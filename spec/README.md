@@ -22,8 +22,8 @@ and the documents).
   `malformed.json`, the responses that are not well formed, each with the
   outcome it must have.
 - `documents/`: the text of every operation the manifest names, with its
-  fragments, as the compiler emits it; written from the generated code and
-  checked against it, so the two cannot drift.
+  fragments, as the compiler emits it, compact on one line; written from
+  the generated code and checked against it, so the two cannot drift.
 - `manifest.json`: the cases, below.
 
 ## The manifest

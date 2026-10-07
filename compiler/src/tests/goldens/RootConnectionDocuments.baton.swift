@@ -74,32 +74,7 @@ nonisolated public struct TestRootNotesPaginationQuery: Baton.Query {
     }
 
     public static let name = "TestRootNotesPaginationQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestRootNotesPaginationQuery(
-  $count: Int = 2
-  $cursor: String
-) {
-  ...TestRootNotes_query_1G22uz
-}
-
-fragment TestRootNotes_query_1G22uz on Query {
-  notes(first: $count, after: $cursor) {
-    totalCount
-    edges {
-      node {
-        id
-        text
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestRootNotesPaginationQuery($count:Int=2,$cursor:String){...TestRootNotes_query_1G22uz}fragment TestRootNotes_query_1G22uz on Query{notes(first:$count,after:$cursor){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor)])
@@ -155,29 +130,7 @@ nonisolated public struct TestRootNotesQuery: Baton.Query {
     }
 
     public static let name = "TestRootNotesQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestRootNotesQuery {
-  ...TestRootNotes_query
-}
-
-fragment TestRootNotes_query on Query {
-  notes(first: 2) {
-    totalCount
-    edges {
-      node {
-        id
-        text
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestRootNotesQuery{...TestRootNotes_query}fragment TestRootNotes_query on Query{notes(first:2){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])

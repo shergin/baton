@@ -57,8 +57,11 @@ fn without_persist_config_an_operation_carries_its_text_and_no_id() {
     assert_eq!(operation.id, None);
     let swift = emitted(&plan);
     assert!(
-        swift.contains("public static let document: Baton.Document = .text(#\"\"\""),
-        "{swift}"
+        swift.contains(&format!(
+            "public static let document: Baton.Document = .text(#\"{}\"#)\n",
+            operation.text
+        )),
+        "the text is one line in a one-line raw literal: {swift}"
     );
     assert!(!swift.contains(".id("), "{swift}");
     assert!(!swift.contains("persistedID"), "{swift}");
@@ -96,6 +99,24 @@ fn under_persist_config_an_operation_carries_the_hash_of_its_text_and_no_text() 
         let json = serde_json::to_value(operation).expect("the operation serializes");
         assert_eq!(json.get("id").and_then(|id| id.as_str()), Some(id.as_str()));
     }
+}
+
+#[test]
+fn the_persisted_id_is_the_hash_of_the_compact_text() {
+    let plan = compiled(
+        r#"{"persistConfig": {"file": "persisted.json"}}"#,
+        &[MUTATION],
+    );
+    let operation = &plan.operations[0];
+    assert_eq!(
+        operation.text,
+        "mutation Rename($id:ID!){addNote(characterId:$id,text:\"x\"){note{id}}}"
+    );
+    assert_eq!(
+        operation.id.as_deref(),
+        Some(md5(&operation.text).as_str()),
+        "the id hashes exactly the text the server would otherwise receive"
+    );
 }
 
 #[test]

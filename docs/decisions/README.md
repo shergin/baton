@@ -36,6 +36,7 @@ principle, the proof belongs here.
 - [A fragment has one reading: a lens, or an `@inline` value](a-fragment-has-one-reading.md)
 - [A mapped scalar is a fallible read](a-mapped-scalar-is-a-fallible-read.md)
 - [An operation is sent as its text or its id, and the build decides](an-operation-is-sent-as-text-or-id.md)
+- [An operation's text is printed compact](operation-text-is-printed-compact.md)
 - [Client data is described by the schema and written by a payload](client-data-is-described-and-committed.md)
 - [An operation states its expiration in its document](an-operation-states-its-expiration.md)
 - [Keys a session produces belong to its store](session-keys-belong-to-the-store.md)

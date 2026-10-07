@@ -132,6 +132,20 @@ struct TransportTests {
         #expect(TestProfileQuery.document == .text(TestProfileQuery.text ?? ""), "the test target sets no persistConfig")
     }
 
+    @Test("a fetched operation's body sends its compact text as the query, one line with its fragments after it")
+    func a_fetched_operations_body_sends_its_compact_text_as_the_query() async throws {
+        let transport = RecordedTransport([TestNotesQuery.name: notesPage(1)])
+        let environment = Environment(transport: transport)
+        environment.log = nil
+        _ = try await environment.fetch(TestNotesQuery(id: "1"))
+        let request = try #require(transport.requests.first)
+        let query = try #require(try object(request.body)["query"] as? String)
+        #expect(query == TestNotesQuery.text)
+        #expect(!query.contains("\n"), "\(query)")
+        #expect(!query.contains("  ") && !query.contains(": ") && !query.contains(", "), "\(query)")
+        #expect(query.hasPrefix("query TestNotesQuery($id:ID!){character(id:$id){...TestNotes_character,id}}fragment TestNotes_character on Character{"), "\(query)")
+    }
+
     @Test("the environment's subscriptions take any transport, and a recorded one serves a subscription its one event")
     func the_environments_subscriptions_take_any_transport() async throws {
         let events = RecordedTransport([TestNoteAdded.name: fixture("note-added-1")])

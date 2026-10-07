@@ -5,18 +5,4 @@
 # scalar lists, a custom scalar given as each kind of JSON value, and members
 # the document does not select. `malformed.json` lists the responses that
 # are not well formed, each with the outcome it must have.
-query TestTokenizerQuery {
-  tokenizer {
-    id
-    text
-    strings
-    count
-    counts
-    ratio
-    ratios
-    flag
-    flags
-    json
-    jsons
-  }
-}
+query TestTokenizerQuery{tokenizer{id,text,strings,count,counts,ratio,ratios,flag,flags,json,jsons}}

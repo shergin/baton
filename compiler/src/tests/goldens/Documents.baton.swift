@@ -38,56 +38,7 @@ nonisolated public struct Fixture: Baton.Query {
     }
 
     public static let name = "Fixture"
-    public static let document: Baton.Document = .text(#"""
-query Fixture(
-  $page: Int
-) {
-  characters(page: $page) {
-    info {
-      count
-      pages
-      next
-      prev
-    }
-    results {
-      id
-      name
-      status
-      species
-      type
-      gender
-      image
-      created
-      origin {
-        id
-        name
-        type
-        dimension
-        created
-      }
-      location {
-        id
-        name
-        type
-        dimension
-        created
-      }
-      episode {
-        id
-        name
-        air_date
-        episode
-        created
-        characters {
-          id
-          name
-          image
-        }
-      }
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query Fixture($page:Int){characters(page:$page){info{count,pages,next,prev},results{id,name,status,species,type,gender,image,created,origin{id,name,type,dimension,created},location{id,name,type,dimension,created},episode{id,name,air_date,episode,created,characters{id,name,image}}}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["page": Baton.Variable(self.page)])
@@ -237,19 +188,7 @@ nonisolated public struct TestEpisodesQuery: Baton.Query {
     }
 
     public static let name = "TestEpisodesQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestEpisodesQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    episode {
-      id
-      name
-    }
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestEpisodesQuery($id:ID!){character(id:$id){episode{id,name},id}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -306,16 +245,7 @@ nonisolated public struct TestFreshCharacter: Baton.Query {
     }
 
     public static let name = "TestFreshCharacter"
-    public static let document: Baton.Document = .text(#"""
-query TestFreshCharacter(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    name
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestFreshCharacter($id:ID!){character(id:$id){id,name}}"#)
     @_spi(Generated) public static let cacheExpiration: Swift.Duration? = .seconds(30)
 
     public var variables: Baton.Variables {
@@ -363,27 +293,7 @@ nonisolated public struct TestHeaderQuery: Baton.Query {
     }
 
     public static let name = "TestHeaderQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestHeaderQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    ...TestHeader_character
-    id
-  }
-}
-
-fragment TestHeader_character on Character {
-  name
-  status
-  species
-  image
-  origin {
-    name
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestHeaderQuery($id:ID!){character(id:$id){...TestHeader_character,id}}fragment TestHeader_character on Character{name,status,species,image,origin{name,id}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -437,36 +347,7 @@ nonisolated public struct TestList: Baton.Query {
     }
 
     public static let name = "TestList"
-    public static let document: Baton.Document = .text(#"""
-query TestList(
-  $page: Int
-) {
-  characters(page: $page) {
-    results {
-      ...TestRow_character
-      ...TestHeader_character
-      id
-    }
-  }
-}
-
-fragment TestHeader_character on Character {
-  name
-  status
-  species
-  image
-  origin {
-    name
-    id
-  }
-}
-
-fragment TestRow_character on Character {
-  name
-  status
-  image
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestList($page:Int){characters(page:$page){results{...TestRow_character,...TestHeader_character,id}}}fragment TestHeader_character on Character{name,status,species,image,origin{name,id}}fragment TestRow_character on Character{name,status,image}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["page": Baton.Variable(self.page)])
@@ -530,16 +411,7 @@ nonisolated public struct TestQualifiedQuery: Baton.Query {
     }
 
     public static let name = "TestQualifiedQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestQualifiedQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    name
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestQualifiedQuery($id:ID!){character(id:$id){id,name}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])

@@ -1,7 +1,1 @@
-mutation TestDeleteNote(
-  $id: ID!
-) {
-  removeNote(id: $id) {
-    removedNoteId
-  }
-}
+mutation TestDeleteNote($id:ID!){removeNote(id:$id){removedNoteId}}

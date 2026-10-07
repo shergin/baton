@@ -223,7 +223,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestFavoriteQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    ...TestFavorite_character\n  }\n}\n\nfragment TestFavorite_character on Character {\n  id\n  name\n  favorite\n}",
+      "text": "query TestFavoriteQuery($id:ID!){character(id:$id){id,...TestFavorite_character}}fragment TestFavorite_character on Character{id,name,favorite}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -455,7 +455,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestNode(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on Character {\n      id\n      name\n    }\n    ... on Episode {\n      id\n      name\n    }\n    id\n  }\n}",
+      "text": "query TestNode($id:ID!){node(id:$id){__typename,...on Character{id,name},...on Episode{id,name},id}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -894,7 +894,7 @@
           "default_value": null
         }
       ],
-      "text": "mutation TestRename(\n  $id: ID!\n  $name: String!\n) {\n  rename(id: $id, name: $name) {\n    character {\n      id\n      name\n    }\n  }\n}",
+      "text": "mutation TestRename($id:ID!,$name:String!){rename(id:$id,name:$name){character{id,name}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -1148,7 +1148,7 @@
           "default_value": null
         }
       ],
-      "text": "mutation TestRenameThroughFragment(\n  $id: ID!\n  $name: String!\n) {\n  ...TestRenamePayload_mutation\n}\n\nfragment TestRenamePayload_mutation on Mutation {\n  rename(id: $id, name: $name) {\n    character {\n      id\n      name\n    }\n  }\n}",
+      "text": "mutation TestRenameThroughFragment($id:ID!,$name:String!){...TestRenamePayload_mutation}fragment TestRenamePayload_mutation on Mutation{rename(id:$id,name:$name){character{id,name}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -1310,7 +1310,7 @@
           "default_value": null
         }
       ],
-      "text": "mutation TestRenameWithOrigin(\n  $id: ID!\n  $name: String!\n  $withOrigin: Boolean!\n) {\n  rename(id: $id, name: $name) {\n    character {\n      id\n      name\n      origin @include(if: $withOrigin) {\n        id\n        name\n      }\n    }\n  }\n}",
+      "text": "mutation TestRenameWithOrigin($id:ID!,$name:String!,$withOrigin:Boolean!){rename(id:$id,name:$name){character{id,name,origin@include(if:$withOrigin){id,name}}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -1722,7 +1722,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestSearch(\n  $name: String!\n) {\n  search(name: $name) {\n    __typename\n    ... on Character {\n      id\n      name\n    }\n    ... on Location {\n      id\n      name\n      dimension\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}",
+      "text": "query TestSearch($name:String!){search(name:$name){__typename,...on Character{id,name},...on Location{id,name,dimension},...on Node{__isNode:__typename,id}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2241,7 +2241,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestSearchOrigins(\n  $name: String!\n) {\n  search(name: $name) {\n    __typename\n    ... on Character {\n      origin {\n        name\n        id\n      }\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}",
+      "text": "query TestSearchOrigins($name:String!){search(name:$name){__typename,...on Character{origin{name,id}},...on Node{__isNode:__typename,id}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2638,7 +2638,7 @@
           "default_value": null
         }
       ],
-      "text": "mutation TestSetFavorite(\n  $id: ID!\n  $favorite: Boolean!\n) {\n  setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      name\n      favorite\n    }\n  }\n}",
+      "text": "mutation TestSetFavorite($id:ID!,$favorite:Boolean!){setFavorite(id:$id,favorite:$favorite){character{id,name,favorite}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

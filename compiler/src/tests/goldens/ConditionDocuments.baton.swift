@@ -24,26 +24,8 @@ nonisolated public struct TestConditions: Baton.Query {
 
     public static let name = "TestConditions"
     public static let document: Baton.Document = .text(#"""
-query TestConditions(
-  $id: ID!
-  $withOrigin: Boolean!
-  $hideStatus: Boolean!
-) {
-  character(id: $id) {
-    name
-    origin {
-      id
-    }
-    origin @include(if: $withOrigin) {
-      name
-      dimension
-      id
-    }
-    species @include(if: $withOrigin)
-    status @skip(if: $hideStatus)
-    id
-  }
-}
+query TestConditions($id:ID!,$withOrigin:Boolean!,$hideStatus:Boolean!){character(id:$id){name,origin{id},origin@include(if:$withOrigin){name,dimension,id}
+    species@include(if:$withOrigin),status@skip(if:$hideStatus),id}}
 """#)
 
     public var variables: Baton.Variables {
@@ -111,19 +93,7 @@ nonisolated public struct TestFoldedNode: Baton.Query {
     }
 
     public static let name = "TestFoldedNode"
-    public static let document: Baton.Document = .text(#"""
-query TestFoldedNode(
-  $name: String!
-) {
-  search(name: $name) {
-    __typename
-    ... on Node {
-      __isNode: __typename
-      id
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestFoldedNode($name:String!){search(name:$name){__typename,...on Node{__isNode:__typename,id}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["name": Baton.Variable(self.name)])
@@ -178,22 +148,7 @@ nonisolated public struct TestNamedSpread: Baton.Query {
     }
 
     public static let name = "TestNamedSpread"
-    public static let document: Baton.Document = .text(#"""
-query TestNamedSpread(
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    id
-    ...TestNamed_named
-  }
-}
-
-fragment TestNamed_named on Named {
-  __isNamed: __typename
-  name
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestNamedSpread($id:ID!){node(id:$id){__typename,id,...TestNamed_named}}fragment TestNamed_named on Named{__isNamed:__typename,name}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -255,28 +210,7 @@ nonisolated public struct TestNodeDeferred: Baton.Query {
     }
 
     public static let name = "TestNodeDeferred"
-    public static let document: Baton.Document = .text(#"""
-query TestNodeDeferred(
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    id
-    ... on Character {
-      name
-    }
-    ...TestAppearances_character @defer(label: "TestNodeDeferred$defer$TestAppearances_character")
-  }
-}
-
-fragment TestAppearances_character on Character {
-  episode {
-    name
-    air_date
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestNodeDeferred($id:ID!){node(id:$id){__typename,id,...on Character{name},...TestAppearances_character@defer(label:"TestNodeDeferred$defer$TestAppearances_character")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}"#)
     @_spi(Generated) public static let hasDeferred = true
 
     public var variables: Baton.Variables {
@@ -354,19 +288,7 @@ nonisolated public struct TestNodeFields: Baton.Query {
     }
 
     public static let name = "TestNodeFields"
-    public static let document: Baton.Document = .text(#"""
-query TestNodeFields(
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    id
-    ... on Character {
-      name
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestNodeFields($id:ID!){node(id:$id){__typename,id,...on Character{name}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -429,22 +351,10 @@ nonisolated public struct TestStrictConditions: Baton.Query {
 
     public static let name = "TestStrictConditions"
     public static let document: Baton.Document = .text(#"""
-query TestStrictConditions(
-  $id: ID!
-  $withStatus: Boolean!
-) {
-  character(id: $id) {
-    name
-    __typename @include(if: $withStatus)
-    species @include(if: $withStatus)
-    status @include(if: $withStatus)
-    origin @include(if: $withStatus) {
-      name
-      id
-    }
-    id
-  }
-}
+query TestStrictConditions($id:ID!,$withStatus:Boolean!){character(id:$id){name,__typename@include(if:$withStatus)
+    species@include(if:$withStatus)
+    status@include(if:$withStatus)
+    origin@include(if:$withStatus){name,id},id}}
 """#)
     @_spi(Generated) public static let throwsOnFieldError = true
 
@@ -554,24 +464,7 @@ nonisolated public struct TestTwoSpreads: Baton.Query {
     }
 
     public static let name = "TestTwoSpreads"
-    public static let document: Baton.Document = .text(#"""
-query TestTwoSpreads(
-  $id: ID!
-  $again: Boolean!
-) {
-  character(id: $id) {
-    ...TestRow_character
-    ...TestRow_character @include(if: $again)
-    id
-  }
-}
-
-fragment TestRow_character on Character {
-  name
-  status
-  image
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestTwoSpreads($id:ID!,$again:Boolean!){character(id:$id){...TestRow_character,...TestRow_character@include(if:$again),id}}fragment TestRow_character on Character{name,status,image}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "again": Baton.Variable(self.again)])
@@ -624,34 +517,7 @@ nonisolated public struct TestUnion: Baton.Query {
     }
 
     public static let name = "TestUnion"
-    public static let document: Baton.Document = .text(#"""
-query TestUnion(
-  $name: String!
-) {
-  search(name: $name) {
-    __typename
-    ... on Character {
-      label: name
-      status
-    }
-    ... on Location {
-      label: dimension
-      type
-    }
-    ... on Episode {
-      air_date
-    }
-    ... on Named {
-      __isNamed: __typename
-      name
-    }
-    ... on Node {
-      __isNode: __typename
-      id
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestUnion($name:String!){search(name:$name){__typename,...on Character{label:name,status},...on Location{label:dimension,type},...on Episode{air_date},...on Named{__isNamed:__typename,name},...on Node{__isNode:__typename,id}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["name": Baton.Variable(self.name)])

@@ -10,23 +10,7 @@ nonisolated public struct TestTokenizerQuery: Baton.Query {
     }
 
     public static let name = "TestTokenizerQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestTokenizerQuery {
-  tokenizer {
-    id
-    text
-    strings
-    count
-    counts
-    ratio
-    ratios
-    flag
-    flags
-    json
-    jsons
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestTokenizerQuery{tokenizer{id,text,strings,count,counts,ratio,ratios,flag,flags,json,jsons}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])

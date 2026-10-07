@@ -9,8 +9,7 @@ use super::builder::builder;
 use super::lens::lens;
 use super::plan::PlanSelections;
 use super::swift::{
-    SwiftType, member, parameter, raw_multiline_literal, runtime_value, swift_literal,
-    variable_type,
+    SwiftType, member, parameter, raw_literal, runtime_value, swift_literal, variable_type,
 };
 use super::writer::Writer;
 use crate::decide::{OperationValue, Shared, VariableValue};
@@ -89,7 +88,7 @@ fn value_members(
     // text to fall back to under `persistConfig`.
     let document = match &operation.id {
         Some(id) => format!(".id({})", swift_literal(id)),
-        None => format!(".text({})", raw_multiline_literal(&operation.text)),
+        None => format!(".text({})", raw_literal(&operation.text)),
     };
     writer.line(format!(
         "public static let document: {} = {document}",

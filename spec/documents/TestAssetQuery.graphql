@@ -1,13 +1,1 @@
-query TestAssetQuery(
-  $uuid: String!
-) {
-  asset(uuid: $uuid) {
-    owner {
-      name
-      id
-    }
-    uuid
-    name
-    id
-  }
-}
+query TestAssetQuery($uuid:String!){asset(uuid:$uuid){owner{name,id},uuid,name,id}}

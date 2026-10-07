@@ -1,11 +1,1 @@
-query TestEpisodesQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    episode {
-      id
-      name
-    }
-    id
-  }
-}
+query TestEpisodesQuery($id:ID!){character(id:$id){episode{id,name},id}}

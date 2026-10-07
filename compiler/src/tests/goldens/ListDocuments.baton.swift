@@ -404,22 +404,7 @@ nonisolated public struct TestAddNote: Baton.Mutation {
     }
 
     public static let name = "TestAddNote"
-    public static let document: Baton.Document = .text(#"""
-mutation TestAddNote(
-  $characterId: ID!
-  $text: String!
-) {
-  addNote(characterId: $characterId, text: $text) {
-    noteEdge {
-      cursor
-      node {
-        id
-        text
-      }
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"mutation TestAddNote($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){noteEdge{cursor,node{id,text}}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["characterId": Baton.Variable(self.characterId), "text": Baton.Variable(self.text), "connections": Baton.Variable(self.connections)])
@@ -559,22 +544,7 @@ nonisolated public struct TestAddNoteFirst: Baton.Mutation {
     }
 
     public static let name = "TestAddNoteFirst"
-    public static let document: Baton.Document = .text(#"""
-mutation TestAddNoteFirst(
-  $characterId: ID!
-  $text: String!
-) {
-  addNote(characterId: $characterId, text: $text) {
-    noteEdge {
-      cursor
-      node {
-        id
-        text
-      }
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"mutation TestAddNoteFirst($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){noteEdge{cursor,node{id,text}}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["characterId": Baton.Variable(self.characterId), "text": Baton.Variable(self.text), "connections": Baton.Variable(self.connections)])
@@ -714,19 +684,7 @@ nonisolated public struct TestAddNoteNode: Baton.Mutation {
     }
 
     public static let name = "TestAddNoteNode"
-    public static let document: Baton.Document = .text(#"""
-mutation TestAddNoteNode(
-  $characterId: ID!
-  $text: String!
-) {
-  addNote(characterId: $characterId, text: $text) {
-    note {
-      id
-      text
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"mutation TestAddNoteNode($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){note{id,text}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["characterId": Baton.Variable(self.characterId), "text": Baton.Variable(self.text), "connections": Baton.Variable(self.connections)])
@@ -839,19 +797,7 @@ nonisolated public struct TestAddNoteNodeFirst: Baton.Mutation {
     }
 
     public static let name = "TestAddNoteNodeFirst"
-    public static let document: Baton.Document = .text(#"""
-mutation TestAddNoteNodeFirst(
-  $characterId: ID!
-  $text: String!
-) {
-  addNote(characterId: $characterId, text: $text) {
-    note {
-      id
-      text
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"mutation TestAddNoteNodeFirst($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){note{id,text}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["characterId": Baton.Variable(self.characterId), "text": Baton.Variable(self.text), "connections": Baton.Variable(self.connections)])
@@ -964,19 +910,7 @@ nonisolated public struct TestAddNoteNodeOfAnotherType: Baton.Mutation {
     }
 
     public static let name = "TestAddNoteNodeOfAnotherType"
-    public static let document: Baton.Document = .text(#"""
-mutation TestAddNoteNodeOfAnotherType(
-  $characterId: ID!
-  $text: String!
-) {
-  addNote(characterId: $characterId, text: $text) {
-    note {
-      id
-      text
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"mutation TestAddNoteNodeOfAnotherType($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){note{id,text}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["characterId": Baton.Variable(self.characterId), "text": Baton.Variable(self.text), "connections": Baton.Variable(self.connections)])
@@ -1086,22 +1020,7 @@ nonisolated public struct TestAliasQuery: Baton.Query {
     }
 
     public static let name = "TestAliasQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestAliasQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    ...TestRow_character
-    id
-  }
-}
-
-fragment TestRow_character on Character {
-  name
-  status
-  image
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestAliasQuery($id:ID!){character(id:$id){...TestRow_character,id}}fragment TestRow_character on Character{name,status,image}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1153,41 +1072,7 @@ nonisolated public struct TestAuthorNotesPaginationQuery: Baton.Query {
     }
 
     public static let name = "TestAuthorNotesPaginationQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestAuthorNotesPaginationQuery(
-  $count: Int = 2
-  $cursor: String
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...TestAuthorNotes_note_1G22uz
-    id
-  }
-}
-
-fragment TestAuthorNotes_note_1G22uz on Note {
-  id
-  author {
-    id
-    name
-    notes(first: $count, after: $cursor) {
-      edges {
-        node {
-          id
-          text
-          __typename
-        }
-        cursor
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-      }
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestAuthorNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestAuthorNotes_note_1G22uz,id}}fragment TestAuthorNotes_note_1G22uz on Note{id,author{id,name,notes(first:$count,after:$cursor){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
@@ -1268,39 +1153,7 @@ nonisolated public struct TestAuthorNotesQuery: Baton.Query {
     }
 
     public static let name = "TestAuthorNotesQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestAuthorNotesQuery(
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...TestAuthorNotes_note
-    id
-  }
-}
-
-fragment TestAuthorNotes_note on Note {
-  id
-  author {
-    id
-    name
-    notes(first: 2) {
-      edges {
-        node {
-          id
-          text
-          __typename
-        }
-        cursor
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-      }
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestAuthorNotesQuery($id:ID!){node(id:$id){__typename,...TestAuthorNotes_note,id}}fragment TestAuthorNotes_note on Note{id,author{id,name,notes(first:2){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1383,41 +1236,7 @@ nonisolated public struct TestDeferredNotesPaginationQuery: Baton.Query {
     }
 
     public static let name = "TestDeferredNotesPaginationQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestDeferredNotesPaginationQuery(
-  $count: Int = 2
-  $cursor: String
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...TestDeferredNotes_character_1G22uz
-    id
-  }
-}
-
-fragment TestDeferredNotes_character_1G22uz on Character {
-  notes(first: $count, after: $cursor) {
-    edges {
-      node {
-        id
-        ...TestNoteText_note @defer(label: "TestDeferredNotes_character$defer$noteText")
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
-  id
-}
-
-fragment TestNoteText_note on Note {
-  text
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestDeferredNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestDeferredNotes_character_1G22uz,id}}fragment TestDeferredNotes_character_1G22uz on Character{notes(first:$count,after:$cursor){edges{node{id,...TestNoteText_note@defer(label:"TestDeferredNotes_character$defer$noteText"),__typename},cursor},pageInfo{endCursor,hasNextPage}},id}fragment TestNoteText_note on Note{text}"#)
     @_spi(Generated) public static let hasDeferred = true
 
     public var variables: Baton.Variables {
@@ -1493,15 +1312,7 @@ nonisolated public struct TestDeleteNote: Baton.Mutation {
     }
 
     public static let name = "TestDeleteNote"
-    public static let document: Baton.Document = .text(#"""
-mutation TestDeleteNote(
-  $id: ID!
-) {
-  removeNote(id: $id) {
-    removedNoteId
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"mutation TestDeleteNote($id:ID!){removeNote(id:$id){removedNoteId}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1586,41 +1397,7 @@ nonisolated public struct TestHiddenNotesPaginationQuery: Baton.Query {
     }
 
     public static let name = "TestHiddenNotesPaginationQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestHiddenNotesPaginationQuery(
-  $count: Int = 2
-  $cursor: String
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...TestHiddenNotes_character_1G22uz
-    id
-  }
-}
-
-fragment TestHiddenNotes_character_1G22uz on Character {
-  TestHiddenNotes_character: name
-  TestHiddenNotesPaginationQuery: status
-  notes(first: $count, after: $cursor) {
-    TestHiddenNotes_character: totalCount
-    TestHiddenNotesPaginationQuery: totalCount
-    edges {
-      node {
-        id
-        text
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
-  id
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestHiddenNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestHiddenNotes_character_1G22uz,id}}fragment TestHiddenNotes_character_1G22uz on Character{TestHiddenNotes_character:name,TestHiddenNotesPaginationQuery:status,notes(first:$count,after:$cursor){TestHiddenNotes_character:totalCount,TestHiddenNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
@@ -1700,38 +1477,7 @@ nonisolated public struct TestHiddenNotesQuery: Baton.Query {
     }
 
     public static let name = "TestHiddenNotesQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestHiddenNotesQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    ...TestHiddenNotes_character
-    id
-  }
-}
-
-fragment TestHiddenNotes_character on Character {
-  TestHiddenNotes_character: name
-  TestHiddenNotesPaginationQuery: status
-  notes(first: 2) {
-    TestHiddenNotes_character: totalCount
-    TestHiddenNotesPaginationQuery: totalCount
-    edges {
-      node {
-        id
-        text
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
-  id
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestHiddenNotesQuery($id:ID!){character(id:$id){...TestHiddenNotes_character,id}}fragment TestHiddenNotes_character on Character{TestHiddenNotes_character:name,TestHiddenNotesPaginationQuery:status,notes(first:2){TestHiddenNotes_character:totalCount,TestHiddenNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1805,39 +1551,7 @@ nonisolated public struct TestHiddenRecentNotesPaginationQuery: Baton.Query {
     }
 
     public static let name = "TestHiddenRecentNotesPaginationQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestHiddenRecentNotesPaginationQuery(
-  $count: Int = 2
-  $cursor: String
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...TestHiddenRecentNotes_character_1G22uz
-    id
-  }
-}
-
-fragment TestHiddenRecentNotes_character_1G22uz on Character {
-  notes(last: $count, before: $cursor) {
-    TestHiddenRecentNotes_character: totalCount
-    TestHiddenRecentNotesPaginationQuery: totalCount
-    edges {
-      node {
-        id
-        text
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      hasPreviousPage
-      startCursor
-    }
-  }
-  id
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestHiddenRecentNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestHiddenRecentNotes_character_1G22uz,id}}fragment TestHiddenRecentNotes_character_1G22uz on Character{notes(last:$count,before:$cursor){TestHiddenRecentNotes_character:totalCount,TestHiddenRecentNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
@@ -1915,36 +1629,7 @@ nonisolated public struct TestHiddenRecentNotesQuery: Baton.Query {
     }
 
     public static let name = "TestHiddenRecentNotesQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestHiddenRecentNotesQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    ...TestHiddenRecentNotes_character
-    id
-  }
-}
-
-fragment TestHiddenRecentNotes_character on Character {
-  notes(last: 2) {
-    TestHiddenRecentNotes_character: totalCount
-    TestHiddenRecentNotesPaginationQuery: totalCount
-    edges {
-      node {
-        id
-        text
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      hasPreviousPage
-      startCursor
-    }
-  }
-  id
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestHiddenRecentNotesQuery($id:ID!){character(id:$id){...TestHiddenRecentNotes_character,id}}fragment TestHiddenRecentNotes_character on Character{notes(last:2){TestHiddenRecentNotes_character:totalCount,TestHiddenRecentNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -2016,39 +1701,7 @@ nonisolated public struct TestNotesPaginationQuery: Baton.Query {
     }
 
     public static let name = "TestNotesPaginationQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestNotesPaginationQuery(
-  $count: Int = 2
-  $cursor: String
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...TestNotes_character_1G22uz
-    id
-  }
-}
-
-fragment TestNotes_character_1G22uz on Character {
-  name
-  notes(first: $count, after: $cursor) {
-    totalCount
-    edges {
-      node {
-        id
-        text
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
-  id
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestNotes_character_1G22uz,id}}fragment TestNotes_character_1G22uz on Character{name,notes(first:$count,after:$cursor){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
@@ -2126,36 +1779,7 @@ nonisolated public struct TestNotesQuery: Baton.Query {
     }
 
     public static let name = "TestNotesQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestNotesQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    ...TestNotes_character
-    id
-  }
-}
-
-fragment TestNotes_character on Character {
-  name
-  notes(first: 2) {
-    totalCount
-    edges {
-      node {
-        id
-        text
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
-  id
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestNotesQuery($id:ID!){character(id:$id){...TestNotes_character,id}}fragment TestNotes_character on Character{name,notes(first:2){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -2225,37 +1849,7 @@ nonisolated public struct TestNotesSizedQuery: Baton.Query {
     }
 
     public static let name = "TestNotesSizedQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestNotesSizedQuery(
-  $id: ID!
-  $size: Int
-) {
-  character(id: $id) {
-    ...TestNotes_character_2H9PL
-    id
-  }
-}
-
-fragment TestNotes_character_2H9PL on Character {
-  name
-  notes(first: $size) {
-    totalCount
-    edges {
-      node {
-        id
-        text
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
-  id
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestNotesSizedQuery($id:ID!,$size:Int){character(id:$id){...TestNotes_character_2H9PL,id}}fragment TestNotes_character_2H9PL on Character{name,notes(first:$size){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "size": Baton.Variable(self.size)])
@@ -2328,37 +1922,7 @@ nonisolated public struct TestRecentNotesPaginationQuery: Baton.Query {
     }
 
     public static let name = "TestRecentNotesPaginationQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestRecentNotesPaginationQuery(
-  $count: Int = 2
-  $cursor: String
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...TestRecentNotes_character_1G22uz
-    id
-  }
-}
-
-fragment TestRecentNotes_character_1G22uz on Character {
-  notes(last: $count, before: $cursor) {
-    edges {
-      node {
-        id
-        text
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      hasPreviousPage
-      startCursor
-    }
-  }
-  id
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestRecentNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestRecentNotes_character_1G22uz,id}}fragment TestRecentNotes_character_1G22uz on Character{notes(last:$count,before:$cursor){edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["count": Baton.Variable(self.count), "cursor": Baton.Variable(self.cursor), "id": Baton.Variable(self.id)])
@@ -2434,34 +1998,7 @@ nonisolated public struct TestRecentNotesQuery: Baton.Query {
     }
 
     public static let name = "TestRecentNotesQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestRecentNotesQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    ...TestRecentNotes_character
-    id
-  }
-}
-
-fragment TestRecentNotes_character on Character {
-  notes(last: 2) {
-    edges {
-      node {
-        id
-        text
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      hasPreviousPage
-      startCursor
-    }
-  }
-  id
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestRecentNotesQuery($id:ID!){character(id:$id){...TestRecentNotes_character,id}}fragment TestRecentNotes_character on Character{notes(last:2){edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -2528,16 +2065,7 @@ nonisolated public struct TestRemoveNote: Baton.Mutation {
     }
 
     public static let name = "TestRemoveNote"
-    public static let document: Baton.Document = .text(#"""
-mutation TestRemoveNote(
-  $id: ID!
-) {
-  removeNote(id: $id) {
-    removedNoteId
-    deleted: removedNoteId
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"mutation TestRemoveNote($id:ID!){removeNote(id:$id){removedNoteId,deleted:removedNoteId}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "connections": Baton.Variable(self.connections)])
@@ -2624,49 +2152,7 @@ nonisolated public struct TestTwoPagesQuery: Baton.Query {
     }
 
     public static let name = "TestTwoPagesQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestTwoPagesQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    notes(first: 2) {
-      edges {
-        node {
-          id
-          text
-          __typename
-        }
-        cursor
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-      }
-    }
-  }
-  node(id: $id) {
-    __typename
-    ... on Character {
-      notes(first: 2, after: "c2") {
-        edges {
-          node {
-            id
-            text
-            __typename
-          }
-          cursor
-        }
-        pageInfo {
-          endCursor
-          hasNextPage
-        }
-      }
-    }
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestTwoPagesQuery($id:ID!){character(id:$id){id,notes(first:2){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}},node(id:$id){__typename,...on Character{notes(first:2,after:"c2"){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}},id}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])

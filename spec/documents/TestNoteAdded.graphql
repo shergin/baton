@@ -1,13 +1,1 @@
-subscription TestNoteAdded(
-  $characterId: ID!
-) {
-  noteAdded(characterId: $characterId) {
-    noteEdge {
-      cursor
-      node {
-        id
-        text
-      }
-    }
-  }
-}
+subscription TestNoteAdded($characterId:ID!){noteAdded(characterId:$characterId){noteEdge{cursor,node{id,text}}}}

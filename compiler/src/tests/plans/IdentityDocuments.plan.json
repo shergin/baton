@@ -19,7 +19,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestAssetNameQuery(\n  $uuid: String!\n) {\n  asset(uuid: $uuid) {\n    name\n    id\n    uuid\n  }\n}",
+      "text": "query TestAssetNameQuery($uuid:String!){asset(uuid:$uuid){name,id,uuid}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -245,7 +245,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestAssetQuery(\n  $uuid: String!\n) {\n  asset(uuid: $uuid) {\n    owner {\n      name\n      id\n    }\n    uuid\n    name\n    id\n  }\n}",
+      "text": "query TestAssetQuery($uuid:String!){asset(uuid:$uuid){owner{name,id},uuid,name,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -614,7 +614,7 @@
       "kind": "query",
       "root_type": "Query",
       "variables": [],
-      "text": "query TestAssetsQuery {\n  assets {\n    name\n    size\n    id\n    uuid\n  }\n}",
+      "text": "query TestAssetsQuery{assets{name,size,id,uuid}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -856,7 +856,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestQuoteQuery(\n  $base: String!\n  $quote: String!\n) {\n  quote(base: $base, quote: $quote) {\n    base\n    quote\n    rate\n  }\n}",
+      "text": "query TestQuoteQuery($base:String!,$quote:String!){quote(base:$base,quote:$quote){base,quote,rate}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -1143,7 +1143,7 @@
       "kind": "query",
       "root_type": "Query",
       "variables": [],
-      "text": "query TestQuotesQuery {\n  quotes {\n    rate\n    base\n    quote\n  }\n}",
+      "text": "query TestQuotesQuery{quotes{rate,base,quote}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

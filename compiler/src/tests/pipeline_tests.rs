@@ -641,3 +641,24 @@ mod condition_lens_tests;
 
 #[path = "persist_tests.rs"]
 mod persist_tests;
+
+#[test]
+fn an_operation_prints_compact_with_its_fragments_following_it() {
+    let (sdl, path) = schema();
+    let mut config: Config = serde_json::from_str("{}").expect("the configuration parses");
+    config.path = PathBuf::from("baton.json");
+    let text = "query Probe($id: ID!, $first: Int) { character(id: $id) { name ...ProbeCharacter } } \
+                fragment ProbeCharacter on Character { origin { name } notes(first: $first, after: \"a\") { edges { cursor } } }";
+    let plan = compile(&sdl, &path, &[], &[document(text)], &config)
+        .unwrap_or_else(|errors| panic!("{errors:?}"))
+        .plan;
+    let sent = &plan.operations[0].text;
+    assert_eq!(
+        sent,
+        "query Probe($id:ID!,$first:Int){character(id:$id){name,...ProbeCharacter,id}}\
+         fragment ProbeCharacter on Character{origin{name,id},notes(first:$first,after:\"a\"){edges{cursor}}}"
+    );
+    assert!(!sent.contains('\n'), "{sent}");
+    assert!(!sent.contains("  "), "{sent}");
+    assert!(!sent.contains(": ") && !sent.contains(", "), "{sent}");
+}

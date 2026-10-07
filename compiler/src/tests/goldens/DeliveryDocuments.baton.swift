@@ -105,21 +105,7 @@ nonisolated public struct TestNoteAdded: Baton.Subscription {
     }
 
     public static let name = "TestNoteAdded"
-    public static let document: Baton.Document = .text(#"""
-subscription TestNoteAdded(
-  $characterId: ID!
-) {
-  noteAdded(characterId: $characterId) {
-    noteEdge {
-      cursor
-      node {
-        id
-        text
-      }
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"subscription TestNoteAdded($characterId:ID!){noteAdded(characterId:$characterId){noteEdge{cursor,node{id,text}}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["characterId": Baton.Variable(self.characterId), "connections": Baton.Variable(self.connections)])
@@ -187,16 +173,7 @@ nonisolated public struct TestNullsOnError: Baton.Query {
     }
 
     public static let name = "TestNullsOnError"
-    public static let document: Baton.Document = .text(#"""
-query TestNullsOnError(
-  $id: ID!
-) {
-  character(id: $id) {
-    name
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestNullsOnError($id:ID!){character(id:$id){name,id}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -242,28 +219,7 @@ nonisolated public struct TestOverlapQuery: Baton.Query {
     }
 
     public static let name = "TestOverlapQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestOverlapQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    name
-    episode {
-      id
-    }
-    ...TestAppearances_character @defer(label: "TestOverlapQuery$defer$TestAppearances_character")
-    id
-  }
-}
-
-fragment TestAppearances_character on Character {
-  episode {
-    name
-    air_date
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestOverlapQuery($id:ID!){character(id:$id){name,episode{id},...TestAppearances_character@defer(label:"TestOverlapQuery$defer$TestAppearances_character"),id}}fragment TestAppearances_character on Character{episode{name,air_date,id}}"#)
     @_spi(Generated) public static let hasDeferred = true
 
     public var variables: Baton.Variables {
@@ -332,47 +288,7 @@ nonisolated public struct TestProfileQuery: Baton.Query {
     }
 
     public static let name = "TestProfileQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestProfileQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    ...TestProfile_character
-    ...TestStrict_character
-    ...TestAppearances_character @defer(label: "TestProfileQuery$defer$TestAppearances_character")
-    id
-  }
-}
-
-fragment TestAppearances_character on Character {
-  episode {
-    name
-    air_date
-    id
-  }
-}
-
-fragment TestProfile_character on Character {
-  name
-  origin {
-    name
-    id
-  }
-  status
-  image
-  location {
-    name
-    dimension
-    id
-  }
-  gender
-}
-
-fragment TestStrict_character on Character {
-  species
-  type
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestProfileQuery($id:ID!){character(id:$id){...TestProfile_character,...TestStrict_character,...TestAppearances_character@defer(label:"TestProfileQuery$defer$TestAppearances_character"),id}}fragment TestAppearances_character on Character{episode{name,air_date,id}}fragment TestProfile_character on Character{name,origin{name,id},status,image,location{name,dimension,id},gender}fragment TestStrict_character on Character{species,type}"#)
     @_spi(Generated) public static let hasDeferred = true
 
     public var variables: Baton.Variables {
@@ -451,19 +367,7 @@ nonisolated public struct TestRosterQuery: Baton.Query {
     }
 
     public static let name = "TestRosterQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestRosterQuery(
-  $page: Int
-) {
-  characters(page: $page) {
-    results {
-      id
-      name
-      status
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestRosterQuery($page:Int){characters(page:$page){results{id,name,status}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["page": Baton.Variable(self.page)])
@@ -526,25 +430,7 @@ nonisolated public struct TestStrictDeferred: Baton.Query {
     }
 
     public static let name = "TestStrictDeferred"
-    public static let document: Baton.Document = .text(#"""
-query TestStrictDeferred(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    name
-    ...TestAppearances_character @defer(label: "TestStrictDeferred$defer$TestAppearances_character")
-  }
-}
-
-fragment TestAppearances_character on Character {
-  episode {
-    name
-    air_date
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestStrictDeferred($id:ID!){character(id:$id){id,name,...TestAppearances_character@defer(label:"TestStrictDeferred$defer$TestAppearances_character")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}"#)
     @_spi(Generated) public static let throwsOnFieldError = true
     @_spi(Generated) public static let hasDeferred = true
 
@@ -631,17 +517,7 @@ nonisolated public struct TestStrictQuery: Baton.Query {
     }
 
     public static let name = "TestStrictQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestStrictQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    name
-    species
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestStrictQuery($id:ID!){character(id:$id){name,species,id}}"#)
     @_spi(Generated) public static let throwsOnFieldError = true
 
     public var variables: Baton.Variables {
@@ -717,21 +593,7 @@ nonisolated public struct TestThrowingSpread: Baton.Query {
     }
 
     public static let name = "TestThrowingSpread"
-    public static let document: Baton.Document = .text(#"""
-query TestThrowingSpread(
-  $id: ID!
-) {
-  character(id: $id) {
-    species
-    ...TestName_character
-    id
-  }
-}
-
-fragment TestName_character on Character {
-  name
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestThrowingSpread($id:ID!){character(id:$id){species,...TestName_character,id}}fragment TestName_character on Character{name}"#)
     @_spi(Generated) public static let throwsOnFieldError = true
 
     public var variables: Baton.Variables {

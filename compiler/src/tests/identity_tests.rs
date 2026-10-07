@@ -139,9 +139,67 @@ fn an_object_implementing_two_interfaces_whose_identities_differ_is_an_error() {
 
 const TEST_IDENTITY: &str = r#"{"types": {"Asset": ["uuid"], "Quote": ["base", "quote"]}}"#;
 
-/// The lines of `text` that select `field` at any depth.
+/// The byte offsets of the selections of `field` at any depth in the
+/// compact `text`, unaliased and without directives. A selection is the text
+/// between the delimiters `{`, `,`, `}`, `(` and a newline (Relay's compact
+/// printer keeps a newline between conditional selections); text inside an
+/// argument list or a string is never a selection.
+fn selection_offsets(text: &str, field: &str) -> Vec<usize> {
+    let mut offsets = Vec::new();
+    let mut start = 0;
+    let mut depth = 0usize;
+    let mut in_string = false;
+    let mut escaped = false;
+    let close = |end: usize, start: usize, offsets: &mut Vec<usize>| {
+        let token = &text[start..end];
+        if token.trim() == field {
+            offsets.push(start + token.find(field).unwrap_or(0));
+        }
+    };
+    for (index, character) in text.char_indices() {
+        if in_string {
+            match character {
+                _ if escaped => escaped = false,
+                '\\' => escaped = true,
+                '"' => in_string = false,
+                _ => {}
+            }
+            continue;
+        }
+        match character {
+            '"' => in_string = true,
+            '(' => {
+                if depth == 0 {
+                    close(index, start, &mut offsets);
+                }
+                depth += 1;
+            }
+            ')' => {
+                depth -= 1;
+                start = index + 1;
+            }
+            '{' | ',' | '}' | '\n' if depth == 0 => {
+                close(index, start, &mut offsets);
+                start = index + 1;
+            }
+            _ => {}
+        }
+    }
+    if depth == 0 {
+        close(text.len(), start, &mut offsets);
+    }
+    offsets
+}
+
+/// The number of selections of `field` at any depth in the compact `text`.
 fn selections_of(text: &str, field: &str) -> usize {
-    text.lines().filter(|line| line.trim() == field).count()
+    selection_offsets(text, field).len()
+}
+
+#[test]
+fn a_selection_is_counted_by_its_whole_name_outside_arguments_and_strings() {
+    let text = r#"query Probe{uuids,uuid(name:"uuid",id:uuid){uuid},list{a:uuid,uuid}}"#;
+    assert_eq!(selections_of(text, "uuid"), 3, "{text}");
 }
 
 #[test]
@@ -153,7 +211,7 @@ fn the_key_field_a_document_leaves_out_is_selected() {
     assert_eq!(selections_of(&text, "base"), 1, "{text}");
     assert_eq!(selections_of(&text, "quote"), 1, "{text}");
     assert!(
-        text.find("    base").unwrap() < text.find("    quote").unwrap(),
+        selection_offsets(&text, "base")[0] < selection_offsets(&text, "quote")[0],
         "the key fields come in the configured order: {text}"
     );
 
@@ -180,7 +238,7 @@ fn a_key_field_the_document_selects_is_not_selected_again() {
 fn an_interface_whose_keyed_members_share_its_own_key_selects_it_once_on_itself() {
     let text = sent("{}", "query Probe { node(id: \"1\") { __typename } }");
     assert_eq!(selections_of(&text, "id"), 1, "{text}");
-    assert!(!text.contains("... on Character"), "{text}");
+    assert!(!text.contains("...on Character"), "{text}");
 }
 
 #[test]
@@ -190,23 +248,23 @@ fn a_union_of_differently_keyed_members_selects_only_the_keys_relay_does_not() {
         "query Probe { search(name: \"a\") { __typename } }",
     );
     let character = text
-        .split("... on Character {")
+        .split("...on Character{")
         .nth(1)
         .unwrap_or_else(|| panic!("Character is selected under its condition: {text}"));
     let character = &character[..character.find('}').unwrap()];
     assert_eq!(
-        character.split_whitespace().collect::<Vec<_>>(),
+        character.split(',').collect::<Vec<_>>(),
         vec!["name"],
         "{text}"
     );
     for member in ["Location", "Episode"] {
         assert!(
-            !text.contains(&format!("... on {member}")),
+            !text.contains(&format!("...on {member}")),
             "Relay's `... on Node {{ id }}` keys {member}: {text}"
         );
     }
     assert!(
-        text.contains("... on Node {\n      __isNode: __typename\n      id\n    }"),
+        text.contains("...on Node{__isNode:__typename,id}"),
         "{text}"
     );
 }

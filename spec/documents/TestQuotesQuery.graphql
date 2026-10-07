@@ -1,7 +1,1 @@
-query TestQuotesQuery {
-  quotes {
-    rate
-    base
-    quote
-  }
-}
+query TestQuotesQuery{quotes{rate,base,quote}}

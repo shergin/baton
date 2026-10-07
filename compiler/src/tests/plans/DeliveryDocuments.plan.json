@@ -474,7 +474,7 @@
           "default_value": null
         }
       ],
-      "text": "subscription TestNoteAdded(\n  $characterId: ID!\n) {\n  noteAdded(characterId: $characterId) {\n    noteEdge {\n      cursor\n      node {\n        id\n        text\n      }\n    }\n  }\n}",
+      "text": "subscription TestNoteAdded($characterId:ID!){noteAdded(characterId:$characterId){noteEdge{cursor,node{id,text}}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -845,7 +845,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestNullsOnError(\n  $id: ID!\n) {\n  character(id: $id) {\n    name\n    id\n  }\n}",
+      "text": "query TestNullsOnError($id:ID!){character(id:$id){name,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -1050,7 +1050,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestOverlapQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    name\n    episode {\n      id\n    }\n    ...TestAppearances_character @defer(label: \"TestOverlapQuery$defer$TestAppearances_character\")\n    id\n  }\n}\n\nfragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n    id\n  }\n}",
+      "text": "query TestOverlapQuery($id:ID!){character(id:$id){name,episode{id},...TestAppearances_character@defer(label:\"TestOverlapQuery$defer$TestAppearances_character\"),id}}fragment TestAppearances_character on Character{episode{name,air_date,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": true,
@@ -1507,7 +1507,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestProfileQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestProfile_character\n    ...TestStrict_character\n    ...TestAppearances_character @defer(label: \"TestProfileQuery$defer$TestAppearances_character\")\n    id\n  }\n}\n\nfragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n    id\n  }\n}\n\nfragment TestProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n  status\n  image\n  location {\n    name\n    dimension\n    id\n  }\n  gender\n}\n\nfragment TestStrict_character on Character {\n  species\n  type\n}",
+      "text": "query TestProfileQuery($id:ID!){character(id:$id){...TestProfile_character,...TestStrict_character,...TestAppearances_character@defer(label:\"TestProfileQuery$defer$TestAppearances_character\"),id}}fragment TestAppearances_character on Character{episode{name,air_date,id}}fragment TestProfile_character on Character{name,origin{name,id},status,image,location{name,dimension,id},gender}fragment TestStrict_character on Character{species,type}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": true,
@@ -2131,7 +2131,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestRosterQuery(\n  $page: Int\n) {\n  characters(page: $page) {\n    results {\n      id\n      name\n      status\n    }\n  }\n}",
+      "text": "query TestRosterQuery($page:Int){characters(page:$page){results{id,name,status}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2444,7 +2444,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestStrictDeferred(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    ...TestAppearances_character @defer(label: \"TestStrictDeferred$defer$TestAppearances_character\")\n  }\n}\n\nfragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n    id\n  }\n}",
+      "text": "query TestStrictDeferred($id:ID!){character(id:$id){id,name,...TestAppearances_character@defer(label:\"TestStrictDeferred$defer$TestAppearances_character\")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}",
       "throws_on_field_error": true,
       "bubbles": false,
       "has_deferred": true,
@@ -2802,7 +2802,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestStrictQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    name\n    species\n    id\n  }\n}",
+      "text": "query TestStrictQuery($id:ID!){character(id:$id){name,species,id}}",
       "throws_on_field_error": true,
       "bubbles": false,
       "has_deferred": false,
@@ -3049,7 +3049,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestThrowingSpread(\n  $id: ID!\n) {\n  character(id: $id) {\n    species\n    ...TestName_character\n    id\n  }\n}\n\nfragment TestName_character on Character {\n  name\n}",
+      "text": "query TestThrowingSpread($id:ID!){character(id:$id){species,...TestName_character,id}}fragment TestName_character on Character{name}",
       "throws_on_field_error": true,
       "bubbles": false,
       "has_deferred": false,

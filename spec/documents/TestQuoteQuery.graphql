@@ -1,10 +1,1 @@
-query TestQuoteQuery(
-  $base: String!
-  $quote: String!
-) {
-  quote(base: $base, quote: $quote) {
-    base
-    quote
-    rate
-  }
-}
+query TestQuoteQuery($base:String!,$quote:String!){quote(base:$base,quote:$quote){base,quote,rate}}

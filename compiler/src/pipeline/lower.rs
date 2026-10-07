@@ -318,10 +318,16 @@ impl Lowering<'_> {
             .operation_text
             .operation(operation.name.item)
             .map(|text_operation| {
+                // Compact: the text is a wire format that every request
+                // carries, and a server's size limit is met by the deep
+                // documents that indentation grows the most.
                 print_full_operation(
                     &self.programs.operation_text,
                     text_operation,
-                    PrinterOptions::default(),
+                    PrinterOptions {
+                        compact: true,
+                        ..PrinterOptions::default()
+                    },
                 )
             })
             .unwrap_or_else(|| {

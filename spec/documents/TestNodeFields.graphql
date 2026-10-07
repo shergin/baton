@@ -1,11 +1,1 @@
-query TestNodeFields(
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    id
-    ... on Character {
-      name
-    }
-  }
-}
+query TestNodeFields($id:ID!){node(id:$id){__typename,id,...on Character{name}}}

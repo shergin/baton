@@ -227,8 +227,15 @@ struct IdentityTests {
     func the_compiler_selects_the_configured_key_fields_an_operation_leaves_out() throws {
         let assets = try #require(TestAssetsQuery.text)
         let quotes = try #require(TestQuotesQuery.text)
-        #expect(assets.contains("    uuid\n"), "\(assets)")
-        #expect(quotes.contains("    base\n"), "\(quotes)")
-        #expect(quotes.contains("    quote\n"), "\(quotes)")
+        #expect(selections(of: "assets", in: assets) == ["name", "size", "id", "uuid"], "\(assets)")
+        #expect(selections(of: "quotes", in: quotes) == ["rate", "base", "quote"], "\(quotes)")
+    }
+
+    /// The selections of the flat selection set of `field` in the compact `text`.
+    private func selections(of field: String, in text: String) -> [Substring] {
+        guard let opening = text.range(of: field + "{") else { return [] }
+        let rest = text[opening.upperBound...]
+        guard let closing = rest.firstIndex(of: "}") else { return [] }
+        return rest[..<closing].split(separator: ",")
     }
 }

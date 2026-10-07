@@ -203,38 +203,7 @@ nonisolated public struct TestBuilderNames: Baton.Mutation {
     }
 
     public static let name = "TestBuilderNames"
-    public static let document: Baton.Document = .text(#"""
-mutation TestBuilderNames(
-  $id: ID!
-  $favorite: Boolean!
-  $self: ID!
-) {
-  type: setFavorite(id: $id, favorite: $favorite) {
-    character {
-      id
-      favorite
-    }
-  }
-  self: setFavorite(id: $self, favorite: $favorite) {
-    character {
-      id
-      favorite
-    }
-  }
-  string: setFavorite(id: $id, favorite: $favorite) {
-    character {
-      id
-      name
-    }
-  }
-  sendable: setFavorite(id: $id, favorite: $favorite) {
-    character {
-      id
-      favorite
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"mutation TestBuilderNames($id:ID!,$favorite:Boolean!,$self:ID!){type:setFavorite(id:$id,favorite:$favorite){character{id,favorite}},self:setFavorite(id:$self,favorite:$favorite){character{id,favorite}},string:setFavorite(id:$id,favorite:$favorite){character{id,name}},sendable:setFavorite(id:$id,favorite:$favorite){character{id,favorite}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "favorite": Baton.Variable(self.favorite), "self": Baton.Variable(self.`self`)])
@@ -492,36 +461,7 @@ nonisolated public struct TestCaughtSpreads: Baton.Query {
     }
 
     public static let name = "TestCaughtSpreads"
-    public static let document: Baton.Document = .text(#"""
-query TestCaughtSpreads(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    ...TestCaughtProfile_character
-    ...TestCaughtStrict_character
-  }
-  node(id: $id) {
-    __typename
-    id
-    ... on Character {
-      ...TestCaughtProfile_character
-    }
-  }
-}
-
-fragment TestCaughtProfile_character on Character {
-  name
-  origin {
-    name
-    id
-  }
-}
-
-fragment TestCaughtStrict_character on Character {
-  species
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestCaughtSpreads($id:ID!){character(id:$id){id,...TestCaughtProfile_character,...TestCaughtStrict_character},node(id:$id){__typename,id,...on Character{...TestCaughtProfile_character}}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestCaughtStrict_character on Character{species}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -622,19 +562,7 @@ nonisolated public struct TestCommitVariable: Baton.Mutation {
     }
 
     public static let name = "TestCommitVariable"
-    public static let document: Baton.Document = .text(#"""
-mutation TestCommitVariable(
-  $commit: ID!
-) {
-  setFavorite(id: $commit, favorite: true) {
-    character {
-      id
-      name
-      favorite
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"mutation TestCommitVariable($commit:ID!){setFavorite(id:$commit,favorite:true){character{id,name,favorite}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["commit": Baton.Variable(self.commit)])
@@ -749,34 +677,7 @@ nonisolated public struct TestConditionNames: Baton.Query {
     }
 
     public static let name = "TestConditionNames"
-    public static let document: Baton.Document = .text(#"""
-query TestConditionNames(
-  $id: ID!
-  $name: String!
-) {
-  namesake(name: $name) {
-    __typename
-    asCharacter: name
-    ... on Character {
-      status
-    }
-    ... on Node {
-      __isNode: __typename
-      id
-    }
-  }
-  node(id: $id) {
-    __typename
-    id
-    ... on Episode {
-      name
-    }
-    ... on Character {
-      name
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestConditionNames($id:ID!,$name:String!){namesake(name:$name){__typename,asCharacter:name,...on Character{status},...on Node{__isNode:__typename,id}},node(id:$id){__typename,id,...on Episode{name},...on Character{name}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name)])
@@ -881,36 +782,7 @@ nonisolated public struct TestEdgesNamesQuery: Baton.Query {
     }
 
     public static let name = "TestEdgesNamesQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestEdgesNamesQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    ...TestEdgesNames_character
-    id
-  }
-}
-
-fragment TestEdgesNames_character on Character {
-  notes(first: 2) {
-    Edges: pageInfo {
-      hasNextPage
-    }
-    edges {
-      node {
-        id
-        text
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestEdgesNamesQuery($id:ID!){character(id:$id){...TestEdgesNames_character,id}}fragment TestEdgesNames_character on Character{notes(first:2){Edges:pageInfo{hasNextPage},edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -975,17 +847,7 @@ nonisolated public struct TestEscapedText: Baton.Query {
     }
 
     public static let name = "TestEscapedText"
-    public static let document: Baton.Document = .text(##"""
-query TestEscapedText {
-  search(name: "\\#1") {
-    __typename
-    ... on Node {
-      __isNode: __typename
-      id
-    }
-  }
-}
-"""##)
+    public static let document: Baton.Document = .text(##"query TestEscapedText{search(name:"\\#1"){__typename,...on Node{__isNode:__typename,id}}}"##)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])
@@ -1038,37 +900,7 @@ nonisolated public struct TestFragmentNamedFields: Baton.Query {
     }
 
     public static let name = "TestFragmentNamedFields"
-    public static let document: Baton.Document = .text(#"""
-query TestFragmentNamedFields(
-  $id: ID!
-) {
-  character(id: $id) {
-    TestCaughtProfile_character: name
-    TestCaughtStrict_character: species
-    ...TestCaughtProfile_character
-    ...TestCaughtStrict_character
-    Fragment: status
-    ...Fragment
-    id
-  }
-}
-
-fragment Fragment on Character {
-  status
-}
-
-fragment TestCaughtProfile_character on Character {
-  name
-  origin {
-    name
-    id
-  }
-}
-
-fragment TestCaughtStrict_character on Character {
-  species
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestFragmentNamedFields($id:ID!){character(id:$id){TestCaughtProfile_character:name,TestCaughtStrict_character:species,...TestCaughtProfile_character,...TestCaughtStrict_character,Fragment:status,...Fragment,id}}fragment Fragment on Character{status}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestCaughtStrict_character on Character{species}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1143,16 +975,7 @@ nonisolated public struct TestHasherVariable: Baton.Query {
     }
 
     public static let name = "TestHasherVariable"
-    public static let document: Baton.Document = .text(#"""
-query TestHasherVariable(
-  $hasher: ID!
-) {
-  character(id: $hasher) {
-    id
-    name
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestHasherVariable($hasher:ID!){character(id:$hasher){id,name}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["hasher": Baton.Variable(self.hasher)])
@@ -1196,19 +1019,7 @@ nonisolated public struct TestListPayload: Baton.Mutation {
     }
 
     public static let name = "TestListPayload"
-    public static let document: Baton.Document = .text(#"""
-mutation TestListPayload {
-  setLists {
-    strings
-    ids
-    counts
-    ratios
-    flags
-    jsons
-    statuses
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"mutation TestListPayload{setLists{strings,ids,counts,ratios,flags,jsons,statuses}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])
@@ -1318,28 +1129,7 @@ nonisolated public struct TestLowercaseSpreads: Baton.Query {
     }
 
     public static let name = "TestLowercaseSpreads"
-    public static let document: Baton.Document = .text(#"""
-query TestLowercaseSpreads(
-  $id: ID!
-) {
-  character(id: $id) {
-    ...testLowercase
-    ...testLowercaseRequired
-    id
-  }
-}
-
-fragment testLowercase on Character {
-  name
-}
-
-fragment testLowercaseRequired on Character {
-  origin {
-    name
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestLowercaseSpreads($id:ID!){character(id:$id){...testLowercase,...testLowercaseRequired,id}}fragment testLowercase on Character{name}fragment testLowercaseRequired on Character{origin{name,id}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1394,18 +1184,7 @@ nonisolated public struct TestModuleNamedPayload: Baton.Mutation {
     }
 
     public static let name = "TestModuleNamedPayload"
-    public static let document: Baton.Document = .text(#"""
-mutation TestModuleNamedPayload(
-  $id: ID!
-) {
-  setFavorite(id: $id, favorite: true) {
-    Baton: character {
-      id
-      Baton: name
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"mutation TestModuleNamedPayload($id:ID!){setFavorite(id:$id,favorite:true){Baton:character{id,Baton:name}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1513,37 +1292,7 @@ nonisolated public struct TestProgramNamesQuery: Baton.Query {
     }
 
     public static let name = "TestProgramNamesQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestProgramNamesQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    ...TestProgramNames_character
-    id
-  }
-}
-
-fragment TestCaughtProfile_character on Character {
-  name
-  origin {
-    name
-    id
-  }
-}
-
-fragment TestProgramNames_character on Character {
-  testProgramNamesRefetchQuery: origin {
-    name
-    id
-  }
-  testCaughtProfile_character: location {
-    name
-    id
-  }
-  ...TestCaughtProfile_character
-  id
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestProgramNamesQuery($id:ID!){character(id:$id){...TestProgramNames_character,id}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestProgramNames_character on Character{testProgramNamesRefetchQuery:origin{name,id},testCaughtProfile_character:location{name,id},...TestCaughtProfile_character,id}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1596,38 +1345,7 @@ nonisolated public struct TestProgramNamesRefetchQuery: Baton.Query {
     }
 
     public static let name = "TestProgramNamesRefetchQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestProgramNamesRefetchQuery(
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ...TestProgramNames_character
-    id
-  }
-}
-
-fragment TestCaughtProfile_character on Character {
-  name
-  origin {
-    name
-    id
-  }
-}
-
-fragment TestProgramNames_character on Character {
-  testProgramNamesRefetchQuery: origin {
-    name
-    id
-  }
-  testCaughtProfile_character: location {
-    name
-    id
-  }
-  ...TestCaughtProfile_character
-  id
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestProgramNamesRefetchQuery($id:ID!){node(id:$id){__typename,...TestProgramNames_character,id}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestProgramNames_character on Character{testProgramNamesRefetchQuery:origin{name,id},testCaughtProfile_character:location{name,id},...TestCaughtProfile_character,id}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1690,21 +1408,7 @@ nonisolated public struct TestSpreadNames: Baton.Query {
     }
 
     public static let name = "TestSpreadNames"
-    public static let document: Baton.Document = .text(#"""
-query TestSpreadNames(
-  $id: ID!
-) {
-  character(id: $id) {
-    testCaughtStrict: species
-    ...TestCaughtStrict_character
-    id
-  }
-}
-
-fragment TestCaughtStrict_character on Character {
-  species
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestSpreadNames($id:ID!){character(id:$id){testCaughtStrict:species,...TestCaughtStrict_character,id}}fragment TestCaughtStrict_character on Character{species}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])

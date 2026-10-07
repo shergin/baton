@@ -1,5 +1,1 @@
-mutation TestSetStatuses {
-  setLists {
-    statuses
-  }
-}
+mutation TestSetStatuses{setLists{statuses}}

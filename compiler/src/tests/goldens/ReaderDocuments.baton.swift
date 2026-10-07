@@ -138,19 +138,7 @@ nonisolated public struct TestCaughtEpisodes: Baton.Query {
     }
 
     public static let name = "TestCaughtEpisodes"
-    public static let document: Baton.Document = .text(#"""
-query TestCaughtEpisodes(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    caught: episode {
-      name
-      id
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestCaughtEpisodes($id:ID!){character(id:$id){id,caught:episode{name,id}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -220,24 +208,7 @@ nonisolated public struct TestCaughtPartQuery: Baton.Query {
     }
 
     public static let name = "TestCaughtPartQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestCaughtPartQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    name
-    ...TestCaughtAppearances_character @defer(label: "TestCaughtPartQuery$defer$TestCaughtAppearances_character")
-  }
-}
-
-fragment TestCaughtAppearances_character on Character {
-  episode {
-    name
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestCaughtPartQuery($id:ID!){character(id:$id){id,name,...TestCaughtAppearances_character@defer(label:"TestCaughtPartQuery$defer$TestCaughtAppearances_character")}}fragment TestCaughtAppearances_character on Character{episode{name,id}}"#)
     @_spi(Generated) public static let throwsOnFieldError = true
     @_spi(Generated) public static let hasDeferred = true
 
@@ -323,19 +294,7 @@ nonisolated public struct TestCollidingErrors: Baton.Query {
     }
 
     public static let name = "TestCollidingErrors"
-    public static let document: Baton.Document = .text(#"""
-query TestCollidingErrors(
-  $id: ID!
-) {
-  types: character(id: $id) {
-    id
-  }
-  typesLens: character(id: $id) {
-    id
-    name
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestCollidingErrors($id:ID!){types:character(id:$id){id},typesLens:character(id:$id){id,name}}"#)
     @_spi(Generated) public static let throwsOnFieldError = true
 
     public var variables: Baton.Variables {
@@ -435,19 +394,7 @@ nonisolated public struct TestCollidingRequired: Baton.Query {
     }
 
     public static let name = "TestCollidingRequired"
-    public static let document: Baton.Document = .text(#"""
-query TestCollidingRequired(
-  $id: ID!
-) {
-  types: character(id: $id) {
-    id
-  }
-  typesLens: character(id: $id) {
-    id
-    name
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestCollidingRequired($id:ID!){types:character(id:$id){id},typesLens:character(id:$id){id,name}}"#)
     @_spi(Generated) public static let bubbles = true
 
     public var variables: Baton.Variables {
@@ -527,16 +474,7 @@ nonisolated public struct TestFilteredCharacters: Baton.Query {
     }
 
     public static let name = "TestFilteredCharacters"
-    public static let document: Baton.Document = .text(#"""
-query TestFilteredCharacters(
-  $filters: [FilterCharacter!]!
-) {
-  charactersMatching(filters: $filters) {
-    id
-    name
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestFilteredCharacters($filters:[FilterCharacter!]!){charactersMatching(filters:$filters){id,name}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["filters": Baton.Variable(self.filters)])
@@ -585,23 +523,7 @@ nonisolated public struct TestKeywordVariables: Baton.Query {
     }
 
     public static let name = "TestKeywordVariables"
-    public static let document: Baton.Document = .text(#"""
-query TestKeywordVariables(
-  $where: ID!
-  $in: String!
-) {
-  character(id: $where) {
-    id
-  }
-  search(name: $in) {
-    __typename
-    ... on Node {
-      __isNode: __typename
-      id
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestKeywordVariables($where:ID!,$in:String!){character(id:$where){id},search(name:$in){__typename,...on Node{__isNode:__typename,id}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["where": Baton.Variable(self.`where`), "in": Baton.Variable(self.`in`)])
@@ -667,19 +589,7 @@ nonisolated public struct TestLoggedOrigin: Baton.Query {
     }
 
     public static let name = "TestLoggedOrigin"
-    public static let document: Baton.Document = .text(#"""
-query TestLoggedOrigin(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    origin {
-      id
-      name
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestLoggedOrigin($id:ID!){character(id:$id){id,origin{id,name}}}"#)
     @_spi(Generated) public static let bubbles = true
 
     public var variables: Baton.Variables {
@@ -759,19 +669,7 @@ nonisolated public struct TestRequiredOrigin: Baton.Query {
     }
 
     public static let name = "TestRequiredOrigin"
-    public static let document: Baton.Document = .text(#"""
-query TestRequiredOrigin(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    origin {
-      id
-      name
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestRequiredOrigin($id:ID!){character(id:$id){id,origin{id,name}}}"#)
     @_spi(Generated) public static let bubbles = true
 
     public var variables: Baton.Variables {
@@ -851,42 +749,7 @@ nonisolated public struct TestReservedNames: Baton.Query {
     }
 
     public static let name = "TestReservedNames"
-    public static let document: Baton.Document = .text(#"""
-query TestReservedNames(
-  $id: ID!
-) {
-  sites: character(id: $id) {
-    id
-    ...TestNotes_character_35kO5h
-  }
-  types: character(id: $id) {
-    id
-  }
-  slots: character(id: $id) {
-    id
-  }
-}
-
-fragment TestNotes_character_35kO5h on Character {
-  name
-  notes(first: 1) {
-    totalCount
-    edges {
-      node {
-        id
-        text
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
-  id
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestReservedNames($id:ID!){sites:character(id:$id){id,...TestNotes_character_35kO5h},types:character(id:$id){id},slots:character(id:$id){id}}fragment TestNotes_character_35kO5h on Character{name,notes(first:1){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -974,40 +837,7 @@ nonisolated public struct TestStandaloneFragmentsQuery: Baton.Query {
     }
 
     public static let name = "TestStandaloneFragmentsQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestStandaloneFragmentsQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    ...TestThrowingOrigin_character
-    ...TestLoggedNotes_character
-    notes(first: 1) {
-      ...TestLogEdges_connection
-    }
-  }
-}
-
-fragment TestLogEdges_connection on NoteConnection {
-  edges {
-    cursor
-  }
-}
-
-fragment TestLoggedNotes_character on Character {
-  notes(first: 1) {
-    totalCount
-    ...TestLogEdges_connection
-  }
-}
-
-fragment TestThrowingOrigin_character on Character {
-  origin {
-    name
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestStandaloneFragmentsQuery($id:ID!){character(id:$id){id,...TestThrowingOrigin_character,...TestLoggedNotes_character,notes(first:1){...TestLogEdges_connection}}}fragment TestLogEdges_connection on NoteConnection{edges{cursor}}fragment TestLoggedNotes_character on Character{notes(first:1){totalCount,...TestLogEdges_connection}}fragment TestThrowingOrigin_character on Character{origin{name,id}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1078,19 +908,7 @@ nonisolated public struct TestStrictEpisodes: Baton.Query {
     }
 
     public static let name = "TestStrictEpisodes"
-    public static let document: Baton.Document = .text(#"""
-query TestStrictEpisodes(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    episode {
-      id
-      name
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestStrictEpisodes($id:ID!){character(id:$id){id,episode{id,name}}}"#)
     @_spi(Generated) public static let throwsOnFieldError = true
 
     public var variables: Baton.Variables {
@@ -1190,19 +1008,7 @@ nonisolated public struct TestStrictOrigin: Baton.Query {
     }
 
     public static let name = "TestStrictOrigin"
-    public static let document: Baton.Document = .text(#"""
-query TestStrictOrigin(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    origin {
-      id
-      name
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestStrictOrigin($id:ID!){character(id:$id){id,origin{id,name}}}"#)
     @_spi(Generated) public static let throwsOnFieldError = true
 
     public var variables: Baton.Variables {
@@ -1302,67 +1108,7 @@ nonisolated public struct TestSwiftNames: Baton.Query {
     }
 
     public static let name = "TestSwiftNames"
-    public static let document: Baton.Document = .text(#"""
-query TestSwiftNames(
-  $id: ID!
-) {
-  type: character(id: $id) {
-    id
-  }
-  self: character(id: $id) {
-    id
-  }
-  protocol: character(id: $id) {
-    id
-  }
-  any: character(id: $id) {
-    id
-  }
-  mainActor: character(id: $id) {
-    id
-  }
-  baton: character(id: $id) {
-    id
-  }
-  abstractSlots: character(id: $id) {
-    id
-  }
-  result: character(id: $id) {
-    id
-  }
-  optional: character(id: $id) {
-    id
-  }
-  string: character(id: $id) {
-    id
-  }
-  int: character(id: $id) {
-    id
-  }
-  double: character(id: $id) {
-    id
-  }
-  bool: character(id: $id) {
-    id
-  }
-  owner: character(id: $id) {
-    id
-  }
-  caught: character(id: $id) {
-    id
-  }
-  node(id: $id) {
-    __typename
-    id
-  }
-  tokenizer {
-    ratio
-    count
-    flag
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestSwiftNames($id:ID!){type:character(id:$id){id},self:character(id:$id){id},protocol:character(id:$id){id},any:character(id:$id){id},mainActor:character(id:$id){id},baton:character(id:$id){id},abstractSlots:character(id:$id){id},result:character(id:$id){id},optional:character(id:$id){id},string:character(id:$id){id},int:character(id:$id){id},double:character(id:$id){id},bool:character(id:$id){id},owner:character(id:$id){id},caught:character(id:$id){id},node(id:$id){__typename,id},tokenizer{ratio,count,flag,id}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1563,19 +1309,7 @@ nonisolated public struct TestThrowingNode: Baton.Query {
     }
 
     public static let name = "TestThrowingNode"
-    public static let document: Baton.Document = .text(#"""
-query TestThrowingNode(
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    id
-    ... on Character {
-      name
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestThrowingNode($id:ID!){node(id:$id){__typename,id,...on Character{name}}}"#)
     @_spi(Generated) public static let throwsOnFieldError = true
 
     public var variables: Baton.Variables {
@@ -1676,28 +1410,7 @@ nonisolated public struct TestTwoFieldPartQuery: Baton.Query {
     }
 
     public static let name = "TestTwoFieldPartQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestTwoFieldPartQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    name
-    ...TestOriginAndEpisode_character @defer(label: "TestTwoFieldPartQuery$defer$TestOriginAndEpisode_character")
-  }
-}
-
-fragment TestOriginAndEpisode_character on Character {
-  origin {
-    name
-    id
-  }
-  episode {
-    name
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestTwoFieldPartQuery($id:ID!){character(id:$id){id,name,...TestOriginAndEpisode_character@defer(label:"TestTwoFieldPartQuery$defer$TestOriginAndEpisode_character")}}fragment TestOriginAndEpisode_character on Character{origin{name,id},episode{name,id}}"#)
     @_spi(Generated) public static let hasDeferred = true
 
     public var variables: Baton.Variables {
@@ -1762,63 +1475,7 @@ nonisolated public struct TestTwoScopes: Baton.Query {
     }
 
     public static let name = "TestTwoScopes"
-    public static let document: Baton.Document = .text(#"""
-query TestTwoScopes(
-  $a: ID!
-  $b: ID!
-) {
-  first: character(id: $a) {
-    id
-    name
-    ...TestNotes_character_35kO5h
-  }
-  second: character(id: $b) {
-    id
-    name
-    ...TestNotes_character_41grAF
-  }
-}
-
-fragment TestNotes_character_35kO5h on Character {
-  name
-  notes(first: 1) {
-    totalCount
-    edges {
-      node {
-        id
-        text
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
-  id
-}
-
-fragment TestNotes_character_41grAF on Character {
-  name
-  notes(first: 3) {
-    totalCount
-    edges {
-      node {
-        id
-        text
-        __typename
-      }
-      cursor
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
-  id
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestTwoScopes($a:ID!,$b:ID!){first:character(id:$a){id,name,...TestNotes_character_35kO5h},second:character(id:$b){id,name,...TestNotes_character_41grAF}}fragment TestNotes_character_35kO5h on Character{name,notes(first:1){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}fragment TestNotes_character_41grAF on Character{name,notes(first:3){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["a": Baton.Variable(self.a), "b": Baton.Variable(self.b)])
@@ -1907,25 +1564,7 @@ nonisolated public struct TestUncaughtPartQuery: Baton.Query {
     }
 
     public static let name = "TestUncaughtPartQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestUncaughtPartQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    name
-    ...TestAppearances_character @defer(label: "TestUncaughtPartQuery$defer$TestAppearances_character")
-  }
-}
-
-fragment TestAppearances_character on Character {
-  episode {
-    name
-    air_date
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestUncaughtPartQuery($id:ID!){character(id:$id){id,name,...TestAppearances_character@defer(label:"TestUncaughtPartQuery$defer$TestAppearances_character")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}"#)
     @_spi(Generated) public static let throwsOnFieldError = true
     @_spi(Generated) public static let hasDeferred = true
 

@@ -10,13 +10,7 @@ nonisolated public struct TestCaughtNames: Baton.Query {
     }
 
     public static let name = "TestCaughtNames"
-    public static let document: Baton.Document = .text(#"""
-query TestCaughtNames {
-  types {
-    Baton
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestCaughtNames{types{Baton}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])
@@ -71,16 +65,7 @@ nonisolated public struct TestNames: Baton.Query {
     }
 
     public static let name = "TestNames"
-    public static let document: Baton.Document = .text(#"""
-query TestNames {
-  types {
-    Type
-    Protocol
-    Baton
-    Any
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestNames{types{Type,Protocol,Baton,Any}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])
@@ -128,36 +113,7 @@ nonisolated public struct TestSpellings: Baton.Query {
     }
 
     public static let name = "TestSpellings"
-    public static let document: Baton.Document = .text(#"""
-query TestSpellings {
-  spellings {
-    __typename
-    ... on Spelled {
-      __isSpelled: __typename
-      label
-    }
-    ... on Baton {
-      id
-    }
-    ... on Type {
-      id
-    }
-    ... on Protocol {
-      id
-    }
-    ... on Set {
-      id
-    }
-    ... on Any {
-      id
-    }
-    ... on Node {
-      __isNode: __typename
-      id
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestSpellings{spellings{__typename,...on Spelled{__isSpelled:__typename,label},...on Baton{id},...on Type{id},...on Protocol{id},...on Set{id},...on Any{id},...on Node{__isNode:__typename,id}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])

@@ -202,7 +202,7 @@
       "kind": "query",
       "root_type": "Query",
       "variables": [],
-      "text": "query TestAssetPricesQuery {\n  assets {\n    uuid\n    price\n    listedAt\n    page\n    prices\n    id\n  }\n}",
+      "text": "query TestAssetPricesQuery{assets{uuid,price,listedAt,page,prices,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -571,7 +571,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestPricedAssetsQuery(\n  $price: Decimal!\n  $among: [Decimal!]\n) {\n  assetsPricedAbove(price: $price, among: $among) {\n    uuid\n    ...TestCaughtPrices_asset\n    ...TestThrowingPrices_asset\n    ...TestRequiredPrice_asset\n    id\n  }\n}\n\nfragment TestCaughtPrices_asset on Asset {\n  price\n  listedAt\n  page\n}\n\nfragment TestRequiredPrice_asset on Asset {\n  price\n}\n\nfragment TestThrowingPrices_asset on Asset {\n  price\n  prices\n}",
+      "text": "query TestPricedAssetsQuery($price:Decimal!,$among:[Decimal!]){assetsPricedAbove(price:$price,among:$among){uuid,...TestCaughtPrices_asset,...TestThrowingPrices_asset,...TestRequiredPrice_asset,id}}fragment TestCaughtPrices_asset on Asset{price,listedAt,page}fragment TestRequiredPrice_asset on Asset{price}fragment TestThrowingPrices_asset on Asset{price,prices}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

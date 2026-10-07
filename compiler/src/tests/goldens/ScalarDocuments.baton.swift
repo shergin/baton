@@ -54,18 +54,7 @@ nonisolated public struct TestAssetPricesQuery: Baton.Query {
     }
 
     public static let name = "TestAssetPricesQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestAssetPricesQuery {
-  assets {
-    uuid
-    price
-    listedAt
-    page
-    prices
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestAssetPricesQuery{assets{uuid,price,listedAt,page,prices,id}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])
@@ -120,35 +109,7 @@ nonisolated public struct TestPricedAssetsQuery: Baton.Query {
     }
 
     public static let name = "TestPricedAssetsQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestPricedAssetsQuery(
-  $price: Decimal!
-  $among: [Decimal!]
-) {
-  assetsPricedAbove(price: $price, among: $among) {
-    uuid
-    ...TestCaughtPrices_asset
-    ...TestThrowingPrices_asset
-    ...TestRequiredPrice_asset
-    id
-  }
-}
-
-fragment TestCaughtPrices_asset on Asset {
-  price
-  listedAt
-  page
-}
-
-fragment TestRequiredPrice_asset on Asset {
-  price
-}
-
-fragment TestThrowingPrices_asset on Asset {
-  price
-  prices
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestPricedAssetsQuery($price:Decimal!,$among:[Decimal!]){assetsPricedAbove(price:$price,among:$among){uuid,...TestCaughtPrices_asset,...TestThrowingPrices_asset,...TestRequiredPrice_asset,id}}fragment TestCaughtPrices_asset on Asset{price,listedAt,page}fragment TestRequiredPrice_asset on Asset{price}fragment TestThrowingPrices_asset on Asset{price,prices}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["price": Baton.Variable(self.price), "among": Baton.Variable(self.among)])

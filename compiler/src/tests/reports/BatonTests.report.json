@@ -12,7 +12,7 @@
         }
       ],
       "fragments": [],
-      "text": "query Fixture(\n  $page: Int\n) {\n  characters(page: $page) {\n    info {\n      count\n      pages\n      next\n      prev\n    }\n    results {\n      id\n      name\n      status\n      species\n      type\n      gender\n      image\n      created\n      origin {\n        id\n        name\n        type\n        dimension\n        created\n      }\n      location {\n        id\n        name\n        type\n        dimension\n        created\n      }\n      episode {\n        id\n        name\n        air_date\n        episode\n        created\n        characters {\n          id\n          name\n          image\n        }\n      }\n    }\n  }\n}"
+      "text": "query Fixture($page:Int){characters(page:$page){info{count,pages,next,prev},results{id,name,status,species,type,gender,image,created,origin{id,name,type,dimension,created},location{id,name,type,dimension,created},episode{id,name,air_date,episode,created,characters{id,name,image}}}}}"
     },
     {
       "name": "TestAddNote",
@@ -33,7 +33,7 @@
         }
       ],
       "fragments": [],
-      "text": "mutation TestAddNote(\n  $characterId: ID!\n  $text: String!\n) {\n  addNote(characterId: $characterId, text: $text) {\n    noteEdge {\n      cursor\n      node {\n        id\n        text\n      }\n    }\n  }\n}"
+      "text": "mutation TestAddNote($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){noteEdge{cursor,node{id,text}}}}"
     },
     {
       "name": "TestAddNoteFirst",
@@ -54,7 +54,7 @@
         }
       ],
       "fragments": [],
-      "text": "mutation TestAddNoteFirst(\n  $characterId: ID!\n  $text: String!\n) {\n  addNote(characterId: $characterId, text: $text) {\n    noteEdge {\n      cursor\n      node {\n        id\n        text\n      }\n    }\n  }\n}"
+      "text": "mutation TestAddNoteFirst($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){noteEdge{cursor,node{id,text}}}}"
     },
     {
       "name": "TestAddNoteNode",
@@ -75,7 +75,7 @@
         }
       ],
       "fragments": [],
-      "text": "mutation TestAddNoteNode(\n  $characterId: ID!\n  $text: String!\n) {\n  addNote(characterId: $characterId, text: $text) {\n    note {\n      id\n      text\n    }\n  }\n}"
+      "text": "mutation TestAddNoteNode($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){note{id,text}}}"
     },
     {
       "name": "TestAddNoteNodeFirst",
@@ -96,7 +96,7 @@
         }
       ],
       "fragments": [],
-      "text": "mutation TestAddNoteNodeFirst(\n  $characterId: ID!\n  $text: String!\n) {\n  addNote(characterId: $characterId, text: $text) {\n    note {\n      id\n      text\n    }\n  }\n}"
+      "text": "mutation TestAddNoteNodeFirst($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){note{id,text}}}"
     },
     {
       "name": "TestAddNoteNodeOfAnotherType",
@@ -117,7 +117,7 @@
         }
       ],
       "fragments": [],
-      "text": "mutation TestAddNoteNodeOfAnotherType(\n  $characterId: ID!\n  $text: String!\n) {\n  addNote(characterId: $characterId, text: $text) {\n    note {\n      id\n      text\n    }\n  }\n}"
+      "text": "mutation TestAddNoteNodeOfAnotherType($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){note{id,text}}}"
     },
     {
       "name": "TestAliasQuery",
@@ -132,7 +132,7 @@
       "fragments": [
         "TestRow_character"
       ],
-      "text": "query TestAliasQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestRow_character\n    id\n  }\n}\n\nfragment TestRow_character on Character {\n  name\n  status\n  image\n}"
+      "text": "query TestAliasQuery($id:ID!){character(id:$id){...TestRow_character,id}}fragment TestRow_character on Character{name,status,image}"
     },
     {
       "name": "TestAssetNameQuery",
@@ -145,7 +145,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestAssetNameQuery(\n  $uuid: String!\n) {\n  asset(uuid: $uuid) {\n    name\n    id\n    uuid\n  }\n}"
+      "text": "query TestAssetNameQuery($uuid:String!){asset(uuid:$uuid){name,id,uuid}}"
     },
     {
       "name": "TestAssetPricesQuery",
@@ -153,7 +153,7 @@
       "source": "swift/Tests/BatonTests/ScalarDocuments.swift",
       "variables": [],
       "fragments": [],
-      "text": "query TestAssetPricesQuery {\n  assets {\n    uuid\n    price\n    listedAt\n    page\n    prices\n    id\n  }\n}"
+      "text": "query TestAssetPricesQuery{assets{uuid,price,listedAt,page,prices,id}}"
     },
     {
       "name": "TestAssetQuery",
@@ -166,7 +166,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestAssetQuery(\n  $uuid: String!\n) {\n  asset(uuid: $uuid) {\n    owner {\n      name\n      id\n    }\n    uuid\n    name\n    id\n  }\n}"
+      "text": "query TestAssetQuery($uuid:String!){asset(uuid:$uuid){owner{name,id},uuid,name,id}}"
     },
     {
       "name": "TestAssetsQuery",
@@ -174,7 +174,7 @@
       "source": "swift/Tests/BatonTests/IdentityDocuments.swift",
       "variables": [],
       "fragments": [],
-      "text": "query TestAssetsQuery {\n  assets {\n    name\n    size\n    id\n    uuid\n  }\n}"
+      "text": "query TestAssetsQuery{assets{name,size,id,uuid}}"
     },
     {
       "name": "TestAuthorNotesPaginationQuery",
@@ -197,7 +197,7 @@
       "fragments": [
         "TestAuthorNotes_note"
       ],
-      "text": "query TestAuthorNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestAuthorNotes_note_1G22uz\n    id\n  }\n}\n\nfragment TestAuthorNotes_note_1G22uz on Note {\n  id\n  author {\n    id\n    name\n    notes(first: $count, after: $cursor) {\n      edges {\n        node {\n          id\n          text\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n  }\n}"
+      "text": "query TestAuthorNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestAuthorNotes_note_1G22uz,id}}fragment TestAuthorNotes_note_1G22uz on Note{id,author{id,name,notes(first:$count,after:$cursor){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}}"
     },
     {
       "name": "TestAuthorNotesQuery",
@@ -212,7 +212,7 @@
       "fragments": [
         "TestAuthorNotes_note"
       ],
-      "text": "query TestAuthorNotesQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestAuthorNotes_note\n    id\n  }\n}\n\nfragment TestAuthorNotes_note on Note {\n  id\n  author {\n    id\n    name\n    notes(first: 2) {\n      edges {\n        node {\n          id\n          text\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n  }\n}"
+      "text": "query TestAuthorNotesQuery($id:ID!){node(id:$id){__typename,...TestAuthorNotes_note,id}}fragment TestAuthorNotes_note on Note{id,author{id,name,notes(first:2){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}}"
     },
     {
       "name": "TestBuilderNames",
@@ -233,7 +233,7 @@
         }
       ],
       "fragments": [],
-      "text": "mutation TestBuilderNames(\n  $id: ID!\n  $favorite: Boolean!\n  $self: ID!\n) {\n  type: setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      favorite\n    }\n  }\n  self: setFavorite(id: $self, favorite: $favorite) {\n    character {\n      id\n      favorite\n    }\n  }\n  string: setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      name\n    }\n  }\n  sendable: setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      favorite\n    }\n  }\n}"
+      "text": "mutation TestBuilderNames($id:ID!,$favorite:Boolean!,$self:ID!){type:setFavorite(id:$id,favorite:$favorite){character{id,favorite}},self:setFavorite(id:$self,favorite:$favorite){character{id,favorite}},string:setFavorite(id:$id,favorite:$favorite){character{id,name}},sendable:setFavorite(id:$id,favorite:$favorite){character{id,favorite}}}"
     },
     {
       "name": "TestCaughtEpisodes",
@@ -246,7 +246,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestCaughtEpisodes(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    caught: episode {\n      name\n      id\n    }\n  }\n}"
+      "text": "query TestCaughtEpisodes($id:ID!){character(id:$id){id,caught:episode{name,id}}}"
     },
     {
       "name": "TestCaughtNames",
@@ -254,7 +254,7 @@
       "source": "swift/Tests/BatonTests/NameDocuments.swift",
       "variables": [],
       "fragments": [],
-      "text": "query TestCaughtNames {\n  types {\n    Baton\n  }\n}"
+      "text": "query TestCaughtNames{types{Baton}}"
     },
     {
       "name": "TestCaughtPartQuery",
@@ -269,7 +269,7 @@
       "fragments": [
         "TestCaughtAppearances_character"
       ],
-      "text": "query TestCaughtPartQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    ...TestCaughtAppearances_character @defer(label: \"TestCaughtPartQuery$defer$TestCaughtAppearances_character\")\n  }\n}\n\nfragment TestCaughtAppearances_character on Character {\n  episode {\n    name\n    id\n  }\n}"
+      "text": "query TestCaughtPartQuery($id:ID!){character(id:$id){id,name,...TestCaughtAppearances_character@defer(label:\"TestCaughtPartQuery$defer$TestCaughtAppearances_character\")}}fragment TestCaughtAppearances_character on Character{episode{name,id}}"
     },
     {
       "name": "TestCaughtSpreads",
@@ -285,7 +285,7 @@
         "TestCaughtProfile_character",
         "TestCaughtStrict_character"
       ],
-      "text": "query TestCaughtSpreads(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    ...TestCaughtProfile_character\n    ...TestCaughtStrict_character\n  }\n  node(id: $id) {\n    __typename\n    id\n    ... on Character {\n      ...TestCaughtProfile_character\n    }\n  }\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestCaughtStrict_character on Character {\n  species\n}"
+      "text": "query TestCaughtSpreads($id:ID!){character(id:$id){id,...TestCaughtProfile_character,...TestCaughtStrict_character},node(id:$id){__typename,id,...on Character{...TestCaughtProfile_character}}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestCaughtStrict_character on Character{species}"
     },
     {
       "name": "TestCharacterSecret",
@@ -293,7 +293,7 @@
       "source": "swift/Tests/BatonTests/TransientDocuments.swift",
       "variables": [],
       "fragments": [],
-      "text": "query TestCharacterSecret {\n  character(id: \"1\") {\n    id\n    name\n    secret {\n      id\n      body\n    }\n  }\n}"
+      "text": "query TestCharacterSecret{character(id:\"1\"){id,name,secret{id,body}}}"
     },
     {
       "name": "TestCharactersWithStatus",
@@ -310,7 +310,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestCharactersWithStatus(\n  $status: Status!\n  $any: [Status!]\n) {\n  charactersWithStatus(status: $status, any: $any) {\n    name\n    id\n  }\n}"
+      "text": "query TestCharactersWithStatus($status:Status!,$any:[Status!]){charactersWithStatus(status:$status,any:$any){name,id}}"
     },
     {
       "name": "TestCollidingErrors",
@@ -323,7 +323,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestCollidingErrors(\n  $id: ID!\n) {\n  types: character(id: $id) {\n    id\n  }\n  typesLens: character(id: $id) {\n    id\n    name\n  }\n}"
+      "text": "query TestCollidingErrors($id:ID!){types:character(id:$id){id},typesLens:character(id:$id){id,name}}"
     },
     {
       "name": "TestCollidingRequired",
@@ -336,7 +336,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestCollidingRequired(\n  $id: ID!\n) {\n  types: character(id: $id) {\n    id\n  }\n  typesLens: character(id: $id) {\n    id\n    name\n  }\n}"
+      "text": "query TestCollidingRequired($id:ID!){types:character(id:$id){id},typesLens:character(id:$id){id,name}}"
     },
     {
       "name": "TestCommitVariable",
@@ -349,7 +349,7 @@
         }
       ],
       "fragments": [],
-      "text": "mutation TestCommitVariable(\n  $commit: ID!\n) {\n  setFavorite(id: $commit, favorite: true) {\n    character {\n      id\n      name\n      favorite\n    }\n  }\n}"
+      "text": "mutation TestCommitVariable($commit:ID!){setFavorite(id:$commit,favorite:true){character{id,name,favorite}}}"
     },
     {
       "name": "TestConditionNames",
@@ -366,7 +366,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestConditionNames(\n  $id: ID!\n  $name: String!\n) {\n  namesake(name: $name) {\n    __typename\n    asCharacter: name\n    ... on Character {\n      status\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n  node(id: $id) {\n    __typename\n    id\n    ... on Episode {\n      name\n    }\n    ... on Character {\n      name\n    }\n  }\n}"
+      "text": "query TestConditionNames($id:ID!,$name:String!){namesake(name:$name){__typename,asCharacter:name,...on Character{status},...on Node{__isNode:__typename,id}},node(id:$id){__typename,id,...on Episode{name},...on Character{name}}}"
     },
     {
       "name": "TestConditions",
@@ -387,7 +387,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestConditions(\n  $id: ID!\n  $withOrigin: Boolean!\n  $hideStatus: Boolean!\n) {\n  character(id: $id) {\n    name\n    origin {\n      id\n    }\n    origin @include(if: $withOrigin) {\n      name\n      dimension\n      id\n    }\n    species @include(if: $withOrigin)\n    status @skip(if: $hideStatus)\n    id\n  }\n}"
+      "text": "query TestConditions($id:ID!,$withOrigin:Boolean!,$hideStatus:Boolean!){character(id:$id){name,origin{id},origin@include(if:$withOrigin){name,dimension,id}\n    species@include(if:$withOrigin),status@skip(if:$hideStatus),id}}"
     },
     {
       "name": "TestDeferredNotesPaginationQuery",
@@ -411,7 +411,7 @@
         "TestDeferredNotes_character",
         "TestNoteText_note"
       ],
-      "text": "query TestDeferredNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestDeferredNotes_character_1G22uz\n    id\n  }\n}\n\nfragment TestDeferredNotes_character_1G22uz on Character {\n  notes(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...TestNoteText_note @defer(label: \"TestDeferredNotes_character$defer$noteText\")\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment TestNoteText_note on Note {\n  text\n}"
+      "text": "query TestDeferredNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestDeferredNotes_character_1G22uz,id}}fragment TestDeferredNotes_character_1G22uz on Character{notes(first:$count,after:$cursor){edges{node{id,...TestNoteText_note@defer(label:\"TestDeferredNotes_character$defer$noteText\"),__typename},cursor},pageInfo{endCursor,hasNextPage}},id}fragment TestNoteText_note on Note{text}"
     },
     {
       "name": "TestDeleteNote",
@@ -424,7 +424,7 @@
         }
       ],
       "fragments": [],
-      "text": "mutation TestDeleteNote(\n  $id: ID!\n) {\n  removeNote(id: $id) {\n    removedNoteId\n  }\n}"
+      "text": "mutation TestDeleteNote($id:ID!){removeNote(id:$id){removedNoteId}}"
     },
     {
       "name": "TestDrafts",
@@ -432,7 +432,7 @@
       "source": "swift/Tests/BatonTests/ExtensionDocuments.swift",
       "variables": [],
       "fragments": [],
-      "text": "query TestDrafts {\n  character(id: \"1\") {\n    id\n    name\n  }\n}"
+      "text": "query TestDrafts{character(id:\"1\"){id,name}}"
     },
     {
       "name": "TestEdgesNamesQuery",
@@ -447,7 +447,7 @@
       "fragments": [
         "TestEdgesNames_character"
       ],
-      "text": "query TestEdgesNamesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestEdgesNames_character\n    id\n  }\n}\n\nfragment TestEdgesNames_character on Character {\n  notes(first: 2) {\n    Edges: pageInfo {\n      hasNextPage\n    }\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}"
+      "text": "query TestEdgesNamesQuery($id:ID!){character(id:$id){...TestEdgesNames_character,id}}fragment TestEdgesNames_character on Character{notes(first:2){Edges:pageInfo{hasNextPage},edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}"
     },
     {
       "name": "TestEpisodesQuery",
@@ -460,7 +460,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestEpisodesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    episode {\n      id\n      name\n    }\n    id\n  }\n}"
+      "text": "query TestEpisodesQuery($id:ID!){character(id:$id){episode{id,name},id}}"
     },
     {
       "name": "TestEscapedText",
@@ -468,7 +468,7 @@
       "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
       "variables": [],
       "fragments": [],
-      "text": "query TestEscapedText {\n  search(name: \"\\\\#1\") {\n    __typename\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}"
+      "text": "query TestEscapedText{search(name:\"\\\\#1\"){__typename,...on Node{__isNode:__typename,id}}}"
     },
     {
       "name": "TestFavoriteQuery",
@@ -483,7 +483,7 @@
       "fragments": [
         "TestFavorite_character"
       ],
-      "text": "query TestFavoriteQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    ...TestFavorite_character\n  }\n}\n\nfragment TestFavorite_character on Character {\n  id\n  name\n  favorite\n}"
+      "text": "query TestFavoriteQuery($id:ID!){character(id:$id){id,...TestFavorite_character}}fragment TestFavorite_character on Character{id,name,favorite}"
     },
     {
       "name": "TestFilteredCharacters",
@@ -496,7 +496,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestFilteredCharacters(\n  $filters: [FilterCharacter!]!\n) {\n  charactersMatching(filters: $filters) {\n    id\n    name\n  }\n}"
+      "text": "query TestFilteredCharacters($filters:[FilterCharacter!]!){charactersMatching(filters:$filters){id,name}}"
     },
     {
       "name": "TestFoldedNode",
@@ -509,7 +509,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestFoldedNode(\n  $name: String!\n) {\n  search(name: $name) {\n    __typename\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}"
+      "text": "query TestFoldedNode($name:String!){search(name:$name){__typename,...on Node{__isNode:__typename,id}}}"
     },
     {
       "name": "TestFragmentNamedFields",
@@ -526,7 +526,7 @@
         "TestCaughtProfile_character",
         "TestCaughtStrict_character"
       ],
-      "text": "query TestFragmentNamedFields(\n  $id: ID!\n) {\n  character(id: $id) {\n    TestCaughtProfile_character: name\n    TestCaughtStrict_character: species\n    ...TestCaughtProfile_character\n    ...TestCaughtStrict_character\n    Fragment: status\n    ...Fragment\n    id\n  }\n}\n\nfragment Fragment on Character {\n  status\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestCaughtStrict_character on Character {\n  species\n}"
+      "text": "query TestFragmentNamedFields($id:ID!){character(id:$id){TestCaughtProfile_character:name,TestCaughtStrict_character:species,...TestCaughtProfile_character,...TestCaughtStrict_character,Fragment:status,...Fragment,id}}fragment Fragment on Character{status}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestCaughtStrict_character on Character{species}"
     },
     {
       "name": "TestFreshCharacter",
@@ -539,7 +539,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestFreshCharacter(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n  }\n}"
+      "text": "query TestFreshCharacter($id:ID!){character(id:$id){id,name}}"
     },
     {
       "name": "TestHasherVariable",
@@ -552,7 +552,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestHasherVariable(\n  $hasher: ID!\n) {\n  character(id: $hasher) {\n    id\n    name\n  }\n}"
+      "text": "query TestHasherVariable($hasher:ID!){character(id:$hasher){id,name}}"
     },
     {
       "name": "TestHeaderQuery",
@@ -567,7 +567,7 @@
       "fragments": [
         "TestHeader_character"
       ],
-      "text": "query TestHeaderQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestHeader_character\n    id\n  }\n}\n\nfragment TestHeader_character on Character {\n  name\n  status\n  species\n  image\n  origin {\n    name\n    id\n  }\n}"
+      "text": "query TestHeaderQuery($id:ID!){character(id:$id){...TestHeader_character,id}}fragment TestHeader_character on Character{name,status,species,image,origin{name,id}}"
     },
     {
       "name": "TestHiddenNotesPaginationQuery",
@@ -590,7 +590,7 @@
       "fragments": [
         "TestHiddenNotes_character"
       ],
-      "text": "query TestHiddenNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestHiddenNotes_character_1G22uz\n    id\n  }\n}\n\nfragment TestHiddenNotes_character_1G22uz on Character {\n  TestHiddenNotes_character: name\n  TestHiddenNotesPaginationQuery: status\n  notes(first: $count, after: $cursor) {\n    TestHiddenNotes_character: totalCount\n    TestHiddenNotesPaginationQuery: totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}"
+      "text": "query TestHiddenNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestHiddenNotes_character_1G22uz,id}}fragment TestHiddenNotes_character_1G22uz on Character{TestHiddenNotes_character:name,TestHiddenNotesPaginationQuery:status,notes(first:$count,after:$cursor){TestHiddenNotes_character:totalCount,TestHiddenNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"
     },
     {
       "name": "TestHiddenNotesQuery",
@@ -605,7 +605,7 @@
       "fragments": [
         "TestHiddenNotes_character"
       ],
-      "text": "query TestHiddenNotesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestHiddenNotes_character\n    id\n  }\n}\n\nfragment TestHiddenNotes_character on Character {\n  TestHiddenNotes_character: name\n  TestHiddenNotesPaginationQuery: status\n  notes(first: 2) {\n    TestHiddenNotes_character: totalCount\n    TestHiddenNotesPaginationQuery: totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}"
+      "text": "query TestHiddenNotesQuery($id:ID!){character(id:$id){...TestHiddenNotes_character,id}}fragment TestHiddenNotes_character on Character{TestHiddenNotes_character:name,TestHiddenNotesPaginationQuery:status,notes(first:2){TestHiddenNotes_character:totalCount,TestHiddenNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"
     },
     {
       "name": "TestHiddenRecentNotesPaginationQuery",
@@ -628,7 +628,7 @@
       "fragments": [
         "TestHiddenRecentNotes_character"
       ],
-      "text": "query TestHiddenRecentNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestHiddenRecentNotes_character_1G22uz\n    id\n  }\n}\n\nfragment TestHiddenRecentNotes_character_1G22uz on Character {\n  notes(last: $count, before: $cursor) {\n    TestHiddenRecentNotes_character: totalCount\n    TestHiddenRecentNotesPaginationQuery: totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}"
+      "text": "query TestHiddenRecentNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestHiddenRecentNotes_character_1G22uz,id}}fragment TestHiddenRecentNotes_character_1G22uz on Character{notes(last:$count,before:$cursor){TestHiddenRecentNotes_character:totalCount,TestHiddenRecentNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}"
     },
     {
       "name": "TestHiddenRecentNotesQuery",
@@ -643,7 +643,7 @@
       "fragments": [
         "TestHiddenRecentNotes_character"
       ],
-      "text": "query TestHiddenRecentNotesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestHiddenRecentNotes_character\n    id\n  }\n}\n\nfragment TestHiddenRecentNotes_character on Character {\n  notes(last: 2) {\n    TestHiddenRecentNotes_character: totalCount\n    TestHiddenRecentNotesPaginationQuery: totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}"
+      "text": "query TestHiddenRecentNotesQuery($id:ID!){character(id:$id){...TestHiddenRecentNotes_character,id}}fragment TestHiddenRecentNotes_character on Character{notes(last:2){TestHiddenRecentNotes_character:totalCount,TestHiddenRecentNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}"
     },
     {
       "name": "TestKeys",
@@ -660,7 +660,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestKeys(\n  $id: ID!\n  $name: String\n) {\n  search(name: \"$0.00\") {\n    __typename\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n  character(id: \"a,b\") {\n    name\n    id\n  }\n  charactersByIds(ids: [$id, \"2\"]) {\n    name\n    id\n  }\n  characters(filter: {status: \"Alive\", name: $name}) {\n    info {\n      count\n    }\n  }\n}"
+      "text": "query TestKeys($id:ID!,$name:String){search(name:\"$0.00\"){__typename,...on Node{__isNode:__typename,id}},character(id:\"a,b\"){name,id},charactersByIds(ids:[$id,\"2\"]){name,id},characters(filter:{status:\"Alive\",name:$name}){info{count}}}"
     },
     {
       "name": "TestKeywordVariables",
@@ -677,7 +677,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestKeywordVariables(\n  $where: ID!\n  $in: String!\n) {\n  character(id: $where) {\n    id\n  }\n  search(name: $in) {\n    __typename\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}"
+      "text": "query TestKeywordVariables($where:ID!,$in:String!){character(id:$where){id},search(name:$in){__typename,...on Node{__isNode:__typename,id}}}"
     },
     {
       "name": "TestList",
@@ -693,7 +693,7 @@
         "TestHeader_character",
         "TestRow_character"
       ],
-      "text": "query TestList(\n  $page: Int\n) {\n  characters(page: $page) {\n    results {\n      ...TestRow_character\n      ...TestHeader_character\n      id\n    }\n  }\n}\n\nfragment TestHeader_character on Character {\n  name\n  status\n  species\n  image\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestRow_character on Character {\n  name\n  status\n  image\n}"
+      "text": "query TestList($page:Int){characters(page:$page){results{...TestRow_character,...TestHeader_character,id}}}fragment TestHeader_character on Character{name,status,species,image,origin{name,id}}fragment TestRow_character on Character{name,status,image}"
     },
     {
       "name": "TestListPayload",
@@ -701,7 +701,7 @@
       "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
       "variables": [],
       "fragments": [],
-      "text": "mutation TestListPayload {\n  setLists {\n    strings\n    ids\n    counts\n    ratios\n    flags\n    jsons\n    statuses\n  }\n}"
+      "text": "mutation TestListPayload{setLists{strings,ids,counts,ratios,flags,jsons,statuses}}"
     },
     {
       "name": "TestLoggedOrigin",
@@ -714,7 +714,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestLoggedOrigin(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    origin {\n      id\n      name\n    }\n  }\n}"
+      "text": "query TestLoggedOrigin($id:ID!){character(id:$id){id,origin{id,name}}}"
     },
     {
       "name": "TestLowercaseSpreads",
@@ -730,7 +730,7 @@
         "testLowercase",
         "testLowercaseRequired"
       ],
-      "text": "query TestLowercaseSpreads(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...testLowercase\n    ...testLowercaseRequired\n    id\n  }\n}\n\nfragment testLowercase on Character {\n  name\n}\n\nfragment testLowercaseRequired on Character {\n  origin {\n    name\n    id\n  }\n}"
+      "text": "query TestLowercaseSpreads($id:ID!){character(id:$id){...testLowercase,...testLowercaseRequired,id}}fragment testLowercase on Character{name}fragment testLowercaseRequired on Character{origin{name,id}}"
     },
     {
       "name": "TestModuleNamedPayload",
@@ -743,7 +743,7 @@
         }
       ],
       "fragments": [],
-      "text": "mutation TestModuleNamedPayload(\n  $id: ID!\n) {\n  setFavorite(id: $id, favorite: true) {\n    Baton: character {\n      id\n      Baton: name\n    }\n  }\n}"
+      "text": "mutation TestModuleNamedPayload($id:ID!){setFavorite(id:$id,favorite:true){Baton:character{id,Baton:name}}}"
     },
     {
       "name": "TestNamedSpread",
@@ -758,7 +758,7 @@
       "fragments": [
         "TestNamed_named"
       ],
-      "text": "query TestNamedSpread(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ...TestNamed_named\n  }\n}\n\nfragment TestNamed_named on Named {\n  __isNamed: __typename\n  name\n}"
+      "text": "query TestNamedSpread($id:ID!){node(id:$id){__typename,id,...TestNamed_named}}fragment TestNamed_named on Named{__isNamed:__typename,name}"
     },
     {
       "name": "TestNames",
@@ -766,7 +766,7 @@
       "source": "swift/Tests/BatonTests/NameDocuments.swift",
       "variables": [],
       "fragments": [],
-      "text": "query TestNames {\n  types {\n    Type\n    Protocol\n    Baton\n    Any\n  }\n}"
+      "text": "query TestNames{types{Type,Protocol,Baton,Any}}"
     },
     {
       "name": "TestNode",
@@ -779,7 +779,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestNode(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on Character {\n      id\n      name\n    }\n    ... on Episode {\n      id\n      name\n    }\n    id\n  }\n}"
+      "text": "query TestNode($id:ID!){node(id:$id){__typename,...on Character{id,name},...on Episode{id,name},id}}"
     },
     {
       "name": "TestNodeDeferred",
@@ -794,7 +794,7 @@
       "fragments": [
         "TestAppearances_character"
       ],
-      "text": "query TestNodeDeferred(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ... on Character {\n      name\n    }\n    ...TestAppearances_character @defer(label: \"TestNodeDeferred$defer$TestAppearances_character\")\n  }\n}\n\nfragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n    id\n  }\n}"
+      "text": "query TestNodeDeferred($id:ID!){node(id:$id){__typename,id,...on Character{name},...TestAppearances_character@defer(label:\"TestNodeDeferred$defer$TestAppearances_character\")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}"
     },
     {
       "name": "TestNodeFields",
@@ -807,7 +807,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestNodeFields(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ... on Character {\n      name\n    }\n  }\n}"
+      "text": "query TestNodeFields($id:ID!){node(id:$id){__typename,id,...on Character{name}}}"
     },
     {
       "name": "TestNoteAdded",
@@ -824,7 +824,7 @@
         }
       ],
       "fragments": [],
-      "text": "subscription TestNoteAdded(\n  $characterId: ID!\n) {\n  noteAdded(characterId: $characterId) {\n    noteEdge {\n      cursor\n      node {\n        id\n        text\n      }\n    }\n  }\n}"
+      "text": "subscription TestNoteAdded($characterId:ID!){noteAdded(characterId:$characterId){noteEdge{cursor,node{id,text}}}}"
     },
     {
       "name": "TestNoteCounts",
@@ -841,7 +841,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestNoteCounts(\n  $page: Int\n  $count: Int\n) {\n  characters(page: $page) {\n    results {\n      id\n      name\n      pinned: notes(first: 97) {\n        totalCount\n      }\n      recent: notes(first: $count) {\n        totalCount\n      }\n    }\n  }\n}"
+      "text": "query TestNoteCounts($page:Int,$count:Int){characters(page:$page){results{id,name,pinned:notes(first:97){totalCount},recent:notes(first:$count){totalCount}}}}"
     },
     {
       "name": "TestNotesPaginationQuery",
@@ -864,7 +864,7 @@
       "fragments": [
         "TestNotes_character"
       ],
-      "text": "query TestNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestNotes_character_1G22uz\n    id\n  }\n}\n\nfragment TestNotes_character_1G22uz on Character {\n  name\n  notes(first: $count, after: $cursor) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}"
+      "text": "query TestNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestNotes_character_1G22uz,id}}fragment TestNotes_character_1G22uz on Character{name,notes(first:$count,after:$cursor){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"
     },
     {
       "name": "TestNotesQuery",
@@ -879,7 +879,7 @@
       "fragments": [
         "TestNotes_character"
       ],
-      "text": "query TestNotesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestNotes_character\n    id\n  }\n}\n\nfragment TestNotes_character on Character {\n  name\n  notes(first: 2) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}"
+      "text": "query TestNotesQuery($id:ID!){character(id:$id){...TestNotes_character,id}}fragment TestNotes_character on Character{name,notes(first:2){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"
     },
     {
       "name": "TestNotesSizedQuery",
@@ -898,7 +898,7 @@
       "fragments": [
         "TestNotes_character"
       ],
-      "text": "query TestNotesSizedQuery(\n  $id: ID!\n  $size: Int\n) {\n  character(id: $id) {\n    ...TestNotes_character_2H9PL\n    id\n  }\n}\n\nfragment TestNotes_character_2H9PL on Character {\n  name\n  notes(first: $size) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}"
+      "text": "query TestNotesSizedQuery($id:ID!,$size:Int){character(id:$id){...TestNotes_character_2H9PL,id}}fragment TestNotes_character_2H9PL on Character{name,notes(first:$size){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"
     },
     {
       "name": "TestNullsOnError",
@@ -911,7 +911,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestNullsOnError(\n  $id: ID!\n) {\n  character(id: $id) {\n    name\n    id\n  }\n}"
+      "text": "query TestNullsOnError($id:ID!){character(id:$id){name,id}}"
     },
     {
       "name": "TestOverlapQuery",
@@ -926,7 +926,7 @@
       "fragments": [
         "TestAppearances_character"
       ],
-      "text": "query TestOverlapQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    name\n    episode {\n      id\n    }\n    ...TestAppearances_character @defer(label: \"TestOverlapQuery$defer$TestAppearances_character\")\n    id\n  }\n}\n\nfragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n    id\n  }\n}"
+      "text": "query TestOverlapQuery($id:ID!){character(id:$id){name,episode{id},...TestAppearances_character@defer(label:\"TestOverlapQuery$defer$TestAppearances_character\"),id}}fragment TestAppearances_character on Character{episode{name,air_date,id}}"
     },
     {
       "name": "TestPinnedCharacter",
@@ -939,7 +939,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestPinnedCharacter(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    status\n  }\n}"
+      "text": "query TestPinnedCharacter($id:ID!){character(id:$id){id,name,status}}"
     },
     {
       "name": "TestPricedAssetsQuery",
@@ -960,7 +960,7 @@
         "TestRequiredPrice_asset",
         "TestThrowingPrices_asset"
       ],
-      "text": "query TestPricedAssetsQuery(\n  $price: Decimal!\n  $among: [Decimal!]\n) {\n  assetsPricedAbove(price: $price, among: $among) {\n    uuid\n    ...TestCaughtPrices_asset\n    ...TestThrowingPrices_asset\n    ...TestRequiredPrice_asset\n    id\n  }\n}\n\nfragment TestCaughtPrices_asset on Asset {\n  price\n  listedAt\n  page\n}\n\nfragment TestRequiredPrice_asset on Asset {\n  price\n}\n\nfragment TestThrowingPrices_asset on Asset {\n  price\n  prices\n}"
+      "text": "query TestPricedAssetsQuery($price:Decimal!,$among:[Decimal!]){assetsPricedAbove(price:$price,among:$among){uuid,...TestCaughtPrices_asset,...TestThrowingPrices_asset,...TestRequiredPrice_asset,id}}fragment TestCaughtPrices_asset on Asset{price,listedAt,page}fragment TestRequiredPrice_asset on Asset{price}fragment TestThrowingPrices_asset on Asset{price,prices}"
     },
     {
       "name": "TestProfileQuery",
@@ -977,7 +977,7 @@
         "TestProfile_character",
         "TestStrict_character"
       ],
-      "text": "query TestProfileQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestProfile_character\n    ...TestStrict_character\n    ...TestAppearances_character @defer(label: \"TestProfileQuery$defer$TestAppearances_character\")\n    id\n  }\n}\n\nfragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n    id\n  }\n}\n\nfragment TestProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n  status\n  image\n  location {\n    name\n    dimension\n    id\n  }\n  gender\n}\n\nfragment TestStrict_character on Character {\n  species\n  type\n}"
+      "text": "query TestProfileQuery($id:ID!){character(id:$id){...TestProfile_character,...TestStrict_character,...TestAppearances_character@defer(label:\"TestProfileQuery$defer$TestAppearances_character\"),id}}fragment TestAppearances_character on Character{episode{name,air_date,id}}fragment TestProfile_character on Character{name,origin{name,id},status,image,location{name,dimension,id},gender}fragment TestStrict_character on Character{species,type}"
     },
     {
       "name": "TestProgramNamesQuery",
@@ -993,7 +993,7 @@
         "TestCaughtProfile_character",
         "TestProgramNames_character"
       ],
-      "text": "query TestProgramNamesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestProgramNames_character\n    id\n  }\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestProgramNames_character on Character {\n  testProgramNamesRefetchQuery: origin {\n    name\n    id\n  }\n  testCaughtProfile_character: location {\n    name\n    id\n  }\n  ...TestCaughtProfile_character\n  id\n}"
+      "text": "query TestProgramNamesQuery($id:ID!){character(id:$id){...TestProgramNames_character,id}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestProgramNames_character on Character{testProgramNamesRefetchQuery:origin{name,id},testCaughtProfile_character:location{name,id},...TestCaughtProfile_character,id}"
     },
     {
       "name": "TestProgramNamesRefetchQuery",
@@ -1009,7 +1009,7 @@
         "TestCaughtProfile_character",
         "TestProgramNames_character"
       ],
-      "text": "query TestProgramNamesRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestProgramNames_character\n    id\n  }\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestProgramNames_character on Character {\n  testProgramNamesRefetchQuery: origin {\n    name\n    id\n  }\n  testCaughtProfile_character: location {\n    name\n    id\n  }\n  ...TestCaughtProfile_character\n  id\n}"
+      "text": "query TestProgramNamesRefetchQuery($id:ID!){node(id:$id){__typename,...TestProgramNames_character,id}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestProgramNames_character on Character{testProgramNamesRefetchQuery:origin{name,id},testCaughtProfile_character:location{name,id},...TestCaughtProfile_character,id}"
     },
     {
       "name": "TestQualifiedQuery",
@@ -1022,7 +1022,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestQualifiedQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n  }\n}"
+      "text": "query TestQualifiedQuery($id:ID!){character(id:$id){id,name}}"
     },
     {
       "name": "TestQuoteQuery",
@@ -1039,7 +1039,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestQuoteQuery(\n  $base: String!\n  $quote: String!\n) {\n  quote(base: $base, quote: $quote) {\n    base\n    quote\n    rate\n  }\n}"
+      "text": "query TestQuoteQuery($base:String!,$quote:String!){quote(base:$base,quote:$quote){base,quote,rate}}"
     },
     {
       "name": "TestQuotesQuery",
@@ -1047,7 +1047,7 @@
       "source": "swift/Tests/BatonTests/IdentityDocuments.swift",
       "variables": [],
       "fragments": [],
-      "text": "query TestQuotesQuery {\n  quotes {\n    rate\n    base\n    quote\n  }\n}"
+      "text": "query TestQuotesQuery{quotes{rate,base,quote}}"
     },
     {
       "name": "TestRecentNotesPaginationQuery",
@@ -1070,7 +1070,7 @@
       "fragments": [
         "TestRecentNotes_character"
       ],
-      "text": "query TestRecentNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestRecentNotes_character_1G22uz\n    id\n  }\n}\n\nfragment TestRecentNotes_character_1G22uz on Character {\n  notes(last: $count, before: $cursor) {\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}"
+      "text": "query TestRecentNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestRecentNotes_character_1G22uz,id}}fragment TestRecentNotes_character_1G22uz on Character{notes(last:$count,before:$cursor){edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}"
     },
     {
       "name": "TestRecentNotesQuery",
@@ -1085,7 +1085,7 @@
       "fragments": [
         "TestRecentNotes_character"
       ],
-      "text": "query TestRecentNotesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestRecentNotes_character\n    id\n  }\n}\n\nfragment TestRecentNotes_character on Character {\n  notes(last: 2) {\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}"
+      "text": "query TestRecentNotesQuery($id:ID!){character(id:$id){...TestRecentNotes_character,id}}fragment TestRecentNotes_character on Character{notes(last:2){edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}"
     },
     {
       "name": "TestRemoveNote",
@@ -1102,7 +1102,7 @@
         }
       ],
       "fragments": [],
-      "text": "mutation TestRemoveNote(\n  $id: ID!\n) {\n  removeNote(id: $id) {\n    removedNoteId\n    deleted: removedNoteId\n  }\n}"
+      "text": "mutation TestRemoveNote($id:ID!){removeNote(id:$id){removedNoteId,deleted:removedNoteId}}"
     },
     {
       "name": "TestRename",
@@ -1119,7 +1119,7 @@
         }
       ],
       "fragments": [],
-      "text": "mutation TestRename(\n  $id: ID!\n  $name: String!\n) {\n  rename(id: $id, name: $name) {\n    character {\n      id\n      name\n    }\n  }\n}"
+      "text": "mutation TestRename($id:ID!,$name:String!){rename(id:$id,name:$name){character{id,name}}}"
     },
     {
       "name": "TestRenameThroughFragment",
@@ -1138,7 +1138,7 @@
       "fragments": [
         "TestRenamePayload_mutation"
       ],
-      "text": "mutation TestRenameThroughFragment(\n  $id: ID!\n  $name: String!\n) {\n  ...TestRenamePayload_mutation\n}\n\nfragment TestRenamePayload_mutation on Mutation {\n  rename(id: $id, name: $name) {\n    character {\n      id\n      name\n    }\n  }\n}"
+      "text": "mutation TestRenameThroughFragment($id:ID!,$name:String!){...TestRenamePayload_mutation}fragment TestRenamePayload_mutation on Mutation{rename(id:$id,name:$name){character{id,name}}}"
     },
     {
       "name": "TestRenameWithOrigin",
@@ -1159,7 +1159,7 @@
         }
       ],
       "fragments": [],
-      "text": "mutation TestRenameWithOrigin(\n  $id: ID!\n  $name: String!\n  $withOrigin: Boolean!\n) {\n  rename(id: $id, name: $name) {\n    character {\n      id\n      name\n      origin @include(if: $withOrigin) {\n        id\n        name\n      }\n    }\n  }\n}"
+      "text": "mutation TestRenameWithOrigin($id:ID!,$name:String!,$withOrigin:Boolean!){rename(id:$id,name:$name){character{id,name,origin@include(if:$withOrigin){id,name}}}}"
     },
     {
       "name": "TestRequiredOrigin",
@@ -1172,7 +1172,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestRequiredOrigin(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    origin {\n      id\n      name\n    }\n  }\n}"
+      "text": "query TestRequiredOrigin($id:ID!){character(id:$id){id,origin{id,name}}}"
     },
     {
       "name": "TestReservedNames",
@@ -1187,7 +1187,7 @@
       "fragments": [
         "TestNotes_character"
       ],
-      "text": "query TestReservedNames(\n  $id: ID!\n) {\n  sites: character(id: $id) {\n    id\n    ...TestNotes_character_35kO5h\n  }\n  types: character(id: $id) {\n    id\n  }\n  slots: character(id: $id) {\n    id\n  }\n}\n\nfragment TestNotes_character_35kO5h on Character {\n  name\n  notes(first: 1) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}"
+      "text": "query TestReservedNames($id:ID!){sites:character(id:$id){id,...TestNotes_character_35kO5h},types:character(id:$id){id},slots:character(id:$id){id}}fragment TestNotes_character_35kO5h on Character{name,notes(first:1){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"
     },
     {
       "name": "TestRootNotesPaginationQuery",
@@ -1206,7 +1206,7 @@
       "fragments": [
         "TestRootNotes_query"
       ],
-      "text": "query TestRootNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n) {\n  ...TestRootNotes_query_1G22uz\n}\n\nfragment TestRootNotes_query_1G22uz on Query {\n  notes(first: $count, after: $cursor) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}"
+      "text": "query TestRootNotesPaginationQuery($count:Int=2,$cursor:String){...TestRootNotes_query_1G22uz}fragment TestRootNotes_query_1G22uz on Query{notes(first:$count,after:$cursor){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}"
     },
     {
       "name": "TestRootNotesQuery",
@@ -1216,7 +1216,7 @@
       "fragments": [
         "TestRootNotes_query"
       ],
-      "text": "query TestRootNotesQuery {\n  ...TestRootNotes_query\n}\n\nfragment TestRootNotes_query on Query {\n  notes(first: 2) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}"
+      "text": "query TestRootNotesQuery{...TestRootNotes_query}fragment TestRootNotes_query on Query{notes(first:2){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}"
     },
     {
       "name": "TestRosterQuery",
@@ -1229,7 +1229,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestRosterQuery(\n  $page: Int\n) {\n  characters(page: $page) {\n    results {\n      id\n      name\n      status\n    }\n  }\n}"
+      "text": "query TestRosterQuery($page:Int){characters(page:$page){results{id,name,status}}}"
     },
     {
       "name": "TestSearch",
@@ -1242,7 +1242,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestSearch(\n  $name: String!\n) {\n  search(name: $name) {\n    __typename\n    ... on Character {\n      id\n      name\n    }\n    ... on Location {\n      id\n      name\n      dimension\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}"
+      "text": "query TestSearch($name:String!){search(name:$name){__typename,...on Character{id,name},...on Location{id,name,dimension},...on Node{__isNode:__typename,id}}}"
     },
     {
       "name": "TestSearchOrigins",
@@ -1255,7 +1255,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestSearchOrigins(\n  $name: String!\n) {\n  search(name: $name) {\n    __typename\n    ... on Character {\n      origin {\n        name\n        id\n      }\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}"
+      "text": "query TestSearchOrigins($name:String!){search(name:$name){__typename,...on Character{origin{name,id}},...on Node{__isNode:__typename,id}}}"
     },
     {
       "name": "TestSecrets",
@@ -1268,7 +1268,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestSecrets(\n  $code: String!\n) {\n  secrets(code: $code) {\n    id\n    body\n  }\n  character(id: \"1\") {\n    id\n    name\n  }\n}"
+      "text": "query TestSecrets($code:String!){secrets(code:$code){id,body},character(id:\"1\"){id,name}}"
     },
     {
       "name": "TestSetFavorite",
@@ -1285,7 +1285,7 @@
         }
       ],
       "fragments": [],
-      "text": "mutation TestSetFavorite(\n  $id: ID!\n  $favorite: Boolean!\n) {\n  setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      name\n      favorite\n    }\n  }\n}"
+      "text": "mutation TestSetFavorite($id:ID!,$favorite:Boolean!){setFavorite(id:$id,favorite:$favorite){character{id,name,favorite}}}"
     },
     {
       "name": "TestSetStatuses",
@@ -1293,7 +1293,7 @@
       "source": "swift/Tests/BatonTests/EnumDocuments.swift",
       "variables": [],
       "fragments": [],
-      "text": "mutation TestSetStatuses {\n  setLists {\n    statuses\n  }\n}"
+      "text": "mutation TestSetStatuses{setLists{statuses}}"
     },
     {
       "name": "TestSpellings",
@@ -1301,7 +1301,7 @@
       "source": "swift/Tests/BatonTests/NameDocuments.swift",
       "variables": [],
       "fragments": [],
-      "text": "query TestSpellings {\n  spellings {\n    __typename\n    ... on Spelled {\n      __isSpelled: __typename\n      label\n    }\n    ... on Baton {\n      id\n    }\n    ... on Type {\n      id\n    }\n    ... on Protocol {\n      id\n    }\n    ... on Set {\n      id\n    }\n    ... on Any {\n      id\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}"
+      "text": "query TestSpellings{spellings{__typename,...on Spelled{__isSpelled:__typename,label},...on Baton{id},...on Type{id},...on Protocol{id},...on Set{id},...on Any{id},...on Node{__isNode:__typename,id}}}"
     },
     {
       "name": "TestSpreadKeys",
@@ -1320,7 +1320,7 @@
       "fragments": [
         "TestKeyArguments_query"
       ],
-      "text": "query TestSpreadKeys(\n  $id: ID!\n  $name: String\n) {\n  character(id: $id) {\n    name\n    id\n  }\n  named: characters(filter: {name: $name}) {\n    info {\n      count\n    }\n  }\n  ...TestKeyArguments_query_p86SO\n}\n\nfragment TestKeyArguments_query_p86SO on Query {\n  charactersByIds(ids: [$id, \"2\"]) {\n    name\n    id\n  }\n  characters(filter: {status: \"Alive\", name: $name}) {\n    info {\n      count\n    }\n  }\n}"
+      "text": "query TestSpreadKeys($id:ID!,$name:String){character(id:$id){name,id},named:characters(filter:{name:$name}){info{count}},...TestKeyArguments_query_p86SO}fragment TestKeyArguments_query_p86SO on Query{charactersByIds(ids:[$id,\"2\"]){name,id},characters(filter:{status:\"Alive\",name:$name}){info{count}}}"
     },
     {
       "name": "TestSpreadNames",
@@ -1335,7 +1335,7 @@
       "fragments": [
         "TestCaughtStrict_character"
       ],
-      "text": "query TestSpreadNames(\n  $id: ID!\n) {\n  character(id: $id) {\n    testCaughtStrict: species\n    ...TestCaughtStrict_character\n    id\n  }\n}\n\nfragment TestCaughtStrict_character on Character {\n  species\n}"
+      "text": "query TestSpreadNames($id:ID!){character(id:$id){testCaughtStrict:species,...TestCaughtStrict_character,id}}fragment TestCaughtStrict_character on Character{species}"
     },
     {
       "name": "TestStandaloneFragmentsQuery",
@@ -1352,7 +1352,7 @@
         "TestLoggedNotes_character",
         "TestThrowingOrigin_character"
       ],
-      "text": "query TestStandaloneFragmentsQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    ...TestThrowingOrigin_character\n    ...TestLoggedNotes_character\n    notes(first: 1) {\n      ...TestLogEdges_connection\n    }\n  }\n}\n\nfragment TestLogEdges_connection on NoteConnection {\n  edges {\n    cursor\n  }\n}\n\nfragment TestLoggedNotes_character on Character {\n  notes(first: 1) {\n    totalCount\n    ...TestLogEdges_connection\n  }\n}\n\nfragment TestThrowingOrigin_character on Character {\n  origin {\n    name\n    id\n  }\n}"
+      "text": "query TestStandaloneFragmentsQuery($id:ID!){character(id:$id){id,...TestThrowingOrigin_character,...TestLoggedNotes_character,notes(first:1){...TestLogEdges_connection}}}fragment TestLogEdges_connection on NoteConnection{edges{cursor}}fragment TestLoggedNotes_character on Character{notes(first:1){totalCount,...TestLogEdges_connection}}fragment TestThrowingOrigin_character on Character{origin{name,id}}"
     },
     {
       "name": "TestStrictConditions",
@@ -1369,7 +1369,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestStrictConditions(\n  $id: ID!\n  $withStatus: Boolean!\n) {\n  character(id: $id) {\n    name\n    __typename @include(if: $withStatus)\n    species @include(if: $withStatus)\n    status @include(if: $withStatus)\n    origin @include(if: $withStatus) {\n      name\n      id\n    }\n    id\n  }\n}"
+      "text": "query TestStrictConditions($id:ID!,$withStatus:Boolean!){character(id:$id){name,__typename@include(if:$withStatus)\n    species@include(if:$withStatus)\n    status@include(if:$withStatus)\n    origin@include(if:$withStatus){name,id},id}}"
     },
     {
       "name": "TestStrictDeferred",
@@ -1384,7 +1384,7 @@
       "fragments": [
         "TestAppearances_character"
       ],
-      "text": "query TestStrictDeferred(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    ...TestAppearances_character @defer(label: \"TestStrictDeferred$defer$TestAppearances_character\")\n  }\n}\n\nfragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n    id\n  }\n}"
+      "text": "query TestStrictDeferred($id:ID!){character(id:$id){id,name,...TestAppearances_character@defer(label:\"TestStrictDeferred$defer$TestAppearances_character\")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}"
     },
     {
       "name": "TestStrictEpisodes",
@@ -1397,7 +1397,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestStrictEpisodes(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    episode {\n      id\n      name\n    }\n  }\n}"
+      "text": "query TestStrictEpisodes($id:ID!){character(id:$id){id,episode{id,name}}}"
     },
     {
       "name": "TestStrictOrigin",
@@ -1410,7 +1410,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestStrictOrigin(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    origin {\n      id\n      name\n    }\n  }\n}"
+      "text": "query TestStrictOrigin($id:ID!){character(id:$id){id,origin{id,name}}}"
     },
     {
       "name": "TestStrictQuery",
@@ -1423,7 +1423,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestStrictQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    name\n    species\n    id\n  }\n}"
+      "text": "query TestStrictQuery($id:ID!){character(id:$id){name,species,id}}"
     },
     {
       "name": "TestSwiftNames",
@@ -1436,7 +1436,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestSwiftNames(\n  $id: ID!\n) {\n  type: character(id: $id) {\n    id\n  }\n  self: character(id: $id) {\n    id\n  }\n  protocol: character(id: $id) {\n    id\n  }\n  any: character(id: $id) {\n    id\n  }\n  mainActor: character(id: $id) {\n    id\n  }\n  baton: character(id: $id) {\n    id\n  }\n  abstractSlots: character(id: $id) {\n    id\n  }\n  result: character(id: $id) {\n    id\n  }\n  optional: character(id: $id) {\n    id\n  }\n  string: character(id: $id) {\n    id\n  }\n  int: character(id: $id) {\n    id\n  }\n  double: character(id: $id) {\n    id\n  }\n  bool: character(id: $id) {\n    id\n  }\n  owner: character(id: $id) {\n    id\n  }\n  caught: character(id: $id) {\n    id\n  }\n  node(id: $id) {\n    __typename\n    id\n  }\n  tokenizer {\n    ratio\n    count\n    flag\n    id\n  }\n}"
+      "text": "query TestSwiftNames($id:ID!){type:character(id:$id){id},self:character(id:$id){id},protocol:character(id:$id){id},any:character(id:$id){id},mainActor:character(id:$id){id},baton:character(id:$id){id},abstractSlots:character(id:$id){id},result:character(id:$id){id},optional:character(id:$id){id},string:character(id:$id){id},int:character(id:$id){id},double:character(id:$id){id},bool:character(id:$id){id},owner:character(id:$id){id},caught:character(id:$id){id},node(id:$id){__typename,id},tokenizer{ratio,count,flag,id}}"
     },
     {
       "name": "TestThrowingNode",
@@ -1449,7 +1449,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestThrowingNode(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ... on Character {\n      name\n    }\n  }\n}"
+      "text": "query TestThrowingNode($id:ID!){node(id:$id){__typename,id,...on Character{name}}}"
     },
     {
       "name": "TestThrowingSpread",
@@ -1464,7 +1464,7 @@
       "fragments": [
         "TestName_character"
       ],
-      "text": "query TestThrowingSpread(\n  $id: ID!\n) {\n  character(id: $id) {\n    species\n    ...TestName_character\n    id\n  }\n}\n\nfragment TestName_character on Character {\n  name\n}"
+      "text": "query TestThrowingSpread($id:ID!){character(id:$id){species,...TestName_character,id}}fragment TestName_character on Character{name}"
     },
     {
       "name": "TestTokenizerQuery",
@@ -1472,7 +1472,7 @@
       "source": "swift/Tests/BatonTests/TokenizerDocuments.swift",
       "variables": [],
       "fragments": [],
-      "text": "query TestTokenizerQuery {\n  tokenizer {\n    id\n    text\n    strings\n    count\n    counts\n    ratio\n    ratios\n    flag\n    flags\n    json\n    jsons\n  }\n}"
+      "text": "query TestTokenizerQuery{tokenizer{id,text,strings,count,counts,ratio,ratios,flag,flags,json,jsons}}"
     },
     {
       "name": "TestTwoFieldPartQuery",
@@ -1487,7 +1487,7 @@
       "fragments": [
         "TestOriginAndEpisode_character"
       ],
-      "text": "query TestTwoFieldPartQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    ...TestOriginAndEpisode_character @defer(label: \"TestTwoFieldPartQuery$defer$TestOriginAndEpisode_character\")\n  }\n}\n\nfragment TestOriginAndEpisode_character on Character {\n  origin {\n    name\n    id\n  }\n  episode {\n    name\n    id\n  }\n}"
+      "text": "query TestTwoFieldPartQuery($id:ID!){character(id:$id){id,name,...TestOriginAndEpisode_character@defer(label:\"TestTwoFieldPartQuery$defer$TestOriginAndEpisode_character\")}}fragment TestOriginAndEpisode_character on Character{origin{name,id},episode{name,id}}"
     },
     {
       "name": "TestTwoPagesQuery",
@@ -1500,7 +1500,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestTwoPagesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    notes(first: 2) {\n      edges {\n        node {\n          id\n          text\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n  }\n  node(id: $id) {\n    __typename\n    ... on Character {\n      notes(first: 2, after: \"c2\") {\n        edges {\n          node {\n            id\n            text\n            __typename\n          }\n          cursor\n        }\n        pageInfo {\n          endCursor\n          hasNextPage\n        }\n      }\n    }\n    id\n  }\n}"
+      "text": "query TestTwoPagesQuery($id:ID!){character(id:$id){id,notes(first:2){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}},node(id:$id){__typename,...on Character{notes(first:2,after:\"c2\"){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}},id}}"
     },
     {
       "name": "TestTwoScopes",
@@ -1519,7 +1519,7 @@
       "fragments": [
         "TestNotes_character"
       ],
-      "text": "query TestTwoScopes(\n  $a: ID!\n  $b: ID!\n) {\n  first: character(id: $a) {\n    id\n    name\n    ...TestNotes_character_35kO5h\n  }\n  second: character(id: $b) {\n    id\n    name\n    ...TestNotes_character_41grAF\n  }\n}\n\nfragment TestNotes_character_35kO5h on Character {\n  name\n  notes(first: 1) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment TestNotes_character_41grAF on Character {\n  name\n  notes(first: 3) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}"
+      "text": "query TestTwoScopes($a:ID!,$b:ID!){first:character(id:$a){id,name,...TestNotes_character_35kO5h},second:character(id:$b){id,name,...TestNotes_character_41grAF}}fragment TestNotes_character_35kO5h on Character{name,notes(first:1){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}fragment TestNotes_character_41grAF on Character{name,notes(first:3){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}"
     },
     {
       "name": "TestTwoSpreads",
@@ -1538,7 +1538,7 @@
       "fragments": [
         "TestRow_character"
       ],
-      "text": "query TestTwoSpreads(\n  $id: ID!\n  $again: Boolean!\n) {\n  character(id: $id) {\n    ...TestRow_character\n    ...TestRow_character @include(if: $again)\n    id\n  }\n}\n\nfragment TestRow_character on Character {\n  name\n  status\n  image\n}"
+      "text": "query TestTwoSpreads($id:ID!,$again:Boolean!){character(id:$id){...TestRow_character,...TestRow_character@include(if:$again),id}}fragment TestRow_character on Character{name,status,image}"
     },
     {
       "name": "TestUncaughtPartQuery",
@@ -1553,7 +1553,7 @@
       "fragments": [
         "TestAppearances_character"
       ],
-      "text": "query TestUncaughtPartQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    ...TestAppearances_character @defer(label: \"TestUncaughtPartQuery$defer$TestAppearances_character\")\n  }\n}\n\nfragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n    id\n  }\n}"
+      "text": "query TestUncaughtPartQuery($id:ID!){character(id:$id){id,name,...TestAppearances_character@defer(label:\"TestUncaughtPartQuery$defer$TestAppearances_character\")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}"
     },
     {
       "name": "TestUnion",
@@ -1566,7 +1566,7 @@
         }
       ],
       "fragments": [],
-      "text": "query TestUnion(\n  $name: String!\n) {\n  search(name: $name) {\n    __typename\n    ... on Character {\n      label: name\n      status\n    }\n    ... on Location {\n      label: dimension\n      type\n    }\n    ... on Episode {\n      air_date\n    }\n    ... on Named {\n      __isNamed: __typename\n      name\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}"
+      "text": "query TestUnion($name:String!){search(name:$name){__typename,...on Character{label:name,status},...on Location{label:dimension,type},...on Episode{air_date},...on Named{__isNamed:__typename,name},...on Node{__isNode:__typename,id}}}"
     }
   ],
   "fragments": [

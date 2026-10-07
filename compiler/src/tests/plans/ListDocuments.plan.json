@@ -2400,7 +2400,7 @@
           "default_value": null
         }
       ],
-      "text": "mutation TestAddNote(\n  $characterId: ID!\n  $text: String!\n) {\n  addNote(characterId: $characterId, text: $text) {\n    noteEdge {\n      cursor\n      node {\n        id\n        text\n      }\n    }\n  }\n}",
+      "text": "mutation TestAddNote($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){noteEdge{cursor,node{id,text}}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2779,7 +2779,7 @@
           "default_value": null
         }
       ],
-      "text": "mutation TestAddNoteFirst(\n  $characterId: ID!\n  $text: String!\n) {\n  addNote(characterId: $characterId, text: $text) {\n    noteEdge {\n      cursor\n      node {\n        id\n        text\n      }\n    }\n  }\n}",
+      "text": "mutation TestAddNoteFirst($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){noteEdge{cursor,node{id,text}}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -3158,7 +3158,7 @@
           "default_value": null
         }
       ],
-      "text": "mutation TestAddNoteNode(\n  $characterId: ID!\n  $text: String!\n) {\n  addNote(characterId: $characterId, text: $text) {\n    note {\n      id\n      text\n    }\n  }\n}",
+      "text": "mutation TestAddNoteNode($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){note{id,text}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -3433,7 +3433,7 @@
           "default_value": null
         }
       ],
-      "text": "mutation TestAddNoteNodeFirst(\n  $characterId: ID!\n  $text: String!\n) {\n  addNote(characterId: $characterId, text: $text) {\n    note {\n      id\n      text\n    }\n  }\n}",
+      "text": "mutation TestAddNoteNodeFirst($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){note{id,text}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -3708,7 +3708,7 @@
           "default_value": null
         }
       ],
-      "text": "mutation TestAddNoteNodeOfAnotherType(\n  $characterId: ID!\n  $text: String!\n) {\n  addNote(characterId: $characterId, text: $text) {\n    note {\n      id\n      text\n    }\n  }\n}",
+      "text": "mutation TestAddNoteNodeOfAnotherType($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){note{id,text}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -3959,7 +3959,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestAliasQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestRow_character\n    id\n  }\n}\n\nfragment TestRow_character on Character {\n  name\n  status\n  image\n}",
+      "text": "query TestAliasQuery($id:ID!){character(id:$id){...TestRow_character,id}}fragment TestRow_character on Character{name,status,image}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -4230,7 +4230,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestAuthorNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestAuthorNotes_note_1G22uz\n    id\n  }\n}\n\nfragment TestAuthorNotes_note_1G22uz on Note {\n  id\n  author {\n    id\n    name\n    notes(first: $count, after: $cursor) {\n      edges {\n        node {\n          id\n          text\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n  }\n}",
+      "text": "query TestAuthorNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestAuthorNotes_note_1G22uz,id}}fragment TestAuthorNotes_note_1G22uz on Note{id,author{id,name,notes(first:$count,after:$cursor){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -4845,7 +4845,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestAuthorNotesQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestAuthorNotes_note\n    id\n  }\n}\n\nfragment TestAuthorNotes_note on Note {\n  id\n  author {\n    id\n    name\n    notes(first: 2) {\n      edges {\n        node {\n          id\n          text\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n  }\n}",
+      "text": "query TestAuthorNotesQuery($id:ID!){node(id:$id){__typename,...TestAuthorNotes_note,id}}fragment TestAuthorNotes_note on Note{id,author{id,name,notes(first:2){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -5487,7 +5487,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestDeferredNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestDeferredNotes_character_1G22uz\n    id\n  }\n}\n\nfragment TestDeferredNotes_character_1G22uz on Character {\n  notes(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...TestNoteText_note @defer(label: \"TestDeferredNotes_character$defer$noteText\")\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment TestNoteText_note on Note {\n  text\n}",
+      "text": "query TestDeferredNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestDeferredNotes_character_1G22uz,id}}fragment TestDeferredNotes_character_1G22uz on Character{notes(first:$count,after:$cursor){edges{node{id,...TestNoteText_note@defer(label:\"TestDeferredNotes_character$defer$noteText\"),__typename},cursor},pageInfo{endCursor,hasNextPage}},id}fragment TestNoteText_note on Note{text}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": true,
@@ -6037,7 +6037,7 @@
           "default_value": null
         }
       ],
-      "text": "mutation TestDeleteNote(\n  $id: ID!\n) {\n  removeNote(id: $id) {\n    removedNoteId\n  }\n}",
+      "text": "mutation TestDeleteNote($id:ID!){removeNote(id:$id){removedNoteId}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -6196,7 +6196,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestHiddenNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestHiddenNotes_character_1G22uz\n    id\n  }\n}\n\nfragment TestHiddenNotes_character_1G22uz on Character {\n  TestHiddenNotes_character: name\n  TestHiddenNotesPaginationQuery: status\n  notes(first: $count, after: $cursor) {\n    TestHiddenNotes_character: totalCount\n    TestHiddenNotesPaginationQuery: totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}",
+      "text": "query TestHiddenNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestHiddenNotes_character_1G22uz,id}}fragment TestHiddenNotes_character_1G22uz on Character{TestHiddenNotes_character:name,TestHiddenNotesPaginationQuery:status,notes(first:$count,after:$cursor){TestHiddenNotes_character:totalCount,TestHiddenNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -6818,7 +6818,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestHiddenNotesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestHiddenNotes_character\n    id\n  }\n}\n\nfragment TestHiddenNotes_character on Character {\n  TestHiddenNotes_character: name\n  TestHiddenNotesPaginationQuery: status\n  notes(first: 2) {\n    TestHiddenNotes_character: totalCount\n    TestHiddenNotesPaginationQuery: totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}",
+      "text": "query TestHiddenNotesQuery($id:ID!){character(id:$id){...TestHiddenNotes_character,id}}fragment TestHiddenNotes_character on Character{TestHiddenNotes_character:name,TestHiddenNotesPaginationQuery:status,notes(first:2){TestHiddenNotes_character:totalCount,TestHiddenNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -7382,7 +7382,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestHiddenRecentNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestHiddenRecentNotes_character_1G22uz\n    id\n  }\n}\n\nfragment TestHiddenRecentNotes_character_1G22uz on Character {\n  notes(last: $count, before: $cursor) {\n    TestHiddenRecentNotes_character: totalCount\n    TestHiddenRecentNotesPaginationQuery: totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}",
+      "text": "query TestHiddenRecentNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestHiddenRecentNotes_character_1G22uz,id}}fragment TestHiddenRecentNotes_character_1G22uz on Character{notes(last:$count,before:$cursor){TestHiddenRecentNotes_character:totalCount,TestHiddenRecentNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -7962,7 +7962,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestHiddenRecentNotesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestHiddenRecentNotes_character\n    id\n  }\n}\n\nfragment TestHiddenRecentNotes_character on Character {\n  notes(last: 2) {\n    TestHiddenRecentNotes_character: totalCount\n    TestHiddenRecentNotesPaginationQuery: totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}",
+      "text": "query TestHiddenRecentNotesQuery($id:ID!){character(id:$id){...TestHiddenRecentNotes_character,id}}fragment TestHiddenRecentNotes_character on Character{notes(last:2){TestHiddenRecentNotes_character:totalCount,TestHiddenRecentNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -8484,7 +8484,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestNotes_character_1G22uz\n    id\n  }\n}\n\nfragment TestNotes_character_1G22uz on Character {\n  name\n  notes(first: $count, after: $cursor) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}",
+      "text": "query TestNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestNotes_character_1G22uz,id}}fragment TestNotes_character_1G22uz on Character{name,notes(first:$count,after:$cursor){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -9064,7 +9064,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestNotesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestNotes_character\n    id\n  }\n}\n\nfragment TestNotes_character on Character {\n  name\n  notes(first: 2) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}",
+      "text": "query TestNotesQuery($id:ID!){character(id:$id){...TestNotes_character,id}}fragment TestNotes_character on Character{name,notes(first:2){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -9573,7 +9573,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestNotesSizedQuery(\n  $id: ID!\n  $size: Int\n) {\n  character(id: $id) {\n    ...TestNotes_character_2H9PL\n    id\n  }\n}\n\nfragment TestNotes_character_2H9PL on Character {\n  name\n  notes(first: $size) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}",
+      "text": "query TestNotesSizedQuery($id:ID!,$size:Int){character(id:$id){...TestNotes_character_2H9PL,id}}fragment TestNotes_character_2H9PL on Character{name,notes(first:$size){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -10100,7 +10100,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestRecentNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestRecentNotes_character_1G22uz\n    id\n  }\n}\n\nfragment TestRecentNotes_character_1G22uz on Character {\n  notes(last: $count, before: $cursor) {\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}",
+      "text": "query TestRecentNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestRecentNotes_character_1G22uz,id}}fragment TestRecentNotes_character_1G22uz on Character{notes(last:$count,before:$cursor){edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -10638,7 +10638,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestRecentNotesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestRecentNotes_character\n    id\n  }\n}\n\nfragment TestRecentNotes_character on Character {\n  notes(last: 2) {\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}",
+      "text": "query TestRecentNotesQuery($id:ID!){character(id:$id){...TestRecentNotes_character,id}}fragment TestRecentNotes_character on Character{notes(last:2){edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -11109,7 +11109,7 @@
           "default_value": null
         }
       ],
-      "text": "mutation TestRemoveNote(\n  $id: ID!\n) {\n  removeNote(id: $id) {\n    removedNoteId\n    deleted: removedNoteId\n  }\n}",
+      "text": "mutation TestRemoveNote($id:ID!){removeNote(id:$id){removedNoteId,deleted:removedNoteId}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -11294,7 +11294,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestTwoPagesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    notes(first: 2) {\n      edges {\n        node {\n          id\n          text\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n  }\n  node(id: $id) {\n    __typename\n    ... on Character {\n      notes(first: 2, after: \"c2\") {\n        edges {\n          node {\n            id\n            text\n            __typename\n          }\n          cursor\n        }\n        pageInfo {\n          endCursor\n          hasNextPage\n        }\n      }\n    }\n    id\n  }\n}",
+      "text": "query TestTwoPagesQuery($id:ID!){character(id:$id){id,notes(first:2){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}},node(id:$id){__typename,...on Character{notes(first:2,after:\"c2\"){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}},id}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

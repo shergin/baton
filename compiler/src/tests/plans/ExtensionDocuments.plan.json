@@ -8,7 +8,7 @@
       "kind": "query",
       "root_type": "Query",
       "variables": [],
-      "text": "query TestDrafts {\n  character(id: \"1\") {\n    id\n    name\n  }\n}",
+      "text": "query TestDrafts{character(id:\"1\"){id,name}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -606,7 +606,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestPinnedCharacter(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    status\n  }\n}",
+      "text": "query TestPinnedCharacter($id:ID!){character(id:$id){id,name,status}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

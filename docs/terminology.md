@@ -34,10 +34,16 @@ that reads it, in Swift source or a `.graphql` file; compiles to a
 **Operation.** *Concept: document.* GraphQL: a query, mutation or
 subscription. Here: assembled by the compiler from the fragments spread into
 it; one per screen; compiles to a variables type, a root lens, a
-[plan](#compiler) and a persisted id. The three kinds are three protocols
-refining `Operation`, in GraphQL's words: `Query`, read through a handle;
-`Mutation`, called as an [action](#generated); `Subscription`, a stream of
-events into the store. Each API takes only its kind.
+[plan](#compiler), its text and a persisted id. The text is printed
+compact, with Relay's printer's own option: no newline, indentation or
+optional space, a comma between items, strings as they are, the fragments
+it reaches after it; the one text is sent, hashed, kept in the persisted
+file and printed by `batonc print`
+([the decision](decisions/operation-text-is-printed-compact.md)). The three
+kinds are three protocols refining `Operation`, in GraphQL's words:
+`Query`, read through a handle; `Mutation`, called as an
+[action](#generated); `Subscription`, a stream of events into the store.
+Each API takes only its kind.
 
 **Spread.** *Composition: document, lens.* GraphQL: `...Name` inside a
 selection. Here: compiles to a named accessor on the parent lens that

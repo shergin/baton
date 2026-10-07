@@ -8,7 +8,7 @@
       "kind": "query",
       "root_type": "Query",
       "variables": [],
-      "text": "query TestCharacterSecret {\n  character(id: \"1\") {\n    id\n    name\n    secret {\n      id\n      body\n    }\n  }\n}",
+      "text": "query TestCharacterSecret{character(id:\"1\"){id,name,secret{id,body}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -400,7 +400,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestSecrets(\n  $code: String!\n) {\n  secrets(code: $code) {\n    id\n    body\n  }\n  character(id: \"1\") {\n    id\n    name\n  }\n}",
+      "text": "query TestSecrets($code:String!){secrets(code:$code){id,body},character(id:\"1\"){id,name}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

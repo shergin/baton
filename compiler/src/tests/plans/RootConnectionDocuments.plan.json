@@ -378,7 +378,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestRootNotesPaginationQuery(\n  $count: Int = 2\n  $cursor: String\n) {\n  ...TestRootNotes_query_1G22uz\n}\n\nfragment TestRootNotes_query_1G22uz on Query {\n  notes(first: $count, after: $cursor) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}",
+      "text": "query TestRootNotesPaginationQuery($count:Int=2,$cursor:String){...TestRootNotes_query_1G22uz}fragment TestRootNotes_query_1G22uz on Query{notes(first:$count,after:$cursor){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -723,7 +723,7 @@
       "kind": "query",
       "root_type": "Query",
       "variables": [],
-      "text": "query TestRootNotesQuery {\n  ...TestRootNotes_query\n}\n\nfragment TestRootNotes_query on Query {\n  notes(first: 2) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}",
+      "text": "query TestRootNotesQuery{...TestRootNotes_query}fragment TestRootNotes_query on Query{notes(first:2){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

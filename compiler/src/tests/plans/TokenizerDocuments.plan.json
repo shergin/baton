@@ -8,7 +8,7 @@
       "kind": "query",
       "root_type": "Query",
       "variables": [],
-      "text": "query TestTokenizerQuery {\n  tokenizer {\n    id\n    text\n    strings\n    count\n    counts\n    ratio\n    ratios\n    flag\n    flags\n    json\n    jsons\n  }\n}",
+      "text": "query TestTokenizerQuery{tokenizer{id,text,strings,count,counts,ratio,ratios,flag,flags,json,jsons}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

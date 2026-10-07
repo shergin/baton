@@ -465,7 +465,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestCaughtEpisodes(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    caught: episode {\n      name\n      id\n    }\n  }\n}",
+      "text": "query TestCaughtEpisodes($id:ID!){character(id:$id){id,caught:episode{name,id}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -792,7 +792,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestCaughtPartQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    ...TestCaughtAppearances_character @defer(label: \"TestCaughtPartQuery$defer$TestCaughtAppearances_character\")\n  }\n}\n\nfragment TestCaughtAppearances_character on Character {\n  episode {\n    name\n    id\n  }\n}",
+      "text": "query TestCaughtPartQuery($id:ID!){character(id:$id){id,name,...TestCaughtAppearances_character@defer(label:\"TestCaughtPartQuery$defer$TestCaughtAppearances_character\")}}fragment TestCaughtAppearances_character on Character{episode{name,id}}",
       "throws_on_field_error": true,
       "bubbles": false,
       "has_deferred": true,
@@ -1129,7 +1129,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestCollidingErrors(\n  $id: ID!\n) {\n  types: character(id: $id) {\n    id\n  }\n  typesLens: character(id: $id) {\n    id\n    name\n  }\n}",
+      "text": "query TestCollidingErrors($id:ID!){types:character(id:$id){id},typesLens:character(id:$id){id,name}}",
       "throws_on_field_error": true,
       "bubbles": false,
       "has_deferred": false,
@@ -1511,7 +1511,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestCollidingRequired(\n  $id: ID!\n) {\n  types: character(id: $id) {\n    id\n  }\n  typesLens: character(id: $id) {\n    id\n    name\n  }\n}",
+      "text": "query TestCollidingRequired($id:ID!){types:character(id:$id){id},typesLens:character(id:$id){id,name}}",
       "throws_on_field_error": false,
       "bubbles": true,
       "has_deferred": false,
@@ -1903,7 +1903,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestFilteredCharacters(\n  $filters: [FilterCharacter!]!\n) {\n  charactersMatching(filters: $filters) {\n    id\n    name\n  }\n}",
+      "text": "query TestFilteredCharacters($filters:[FilterCharacter!]!){charactersMatching(filters:$filters){id,name}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2119,7 +2119,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestKeywordVariables(\n  $where: ID!\n  $in: String!\n) {\n  character(id: $where) {\n    id\n  }\n  search(name: $in) {\n    __typename\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}",
+      "text": "query TestKeywordVariables($where:ID!,$in:String!){character(id:$where){id},search(name:$in){__typename,...on Node{__isNode:__typename,id}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2516,7 +2516,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestLoggedOrigin(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    origin {\n      id\n      name\n    }\n  }\n}",
+      "text": "query TestLoggedOrigin($id:ID!){character(id:$id){id,origin{id,name}}}",
       "throws_on_field_error": false,
       "bubbles": true,
       "has_deferred": false,
@@ -2860,7 +2860,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestRequiredOrigin(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    origin {\n      id\n      name\n    }\n  }\n}",
+      "text": "query TestRequiredOrigin($id:ID!){character(id:$id){id,origin{id,name}}}",
       "throws_on_field_error": false,
       "bubbles": true,
       "has_deferred": false,
@@ -3204,7 +3204,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestReservedNames(\n  $id: ID!\n) {\n  sites: character(id: $id) {\n    id\n    ...TestNotes_character_35kO5h\n  }\n  types: character(id: $id) {\n    id\n  }\n  slots: character(id: $id) {\n    id\n  }\n}\n\nfragment TestNotes_character_35kO5h on Character {\n  name\n  notes(first: 1) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}",
+      "text": "query TestReservedNames($id:ID!){sites:character(id:$id){id,...TestNotes_character_35kO5h},types:character(id:$id){id},slots:character(id:$id){id}}fragment TestNotes_character_35kO5h on Character{name,notes(first:1){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -4047,7 +4047,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestStandaloneFragmentsQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    ...TestThrowingOrigin_character\n    ...TestLoggedNotes_character\n    notes(first: 1) {\n      ...TestLogEdges_connection\n    }\n  }\n}\n\nfragment TestLogEdges_connection on NoteConnection {\n  edges {\n    cursor\n  }\n}\n\nfragment TestLoggedNotes_character on Character {\n  notes(first: 1) {\n    totalCount\n    ...TestLogEdges_connection\n  }\n}\n\nfragment TestThrowingOrigin_character on Character {\n  origin {\n    name\n    id\n  }\n}",
+      "text": "query TestStandaloneFragmentsQuery($id:ID!){character(id:$id){id,...TestThrowingOrigin_character,...TestLoggedNotes_character,notes(first:1){...TestLogEdges_connection}}}fragment TestLogEdges_connection on NoteConnection{edges{cursor}}fragment TestLoggedNotes_character on Character{notes(first:1){totalCount,...TestLogEdges_connection}}fragment TestThrowingOrigin_character on Character{origin{name,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -4487,7 +4487,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestStrictEpisodes(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    episode {\n      id\n      name\n    }\n  }\n}",
+      "text": "query TestStrictEpisodes($id:ID!){character(id:$id){id,episode{id,name}}}",
       "throws_on_field_error": true,
       "bubbles": false,
       "has_deferred": false,
@@ -4833,7 +4833,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestStrictOrigin(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    origin {\n      id\n      name\n    }\n  }\n}",
+      "text": "query TestStrictOrigin($id:ID!){character(id:$id){id,origin{id,name}}}",
       "throws_on_field_error": true,
       "bubbles": false,
       "has_deferred": false,
@@ -5171,7 +5171,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestSwiftNames(\n  $id: ID!\n) {\n  type: character(id: $id) {\n    id\n  }\n  self: character(id: $id) {\n    id\n  }\n  protocol: character(id: $id) {\n    id\n  }\n  any: character(id: $id) {\n    id\n  }\n  mainActor: character(id: $id) {\n    id\n  }\n  baton: character(id: $id) {\n    id\n  }\n  abstractSlots: character(id: $id) {\n    id\n  }\n  result: character(id: $id) {\n    id\n  }\n  optional: character(id: $id) {\n    id\n  }\n  string: character(id: $id) {\n    id\n  }\n  int: character(id: $id) {\n    id\n  }\n  double: character(id: $id) {\n    id\n  }\n  bool: character(id: $id) {\n    id\n  }\n  owner: character(id: $id) {\n    id\n  }\n  caught: character(id: $id) {\n    id\n  }\n  node(id: $id) {\n    __typename\n    id\n  }\n  tokenizer {\n    ratio\n    count\n    flag\n    id\n  }\n}",
+      "text": "query TestSwiftNames($id:ID!){type:character(id:$id){id},self:character(id:$id){id},protocol:character(id:$id){id},any:character(id:$id){id},mainActor:character(id:$id){id},baton:character(id:$id){id},abstractSlots:character(id:$id){id},result:character(id:$id){id},optional:character(id:$id){id},string:character(id:$id){id},int:character(id:$id){id},double:character(id:$id){id},bool:character(id:$id){id},owner:character(id:$id){id},caught:character(id:$id){id},node(id:$id){__typename,id},tokenizer{ratio,count,flag,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -7965,7 +7965,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestThrowingNode(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ... on Character {\n      name\n    }\n  }\n}",
+      "text": "query TestThrowingNode($id:ID!){node(id:$id){__typename,id,...on Character{name}}}",
       "throws_on_field_error": true,
       "bubbles": false,
       "has_deferred": false,
@@ -8276,7 +8276,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestTwoFieldPartQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    ...TestOriginAndEpisode_character @defer(label: \"TestTwoFieldPartQuery$defer$TestOriginAndEpisode_character\")\n  }\n}\n\nfragment TestOriginAndEpisode_character on Character {\n  origin {\n    name\n    id\n  }\n  episode {\n    name\n    id\n  }\n}",
+      "text": "query TestTwoFieldPartQuery($id:ID!){character(id:$id){id,name,...TestOriginAndEpisode_character@defer(label:\"TestTwoFieldPartQuery$defer$TestOriginAndEpisode_character\")}}fragment TestOriginAndEpisode_character on Character{origin{name,id},episode{name,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": true,
@@ -8700,7 +8700,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestTwoScopes(\n  $a: ID!\n  $b: ID!\n) {\n  first: character(id: $a) {\n    id\n    name\n    ...TestNotes_character_35kO5h\n  }\n  second: character(id: $b) {\n    id\n    name\n    ...TestNotes_character_41grAF\n  }\n}\n\nfragment TestNotes_character_35kO5h on Character {\n  name\n  notes(first: 1) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment TestNotes_character_41grAF on Character {\n  name\n  notes(first: 3) {\n    totalCount\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}",
+      "text": "query TestTwoScopes($a:ID!,$b:ID!){first:character(id:$a){id,name,...TestNotes_character_35kO5h},second:character(id:$b){id,name,...TestNotes_character_41grAF}}fragment TestNotes_character_35kO5h on Character{name,notes(first:1){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}fragment TestNotes_character_41grAF on Character{name,notes(first:3){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -9776,7 +9776,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestUncaughtPartQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    name\n    ...TestAppearances_character @defer(label: \"TestUncaughtPartQuery$defer$TestAppearances_character\")\n  }\n}\n\nfragment TestAppearances_character on Character {\n  episode {\n    name\n    air_date\n    id\n  }\n}",
+      "text": "query TestUncaughtPartQuery($id:ID!){character(id:$id){id,name,...TestAppearances_character@defer(label:\"TestUncaughtPartQuery$defer$TestAppearances_character\")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}",
       "throws_on_field_error": true,
       "bubbles": false,
       "has_deferred": true,

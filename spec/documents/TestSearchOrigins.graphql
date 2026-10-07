@@ -1,17 +1,1 @@
-query TestSearchOrigins(
-  $name: String!
-) {
-  search(name: $name) {
-    __typename
-    ... on Character {
-      origin {
-        name
-        id
-      }
-    }
-    ... on Node {
-      __isNode: __typename
-      id
-    }
-  }
-}
+query TestSearchOrigins($name:String!){search(name:$name){__typename,...on Character{origin{name,id}},...on Node{__isNode:__typename,id}}}

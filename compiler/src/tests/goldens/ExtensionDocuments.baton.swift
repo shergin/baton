@@ -10,14 +10,7 @@ nonisolated public struct TestDrafts: Baton.Query {
     }
 
     public static let name = "TestDrafts"
-    public static let document: Baton.Document = .text(#"""
-query TestDrafts {
-  character(id: "1") {
-    id
-    name
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestDrafts{character(id:"1"){id,name}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])
@@ -89,17 +82,7 @@ nonisolated public struct TestPinnedCharacter: Baton.Query {
     }
 
     public static let name = "TestPinnedCharacter"
-    public static let document: Baton.Document = .text(#"""
-query TestPinnedCharacter(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    name
-    status
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestPinnedCharacter($id:ID!){character(id:$id){id,name,status}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])

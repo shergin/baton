@@ -1,11 +1,1 @@
-mutation TestRename(
-  $id: ID!
-  $name: String!
-) {
-  rename(id: $id, name: $name) {
-    character {
-      id
-      name
-    }
-  }
-}
+mutation TestRename($id:ID!,$name:String!){rename(id:$id,name:$name){character{id,name}}}

@@ -41,22 +41,7 @@ nonisolated public struct TestFavoriteQuery: Baton.Query {
     }
 
     public static let name = "TestFavoriteQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestFavoriteQuery(
-  $id: ID!
-) {
-  character(id: $id) {
-    id
-    ...TestFavorite_character
-  }
-}
-
-fragment TestFavorite_character on Character {
-  id
-  name
-  favorite
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestFavoriteQuery($id:ID!){character(id:$id){id,...TestFavorite_character}}fragment TestFavorite_character on Character{id,name,favorite}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -104,24 +89,7 @@ nonisolated public struct TestNode: Baton.Query {
     }
 
     public static let name = "TestNode"
-    public static let document: Baton.Document = .text(#"""
-query TestNode(
-  $id: ID!
-) {
-  node(id: $id) {
-    __typename
-    ... on Character {
-      id
-      name
-    }
-    ... on Episode {
-      id
-      name
-    }
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestNode($id:ID!){node(id:$id){__typename,...on Character{id,name},...on Episode{id,name},id}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -190,19 +158,7 @@ nonisolated public struct TestRename: Baton.Mutation {
     }
 
     public static let name = "TestRename"
-    public static let document: Baton.Document = .text(#"""
-mutation TestRename(
-  $id: ID!
-  $name: String!
-) {
-  rename(id: $id, name: $name) {
-    character {
-      id
-      name
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"mutation TestRename($id:ID!,$name:String!){rename(id:$id,name:$name){character{id,name}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name)])
@@ -312,23 +268,7 @@ nonisolated public struct TestRenameThroughFragment: Baton.Mutation {
     }
 
     public static let name = "TestRenameThroughFragment"
-    public static let document: Baton.Document = .text(#"""
-mutation TestRenameThroughFragment(
-  $id: ID!
-  $name: String!
-) {
-  ...TestRenamePayload_mutation
-}
-
-fragment TestRenamePayload_mutation on Mutation {
-  rename(id: $id, name: $name) {
-    character {
-      id
-      name
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"mutation TestRenameThroughFragment($id:ID!,$name:String!){...TestRenamePayload_mutation}fragment TestRenamePayload_mutation on Mutation{rename(id:$id,name:$name){character{id,name}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name)])
@@ -427,24 +367,7 @@ nonisolated public struct TestRenameWithOrigin: Baton.Mutation {
     }
 
     public static let name = "TestRenameWithOrigin"
-    public static let document: Baton.Document = .text(#"""
-mutation TestRenameWithOrigin(
-  $id: ID!
-  $name: String!
-  $withOrigin: Boolean!
-) {
-  rename(id: $id, name: $name) {
-    character {
-      id
-      name
-      origin @include(if: $withOrigin) {
-        id
-        name
-      }
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"mutation TestRenameWithOrigin($id:ID!,$name:String!,$withOrigin:Boolean!){rename(id:$id,name:$name){character{id,name,origin@include(if:$withOrigin){id,name}}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "name": Baton.Variable(self.name), "withOrigin": Baton.Variable(self.withOrigin)])
@@ -586,28 +509,7 @@ nonisolated public struct TestSearch: Baton.Query {
     }
 
     public static let name = "TestSearch"
-    public static let document: Baton.Document = .text(#"""
-query TestSearch(
-  $name: String!
-) {
-  search(name: $name) {
-    __typename
-    ... on Character {
-      id
-      name
-    }
-    ... on Location {
-      id
-      name
-      dimension
-    }
-    ... on Node {
-      __isNode: __typename
-      id
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestSearch($name:String!){search(name:$name){__typename,...on Character{id,name},...on Location{id,name,dimension},...on Node{__isNode:__typename,id}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["name": Baton.Variable(self.name)])
@@ -689,25 +591,7 @@ nonisolated public struct TestSearchOrigins: Baton.Query {
     }
 
     public static let name = "TestSearchOrigins"
-    public static let document: Baton.Document = .text(#"""
-query TestSearchOrigins(
-  $name: String!
-) {
-  search(name: $name) {
-    __typename
-    ... on Character {
-      origin {
-        name
-        id
-      }
-    }
-    ... on Node {
-      __isNode: __typename
-      id
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestSearchOrigins($name:String!){search(name:$name){__typename,...on Character{origin{name,id}},...on Node{__isNode:__typename,id}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["name": Baton.Variable(self.name)])
@@ -784,20 +668,7 @@ nonisolated public struct TestSetFavorite: Baton.Mutation {
     }
 
     public static let name = "TestSetFavorite"
-    public static let document: Baton.Document = .text(#"""
-mutation TestSetFavorite(
-  $id: ID!
-  $favorite: Boolean!
-) {
-  setFavorite(id: $id, favorite: $favorite) {
-    character {
-      id
-      name
-      favorite
-    }
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"mutation TestSetFavorite($id:ID!,$favorite:Boolean!){setFavorite(id:$id,favorite:$favorite){character{id,name,favorite}}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id), "favorite": Baton.Variable(self.favorite)])

@@ -817,7 +817,7 @@
           "default_value": null
         }
       ],
-      "text": "mutation TestBuilderNames(\n  $id: ID!\n  $favorite: Boolean!\n  $self: ID!\n) {\n  type: setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      favorite\n    }\n  }\n  self: setFavorite(id: $self, favorite: $favorite) {\n    character {\n      id\n      favorite\n    }\n  }\n  string: setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      name\n    }\n  }\n  sendable: setFavorite(id: $id, favorite: $favorite) {\n    character {\n      id\n      favorite\n    }\n  }\n}",
+      "text": "mutation TestBuilderNames($id:ID!,$favorite:Boolean!,$self:ID!){type:setFavorite(id:$id,favorite:$favorite){character{id,favorite}},self:setFavorite(id:$self,favorite:$favorite){character{id,favorite}},string:setFavorite(id:$id,favorite:$favorite){character{id,name}},sendable:setFavorite(id:$id,favorite:$favorite){character{id,favorite}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -1797,7 +1797,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestCaughtSpreads(\n  $id: ID!\n) {\n  character(id: $id) {\n    id\n    ...TestCaughtProfile_character\n    ...TestCaughtStrict_character\n  }\n  node(id: $id) {\n    __typename\n    id\n    ... on Character {\n      ...TestCaughtProfile_character\n    }\n  }\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestCaughtStrict_character on Character {\n  species\n}",
+      "text": "query TestCaughtSpreads($id:ID!){character(id:$id){id,...TestCaughtProfile_character,...TestCaughtStrict_character},node(id:$id){__typename,id,...on Character{...TestCaughtProfile_character}}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestCaughtStrict_character on Character{species}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2527,7 +2527,7 @@
           "default_value": null
         }
       ],
-      "text": "mutation TestCommitVariable(\n  $commit: ID!\n) {\n  setFavorite(id: $commit, favorite: true) {\n    character {\n      id\n      name\n      favorite\n    }\n  }\n}",
+      "text": "mutation TestCommitVariable($commit:ID!){setFavorite(id:$commit,favorite:true){character{id,name,favorite}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -2823,7 +2823,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestConditionNames(\n  $id: ID!\n  $name: String!\n) {\n  namesake(name: $name) {\n    __typename\n    asCharacter: name\n    ... on Character {\n      status\n    }\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n  node(id: $id) {\n    __typename\n    id\n    ... on Episode {\n      name\n    }\n    ... on Character {\n      name\n    }\n  }\n}",
+      "text": "query TestConditionNames($id:ID!,$name:String!){namesake(name:$name){__typename,asCharacter:name,...on Character{status},...on Node{__isNode:__typename,id}},node(id:$id){__typename,id,...on Episode{name},...on Character{name}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -3504,7 +3504,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestEdgesNamesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestEdgesNames_character\n    id\n  }\n}\n\nfragment TestEdgesNames_character on Character {\n  notes(first: 2) {\n    Edges: pageInfo {\n      hasNextPage\n    }\n    edges {\n      node {\n        id\n        text\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}",
+      "text": "query TestEdgesNamesQuery($id:ID!){character(id:$id){...TestEdgesNames_character,id}}fragment TestEdgesNames_character on Character{notes(first:2){Edges:pageInfo{hasNextPage},edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -3993,7 +3993,7 @@
       "kind": "query",
       "root_type": "Query",
       "variables": [],
-      "text": "query TestEscapedText {\n  search(name: \"\\\\#1\") {\n    __typename\n    ... on Node {\n      __isNode: __typename\n      id\n    }\n  }\n}",
+      "text": "query TestEscapedText{search(name:\"\\\\#1\"){__typename,...on Node{__isNode:__typename,id}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -4240,7 +4240,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestFragmentNamedFields(\n  $id: ID!\n) {\n  character(id: $id) {\n    TestCaughtProfile_character: name\n    TestCaughtStrict_character: species\n    ...TestCaughtProfile_character\n    ...TestCaughtStrict_character\n    Fragment: status\n    ...Fragment\n    id\n  }\n}\n\nfragment Fragment on Character {\n  status\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestCaughtStrict_character on Character {\n  species\n}",
+      "text": "query TestFragmentNamedFields($id:ID!){character(id:$id){TestCaughtProfile_character:name,TestCaughtStrict_character:species,...TestCaughtProfile_character,...TestCaughtStrict_character,Fragment:status,...Fragment,id}}fragment Fragment on Character{status}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestCaughtStrict_character on Character{species}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -4741,7 +4741,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestHasherVariable(\n  $hasher: ID!\n) {\n  character(id: $hasher) {\n    id\n    name\n  }\n}",
+      "text": "query TestHasherVariable($hasher:ID!){character(id:$hasher){id,name}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -4956,7 +4956,7 @@
       "kind": "mutation",
       "root_type": "Mutation",
       "variables": [],
-      "text": "mutation TestListPayload {\n  setLists {\n    strings\n    ids\n    counts\n    ratios\n    flags\n    jsons\n    statuses\n  }\n}",
+      "text": "mutation TestListPayload{setLists{strings,ids,counts,ratios,flags,jsons,statuses}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -5396,7 +5396,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestLowercaseSpreads(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...testLowercase\n    ...testLowercaseRequired\n    id\n  }\n}\n\nfragment testLowercase on Character {\n  name\n}\n\nfragment testLowercaseRequired on Character {\n  origin {\n    name\n    id\n  }\n}",
+      "text": "query TestLowercaseSpreads($id:ID!){character(id:$id){...testLowercase,...testLowercaseRequired,id}}fragment testLowercase on Character{name}fragment testLowercaseRequired on Character{origin{name,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -5669,7 +5669,7 @@
           "default_value": null
         }
       ],
-      "text": "mutation TestModuleNamedPayload(\n  $id: ID!\n) {\n  setFavorite(id: $id, favorite: true) {\n    Baton: character {\n      id\n      Baton: name\n    }\n  }\n}",
+      "text": "mutation TestModuleNamedPayload($id:ID!){setFavorite(id:$id,favorite:true){Baton:character{id,Baton:name}}}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -5913,7 +5913,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestProgramNamesQuery(\n  $id: ID!\n) {\n  character(id: $id) {\n    ...TestProgramNames_character\n    id\n  }\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestProgramNames_character on Character {\n  testProgramNamesRefetchQuery: origin {\n    name\n    id\n  }\n  testCaughtProfile_character: location {\n    name\n    id\n  }\n  ...TestCaughtProfile_character\n  id\n}",
+      "text": "query TestProgramNamesQuery($id:ID!){character(id:$id){...TestProgramNames_character,id}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestProgramNames_character on Character{testProgramNamesRefetchQuery:origin{name,id},testCaughtProfile_character:location{name,id},...TestCaughtProfile_character,id}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -6334,7 +6334,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestProgramNamesRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...TestProgramNames_character\n    id\n  }\n}\n\nfragment TestCaughtProfile_character on Character {\n  name\n  origin {\n    name\n    id\n  }\n}\n\nfragment TestProgramNames_character on Character {\n  testProgramNamesRefetchQuery: origin {\n    name\n    id\n  }\n  testCaughtProfile_character: location {\n    name\n    id\n  }\n  ...TestCaughtProfile_character\n  id\n}",
+      "text": "query TestProgramNamesRefetchQuery($id:ID!){node(id:$id){__typename,...TestProgramNames_character,id}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestProgramNames_character on Character{testProgramNamesRefetchQuery:origin{name,id},testCaughtProfile_character:location{name,id},...TestCaughtProfile_character,id}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,
@@ -6823,7 +6823,7 @@
           "default_value": null
         }
       ],
-      "text": "query TestSpreadNames(\n  $id: ID!\n) {\n  character(id: $id) {\n    testCaughtStrict: species\n    ...TestCaughtStrict_character\n    id\n  }\n}\n\nfragment TestCaughtStrict_character on Character {\n  species\n}",
+      "text": "query TestSpreadNames($id:ID!){character(id:$id){testCaughtStrict:species,...TestCaughtStrict_character,id}}fragment TestCaughtStrict_character on Character{species}",
       "throws_on_field_error": false,
       "bubbles": false,
       "has_deferred": false,

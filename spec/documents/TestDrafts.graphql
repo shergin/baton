@@ -1,6 +1,1 @@
-query TestDrafts {
-  character(id: "1") {
-    id
-    name
-  }
-}
+query TestDrafts{character(id:"1"){id,name}}

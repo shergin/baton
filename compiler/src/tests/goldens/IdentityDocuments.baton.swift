@@ -12,17 +12,7 @@ nonisolated public struct TestAssetNameQuery: Baton.Query {
     }
 
     public static let name = "TestAssetNameQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestAssetNameQuery(
-  $uuid: String!
-) {
-  asset(uuid: $uuid) {
-    name
-    id
-    uuid
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestAssetNameQuery($uuid:String!){asset(uuid:$uuid){name,id,uuid}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["uuid": Baton.Variable(self.uuid)])
@@ -69,21 +59,7 @@ nonisolated public struct TestAssetQuery: Baton.Query {
     }
 
     public static let name = "TestAssetQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestAssetQuery(
-  $uuid: String!
-) {
-  asset(uuid: $uuid) {
-    owner {
-      name
-      id
-    }
-    uuid
-    name
-    id
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestAssetQuery($uuid:String!){asset(uuid:$uuid){owner{name,id},uuid,name,id}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["uuid": Baton.Variable(self.uuid)])
@@ -141,16 +117,7 @@ nonisolated public struct TestAssetsQuery: Baton.Query {
     }
 
     public static let name = "TestAssetsQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestAssetsQuery {
-  assets {
-    name
-    size
-    id
-    uuid
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestAssetsQuery{assets{name,size,id,uuid}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])
@@ -200,18 +167,7 @@ nonisolated public struct TestQuoteQuery: Baton.Query {
     }
 
     public static let name = "TestQuoteQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestQuoteQuery(
-  $base: String!
-  $quote: String!
-) {
-  quote(base: $base, quote: $quote) {
-    base
-    quote
-    rate
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestQuoteQuery($base:String!,$quote:String!){quote(base:$base,quote:$quote){base,quote,rate}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables(["base": Baton.Variable(self.base), "quote": Baton.Variable(self.quote)])
@@ -259,15 +215,7 @@ nonisolated public struct TestQuotesQuery: Baton.Query {
     }
 
     public static let name = "TestQuotesQuery"
-    public static let document: Baton.Document = .text(#"""
-query TestQuotesQuery {
-  quotes {
-    rate
-    base
-    quote
-  }
-}
-"""#)
+    public static let document: Baton.Document = .text(#"query TestQuotesQuery{quotes{rate,base,quote}}"#)
 
     public var variables: Baton.Variables {
         Baton.Variables([:])

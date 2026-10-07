@@ -256,6 +256,6 @@ struct EmitterTests {
 
     @Test("an operation whose text holds a backslash before a hash compiles, and its text holds both as the document wrote them")
     func textWithBackslashBeforeHash() {
-        #expect(TestEscapedText.text?.contains(##"search(name: "\\#1")"##) == true)
+        #expect(TestEscapedText.text?.contains(##"search(name:"\\#1")"##) == true)
     }
 }

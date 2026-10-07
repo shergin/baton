@@ -61,8 +61,9 @@ editor or a pre-commit hook.
 ### `print`
 
 The same compilation, printing one operation's text, the exact text the app
-sends, preceded by `# documentId: <id>` under `persistConfig`, for pasting
-into a server's tool.
+sends, compact on one line as the compiler prints it, preceded by
+`# documentId: <id>` under `persistConfig`, for pasting into a server's
+tool, which formats it.
 
 ## Diagnostics and exit codes
 

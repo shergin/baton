@@ -1,14 +1,1 @@
-mutation TestAddNoteFirst(
-  $characterId: ID!
-  $text: String!
-) {
-  addNote(characterId: $characterId, text: $text) {
-    noteEdge {
-      cursor
-      node {
-        id
-        text
-      }
-    }
-  }
-}
+mutation TestAddNoteFirst($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){noteEdge{cursor,node{id,text}}}}

@@ -5,6 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- An operation's text is printed compact, with Relay's printer's own
+  option: no newline, indentation or optional space, a comma between
+  items, strings as they are. The test target's 115 operations hold
+  61,797 bytes of text where they held 83,885, and the deepest realistic
+  one 47% of what it held; the 65 KB operation of issue 36 that a server
+  refused goes out at about half. Every persisted id changes with the
+  text, so a team with registered ids regenerates the file and registers
+  again; `batonc print` and `spec/documents` show the compact text.
+  Recorded in `docs/decisions/operation-text-is-printed-compact.md`.
 - A connection on the query root comes back from the image. The
   availability check hydrates the root a waited field at a time, and the
   connection's client link, Relay's handle key on the root, was never among
