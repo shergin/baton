@@ -51,11 +51,16 @@ jobs:
   # On Linux, since nothing in it is Apple's.
   kotlin:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: kotlin
     steps:
       - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: compiler
+      # The Kotlin harness generates its test sources from spec/sources with
+      # the compiler, found at compiler/target/release/batonc.
+      - run: cargo build --release
+        working-directory: compiler
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -64,6 +69,7 @@ jobs:
         with:
           gradle-version: "9.8.0"
       - run: gradle --no-daemon :baton:build :goldens:compileKotlinJvm
+        working-directory: kotlin
 
   # The package on the current Xcode. Every target builds with warnings as
   # errors: the runtime, the macros, both samples, the benchmarks and the
