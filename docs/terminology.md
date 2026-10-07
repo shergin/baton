@@ -625,6 +625,10 @@ Here: stored as its text, exactly as the server wrote it, and read as a
 string; or, mapped under Relay's key `customScalarTypes` to a type of the
 app's that conforms to the runtime's mapped scalar, read as that type,
 converted from the text at the read and never cached on the record. The
+configuration names the host type per language: a value is one type's
+name, or an object by language; the plan carries the scalar's name alone,
+and each language's writer resolves its type
+([the decision](decisions/a-mapped-scalars-host-type-is-named-per-language.md)). The
 runtime's decimal, date, URL and UUID conform, each with one format: the
 POSIX locale, ISO 8601's internet profile with or without fractional
 seconds. The accessor says the conversion can fail: it is optional wherever
@@ -644,7 +648,8 @@ text. See [the contract](../spec/runtime.md#6-the-lens-reads),
 [the second](decisions/a-mapped-scalar-converts-at-the-read.md).
 Swift: an unmapped scalar reads as a `String`; a mapped one names a Swift
 type conforming to `MappedScalar`, which `Decimal`, `Date`, `URL` and
-`UUID` do; `@catch` makes it a `Result`; a variable takes the Swift type.
+`UUID` do, as the configuration's string or its `swift` entry; `@catch`
+makes it a `Result`; a variable takes the Swift type.
 
 **Enum.** *Composition: schema, lens.* GraphQL: a type with a closed set of
 named values.

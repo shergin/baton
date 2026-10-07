@@ -372,11 +372,12 @@ fn validate_client_fields(schema: &SDLSchema) -> Vec<Diagnostic> {
 }
 
 /// Checks each mapping in `customScalarTypes`: the name is a custom scalar
-/// of the schema, and the Swift type is written.
+/// of the schema, and the Swift type is written, as the value or as its
+/// `swift` entry.
 fn validate_mappings(schema: &SDLSchema, config: &Config) -> Vec<Diagnostic> {
     let location = config_location(config);
     let mut errors = Vec::new();
-    for (scalar, swift_type) in &config.custom_scalar_types {
+    for (scalar, host_types) in &config.custom_scalar_types {
         let mut fail = |message: String| errors.push(Diagnostic::error(message, location));
         match schema.get_type(scalar.intern()) {
             Some(Type::Scalar(_))
@@ -394,10 +395,14 @@ fn validate_mappings(schema: &SDLSchema, config: &Config) -> Vec<Diagnostic> {
                 "`customScalarTypes` maps `{scalar}`, which the schema does not declare"
             )),
         }
-        if swift_type.trim().is_empty() {
-            fail(format!(
+        match host_types.swift() {
+            None => fail(format!(
+                "`customScalarTypes` maps `{scalar}` to no Swift type: write it under `swift`"
+            )),
+            Some(swift_type) if swift_type.trim().is_empty() => fail(format!(
                 "`customScalarTypes` maps `{scalar}` to no type: write the Swift type it reads as"
-            ));
+            )),
+            Some(_) => {}
         }
     }
     errors

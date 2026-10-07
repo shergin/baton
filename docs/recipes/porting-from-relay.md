@@ -39,9 +39,9 @@ a native runtime make better, and what Baton leaves out on purpose. Each
   types keyed otherwise, including composite keys and interfaces, are named
   in `baton.json`, and the compiler asks the server for the key fields.
 - **Custom scalars read as Swift types.** `customScalarTypes` maps a scalar
-  to `Decimal`, `Date`, `URL`, `UUID` or the app's own `MappedScalar`; the
-  conversion happens at the read, and a value the type cannot hold is a
-  field error.
+  to `Decimal`, `Date`, `URL`, `UUID` or the app's own `MappedScalar`, as a
+  string or under `swift` in an object by language; the conversion happens
+  at the read, and a value the type cannot hold is a field error.
 - **Enums are generated**, with an `unknown` case for a value the build did
   not know.
 - **Input objects are generated structs**, typed from the schema.

@@ -19,11 +19,27 @@ fn mapping_errors(mappings: &str) -> Vec<String> {
     errors(&format!(r#"{{"customScalarTypes": {mappings}}}"#), QUERY)
 }
 
+/// The same mappings, each value an object by language.
+const MAPPED_BY_LANGUAGE: &str = r#"{
+    "identity": {"types": {"Asset": ["uuid"], "Quote": ["base", "quote"]}},
+    "customScalarTypes": {
+        "Decimal": {"swift": "Foundation.Decimal", "kotlin": "java.math.BigDecimal"},
+        "DateTime": {"kotlin": "java.time.Instant", "swift": "Foundation.Date"},
+        "Url": {"swift": "Foundation.URL"}
+    }
+}"#;
+
 /// The emitted Swift of `text` under the test mappings, the file of its
 /// definitions.
 fn emitted_mapped(text: &str) -> String {
+    emitted_under(MAPPED, text)
+}
+
+/// The emitted Swift of `text` under the configuration `config`, the file
+/// of its definitions.
+fn emitted_under(config: &str, text: &str) -> String {
     let (sdl, path) = schema();
-    let mut config: Config = serde_json::from_str(MAPPED).expect("the configuration parses");
+    let mut config: Config = serde_json::from_str(config).expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
     let compiled = compile(&sdl, &path, &[], &[document(text)], &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"));
@@ -104,12 +120,58 @@ fn a_mapping_of_a_built_in_scalar_is_an_error() {
 #[test]
 fn a_mapping_to_an_empty_type_is_an_error() {
     for swift_type in ["", "  "] {
+        for mapping in [
+            format!(r#"{{"Decimal": "{swift_type}"}}"#),
+            format!(r#"{{"Decimal": {{"swift": "{swift_type}"}}}}"#),
+        ] {
+            assert_eq!(
+                mapping_errors(&mapping),
+                vec![
+                    "`customScalarTypes` maps `Decimal` to no type: write the Swift type it reads as"
+                ],
+                "{mapping}"
+            );
+        }
+    }
+}
+
+#[test]
+fn a_mapping_by_language_without_a_swift_type_is_an_error() {
+    for mapping in [
+        r#"{"Decimal": {"kotlin": "java.math.BigDecimal"}}"#,
+        r#"{"Decimal": {}}"#,
+    ] {
         assert_eq!(
-            mapping_errors(&format!(r#"{{"Decimal": "{swift_type}"}}"#)),
-            vec!["`customScalarTypes` maps `Decimal` to no type: write the Swift type it reads as"],
-            "{swift_type:?}"
+            mapping_errors(mapping),
+            vec!["`customScalarTypes` maps `Decimal` to no Swift type: write it under `swift`"],
+            "{mapping}"
         );
     }
+}
+
+#[test]
+fn a_mapping_by_language_is_checked_against_the_schema_as_a_string_is() {
+    assert_eq!(
+        mapping_errors(r#"{"Money": {"swift": "Foundation.Decimal"}}"#),
+        vec!["`customScalarTypes` maps `Money`, which the schema does not declare"]
+    );
+    assert_eq!(
+        mapping_errors(r#"{"Asset": {"swift": "Foundation.Decimal"}}"#),
+        vec!["`customScalarTypes` maps `Asset`, which is not a scalar of the schema"]
+    );
+}
+
+#[test]
+fn a_mapping_by_language_writes_the_swift_its_swift_entry_names_as_the_string_would() {
+    let text = "fragment Probe_asset on Asset @throwOnFieldError { price listedAt @required(action: NONE) page prices }
+         query Probe($price: Decimal!) { assetsPricedAbove(price: $price) { ...Probe_asset } }";
+    let swift = emitted_under(MAPPED_BY_LANGUAGE, text);
+    assert_eq!(swift, emitted_mapped(text));
+    assert!(
+        swift.contains("    public var price: Foundation.Decimal\n"),
+        "{swift}"
+    );
+    assert!(!swift.contains("java."), "{swift}");
 }
 
 #[test]

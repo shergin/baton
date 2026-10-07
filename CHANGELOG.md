@@ -5,6 +5,14 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `customScalarTypes` takes, beside the Swift type as a string, an object
+  by language, `{"swift": "Foundation.Decimal", "kotlin": "..."}`; a mapped
+  scalar with no `swift` entry is an error at the configuration. The plan
+  the compiler lowers carries the scalar's name and the `onError` value, no
+  longer a Swift type or a Swift case: the Swift writer resolves both, so a
+  second emitter reads the same plan. The refetch descriptor names the
+  `@fetchable` field Relay's metadata names instead of a field spelled
+  `id`. The generated Swift does not change by a byte.
 - A view outside every `.environment(\.baton, ...)` reads
   `.failed(EnvironmentError.notInjected)` on its first body and makes no
   handle, and a mutation action in such a view throws the same; the shared

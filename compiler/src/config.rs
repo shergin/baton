@@ -160,6 +160,25 @@ pub enum OnError {
     Abort,
 }
 
+/// A `customScalarTypes` value: the Swift type a scalar reads as, or the
+/// host type by language.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Deserialize)]
+#[serde(untagged)]
+pub enum HostTypes {
+    One(String),
+    ByLanguage(BTreeMap<String, String>),
+}
+
+impl HostTypes {
+    /// The Swift type: the string, or the `swift` entry.
+    pub fn swift(&self) -> Option<&str> {
+        match self {
+            HostTypes::One(swift_type) => Some(swift_type),
+            HostTypes::ByLanguage(types) => types.get("swift").map(String::as_str),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
@@ -188,12 +207,14 @@ pub struct Config {
     /// registration step. Without it the text and no id.
     #[serde(rename = "persistConfig", default)]
     pub persist_config: Option<PersistConfig>,
-    /// Relay's `customScalarTypes`: the Swift type a custom scalar reads as,
-    /// by the scalar's name, e.g. `"Decimal": "Foundation.Decimal"`. The
-    /// store keeps the text; the accessor converts at the read, and says the
-    /// conversion can fail. An unmapped custom scalar reads as `String`.
+    /// Relay's `customScalarTypes`: the host type a custom scalar reads as,
+    /// by the scalar's name, e.g. `"Decimal": "Foundation.Decimal"` or
+    /// `"Decimal": {"swift": "Foundation.Decimal", "kotlin":
+    /// "java.math.BigDecimal"}`. The store keeps the text; the accessor
+    /// converts at the read, and says the conversion can fail. An unmapped
+    /// custom scalar reads as `String`.
     #[serde(rename = "customScalarTypes", default)]
-    pub custom_scalar_types: BTreeMap<String, String>,
+    pub custom_scalar_types: BTreeMap<String, HostTypes>,
     /// The `onError` request parameter every operation sends: `PROPAGATE`,
     /// `NULL` or `ABORT`. Under `NULL` a server nulls an errored field in
     /// place, so a field the schema types non-null is typed by its semantic
@@ -246,8 +267,14 @@ impl Config {
     }
 
     /// The Swift type each mapped custom scalar reads as, by the scalar's
-    /// name: what the Swift writer resolves a mapped scalar by.
+    /// name: what the Swift writer resolves a mapped scalar by. A mapping
+    /// without one is refused when the configuration is checked.
     pub fn swift_types(&self) -> BTreeMap<String, String> {
-        self.custom_scalar_types.clone()
+        self.custom_scalar_types
+            .iter()
+            .filter_map(|(scalar, host_types)| {
+                Some((scalar.clone(), host_types.swift()?.to_string()))
+            })
+            .collect()
     }
 }

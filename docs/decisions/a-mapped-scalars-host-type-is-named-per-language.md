@@ -3,7 +3,7 @@
 Status: accepted, 2026-10-07. Serves
 [The compiler decides](../principles/compiler-decides.md) and
 [Two runtimes, one compiler](../principles/two-runtimes-one-compiler.md).
-Not built yet. Reopen if Relay's `customScalarTypes` takes a shape of its
+Built 2026-10-07. Reopen if Relay's `customScalarTypes` takes a shape of its
 own for more than one language.
 
 ## Context
