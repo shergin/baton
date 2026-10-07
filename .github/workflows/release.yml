@@ -1,4 +1,4 @@
-# Cuts a release from main: builds the compiler bundle for both Mac
+# Cuts a release from master: builds the compiler bundle for both Mac
 # architectures, writes the release commit (the version into the compiler's
 # manifest, the bundle's checksum into Package.swift), tags it, and publishes
 # the GitHub release with the bundle and the changelog's section. The
@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: main
+          ref: master
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-apple-darwin, x86_64-apple-darwin
@@ -58,7 +58,7 @@ jobs:
           git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           git commit -m "Release $VERSION ($NAME)" -- compiler/Cargo.toml compiler/Cargo.lock Package.swift
           git tag "v$VERSION"
-          git push origin HEAD:main "v$VERSION"
+          git push origin HEAD:master "v$VERSION"
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
