@@ -1,0 +1,53 @@
+{
+  "name": "notifications",
+  "steps": [
+    {
+      "attach": {"operation": "TestNotesQuery", "variables": {"id": "1"}, "as": "notes", "response": "tests/notes-page-1.json"},
+      "records": "tests/notes-page-1.store.json",
+      "notified": []
+    },
+    {
+      "commit": {"operation": "TestNotesQuery", "variables": {"id": "1"}, "response": "tests/notes-page-1.json"},
+      "notified": []
+    },
+    {
+      "commit": {"operation": "TestNotesQuery", "variables": {"id": "1"}, "response": "tests/notes-page-1-renamed.json"},
+      "notified": [{"record": "Character:1", "field": "name"}]
+    },
+    {
+      "commit": {"operation": "TestProfileQuery", "variables": {"id": "1"}, "response": "tests/character-errors-answered.json"},
+      "notified": [{"record": "Character:1", "field": "name"}]
+    },
+    {
+      "commit": {"operation": "TestProfileQuery", "variables": {"id": "1"}, "response": "tests/character-errors.json"},
+      "notified": [
+        {"record": "Character:1", "field": "gender"},
+        {"record": "Character:1", "field": "image"},
+        {"record": "Location:20", "field": "name"}
+      ]
+    },
+    {
+      "commit": {"operation": "TestProfileQuery", "variables": {"id": "1"}, "response": "tests/character-errors-answered.json"},
+      "notified": [
+        {"record": "Character:1", "field": "gender"},
+        {"record": "Character:1", "field": "image"},
+        {"record": "Location:20", "field": "name"}
+      ]
+    },
+    {
+      "commit": {"operation": "TestDeleteNote", "variables": {"id": "n2"}, "response": "tests/delete-note-n2.json"},
+      "notified": [
+        {"record": "Character:1:notes(first:2):edges:1", "field": "node"},
+        {"record": "Note:n2", "field": "id"},
+        {"record": "Note:n2", "field": "text"}
+      ]
+    },
+    {
+      "commit": {"operation": "TestNotesPaginationQuery", "variables": {"count": 2, "cursor": "c2", "id": "1"}, "response": "tests/notes-page-2.json"},
+      "notified": [
+        {"record": "Character:1:__TestNotes_notes_connection", "field": "edges"},
+        {"record": "Character:1:__TestNotes_notes_connection:pageInfo", "field": "endCursor"}
+      ]
+    }
+  ]
+}

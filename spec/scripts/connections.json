@@ -1,0 +1,46 @@
+{
+  "name": "connections",
+  "steps": [
+    {
+      "attach": {"operation": "TestNotesQuery", "variables": {"id": "1"}, "as": "notes", "response": "tests/notes-page-1.json"},
+      "records": "tests/notes-page-1.store.json"
+    },
+    {
+      "commit": {"operation": "TestNotesPaginationQuery", "variables": {"count": 2, "cursor": "c2", "id": "1"}, "response": "tests/notes-page-2.json"},
+      "records": "scripts/connections-merged.store.json",
+      "reads": [
+        {"handle": "notes", "path": "character.notes.edges.1.node.text", "value": "Portal gun needs charging"},
+        {"handle": "notes", "path": "character.notes.edges.2.node.text", "value": "Get Schwifty"},
+        {"handle": "notes", "path": "character.notes.edges.3.node.text", "value": "Avoid the Citadel"},
+        {"handle": "notes", "path": "character.notes.pageInfo.endCursor", "value": "c4"},
+        {"handle": "notes", "path": "character.notes.pageInfo.hasNextPage", "value": true}
+      ]
+    },
+    {
+      "refetch": {"handle": "notes", "response": "tests/notes-page-1.json"},
+      "records": "scripts/connections-replaced.store.json",
+      "reads": [
+        {"handle": "notes", "path": "character.notes.edges.1.node.text", "value": "Portal gun needs charging"},
+        {"handle": "notes", "path": "character.notes.edges.2.node.text", "value": null},
+        {"handle": "notes", "path": "character.notes.pageInfo.endCursor", "value": "c2"}
+      ]
+    },
+    {
+      "commit": {"operation": "TestAddNote", "variables": {"characterId": "1", "text": "Appended", "connections": ["Character:1:__TestNotes_notes_connection"]}, "response": "tests/add-note-n9.json"},
+      "records": "scripts/connections-inserted.store.json",
+      "reads": [
+        {"handle": "notes", "path": "character.notes.edges.2.node.text", "value": "Appended"},
+        {"handle": "notes", "path": "character.notes.edges.3.node.text", "value": null}
+      ]
+    },
+    {
+      "commit": {"operation": "TestNotesPaginationQuery", "variables": {"count": 2, "cursor": "c1", "id": "1"}, "response": "tests/notes-page-3.json"},
+      "notified": [],
+      "reads": [
+        {"handle": "notes", "path": "character.notes.edges.2.node.text", "value": "Appended"},
+        {"handle": "notes", "path": "character.notes.edges.3.node.text", "value": null},
+        {"handle": "notes", "path": "character.notes.pageInfo.endCursor", "value": "c2"}
+      ]
+    }
+  ]
+}

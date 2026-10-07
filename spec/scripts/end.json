@@ -1,0 +1,52 @@
+{
+  "name": "end",
+  "steps": [
+    {
+      "attach": {"operation": "TestConditions", "variables": {"id": "1", "withOrigin": true, "hideStatus": false}, "as": "rick", "response": "tests/conditions-included.json"}
+    },
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "11"}, "as": "einstein"},
+      "fetch": {"handle": "einstein", "fetch": "inFlight"}
+    },
+    {
+      "optimistic": {"operation": "TestRename", "variables": {"id": "1", "name": "Rick Prime"}, "response": "tests/rename-1.json", "as": "rename"},
+      "reads": [{"handle": "rick", "path": "character.name", "value": "Rick Prime"}]
+    },
+    {
+      "end": {},
+      "phase": [
+        {"handle": "rick", "phase": {"failed": "gone"}},
+        {"handle": "einstein", "phase": {"failed": "gone"}}
+      ],
+      "fetch": [
+        {"handle": "rick", "fetch": {"failed": "environment"}},
+        {"handle": "einstein", "fetch": {"failed": "environment"}}
+      ],
+      "records_held": ["client:root", "client:root:mutation", "client:root:subscription"],
+      "reads": [{"operation": "TestConditions", "variables": {"id": "1", "withOrigin": true, "hideStatus": false}, "path": "character.name", "value": null}],
+      "events": []
+    },
+    {
+      "resolve": {"layer": "rename", "response": "tests/rename-1.json"},
+      "records": "scripts/end-empty.store.json",
+      "events": []
+    },
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "5"}, "as": "jerry"},
+      "phase": {"handle": "jerry", "phase": {"failed": "gone"}},
+      "fetch": {"handle": "jerry", "fetch": {"failed": "environment"}},
+      "events": []
+    },
+    {
+      "commit": {"operation": "TestHeaderQuery", "variables": {"id": "5"}, "response": "tests/character-header-5.json"},
+      "error": "gone",
+      "records": "scripts/end-empty.store.json",
+      "events": []
+    },
+    {
+      "payload": {"operation": "TestHeaderQuery", "variables": {"id": "5"}, "response": "tests/character-header-5.json"},
+      "error": "gone",
+      "records": "scripts/end-empty.store.json"
+    }
+  ]
+}

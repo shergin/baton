@@ -1,0 +1,15 @@
+{
+  "Character:1": {"__TestNotes_notes_connection": {"__ref": "Character:1:__TestNotes_notes_connection"}, "__typename": "Character", "id": "1", "name": "Rick Prime", "notes(first:2)": {"__ref": "Character:1:notes(first:2)"}},
+  "Character:1:__TestNotes_notes_connection": {"__typename": "NoteConnection", "edges": {"__refs": ["Character:1:notes(first:2):edges:0", "Character:1:notes(first:2):edges:1"]}, "pageInfo": {"__ref": "Character:1:__TestNotes_notes_connection:pageInfo"}, "totalCount": 6},
+  "Character:1:__TestNotes_notes_connection:pageInfo": {"__typename": "PageInfo", "endCursor": "c2", "hasNextPage": true},
+  "Character:1:notes(first:2)": {"__typename": "NoteConnection", "edges": {"__refs": ["Character:1:notes(first:2):edges:0", "Character:1:notes(first:2):edges:1"]}, "pageInfo": {"__ref": "Character:1:notes(first:2):pageInfo"}, "totalCount": 6},
+  "Character:1:notes(first:2):edges:0": {"__typename": "NoteEdge", "cursor": "c1", "node": {"__ref": "Note:n1"}},
+  "Character:1:notes(first:2):edges:1": {"__typename": "NoteEdge", "cursor": "c2", "node": {"__ref": "Note:n2"}},
+  "Character:1:notes(first:2):pageInfo": {"__typename": "PageInfo", "endCursor": "c2", "hasNextPage": true},
+  "Note:n1": {"__typename": "Note", "id": "n1", "text": "Wubba lubba dub dub"},
+  "Note:n2": {"__typename": "Note", "id": "n2", "text": "Portal gun needs charging"},
+  "client:root": {"__typename": "Query", "character(id:\"1\")": {"__ref": "Character:1"}},
+  "client:root:mutation": {"__typename": "Mutation", "rename": {"__ref": "client:root:mutation:rename"}},
+  "client:root:mutation:rename": {"__typename": "FavoritePayload", "character": {"__ref": "Character:1"}},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

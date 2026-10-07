@@ -5,6 +5,18 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- Scripts, the second kind of fixture under `spec/`: a file under
+  `spec/scripts/` runs steps over time in one environment over one store,
+  through a transport the steps answer, and after any step compares the
+  dump, the reads, the fields notified, a handle's phase, fetch and
+  stream, the check's answer, the records held and the log's events.
+  Eleven scripts (`notifications`, `optimistic`, `connections`, `lifetime`,
+  `ages`, `phase`, `check`, `heal`, `end`, `events`, `subscriptions`)
+  hold the rules of the contract that no single commit could; the
+  manifest goes to format 2, with `scripts` beside `cases`, and
+  `spec/README.md` says what a script holds. The Swift runtime passes
+  them all; loading a page through a lens and the transport's framings
+  stay with the Swift tests for now.
 - `customScalarTypes` takes, beside the Swift type as a string, an object
   by language, `{"swift": "Foundation.Decimal", "kotlin": "..."}`; a mapped
   scalar with no `swift` entry is an error at the configuration. The plan

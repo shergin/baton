@@ -23,6 +23,12 @@ struct OracleOperation: Sendable {
     /// Runs the operation through an environment, as an app fetches it;
     /// nil for an operation that is not a query.
     let fetch: (@MainActor @Sendable (Environment) async throws -> Void)?
+    /// The operation value itself, for a script's steps to make handles of
+    /// and commit through.
+    let value: any Baton.Operation
+    let kind: Request.Kind
+    /// Whether the response may arrive in parts.
+    let hasDeferred: Bool
 
     init<Op: Baton.Operation>(_ operation: Op, reads: [String: @MainActor @Sendable (Op.Data) -> Manifest.Value], spellings: [String: Spelling] = [:]) {
         self.spellings = spellings
@@ -31,6 +37,9 @@ struct OracleOperation: Sendable {
         text = Op.text ?? ""
         plan = Op.plan
         variables = operation.variables
+        value = operation
+        kind = Op.kind
+        hasDeferred = Op.hasDeferred
         readers = reads.mapValues { read -> Reader in { anchor in read(Op.Data(anchor: anchor)) } }
         if let query = operation as? any Query {
             fetch = { environment in try await environment.fetch(query) }
@@ -39,9 +48,9 @@ struct OracleOperation: Sendable {
         }
     }
 
-    /// The operation each manifest case names, built from the case's
+    /// The operation each manifest case or script step names, built from its
     /// variables. A case whose operation is missing here is a failure.
-    static let bindings: [String: @Sendable (Manifest.Case) throws -> OracleOperation] = [
+    static let bindings: [String: @Sendable (any OperationVariables) throws -> OracleOperation] = [
         "Fixture": { try OracleOperation(Fixture(page: $0.optionalInt("page")), reads: fixtureReads) },
         "TestEpisodesQuery": { try OracleOperation(TestEpisodesQuery(id: $0.string("id")), reads: episodesReads) },
         "TestHeaderQuery": { try OracleOperation(TestHeaderQuery(id: $0.string("id")), reads: headerReads) },
@@ -96,16 +105,24 @@ struct OracleOperation: Sendable {
         "TestSecrets": { try OracleOperation(TestSecrets(code: $0.string("code")), reads: secretsReads) },
         "TestCharacterSecret": { _ in OracleOperation(TestCharacterSecret(), reads: characterSecretReads) },
         "TestRootNotesQuery": { _ in OracleOperation(TestRootNotesQuery(), reads: rootNotesReads) },
+        "TestFreshCharacter": { try OracleOperation(TestFreshCharacter(id: $0.string("id")), reads: freshCharacterReads) },
+        "TestRequiredOrigin": { try OracleOperation(TestRequiredOrigin(id: $0.string("id")), reads: requiredOriginReads) },
     ]
 
     /// Binds a manifest case to its operation.
     static func bind(_ entry: Manifest.Case) throws -> OracleOperation {
-        guard let binding = bindings[entry.operation] else {
-            throw OracleError(description: "no binding for the operation \(entry.operation)")
+        try bind(entry.operation, entry)
+    }
+
+    /// Binds an operation by its name to the variables a case or a step
+    /// gives.
+    static func bind(_ name: String, _ source: any OperationVariables) throws -> OracleOperation {
+        guard let binding = bindings[name] else {
+            throw OracleError(description: "no binding for the operation \(name)")
         }
-        let operation = try binding(entry)
-        guard operation.name == entry.operation else {
-            throw OracleError(description: "the binding for \(entry.operation) builds \(operation.name)")
+        let operation = try binding(source)
+        guard operation.name == name else {
+            throw OracleError(description: "the binding for \(name) builds \(operation.name)")
         }
         return operation
     }
@@ -170,6 +187,10 @@ extension OracleOperation {
 
     static let notesReads: [String: @MainActor @Sendable (TestNotesQuery.Data) -> Manifest.Value] = [
         "character.id": { $0.character?.testNotes.id.manifestValue ?? .null },
+        "character.notes.edges.2.node.text": { $0.character?.testNotes.notes.edges?.element(2)?.node?.text.manifestValue ?? .null },
+        "character.notes.edges.3.node.text": { $0.character?.testNotes.notes.edges?.element(3)?.node?.text.manifestValue ?? .null },
+        "character.notes.edges.4.node.text": { $0.character?.testNotes.notes.edges?.element(4)?.node?.text.manifestValue ?? .null },
+        "character.notes.pageInfo.endCursor": { $0.character?.testNotes.notes.pageInfo.endCursor.manifestValue ?? .null },
         "character.name": { $0.character?.testNotes.name.manifestValue ?? .null },
         "character.notes.totalCount": { $0.character?.testNotes.notes.totalCount.manifestValue ?? .null },
         "character.notes.edges.0.node.id": { $0.character?.testNotes.notes.edges?.element(0)?.node?.id.manifestValue ?? .null },
@@ -184,6 +205,18 @@ extension OracleOperation {
         "notes.edges.0.node.text": { $0.testRootNotes.notes.edges?.element(0)?.node?.text.manifestValue ?? .null },
         "notes.edges.1.node.text": { $0.testRootNotes.notes.edges?.element(1)?.node?.text.manifestValue ?? .null },
         "notes.pageInfo.hasNextPage": { $0.testRootNotes.notes.pageInfo.hasNextPage.manifestValue },
+    ]
+
+    static let freshCharacterReads: [String: @MainActor @Sendable (TestFreshCharacter.Data) -> Manifest.Value] = [
+        "character.id": { $0.character?.id.manifestValue ?? .null },
+        "character.name": { $0.character?.name.manifestValue ?? .null },
+    ]
+
+    /// A root whose `@required` fields bubble: its lens reads the fields
+    /// whatever the phase says of them.
+    static let requiredOriginReads: [String: @MainActor @Sendable (TestRequiredOrigin.Data) -> Manifest.Value] = [
+        "character.id": { $0.character.id.manifestValue },
+        "character.origin.name": { $0.character.origin.name.manifestValue },
     ]
 
     static let notesPaginationReads: [String: @MainActor @Sendable (TestNotesPaginationQuery.Data) -> Manifest.Value] = [
@@ -542,7 +575,16 @@ extension RandomAccessCollection where Index == Int {
 
 // MARK: Reading a case's variables
 
-extension Manifest.Case {
+/// What a binding reads an operation's variables from: a manifest case, or a
+/// script's step, named for the messages.
+protocol OperationVariables {
+    var name: String { get }
+    var variables: [String: Manifest.Value] { get }
+}
+
+extension Manifest.Case: OperationVariables {}
+
+extension OperationVariables {
     private func variable(_ name: String) throws -> Manifest.Value? {
         guard let value = variables[name], value != .null else { return nil }
         return value

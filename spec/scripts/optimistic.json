@@ -1,0 +1,71 @@
+{
+  "name": "optimistic",
+  "steps": [
+    {
+      "attach": {"operation": "TestNotesQuery", "variables": {"id": "1"}, "as": "notes", "response": "tests/notes-page-1.json"},
+      "records": "tests/notes-page-1.store.json"
+    },
+    {
+      "optimistic": {"operation": "TestRename", "variables": {"id": "1", "name": "Rick Prime"}, "response": "tests/rename-1.json", "as": "rename"},
+      "notified": [{"record": "Character:1", "field": "name"}],
+      "reads": [{"handle": "notes", "path": "character.name", "value": "Rick Prime"}]
+    },
+    {
+      "commit": {"operation": "TestNotesQuery", "variables": {"id": "1"}, "response": "tests/notes-page-1-total-6.json"},
+      "notified": [
+        {"record": "Character:1:__TestNotes_notes_connection", "field": "totalCount"},
+        {"record": "Character:1:notes(first:2)", "field": "totalCount"}
+      ],
+      "reads": [
+        {"handle": "notes", "path": "character.name", "value": "Rick Prime"},
+        {"handle": "notes", "path": "character.notes.totalCount", "value": 6}
+      ]
+    },
+    {
+      "resolve": {"layer": "rename", "response": "tests/rename-1.json"},
+      "notified": [],
+      "records": "scripts/optimistic-resolved.store.json",
+      "reads": [{"handle": "notes", "path": "character.name", "value": "Rick Prime"}]
+    },
+    {
+      "optimistic": {"operation": "TestSetFavorite", "variables": {"id": "1", "favorite": true}, "response": "tests/set-favorite-1.json", "as": "favorite"},
+      "notified": [{"record": "Character:1", "field": "name"}],
+      "reads": [{"handle": "notes", "path": "character.name", "value": "Rick Sanchez"}]
+    },
+    {
+      "revert": {"layer": "favorite"},
+      "notified": [
+        {"record": "Character:1", "field": "favorite"},
+        {"record": "Character:1", "field": "name"},
+        {"record": "client:root:mutation", "field": "setFavorite"},
+        {"record": "client:root:mutation:setFavorite", "field": "character"}
+      ],
+      "records": "scripts/optimistic-resolved.store.json",
+      "reads": [{"handle": "notes", "path": "character.name", "value": "Rick Prime"}]
+    },
+    {
+      "commit": {"operation": "TestDeleteNote", "variables": {"id": "n2"}, "response": "tests/delete-note-n2.json"},
+      "records": "scripts/optimistic-deleted.store.json"
+    },
+    {
+      "optimistic": {"operation": "TestAddNote", "variables": {"characterId": "1", "text": "Portal gun needs charging", "connections": []}, "response": "tests/add-note-n2.json", "as": "revival"},
+      "records": "scripts/optimistic-revived.store.json",
+      "notified": [{"record": "Character:1:notes(first:2):edges:1", "field": "node"}],
+      "reads": [{"handle": "notes", "path": "character.notes.edges.1.node.text", "value": "Portal gun needs charging"}]
+    },
+    {
+      "revert": {"layer": "revival"},
+      "records": "scripts/optimistic-deleted.store.json",
+      "notified": [
+        {"record": "Character:1:notes(first:2):edges:1", "field": "node"},
+        {"record": "Note:n2", "field": "id"},
+        {"record": "Note:n2", "field": "text"},
+        {"record": "client:root:mutation", "field": "addNote"},
+        {"record": "client:root:mutation:addNote", "field": "noteEdge"},
+        {"record": "client:root:mutation:addNote:noteEdge", "field": "cursor"},
+        {"record": "client:root:mutation:addNote:noteEdge", "field": "node"}
+      ],
+      "reads": [{"handle": "notes", "path": "character.notes.edges.1.node.text", "value": null}]
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+query TestFreshCharacter($id:ID!){character(id:$id){id,name}}

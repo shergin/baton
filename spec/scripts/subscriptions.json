@@ -1,0 +1,47 @@
+{
+  "name": "subscriptions",
+  "steps": [
+    {
+      "attach": {"operation": "TestNoteAdded", "variables": {"characterId": "1", "connections": []}, "as": "live"},
+      "stream": {"handle": "live", "stream": "connecting", "events": 0, "resumptions": 0}
+    },
+    {
+      "event": {"handle": "live", "response": "tests/note-added-1.json"},
+      "stream": {"handle": "live", "stream": "open", "events": 1},
+      "records": "tests/note-added-1.store.json"
+    },
+    {
+      "event": {"handle": "live", "response": "tests/not-authorized.json"},
+      "stream": {"handle": "live", "stream": "open", "events": 1},
+      "records": "tests/note-added-1.store.json"
+    },
+    {
+      "active": {"value": false},
+      "stream": {"handle": "live", "stream": "idle", "events": 1, "resumptions": 0}
+    },
+    {
+      "active": {"value": true},
+      "stream": {"handle": "live", "stream": "connecting", "events": 1, "resumptions": 1}
+    },
+    {
+      "event": {"handle": "live", "response": "tests/note-added-2.json"},
+      "stream": {"handle": "live", "stream": "open", "events": 2, "resumptions": 1}
+    },
+    {
+      "attach": {"operation": "TestNoteAdded", "variables": {"characterId": "2", "connections": []}, "as": "other"},
+      "stream": {"handle": "other", "stream": "connecting", "events": 0}
+    },
+    {
+      "event": {"handle": "other", "response": "tests/note-added-1.json"},
+      "stream": {"handle": "other", "stream": "open", "events": 1}
+    },
+    {
+      "event": {"handle": "other", "complete": true},
+      "stream": {"handle": "other", "stream": {"ended": null}, "events": 1, "resumptions": 0}
+    },
+    {
+      "event": {"handle": "live", "failure": "transport"},
+      "stream": {"handle": "live", "stream": "waiting", "events": 2, "resumptions": 1}
+    }
+  ]
+}

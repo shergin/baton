@@ -169,7 +169,7 @@ struct OracleTests {
         }
     }
 
-    @Test("every operation the manifest names has its document under spec/documents, equal to the text the compiler generated")
+    @Test("every operation the manifest's cases and scripts name has its document under spec/documents, equal to the text the compiler generated")
     func theDocumentsAgreeWithTheGeneratedText() throws {
         var documents: [String: String] = [:]
         for entry in Spec.manifest.cases {
@@ -177,6 +177,16 @@ struct OracleTests {
                 documents[entry.document] = try OracleOperation.bind(entry).text + "\n"
             } catch {
                 Issue.record("\(entry.name): \(error)")
+            }
+        }
+        // A script's operations are held to their documents as a case's are.
+        for path in Spec.manifest.scripts {
+            do {
+                for reference in try Manifest.Script.load(path).operations {
+                    documents["documents/\(reference.name).graphql"] = try OracleOperation.bind(reference.name, StepVariables(name: path, variables: reference.variables)).text + "\n"
+                }
+            } catch {
+                Issue.record("\(path): \(error)")
             }
         }
         let bless = ProcessInfo.processInfo.environment["BATON_BLESS"] != nil

@@ -1,0 +1,39 @@
+{
+  "name": "check",
+  "image": true,
+  "steps": [
+    {
+      "commit": {"operation": "TestQuotesQuery", "response": "tests/quote-list.json"},
+      "records": "tests/quote-list.store.json"
+    },
+    {
+      "check": {"operation": "TestQuoteQuery", "variables": {"base": "BTC", "quote": "USD"}},
+      "answer": "memory",
+      "records": "scripts/check-bound.store.json",
+      "reads": [{"operation": "TestQuoteQuery", "variables": {"base": "BTC", "quote": "USD"}, "path": "quote.rate", "value": 1.5}]
+    },
+    {
+      "check": {"operation": "TestQuoteQuery", "variables": {"base": "BTC", "quote": "EUR"}},
+      "answer": "miss",
+      "reads": [{"operation": "TestQuoteQuery", "variables": {"base": "BTC", "quote": "EUR"}, "path": "quote.rate", "value": null}]
+    },
+    {
+      "relaunch": {},
+      "records_held": ["client:root", "client:root:mutation", "client:root:subscription"]
+    },
+    {
+      "check": {"operation": "TestQuoteQuery", "variables": {"base": "BTC", "quote": "USD"}},
+      "answer": "image",
+      "reads": [{"operation": "TestQuoteQuery", "variables": {"base": "BTC", "quote": "USD"}, "path": "quote.rate", "value": 1.5}]
+    },
+    {
+      "check": {"operation": "TestQuotesQuery"},
+      "answer": "image",
+      "records": "scripts/check-bound.store.json"
+    },
+    {
+      "check": {"operation": "TestQuoteQuery", "variables": {"base": "BTC", "quote": "EUR"}},
+      "answer": "miss"
+    }
+  ]
+}

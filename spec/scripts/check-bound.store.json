@@ -1,0 +1,8 @@
+{
+  "Quote:A\\:B:C\\\\D": {"__typename": "Quote", "base": "A:B", "quote": "C\\D", "rate": 2.0},
+  "Quote:BTC:USD": {"__typename": "Quote", "base": "BTC", "quote": "USD", "rate": 1.5},
+  "Quote:EUR:USD": {"__typename": "Quote", "base": "EUR", "quote": "USD", "rate": 0.9},
+  "client:root": {"__typename": "Query", "quote(base:\"BTC\",quote:\"USD\")": {"__ref": "Quote:BTC:USD"}, "quotes": {"__refs": ["Quote:BTC:USD", "Quote:EUR:USD", "Quote:A\\:B:C\\\\D"]}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

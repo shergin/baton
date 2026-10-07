@@ -1,0 +1,67 @@
+{
+  "name": "events",
+  "steps": [
+    {
+      "commit": {"operation": "TestHeaderQuery", "variables": {"id": "5"}, "response": "tests/character-header-5.json"},
+      "events": [
+        {"fetchStarted": {"operation": "TestHeaderQuery"}},
+        {"committed": {"kind": "server", "changed": 1}},
+        {"fetchCompleted": {"operation": "TestHeaderQuery"}}
+      ]
+    },
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "11"}, "as": "einstein", "failure": "transport"},
+      "events": [
+        {"fetchStarted": {"operation": "TestHeaderQuery"}},
+        {"fetchFailed": {"operation": "TestHeaderQuery", "kind": "transport"}}
+      ]
+    },
+    {
+      "retry": {"handle": "einstein", "failure": "request"},
+      "events": [
+        {"fetchStarted": {"operation": "TestHeaderQuery"}},
+        {"fetchFailed": {"operation": "TestHeaderQuery", "kind": "request"}}
+      ]
+    },
+    {
+      "commit": {"operation": "TestStrictQuery", "variables": {"id": "1"}, "response": "tests/character-name-hidden.json"},
+      "error": "fieldErrors",
+      "events": [
+        {"fetchStarted": {"operation": "TestStrictQuery"}},
+        {"committed": {"kind": "server", "changed": 2}},
+        {"fieldError": {"operation": "TestStrictQuery", "path": "character.name"}},
+        {"fetchCompleted": {"operation": "TestStrictQuery"}}
+      ]
+    },
+    {
+      "commit": {"operation": "TestProfileQuery", "variables": {"id": "1"}, "response": "tests/character-errors.json"},
+      "events": [
+        {"fetchStarted": {"operation": "TestProfileQuery"}},
+        {"committed": {"kind": "server", "changed": 13}},
+        {"fetchCompleted": {"operation": "TestProfileQuery"}}
+      ]
+    },
+    {
+      "commit": {"operation": "TestProfileQuery", "variables": {"id": "1"}, "responses": ["tests/character-deferred-1.json", "tests/character-deferred-stray.json", "tests/character-deferred-2.json"]},
+      "events": [
+        {"fetchStarted": {"operation": "TestProfileQuery"}},
+        {"committed": {"kind": "server", "changed": 7}},
+        {"partDropped": {"path": "character.nonexistent"}},
+        {"committed": {"kind": "server", "changed": 1}},
+        {"fetchCompleted": {"operation": "TestProfileQuery"}}
+      ]
+    },
+    {
+      "optimistic": {"operation": "TestRename", "variables": {"id": "1", "name": "Rick Prime"}, "response": "tests/rename-1.json", "as": "rename"},
+      "events": [
+        {"committed": {"kind": "optimistic", "changed": 2}}
+      ]
+    },
+    {
+      "resolve": {"layer": "rename", "response": "tests/rename-1.json"},
+      "events": [
+        {"committed": {"kind": "server", "changed": 0}}
+      ]
+    }
+  ]
+}

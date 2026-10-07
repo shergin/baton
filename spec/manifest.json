@@ -1,5 +1,5 @@
 {
-  "format": 1,
+  "format": 2,
   "cases": [
     {
       "name": "rickandmorty/characters-page-1",
@@ -2319,5 +2319,18 @@
         "value": "Edited"
       }
     }
+  ],
+  "scripts": [
+    "scripts/notifications.json",
+    "scripts/optimistic.json",
+    "scripts/connections.json",
+    "scripts/lifetime.json",
+    "scripts/ages.json",
+    "scripts/phase.json",
+    "scripts/check.json",
+    "scripts/heal.json",
+    "scripts/end.json",
+    "scripts/events.json",
+    "scripts/subscriptions.json"
   ]
 }

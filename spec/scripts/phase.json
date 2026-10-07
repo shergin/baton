@@ -1,0 +1,101 @@
+{
+  "name": "phase",
+  "steps": [
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "5"}, "policy": "storeOrNetwork", "as": "jerry"},
+      "phase": {"handle": "jerry", "phase": "loading", "isRefreshing": false},
+      "fetch": {"handle": "jerry", "fetch": "inFlight"}
+    },
+    {
+      "answer": {"handle": "jerry", "response": "tests/character-header-5.json"},
+      "phase": {"handle": "jerry", "phase": "ready", "isRefreshing": false},
+      "fetch": {"handle": "jerry", "fetch": "idle"}
+    },
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "5"}, "policy": "storeOrNetwork", "as": "quiet"},
+      "phase": {"handle": "quiet", "phase": "ready", "isRefreshing": false},
+      "fetch": {"handle": "quiet", "fetch": "idle"}
+    },
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "5"}, "policy": "storeAndNetwork", "as": "eager"},
+      "phase": {"handle": "eager", "phase": "ready", "isRefreshing": true},
+      "fetch": {"handle": "eager", "fetch": "inFlight"}
+    },
+    {
+      "answer": {"handle": "eager", "failure": "transport"},
+      "phase": {"handle": "eager", "phase": "ready", "isRefreshing": false},
+      "fetch": {"handle": "eager", "fetch": {"failed": "transport"}}
+    },
+    {
+      "refetch": {"handle": "jerry", "failure": "request"},
+      "error": "request",
+      "phase": {"handle": "jerry", "phase": "ready"},
+      "fetch": {"handle": "jerry", "fetch": {"failed": "request"}}
+    },
+    {
+      "refetch": {"handle": "jerry", "response": "tests/character-header-5.json"},
+      "fetch": {"handle": "jerry", "fetch": "idle"}
+    },
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "5"}, "policy": "networkOnly", "as": "shown"},
+      "phase": {"handle": "shown", "phase": "ready", "isRefreshing": true},
+      "fetch": {"handle": "shown", "fetch": "inFlight"}
+    },
+    {
+      "answer": {"handle": "shown", "response": "tests/character-header-5.json"},
+      "phase": {"handle": "shown", "phase": "ready", "isRefreshing": false}
+    },
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "11"}, "policy": "networkOnly", "as": "einstein"},
+      "phase": {"handle": "einstein", "phase": "loading"},
+      "fetch": {"handle": "einstein", "fetch": "inFlight"}
+    },
+    {
+      "answer": {"handle": "einstein", "response": "tests/character-header-11.json"},
+      "phase": {"handle": "einstein", "phase": "ready"}
+    },
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "2"}, "policy": "storeAndNetwork", "as": "morty", "failure": "transport"},
+      "phase": {"handle": "morty", "phase": {"failed": "transport"}},
+      "fetch": {"handle": "morty", "fetch": {"failed": "transport"}}
+    },
+    {
+      "retry": {"handle": "morty"},
+      "phase": {"handle": "morty", "phase": "loading", "isRefreshing": false},
+      "fetch": {"handle": "morty", "fetch": "inFlight"}
+    },
+    {
+      "answer": {"handle": "morty", "failure": "malformed"},
+      "phase": {"handle": "morty", "phase": {"failed": "malformed"}},
+      "fetch": {"handle": "morty", "fetch": {"failed": "malformed"}}
+    },
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "999"}, "policy": "storeOnly", "as": "offline"},
+      "phase": {"handle": "offline", "phase": {"failed": "missingData"}},
+      "fetch": {"handle": "offline", "fetch": "idle"}
+    },
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "11"}, "policy": "storeOnly", "as": "cached"},
+      "phase": {"handle": "cached", "phase": "ready"},
+      "fetch": {"handle": "cached", "fetch": "idle"}
+    },
+    {
+      "attach": {"operation": "TestStrictQuery", "variables": {"id": "1"}, "as": "strict", "response": "tests/character-name-hidden.json"},
+      "phase": {"handle": "strict", "phase": {"failed": "fieldErrors"}}
+    },
+    {
+      "payload": {"operation": "TestStrictQuery", "variables": {"id": "1"}, "response": "tests/character-name-shown.json"},
+      "phase": {"handle": "strict", "phase": "ready"},
+      "reads": [{"handle": "strict", "path": "character.name", "value": "Rick Sanchez"}]
+    },
+    {
+      "attach": {"operation": "TestRequiredOrigin", "variables": {"id": "1"}, "as": "required", "response": "tests/required-origin-1-null.json"},
+      "phase": {"handle": "required", "phase": {"failed": "requiredField"}}
+    },
+    {
+      "payload": {"operation": "TestRequiredOrigin", "variables": {"id": "1"}, "response": "tests/required-origin-1.json"},
+      "phase": {"handle": "required", "phase": "ready"},
+      "reads": [{"handle": "required", "path": "character.origin.name", "value": "Earth (C-137)"}]
+    }
+  ]
+}

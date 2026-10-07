@@ -177,7 +177,7 @@ by* tests/author-notes-page-1 and tests/notes-page-2 through their keys.
 `@cacheExpiration(seconds:)` is emitted as a constant of the operation,
 left out of the text a server receives; the store reads it against the
 root's age, an operation that states none takes the store's default, and
-no timer is armed. *Unheld* (script `ages`).
+no timer is armed. *Held by* script `ages`.
 
 **The compiler decides what the runtime relies on.** An operation's text
 is printed compact, with Relay's printer's own option (no newline,
@@ -209,8 +209,8 @@ incremental response `pending` and `hasNext`; other members are skipped.
 errors and writes nothing; `data` absent with no errors is malformed. The
 change set is grouped by record when the walk ends, so the commit writes a
 record's slots in a run. *Held by* spec/tokenizer/malformed.json for
-malformed responses; a request error is *unheld* (the Swift tests prove it
-through the transport).
+malformed responses; a request error's failure by scripts `phase` and
+`events`.
 
 **An object is read against a selection.** Under an abstract selection the
 object's `__typename` is read first, by scanning ahead from the first
@@ -285,7 +285,8 @@ object is, and committed. A completed part with errors is a failed part:
 the errors land on the fields it would have filled. A part that names a
 place the store or the plan does not have is dropped and logged. *Held by*
 tests/character-deferred, tests/character-deferred-pending and
-tests/node-deferred; a failed part and a dropped part are *unheld*.
+tests/node-deferred; a dropped part by script `events`; a failed part is
+*unheld*.
 
 ## 4. The commit
 
@@ -298,8 +299,8 @@ by notifying the observed fields whose value or error differs from before
 the batch, netted: a slot changed and changed back notifies nobody, and a
 record the batch created notifies nobody, since nothing had read it. A
 plain server batch under no optimistic layer notifies as it writes, since
-nothing in it can change back. *Held by* script `notifications` (*unheld*
-until it lands).
+nothing in it can change back. *Held by* scripts `notifications` and
+`optimistic`.
 
 **A change set is applied in one order.** Memberships are learned; records
 are found or created by key; for each record, a deleted one a payload
@@ -321,8 +322,9 @@ page info merges per direction: a replacing page sets all four fields; an
 appending page `hasNextPage` and `endCursor`; a prepending page
 `hasPreviousPage` and `startCursor`; a field the page's info lacks is left
 as it was. *Held by* tests/notes-page-1 and tests/recent-notes-page-1 (a
-replace); the merge of a second page and a refetch's replacement are
-*unheld* (script `connections`).
+replace); the merge of a second page, a refetch's replacement and a page
+after a cursor that is no longer the end by script `connections`; a
+prepending page's merge is *unheld*.
 
 **An edge directive edits a connection the store holds.** The connection
 an edit names must exist in memory, live, and hold what the image has or
@@ -340,7 +342,7 @@ when it holds several does nothing and logs the ambiguity. *Held by*
 tests/add-note-n9 (append), tests/add-note-n0 (prepend),
 tests/add-note-node-n7 and tests/add-note-node-n0, tests/delete-note-n2,
 tests/delete-note-7, tests/remove-note-n2; an edit into a connection that
-already has edges is *unheld* (script `connections`).
+already has edges by script `connections`.
 
 **A deleted record reads as absent.** Its values are cleared through the
 batch, so the bodies that read them are told; its flag is set, so links to
@@ -358,8 +360,8 @@ payload, re-applies the layers and notifies the net difference; the
 server's answer to the mutation replaces its layer in that same batch; a
 failure reverts the layer, later layers re-applied over the gap. A layer
 is never written to the image. *Held by* every case's `override` for one
-layer's reads; the rebase, the replacement and the revert are *unheld*
-(script `optimistic`).
+layer's reads; the rebase, the replacement and the revert by script
+`optimistic`; later layers re-applied over a gap are *unheld*.
 
 **A server batch is handed to the image.** A snapshot of every record the
 batch changed, and each changed field of the query root one by one, taken
@@ -379,8 +381,8 @@ memory, with the image's help, or a miss. What the walk writes, a lookup's
 link bound, a link repaired, a cell filled, is one local batch notified
 once the walk is over; nothing observes a walk in progress. *Held by* each
 case's `complete`, which says whether the check passes on the responses;
-the image's answer by the oracle's second store; the lookups and the batch
-are *unheld* (script `check`).
+the image's answer by the oracle's second store and by script `check`;
+the lookups by script `check`; the batch is *unheld*.
 
 **The walk.** For each field the variant waits for: a missing scalar is a
 miss; a missing link with a lookup is satisfied by the entity the lookup
@@ -401,7 +403,7 @@ registered only once the image had its row. A lookup without a type probes
 the members of the field's interface or union that one value keys: the one
 live entity with the id among them, or none when several have it, which is
 logged. *Held by* tests/search-1 as a dump; the binding from a cached list
-without a fetch is *unheld* (script `check`).
+without a fetch, in memory and from the image, by script `check`.
 
 **Hydration fills what memory lacks, once.** A record's row is read once,
 and the slots the record lacks are filled; a slot that holds a value is
@@ -457,8 +459,8 @@ value (the empty string, zero, false) and is logged as unexpected. A value
 of another kind reads as nil, or as the zero value where non-null, and is
 logged as unexpected. A missing value reads as nil or the zero value, is
 logged as missing, and asks for the heal (section 7). *Held by* `reads`
-for the values; the zero values and the events are *unheld* (script
-`heal`).
+for the values; the missing and unexpected events by script `heal`; the
+zero values are *unheld*.
 
 **A list of scalars follows its element type.** A list whose elements the
 schema types non-null drops an element it cannot hold, a null or a value
@@ -544,7 +546,8 @@ many as the buffer holds (ten by default), and a root pushed out leaves,
 with its handle and the fetch it had in flight. A subscription's root
 leaves at once when released. A completed mutation's root waits apart from
 the buffer, one per operation value and as many as the buffer holds, so
-mutations push no released query out. *Unheld* (script `lifetime`).
+mutations push no released query out. *Held by* script `lifetime`; a
+subscription's root leaving at once is *unheld*.
 
 **Every server write dates its root.** The commit of a response stamps the
 operation's root with the store's time and the invalidation it was fetched
@@ -552,7 +555,9 @@ under, and counts the fetch; the image is told, except for an operation
 selecting a transient root field, whose stamp would name what the field
 was asked with. A query just written that nothing retains waits in the
 release buffer, as a preload does. A deferred response is dated when its
-stream completes. *Unheld* (script `ages`).
+stream completes. *Held by* script `ages` for a fetch's stamp, here and
+across a launch; the transient root field and the deferred response are
+*unheld*.
 
 **An age is the root's, and an unknown age is stale.** A root this launch
 has not fetched takes the age the image knows, the time since an earlier
@@ -564,7 +569,8 @@ has passed since the stamp; no expiration means never. `invalidate` marks
 everything stale, in memory and in the image, and refetches the retained
 roots whose holders allow the network; `revalidate` refetches the retained
 roots that are stale or whose last fetch failed, where a holder allows the
-network, and marks nothing. *Unheld* (script `ages`).
+network, and marks nothing. *Held by* script `ages`; a revalidation of a
+failed fetch is *unheld*.
 
 **The collector marks from retentions and from nothing else.** A pass runs
 on the next turn of the main thread after a root left the store (pushed
@@ -578,7 +584,9 @@ removed: its values cleared so cycles break, the roots' links to it
 dropped. Then the store frees every rendered key's number that no live
 resolution or scope holds, no layer carries and no waiting row names: the
 records drop their entries under it, the image forgets its name, and the
-number is used again lowest first. *Unheld* (script `lifetime`).
+number is used again lowest first. *Held by* script `lifetime` for the
+marking from the roots and the sweep; the marks from layers and from rows
+waiting for the image, and the numbers freed, are *unheld*.
 
 **The heal.** A read that finds a slot the store never received logs it
 and tells the owner's environment, which marks the owner's root stale and
@@ -586,7 +594,8 @@ refetches it if a holder allows the network, once per fetch of that root;
 a field still missing after the heal's own refetch is logged as unexpected
 and healed no further. A lens made by hand, with no root, is logged and
 not healed. A deleted record's fields and a client field report nothing.
-*Unheld* (script `heal`).
+*Held by* script `heal`; a deleted record's fields and a client field are
+*unheld*.
 
 **A page's fetch has no handle and no root of its own.** The fetch runs the
 fragment's refetch query, the connection owns the merged pages, and the
@@ -599,8 +608,8 @@ and forgets the session's keys. An ended store commits nothing: a response
 that lands after the end, which cancellation could not reach, reaches
 neither memory nor the image nor the log. A handle still held reads failed
 with the environment gone and tells its observers; a lens still held finds
-its records cleared; every later call fails the same way. *Unheld* (script
-`end`).
+its records cleared; every later call fails the same way. *Held by*
+script `end`; the image closed and the keys forgotten are *unheld*.
 
 ## 8. The handle: policies, phase, fetch
 
@@ -608,7 +617,8 @@ its records cleared; every later call fails the same way. *Unheld* (script
 per operation value, shared by equal values, with the root among the
 store's and the fetch in flight among its own; `preload` makes one and
 parks its root in the buffer, so the first attach finds the fetch made or
-on the way and makes none. *Unheld* (script `phase`).
+on the way and makes none. *Held by* script `phase` for a handle shared by
+equal values; `preload` is *unheld*.
 
 **A value is resolved by a view, and no environment is not a session.**
 Outside any view an operation value is unresolved and reads as loading. A
@@ -629,7 +639,9 @@ fetches when the store cannot answer, when the deferred parts are not all
 held, when the data is stale, or when the last response carried errors no
 field holds; `storeAndNetwork` and `networkOnly` fetch, and `networkOnly`
 shows loading until its own response if nobody shows the handle yet. One
-fetch is in flight per handle at a time. *Unheld* (script `phase`).
+fetch is in flight per handle at a time. *Held by* script `phase`, and the
+fetch of stale data by script `ages`; the fetches for deferred parts not
+held and for errors no field holds are *unheld*.
 
 **The fetch is a value beside the phase.** Idle, in flight, or failed with
 the failure and when it failed. A fetch that fails behind data leaves the
@@ -638,14 +650,15 @@ response replaces it. `isRefreshing` is data present and a fetch in flight.
 `refetch` fetches again and throws the failure rather than showing it;
 `retry` after a failure with no data behind it shows loading, and after one
 with data in the store refreshes behind it. A fetch superseded by another
-leaves the handle's state to whoever superseded it. *Unheld* (script
-`phase`).
+leaves the handle's state to whoever superseded it. *Held by* script
+`phase`; a superseded fetch is *unheld*.
 
 **A failure says its kind.** The transport's, carrying what the transport
 threw unchanged; a request error, the server's errors with no data; a
 malformed response the plan could not read; the environment's, when
-nothing could send the request. A field error is not a kind. *Unheld*
-(script `phase`); the log names the kind.
+nothing could send the request. A field error is not a kind. *Held by*
+scripts `phase` and `end`; the log names the kind, held by script
+`events`.
 
 **The verdict is what the data deserves.** Ready, unless `@throwOnFieldError`
 finds an uncaught field error in the operation's own selection or among the
@@ -655,7 +668,8 @@ while the data stays in the store and ages as ready data does. The verdict
 is settled after the fetch, after every attach that finds the data, and
 after every commit that changed a null, a link, an error or a deletion; a
 verdict equal to the last is no change (the same errors, the same path).
-*Unheld* (script `phase`). The decision record *A handle keeps its fetch
+*Held by* script `phase`; a verdict equal to the last is *unheld*. The
+decision record *A handle keeps its fetch
 and derives its phase* and the one that supersedes it say where the
 verdict is kept; this contract says when it changes.
 
@@ -672,8 +686,8 @@ reset by an event. The environment's `isActive` parks every retained
 stream while false and resumes them when true; every reopening counts as a
 resumption an owner may observe. Released to no holder, the stream closes
 and the root leaves at once. *Held by* tests/note-added-1 and
-tests/note-added-2 for one event's commit; the states are *unheld* (script
-`subscriptions`).
+tests/note-added-2 for one event's commit; the states by script
+`subscriptions`; an end by a request error and the backoff are *unheld*.
 
 ## 9. The image
 
@@ -776,8 +790,11 @@ its batch count, or failed; a field read and never fetched; a value a
 reader's type cannot hold; an id naming records of several types; a
 `@required(action: LOG)` field null; a deferred part dropped. Never a
 record, a slot, a value, a variable or a response body. A debug build
-prints the missing-data cases until a log is set. *Unheld* (script
-`events`).
+prints the missing-data cases until a log is set. *Held by* script
+`events` for a fetch's events, the commits, a field error and a dropped
+part, and by script `heal` for missing and unexpected data; the image's
+events, an ambiguous id and a `@required(action: LOG)` null are
+*unheld*.
 
 ## 11. What is not the contract
 

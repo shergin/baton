@@ -1,0 +1,90 @@
+{
+  "name": "ages",
+  "image": true,
+  "expiration": 60,
+  "steps": [
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "5"}, "as": "jerry", "response": "tests/character-header-5.json"},
+      "phase": {"handle": "jerry", "phase": "ready", "isStale": false}
+    },
+    {
+      "attach": {"operation": "TestFreshCharacter", "variables": {"id": "5"}, "policy": "storeOnly", "as": "unknown"},
+      "phase": {"handle": "unknown", "phase": "ready", "isStale": true},
+      "fetch": {"handle": "unknown", "fetch": "idle"}
+    },
+    {
+      "attach": {"operation": "TestFreshCharacter", "variables": {"id": "5"}, "as": "fresh", "response": "tests/character-header-5.json"},
+      "phase": {"handle": "fresh", "phase": "ready", "isStale": false}
+    },
+    {
+      "advance": {"seconds": 45},
+      "phase": [
+        {"handle": "jerry", "phase": "ready", "isStale": false},
+        {"handle": "fresh", "phase": "ready", "isStale": true}
+      ]
+    },
+    {
+      "advance": {"seconds": 30},
+      "phase": [
+        {"handle": "jerry", "phase": "ready", "isStale": true},
+        {"handle": "fresh", "phase": "ready", "isStale": true}
+      ]
+    },
+    {
+      "revalidate": {},
+      "phase": [
+        {"handle": "jerry", "phase": "ready", "isStale": true, "isRefreshing": true},
+        {"handle": "fresh", "phase": "ready", "isStale": true, "isRefreshing": true}
+      ],
+      "fetch": [
+        {"handle": "jerry", "fetch": "inFlight"},
+        {"handle": "fresh", "fetch": "inFlight"}
+      ]
+    },
+    {
+      "answer": {"handle": "jerry", "response": "tests/character-header-5.json"},
+      "phase": {"handle": "jerry", "phase": "ready", "isStale": false}
+    },
+    {
+      "answer": {"handle": "fresh", "response": "tests/character-header-5.json"},
+      "phase": {"handle": "fresh", "phase": "ready", "isStale": false}
+    },
+    {
+      "revalidate": {},
+      "fetch": [
+        {"handle": "jerry", "fetch": "idle"},
+        {"handle": "fresh", "fetch": "idle"}
+      ]
+    },
+    {
+      "invalidate": {},
+      "phase": [
+        {"handle": "jerry", "phase": "ready", "isStale": true, "isRefreshing": true},
+        {"handle": "fresh", "phase": "ready", "isStale": true, "isRefreshing": true}
+      ]
+    },
+    {
+      "answer": {"handle": "jerry", "response": "tests/character-header-5.json"},
+      "phase": {"handle": "jerry", "phase": "ready", "isStale": false}
+    },
+    {
+      "answer": {"handle": "fresh", "response": "tests/character-header-5.json"},
+      "phase": {"handle": "fresh", "phase": "ready", "isStale": false}
+    },
+    {
+      "relaunch": {}
+    },
+    {
+      "advance": {"seconds": 10}
+    },
+    {
+      "attach": {"operation": "TestHeaderQuery", "variables": {"id": "5"}, "as": "again"},
+      "phase": {"handle": "again", "phase": "ready", "isStale": false},
+      "fetch": {"handle": "again", "fetch": "idle"}
+    },
+    {
+      "advance": {"seconds": 55},
+      "phase": {"handle": "again", "phase": "ready", "isStale": true}
+    }
+  ]
+}

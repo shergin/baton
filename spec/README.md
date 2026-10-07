@@ -25,8 +25,14 @@ and the documents).
   outcome it must have.
 - `documents/`: the text of every operation the manifest names, with its
   fragments, as the compiler emits it, compact on one line; written from
-  the generated code and checked against it, so the two cannot drift.
-- `manifest.json`: the cases, below.
+  the generated code and checked against it, so the two cannot drift. This
+  is the text a server receives: the client directives the authors wrote,
+  `@catch`, `@required`, `@connection`, `@cacheExpiration`, are not in it,
+  and the author's documents a second runtime would compile its lenses
+  from live in the Swift test target's sources today. Owed: the author's
+  documents under `spec/`, checked against the markers as the texts are.
+- `scripts/`: the scripts, below: steps over time and what each leaves.
+- `manifest.json`: the cases and the scripts, below.
 - `runtime.md`: the contract, one paragraph a rule, each ending with the
   fixture that holds it or the word *unheld*.
 
@@ -54,3 +60,71 @@ through the lens its compiler generated for the document, and, where
 `override` is given, applying the overriding response as an optimistic
 layer and reading the overridden leaves. A runtime that cannot bind a case
 or a read fails the case; it does not skip it.
+
+## Scripts
+
+A case starts from an empty store and commits once. What happens over time,
+a second page merging, a layer reverted, a root released and collected, a
+clock advanced past an expiration, a phase moving, is a *script*: a file
+under `scripts/`, listed in the manifest's `scripts`, holding steps and,
+after any step, the facts the runtime must then show. Format 2 of the
+manifest adds them; the cases are unchanged.
+
+A script has a `name`, the name of its file; whether it runs with an
+`image` (an image on a file of the harness's choosing, so that `relaunch`
+can open a second store over it); the store's release `buffer` (ten when
+omitted) and default `expiration` in seconds (none when omitted); and
+`steps`, each an object with one key naming the step, whose value is an
+object of the step's arguments (`{}` for none), and any of the expectation
+fields beside it. A response is a path under `spec/`; `variables` is
+omitted for none.
+
+| Step | Arguments | What the runtime does |
+|---|---|---|
+| `commit` | `operation`, `variables`, `response` (or `responses`, the parts of an incremental response) | Commits the response as a server's response to the operation, through the door, under the root of the operation's kind: complete, so an omitted field is malformed. A query is fetched by the environment and a mutation committed by it, the transport answering with the response; a subscription's events come by `event`. |
+| `payload` | `operation`, `variables`, `response` | Commits the response as a payload committed by hand: part of the selection may be absent. |
+| `optimistic` | `operation`, `variables`, `response`, `as` | Applies the response as an optimistic layer of the mutation, named `as` for later steps. |
+| `resolve` | `layer`, `response` | The server's answer to the layer's mutation replaces the layer in one batch. |
+| `revert` | `layer` | Reverts the layer, as a failed mutation does. |
+| `attach` | `operation`, `variables`, `policy`, `as` | Makes the operation's handle in the script's environment with the fetch policy (`storeOrNetwork`, the default, `storeAndNetwork`, `networkOnly`, `storeOnly`), retains it, and names it `as`. The transport answers the fetch this makes from `response` when the step gives one, and fails it with `failure` (`transport`, `request`, `malformed`) when the step gives that; with neither the fetch stays in flight. |
+| `answer` | `handle`, `response` or `failure` | Answers the handle's fetch in flight, or fails it. |
+| `refetch` | `handle`, `response` or `failure` | Refetches the handle, answered or failed as `answer` is. |
+| `retry` | `handle`, and `response` or `failure` or neither | Retries the handle after a failure, answered or failed as `attach` is. |
+| `release` | `handle` | Ends the handle's retention. |
+| `collect` | | Runs a collection pass now. |
+| `advance` | `seconds` | Advances the store's clock, and the wall clock the image keeps ages by. |
+| `invalidate` | | Marks everything stale, as `Environment.invalidate()` does; the refetches it starts stay in flight for `answer`. |
+| `revalidate` | | As `Environment.revalidate()`; its refetches stay in flight as well. |
+| `check` | `operation`, `variables` | Runs the availability check for the operation. |
+| `relaunch` | | Ends the environment and opens a second store over the same image, in the same process; later steps run in it. |
+| `event` | `handle`, `response` or `failure` or `complete` (`true`) | A subscription handle's stream delivers an event, fails, or is completed by the server. |
+| `active` | `value` | Sets the environment's activity. |
+| `end` | | Ends the environment. |
+
+The failures are a transport's own (`transport`), the server's errors and
+no data (`request`), and a response with neither data nor errors
+(`malformed`). The expectations, each optional, each compared after the
+step and after a collection pass it scheduled has run:
+
+| Field | Meaning |
+|---|---|
+| `records` | The path of the store's dump, as a case's. |
+| `reads` | Rows as a case's, each with the `handle` whose data the lens reads, or with the `operation` and `variables` of a lens made by hand over the root of the operation's kind. |
+| `notified` | The fields the step's batches notified, as `[{"record": key, "field": storage key}]`, and nothing else was notified, among the fields that held a value before the step. `[]` says the step notified nothing. |
+| `phase` | A handle's phase: `{"handle": name, "phase": "loading" or "ready" or {"failed": kind}}`, where `kind` is a failure's kind, `fieldErrors`, `requiredField`, `missingData` or `gone`; with `isRefreshing` and `isStale` beside it when they matter. A list of such objects compares several handles; so for `fetch` and `stream`. |
+| `fetch` | A handle's fetch: `{"handle": name, "fetch": "idle" or "inFlight" or {"failed": kind}}`. |
+| `stream` | A subscription handle's stream: `{"handle": name, "stream": state}`, the state `idle`, `connecting`, `open`, `waiting`, or `{"ended": kind or null}`; with `events` (the count) and `resumptions` beside it when they matter. |
+| `answer` | Beside a `check` step, the check's answer: `memory`, `image` or `miss`. As a word it is this expectation; as an object it is the `answer` step. |
+| `records_held` | The record keys the store holds, the roots among them, sorted. |
+| `events` | The log's events during the step, its expectations' reads included, as their names in order, with the value-free fields a name carries (`{"fetchFailed": {"operation": name, "kind": kind}}`); a bare name compares the name alone. The image's events are left out, since their timing is the writer's. |
+| `error` | What the step threw, as a failure's kind or `fieldErrors` or `gone`, when the step is expected to throw (a `refetch` failed; a fetch after the end). A step that throws without it fails the script, except a `revert`, whose failure is the point. A `storeOnly` attach without data throws nothing: its phase reads `{"failed": "missingData"}`. |
+
+A runtime proves a script by running its steps in order in one environment
+over one store, through a transport the harness scripts from the steps, and
+comparing every expectation as it comes. The clock is the store's: a
+runtime whose store cannot be told the time cannot run `advance` and fails
+the script. Timing that is not the store's, a subscription's backoff, is
+not scripted: a `waiting` stream is compared as waiting, not at an instant.
+A runtime that cannot bind a step fails the script; it does not skip it.
+The rules a script holds are named in [`runtime.md`](runtime.md) by the
+script's name.

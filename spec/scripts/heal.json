@@ -1,0 +1,53 @@
+{
+  "name": "heal",
+  "steps": [
+    {
+      "attach": {"operation": "TestConditions", "variables": {"id": "1", "withOrigin": true, "hideStatus": false}, "as": "rick", "response": "tests/conditions-included.json"},
+      "reads": [{"handle": "rick", "path": "character.origin.dimension", "value": "Dimension C-137"}],
+      "events": [{"fetchStarted": {"operation": "TestConditions"}}, {"committed": {"kind": "server", "changed": 1}}, {"fetchCompleted": {"operation": "TestConditions"}}]
+    },
+    {
+      "payload": {"operation": "TestConditions", "variables": {"id": "1", "withOrigin": false, "hideStatus": true}, "response": "tests/conditions-excluded-origin-99.json"},
+      "reads": [{"handle": "rick", "path": "character.origin.dimension", "value": null}],
+      "phase": {"handle": "rick", "phase": "ready", "isStale": true},
+      "fetch": {"handle": "rick", "fetch": "inFlight"},
+      "events": [{"committed": {"kind": "server", "changed": 1}}, {"missing": {"type": "Location", "field": "dimension"}}]
+    },
+    {
+      "answer": {"handle": "rick", "response": "tests/conditions-included.json"},
+      "reads": [{"handle": "rick", "path": "character.origin.dimension", "value": "Dimension C-137"}],
+      "phase": {"handle": "rick", "phase": "ready", "isStale": false},
+      "events": [{"fetchStarted": {"operation": "TestConditions"}}, {"committed": {"kind": "server", "changed": 1}}, {"fetchCompleted": {"operation": "TestConditions"}}]
+    },
+    {
+      "payload": {"operation": "TestConditions", "variables": {"id": "1", "withOrigin": false, "hideStatus": true}, "response": "tests/conditions-excluded-origin-99.json"},
+      "reads": [{"handle": "rick", "path": "character.origin.dimension", "value": null}],
+      "phase": {"handle": "rick", "phase": "ready", "isStale": false},
+      "fetch": {"handle": "rick", "fetch": "idle"},
+      "events": [{"committed": {"kind": "server", "changed": 1}}, {"missing": {"type": "Location", "field": "dimension"}}, {"unexpected": {"type": "Location", "field": "dimension"}}]
+    },
+    {
+      "refetch": {"handle": "rick", "response": "tests/conditions-included.json"},
+      "reads": [{"handle": "rick", "path": "character.origin.dimension", "value": "Dimension C-137"}],
+      "events": [{"fetchStarted": {"operation": "TestConditions"}}, {"committed": {"kind": "server", "changed": 1}}, {"fetchCompleted": {"operation": "TestConditions"}}]
+    },
+    {
+      "payload": {"operation": "TestConditions", "variables": {"id": "1", "withOrigin": false, "hideStatus": true}, "response": "tests/conditions-excluded-origin-99.json"},
+      "reads": [{"handle": "rick", "path": "character.origin.dimension", "value": null}],
+      "phase": {"handle": "rick", "phase": "ready", "isStale": true},
+      "fetch": {"handle": "rick", "fetch": "inFlight"},
+      "events": [{"committed": {"kind": "server", "changed": 1}}, {"missing": {"type": "Location", "field": "dimension"}}]
+    },
+    {
+      "answer": {"handle": "rick", "response": "tests/conditions-included.json"},
+      "phase": {"handle": "rick", "phase": "ready", "isStale": false}
+    },
+    {
+      "payload": {"operation": "TestConditions", "variables": {"id": "1", "withOrigin": false, "hideStatus": true}, "response": "tests/conditions-excluded-origin-99.json"},
+      "reads": [{"operation": "TestConditions", "variables": {"id": "1", "withOrigin": true, "hideStatus": false}, "path": "character.origin.dimension", "value": null}],
+      "phase": {"handle": "rick", "phase": "ready", "isStale": false},
+      "fetch": {"handle": "rick", "fetch": "idle"},
+      "events": [{"committed": {"kind": "server", "changed": 1}}, {"missing": {"type": "Location", "field": "dimension"}}]
+    }
+  ]
+}
