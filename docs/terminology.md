@@ -211,6 +211,10 @@ elements are nullable; the collection of lenses is `List`, a nullable one
 `List?`, and the empty one `List.empty`. A lens is `Equatable` by its
 anchor, so a row view whose stored state is a lens conforms in one line and
 opts into `.equatable()`.
+Kotlin: a `@Stable` class equal by its anchor; a plural link reads as a
+`LensList`, a `kotlin.collections.List` that builds each element's lens
+from its anchor on access, a nullable one as `LensList?`, and the empty one
+`LensList.empty()`.
 
 **Membership, type condition.** *Composition: plan, record.* Relay: an
 inline fragment or spread on an interface or union applies to the records
@@ -247,6 +251,8 @@ handle makes one owner and keeps it; a storage key with variables is
 resolved once per owner, and a spread with arguments binds its scope once
 per owner, so later reads render, hash and allocate nothing. See
 [the contract](../spec/runtime.md#6-the-lens-reads).
+Kotlin: `Owner`, which settles each key, condition and argument site once
+by identity and is read on the store's thread.
 
 **Anchor.** *Composition: lens, record, operation value.* Baton's word.
 Relay's fragment reference carries a record id and an owner; an anchor
@@ -260,6 +266,9 @@ data it returns, a fragment spread enters its record as the origin, and
 generated accessors derive every anchor below it. Generated code's alone: an
 app's code never holds one (see [artifact](#compiler)). See
 [the contract](../spec/runtime.md#6-the-lens-reads).
+Kotlin: `Anchor`, whose readers generated code calls with a lens's
+constructor reference, an enum's `of` and a mapped scalar's converter
+where Swift uses static requirements.
 Swift: `mutate` makes the anchor of the data it returns.
 
 **Operation value.** *Concept: operation value.*

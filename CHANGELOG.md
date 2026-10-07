@@ -21,6 +21,15 @@ are expected and listed without apology.
   own. The `.kt` scanner reads every Kotlin string form, and a document with
   a variable is written in a `$$` string. A mapped scalar names its Kotlin
   type and converter under `kotlin`. Lenses follow with the Kotlin readers.
+- The Kotlin runtime reads: the anchor's readers behind every accessor
+  generated code prints, the owner that settles a lens's keys, conditions
+  and `@arguments` once, and the placeholder behind a non-null link with no
+  record. A read registers the one cell it reads; a missing or wrong-kind
+  value is reported to the store's log once and reads as null or a zero
+  value; `@required`, `@catch`, `@throwOnFieldError` and `@defer` read by
+  Relay's rules, `@catch` as a `kotlin.Result`. Lenses written by hand
+  after the Swift goldens read the `reads` rows of ten operations' cases
+  as the cases say. Pagination and refetch come with the environment.
 - `URLSessionTransport` reads a request error answered with a 4xx or 5xx
   status as `application/graphql-response+json`, as GraphQL Yoga, Hive
   Gateway and Apollo Router do for a document that fails to parse or

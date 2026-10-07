@@ -12,7 +12,16 @@ internal object Spec {
 
     fun text(path: String): String = File(directory, path).readText()
 
-    /** A case of the manifest: the responses an operation's server sent, and the dump the store holds after them. */
+    /**
+     * A row of a case's `reads`: the response keys and list indices from the
+     * root, the value a lens yields there as JSON read by `Json`, and the
+     * rule that reads it otherwise than the response, when one does.
+     */
+    class Read(val path: String, val value: Any?, val note: String?) {
+        override fun toString(): String = path
+    }
+
+    /** A case of the manifest: the responses an operation's server sent, the dump the store holds after them, and what a lens reads. */
     class Case(
         val name: String,
         val operation: String,
@@ -20,6 +29,7 @@ internal object Spec {
         val variables: Variables,
         val responses: List<String>,
         val records: String,
+        val reads: List<Read>,
     ) {
         val plan: Plan? get() = TestPlans.byOperation[operation]?.invoke()
 
@@ -70,6 +80,10 @@ internal object Spec {
                 variables = Variables(variables),
                 responses = (entry["responses"] as List<*>).map { it as String },
                 records = entry["records"] as String,
+                reads = (entry["reads"] as List<*>?).orEmpty().map { row ->
+                    row as Map<*, *>
+                    Read(row["path"] as String, row["value"], row["note"] as String?)
+                },
             )
         }
     }

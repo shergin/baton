@@ -35,7 +35,7 @@ JAVA_HOME=$(/usr/libexec/java_home -v 21) gradle :baton:build
 The plan model generated code constructs (`Plan.kt`, `Registry.kt`), the
 wire's values (`Value.kt`), the operation interfaces (`Operation.kt`), the
 host markers (`Markers.kt`), the generated-code marker and the format
-(`Generated.kt`), and the lens's skeleton (`Lens.kt`).
+(`Generated.kt`), and the public errors (`Errors.kt`).
 
 The store and the ingest, to the dump. A record's cells are Compose
 snapshot state, one per slot (`Record.kt`); the store numbers the keys a
@@ -55,5 +55,17 @@ number, not a benchmark: the Fixture response (686 KB, 899 records) is
 ingested in about 1.7 ms and committed in about 0.3 ms on JDK 21 on an M1
 Pro, the medians `IngestTiming` prints.
 
-The lens's readers, the availability check, optimistic layers, retention
-and collection, the image and the environment follow.
+The reads. The anchor's readers are every accessor generated code calls
+(`Lens.kt`): a read loads one cell on the store's thread, so composition
+registers that slot alone; a missing or wrong-kind value goes to the
+store's log and reads as null or a zero value; a non-null link with no
+record reads the type's placeholder, the link alone reported; `@required`,
+`@catch`, `@throwOnFieldError` and `@defer` read by Relay's rules. The
+owner settles a lens's keys, conditions and `@arguments` once each
+(`Owner.kt`). `jvmTest` reads the `reads` rows of the cases of ten
+operations through lenses written by hand after the Swift goldens
+(`TestLenses.kt`), until the emitter prints them, with mapped scalars
+through test converters for `BigDecimal`, `Instant` and `URI`.
+
+The availability check, optimistic layers, retention and collection, the
+image and the environment, with pagination and refetch, follow.
