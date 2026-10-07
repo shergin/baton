@@ -18,10 +18,10 @@ use super::swift::{
 };
 use super::writer::Writer;
 use crate::decide::{
-    Accessor, AliasGuard, AliasedRead, BoundArgument, ConditionRead, ConnectionMembers, ErrorCheck,
-    ErrorLine, FragmentLens, Guard, Guarded, LinkedForm, LinkedRead, LoadMore, Read, ReaderPlan,
-    RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead, SlotAccess, SpreadForm, SpreadGuard,
-    SpreadRead, TypeTest,
+    Accessor, AliasGuard, AliasedRead, Binding, BoundArgument, ConditionRead, ConnectionMembers,
+    ErrorCheck, ErrorLine, FragmentLens, Guard, Guarded, LinkedForm, LinkedRead, LoadMore, Read,
+    ReaderPlan, RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead, SlotAccess, SpreadForm,
+    SpreadGuard, SpreadRead, TypeTest,
 };
 use crate::names::capitalize;
 use crate::names::guard_name;
@@ -407,26 +407,7 @@ pub(super) fn spread_piece(read: &SpreadRead) -> SpreadPiece {
             writer.push(alias.declaration());
         }
         if let Some(binding) = &read.binding {
-            let bindings: Vec<String> = binding
-                .arguments
-                .iter()
-                .map(|(name, value)| {
-                    let value = match value {
-                        BoundArgument::Passed(value) => argument_expression(value),
-                        BoundArgument::Default(constant) => variable_literal(constant),
-                        BoundArgument::Null => ".null".to_string(),
-                    };
-                    format!("{}: {value}", swift_literal(name))
-                })
-                .collect();
-            // The closure states its type: inferred from the literal, the
-            // time Swift takes to check it doubles with each argument.
-            writer.push(format!(
-                "let bound = anchor.binding(Sites.{}) {{ () -> [String: {}] in [{}] }}",
-                binding.site,
-                SwiftType::runtime("Variable").optional(),
-                bindings.join(", ")
-            ));
+            writer.push(binding_line(binding));
         }
         if !guards.is_empty() {
             writer.push(format!(
@@ -450,6 +431,31 @@ pub(super) fn spread_piece(read: &SpreadRead) -> SpreadPiece {
         expression: None,
         statements,
     }
+}
+
+/// `bound`, the anchor in the scope a spread's arguments bind, once per
+/// owner at the spread's site.
+fn binding_line(binding: &Binding) -> String {
+    let bindings: Vec<String> = binding
+        .arguments
+        .iter()
+        .map(|(name, value): &(String, BoundArgument)| {
+            let value = match value {
+                BoundArgument::Passed(value) => argument_expression(value),
+                BoundArgument::Default(constant) => variable_literal(constant),
+                BoundArgument::Null => ".null".to_string(),
+            };
+            format!("{}: {value}", swift_literal(name))
+        })
+        .collect();
+    // The closure states its type: inferred from the literal, the time
+    // Swift takes to check it doubles with each argument.
+    format!(
+        "let bound = anchor.binding(Sites.{}) {{ () -> [String: {}] in [{}] }}",
+        binding.site,
+        SwiftType::runtime("Variable").optional(),
+        bindings.join(", ")
+    )
 }
 
 /// An aliased selection's accessor: its nested lens, optional under its
@@ -870,6 +876,38 @@ fn error_line(writer: &mut Writer, line: &ErrorLine) {
                 "errors.append(contentsOf: {}.fieldErrors(anchor))",
                 SwiftType::named(lens)
             ));
+        }
+        ErrorLine::Spread(read) => {
+            // A `do` keeps the alias and the binding to this spread, since
+            // the body collects for every spread of the value.
+            let alias = LocalAlias::fragment(&read.fragment, &[&read.fragment]);
+            let anchor = if read.binding.is_some() {
+                "bound"
+            } else {
+                "anchor"
+            };
+            let guards: Vec<String> = read
+                .guards
+                .iter()
+                .filter_map(|guard| match guard {
+                    SpreadGuard::Selects(guards) => guard_condition(guards),
+                    SpreadGuard::Test(test) => Some(type_test(test)),
+                    SpreadGuard::Present => Some(format!("{alias}.isPresent({anchor})")),
+                    SpreadGuard::Satisfied | SpreadGuard::NoErrors => None,
+                })
+                .collect();
+            writer.block("do", |writer| {
+                alias.declare(writer);
+                if let Some(binding) = &read.binding {
+                    writer.line(binding_line(binding));
+                }
+                let append = format!("errors.append(contentsOf: {alias}.fieldErrors({anchor}))");
+                if guards.is_empty() {
+                    writer.line(append);
+                } else {
+                    writer.line(format!("if {} {{ {append} }}", guards.join(" && ")));
+                }
+            });
         }
     }
 }

@@ -524,7 +524,7 @@ fn print(arguments: &[String]) -> Result<(), DriverError> {
 }
 
 /// A fragment no operation reaches, directly or through another fragment,
-/// warned at its definition: nothing can read its lens, and the code
+/// warned at its definition: nothing can read it, and the code
 /// generated for it is dead.
 fn unused_fragments(documents: &[Document], plan: &pipeline::Plan) -> Vec<Rendered> {
     let reach = report::reach(plan);
@@ -538,7 +538,7 @@ fn unused_fragments(documents: &[Document], plan: &pipeline::Plan) -> Vec<Render
                 origin,
                 documents,
                 format!(
-                    "fragment `{}` is spread by no operation; nothing can read its lens",
+                    "fragment `{}` is spread by no operation; nothing can read it",
                     fragment.name
                 ),
             ))

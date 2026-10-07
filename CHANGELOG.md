@@ -15,8 +15,12 @@ are expected and listed without apology.
   `@catch` around one a `Result`. An inline fragment spreads only inline
   fragments and takes no `@connection`, `@refetchable` or `@required`; a
   non-null mapped scalar in it reads optional, since a stored property
-  cannot throw. Format 16: generated code names the readers that build a
-  plural link's values. Recorded in
+  cannot throw. A value's field errors include those of the values it
+  spreads, so a catch or a policy around it sees them, and
+  `@throwOnFieldError` on a value spread inside another value is refused.
+  Format 16: generated code names the readers that build a plural link's
+  values. A fragment spread by no operation is warned as one nothing can
+  read, lens or value. Recorded in
   `docs/decisions/a-fragment-has-one-reading.md`.
 
 ## 0.8.0 (Back Straight) — 2026-10-06

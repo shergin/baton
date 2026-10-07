@@ -15,9 +15,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use super::checks::{field_errors, is_present, report_missing, satisfied};
 use super::lens::{
     Accessor, AliasGuard, AliasedRead, Binding, BoundArgument, ConditionRead, ConnectionMembers,
-    LinkedForm, LinkedRead, LoadMore, Nodes, Read, ReaderPlan, RefetchMembers, ScalarForm,
-    ScalarRead, ScalarShape, SlotAccess, SpreadForm, SpreadGuard, SpreadRead, TypeTest,
-    hideable_name,
+    ErrorCheck, ErrorLine, Guarded, LinkedForm, LinkedRead, LoadMore, Nodes, Read, ReaderPlan,
+    RefetchMembers, ScalarForm, ScalarRead, ScalarShape, SlotAccess, SpreadForm, SpreadGuard,
+    SpreadRead, TypeTest, hideable_name,
 };
 use super::members::{
     Member, collect_caught, collect_deferred, condition_lens, derived_spread, members,
@@ -55,6 +55,13 @@ pub(super) struct Readers {
     fragment_conditions: BTreeMap<String, FragmentCondition>,
     /// Fragments spread with `@defer` somewhere: their lenses get `isPresent`.
     deferred_fragments: BTreeSet<String>,
+    /// The fragments marked `@inline`, whose spreads build values.
+    inline_fragments: BTreeSet<String>,
+    /// The inline fragments whose errors something asks for: a value with
+    /// an error policy of its own or spread under a catch, and, since a
+    /// value's errors include those of the values it spreads, every value
+    /// spread inside one of those or under a `@catch` inside any value.
+    scanning_values: BTreeSet<String>,
     /// Fragments spread alone under `@catch` somewhere: their lenses get
     /// `fieldErrors`, which the catch reads.
     caught_fragments: BTreeSet<String>,
@@ -146,6 +153,7 @@ impl Readers {
             collect_deferred(&operation.reader, &mut deferred_fragments);
             collect_caught(&operation.reader, &mut caught_fragments);
         }
+        let scanning_values = scanning_values(plan, &caught_fragments);
         Readers {
             fragment_arguments: plan
                 .fragments
@@ -180,6 +188,13 @@ impl Readers {
                 .collect(),
             deferred_fragments,
             caught_fragments,
+            inline_fragments: plan
+                .fragments
+                .iter()
+                .filter(|fragment| fragment.inline)
+                .map(|fragment| fragment.name.clone())
+                .collect(),
+            scanning_values,
             lens_names: Reserved::lenses(
                 plan.fragments
                     .iter()
@@ -206,7 +221,8 @@ impl Readers {
             arguments: &fragment.arguments,
             throws: fragment.throws_on_field_error,
             within_catch: false,
-            caught_spread: self.caught_fragments.contains(&fragment.name),
+            caught_spread: self.caught_fragments.contains(&fragment.name)
+                || self.scanning_values.contains(&fragment.name),
             response_path: "",
             inline: fragment.inline,
         };
@@ -289,9 +305,32 @@ impl Readers {
             self.connection_members(connection, type_name, &members, facts.nodes, context)
         });
         let satisfied = bubbles.then(|| satisfied(type_name, type_is_abstract, &members));
-        let field_errors = context
+        let mut field_errors = context
             .scans_errors()
             .then(|| field_errors(type_name, type_is_abstract, &members, context.response_path));
+        // A value is one frozen selection: the errors inside the values it
+        // spreads are its own, but for a spread that catches them itself.
+        // A lens's spread keeps its fragment's policy, as the fragment is
+        // one live type wherever it is spread.
+        if context.inline
+            && let Some(checks) = &mut field_errors
+        {
+            for accessor in &accessors {
+                if let Read::Spread(read) = &accessor.read
+                    && self.inline_fragments.contains(&read.fragment)
+                    && read.form != SpreadForm::Caught
+                    && !read
+                        .guards
+                        .iter()
+                        .any(|guard| matches!(guard, SpreadGuard::NoErrors))
+                {
+                    checks.push(ErrorCheck::Member(Guarded {
+                        guards: Vec::new(),
+                        item: vec![ErrorLine::Spread(read.clone())],
+                    }));
+                }
+            }
+        }
         let is_present = (is_fragment_root && self.deferred_fragments.contains(name))
             .then(|| is_present(type_name, type_is_abstract, &members));
         let nested = nested
@@ -792,6 +831,75 @@ impl Readers {
         }
         self.sites.insert(name.clone());
         name
+    }
+}
+
+/// The inline fragments that scan for field errors: those with
+/// `@throwOnFieldError` or spread under a catch, then, to a fixed point,
+/// every inline fragment spread inside one of those, and every one spread
+/// inside a value that holds a `@catch`, whose caught selection scans.
+fn scanning_values(plan: &Plan, caught_fragments: &BTreeSet<String>) -> BTreeSet<String> {
+    let values: BTreeMap<&str, &FragmentPlan> = plan
+        .fragments
+        .iter()
+        .filter(|fragment| fragment.inline)
+        .map(|fragment| (fragment.name.as_str(), fragment))
+        .collect();
+    let mut scanning: BTreeSet<String> = values
+        .values()
+        .filter(|fragment| {
+            fragment.throws_on_field_error || caught_fragments.contains(&fragment.name)
+        })
+        .map(|fragment| fragment.name.clone())
+        .collect();
+    loop {
+        let mut reached = Vec::new();
+        for fragment in values.values() {
+            let mut spreads = Vec::new();
+            inline_spreads(
+                &fragment.reader,
+                scanning.contains(&fragment.name),
+                &mut spreads,
+            );
+            reached.extend(
+                spreads
+                    .into_iter()
+                    .filter(|spread| values.contains_key(spread.as_str())),
+            );
+        }
+        let before = scanning.len();
+        scanning.extend(reached);
+        if scanning.len() == before {
+            return scanning;
+        }
+    }
+}
+
+/// The fragments spread in a selection tree where errors are scanned:
+/// everywhere when `scanning`, else under a `@catch`.
+fn inline_spreads(selections: &[SelectionPlan], scanning: bool, into: &mut Vec<String>) {
+    for selection in selections {
+        match selection {
+            SelectionPlan::Spread { fragment, .. } => {
+                if scanning {
+                    into.push(fragment.clone());
+                }
+            }
+            SelectionPlan::Linked {
+                catch,
+                selections: child,
+                ..
+            }
+            | SelectionPlan::Inline {
+                catch,
+                selections: child,
+                ..
+            } => inline_spreads(child, scanning || catch.is_some(), into),
+            SelectionPlan::Condition {
+                selections: child, ..
+            } => inline_spreads(child, scanning, into),
+            SelectionPlan::Scalar { .. } => {}
+        }
     }
 }
 

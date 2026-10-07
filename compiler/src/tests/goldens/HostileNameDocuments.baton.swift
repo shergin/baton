@@ -9927,6 +9927,19 @@ nonisolated public struct HostileInlineSpreadTarget_character: Swift.Sendable, S
     @_spi(Generated) @MainActor public init(anchor: Baton.Anchor) {
         self.name = anchor.string(Slots.Character.name)
     }
+    /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+    @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+        var errors: [Baton.FieldError] = []
+        anchor.collectError(Slots.Character.name, into: &errors)
+        return errors
+    }
+    /// The value, or the field errors in it as a thrown `FieldErrors`.
+    @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+    /// The value, or the field errors in it as a `Result`.
+    @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+        let errors = fieldErrors(anchor)
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
+    }
 }
 
 /// Value of `fragment HostileInlineSpreads_character on Character @inline`.
@@ -10390,7 +10403,614 @@ nonisolated public struct HostileInlineSpreads_character: Swift.Sendable, Swift.
         self.Sendable = .init(anchor: anchor.entering())
     }
     /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
-    @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] { [] }
+    @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+        var errors: [Baton.FieldError] = []
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        do {
+            typealias Fragment = HostileInlineSpreadTarget_character
+            errors.append(contentsOf: Fragment.fieldErrors(anchor))
+        }
+        return errors
+    }
     /// The value, or the field errors in it as a thrown `FieldErrors`.
     @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
     /// The value, or the field errors in it as a `Result`.

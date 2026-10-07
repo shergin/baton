@@ -92,6 +92,16 @@ value, for code outside views.
   property cannot throw and a text that does not convert has no zero to
   read as; under `@throwOnFieldError` the failed conversion is among the
   fragment's field errors and throws at the spread.
+- A value's field errors include those of the values it spreads, read in
+  the scope the spread binds and under its guards, since a value is one
+  frozen selection; a lens's spread keeps its fragment's policy, since a
+  fragment is one live type wherever it is spread. Only a value something
+  asks the errors of carries the check: one with `@throwOnFieldError`, one
+  spread under a catch, and, to a fixed point, every value spread inside
+  those or under a `@catch` inside any value. `@throwOnFieldError` on a
+  value spread inside another value is refused: the outer value is built
+  in one pass and its initializer cannot throw, so the policy goes on the
+  outer value.
 - An operation root is not inline. `@inline` marks a fragment definition
   only, in Relay and here. A query that needs its answer as a value spreads
   one inline fragment at its root and calls that accessor on the main

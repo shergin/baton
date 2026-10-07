@@ -17,7 +17,7 @@ use super::lens::{
 };
 use super::swift::SwiftType;
 use super::writer::Writer;
-use crate::decide::{Accessor, FragmentLens, Read, ReaderPlan};
+use crate::decide::{Accessor, FragmentLens, Read, ReaderPlan, local_name};
 use crate::names::escape;
 
 pub(super) fn fragment_text(fragment: &FragmentLens) -> String {
@@ -79,21 +79,37 @@ fn value(writer: &mut Writer, plan: &ReaderPlan) {
 }
 
 /// The initializer that takes every property, for code that builds a
-/// value without a record.
+/// value without a record. A parameter is labeled by its property and
+/// named like it, but for `self`, whose local would hide the instance.
 fn memberwise_initializer(writer: &mut Writer, properties: &[Property]) {
     if properties.is_empty() {
         writer.line("public init() {}");
         return;
     }
+    let names: Vec<&str> = properties
+        .iter()
+        .map(|property| property.name.as_str())
+        .collect();
+    let locals: Vec<String> = properties
+        .iter()
+        .map(|property| local_name(&property.name, &names))
+        .collect();
     let parameters: Vec<String> = properties
         .iter()
-        .map(|property| format!("{}: {}", property.name, property.swift_type))
+        .zip(&locals)
+        .map(|(property, local)| {
+            if *local == property.name {
+                format!("{}: {}", property.name, property.swift_type)
+            } else {
+                format!("{} {local}: {}", property.name, property.swift_type)
+            }
+        })
         .collect();
     writer.block(
         format!("public init({})", parameters.join(", ")),
         |writer| {
-            for property in properties {
-                writer.line(format!("self.{} = {}", property.name, property.name));
+            for (property, local) in properties.iter().zip(&locals) {
+                writer.line(format!("self.{} = {local}", property.name));
             }
         },
     );

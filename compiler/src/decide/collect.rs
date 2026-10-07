@@ -145,6 +145,16 @@ impl Shared {
                             | ErrorLine::Required { slot, .. }
                             | ErrorLine::Converts { slot, .. } => self.slot(slot),
                             ErrorLine::Nested(_) => {}
+                            ErrorLine::Spread(read) => {
+                                if let Some(binding) = &read.binding {
+                                    self.sites.insert(binding.site.clone());
+                                }
+                                for guard in &read.guards {
+                                    if let SpreadGuard::Test(test) = guard {
+                                        self.test(test);
+                                    }
+                                }
+                            }
                         }
                     }
                 }

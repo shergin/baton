@@ -374,7 +374,7 @@ fn builder(
 /// property's own, escaped, except for `self`, which as a parameter or a
 /// local would hide the instance. It goes by `selfValue`, numbered past the
 /// names in `taken`.
-fn local_name(property: &str, taken: &[&str]) -> String {
+pub fn local_name(property: &str, taken: &[&str]) -> String {
     if property != "self" {
         return escape(property);
     }

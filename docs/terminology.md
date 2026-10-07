@@ -136,7 +136,9 @@ scalar in it reads optional, since a stored property cannot throw, and
 under `@throwOnFieldError` a text that does not convert throws at the
 spread. Its spread takes what any spread takes; `@catch` has no place on a
 spread in Relay's schema, and `... @alias(as:) @catch { ...Value }` reads a
-`Result`. A conditional or deferred spread yields an optional value. A view
+`Result`. A value's field errors include those of the values it spreads,
+and a value with `@throwOnFieldError` is not spread inside another value.
+A conditional or deferred spread yields an optional value. A view
 holds a value only as a parameter of its own initializer, and an operation
 root needed as a value spreads one inline fragment. See
 [the decision](decisions/a-fragment-has-one-reading.md).

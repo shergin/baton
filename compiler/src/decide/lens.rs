@@ -127,6 +127,18 @@ impl ReaderPlan {
                                 names.insert(slot.shared_enum());
                             }
                             ErrorLine::Nested(_) => {}
+                            ErrorLine::Spread(read) => {
+                                if read.binding.is_some() {
+                                    names.insert("Sites");
+                                }
+                                if read
+                                    .guards
+                                    .iter()
+                                    .any(|guard| matches!(guard, SpreadGuard::Test(_)))
+                                {
+                                    names.insert("Types");
+                                }
+                            }
                         }
                     }
                 }
@@ -571,4 +583,8 @@ pub enum ErrorLine {
     },
     /// An aliased selection's lens.
     Nested(String),
+    /// A spread of an inline fragment inside a value: the value is one
+    /// frozen selection, so the errors inside what it spreads are its own,
+    /// read in the scope the spread binds and under its guards.
+    Spread(SpreadRead),
 }

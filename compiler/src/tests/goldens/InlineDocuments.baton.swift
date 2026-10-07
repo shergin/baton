@@ -113,7 +113,14 @@ nonisolated public struct TestCharacterValue_character: Swift.Sendable, Swift.Ha
             self.testOriginValue = .init(anchor: anchor.entering())
         }
         /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
-        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] { [] }
+        @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+            var errors: [Baton.FieldError] = []
+            do {
+                typealias Fragment = TestOriginValue_location
+                errors.append(contentsOf: Fragment.fieldErrors(anchor))
+            }
+            return errors
+        }
         /// The value, or the field errors in it as a thrown `FieldErrors`.
         @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
         /// The value, or the field errors in it as a `Result`.
@@ -190,6 +197,21 @@ nonisolated public struct TestOriginValue_location: Swift.Sendable, Swift.Hashab
         self.id = anchor.string(Slots.Location.id)
         self.name = anchor.string(Slots.Location.name)
         self.dimension = anchor.string(Slots.Location.dimension)
+    }
+    /// The field errors in this selection, for `@catch` and `@throwOnFieldError`.
+    @_spi(Generated) @MainActor public static func fieldErrors(_ anchor: Baton.Anchor) -> [Baton.FieldError] {
+        var errors: [Baton.FieldError] = []
+        anchor.collectError(Slots.Location.id, into: &errors)
+        anchor.collectError(Slots.Location.name, into: &errors)
+        anchor.collectError(Slots.Location.dimension, into: &errors)
+        return errors
+    }
+    /// The value, or the field errors in it as a thrown `FieldErrors`.
+    @_spi(Generated) @MainActor public static func throwing(_ anchor: Baton.Anchor) throws -> Self { try caught(anchor).get() }
+    /// The value, or the field errors in it as a `Result`.
+    @_spi(Generated) @MainActor public static func caught(_ anchor: Baton.Anchor) -> Result<Self, Baton.FieldErrors> {
+        let errors = fieldErrors(anchor)
+        return errors.isEmpty ? .success(.init(anchor: anchor)) : .failure(.init(errors))
     }
 }
 

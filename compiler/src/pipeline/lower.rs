@@ -442,8 +442,6 @@ impl Lowering<'_> {
         }
     }
 
-    /// The `@refetchable` metadata Relay attached: the generated query's name
-    /// and variables, the id variable, and the one connection it paginates.
     /// What an `@inline` fragment may not say: `@refetchable` and
     /// `@connection`, since a value is not live and paginates nothing, and
     /// a spread of a lens fragment, since a value holds no lens
@@ -466,7 +464,7 @@ impl Lowering<'_> {
                 fragment.name.location,
             ));
         }
-        self.check_inline_spreads(name, &fragment.selections);
+        self.check_inline_spreads(name, fragment.name.location, &fragment.selections);
     }
 
     /// Relay's inline-data transform replaces the spread of an inline
@@ -475,6 +473,7 @@ impl Lowering<'_> {
     fn check_inline_spreads(
         &self,
         name: graphql_ir::FragmentDefinitionName,
+        location: common::Location,
         selections: &[Selection],
     ) {
         for selection in selections {
@@ -489,21 +488,47 @@ impl Lowering<'_> {
                     ));
                 }
                 Selection::LinkedField(field) => {
-                    self.check_inline_spreads(name, &field.selections);
+                    self.check_inline_spreads(name, location, &field.selections);
                 }
                 Selection::InlineFragment(inline) => {
-                    if InlineDirectiveMetadata::find(&inline.directives).is_none() {
-                        self.check_inline_spreads(name, &inline.selections);
+                    match InlineDirectiveMetadata::find(&inline.directives) {
+                        None => self.check_inline_spreads(name, location, &inline.selections),
+                        // A value is built in one pass and its initializer
+                        // cannot throw, so the policy of a value it spreads
+                        // has no place to act: it goes on the outer value.
+                        Some(metadata) => {
+                            let inner = metadata.fragment_name;
+                            let throws =
+                                self.programs
+                                    .reader
+                                    .fragment(inner)
+                                    .is_some_and(|fragment| {
+                                        fragment
+                                            .directives
+                                            .named(directive_name("throwOnFieldError"))
+                                            .is_some()
+                                    });
+                            if throws {
+                                self.diagnostics.borrow_mut().push(Diagnostic::error(
+                                    format!(
+                                        "`{inner}` is `@throwOnFieldError` and is spread inside the `@inline` fragment `{name}`; a value is built in one pass, so the policy goes on `{name}`, whose errors include those of the values it spreads"
+                                    ),
+                                    location,
+                                ));
+                            }
+                        }
                     }
                 }
                 Selection::Condition(condition) => {
-                    self.check_inline_spreads(name, &condition.selections);
+                    self.check_inline_spreads(name, location, &condition.selections);
                 }
                 Selection::ScalarField(_) => {}
             }
         }
     }
 
+    /// The `@refetchable` metadata Relay attached: the generated query's name
+    /// and variables, the id variable, and the one connection it paginates.
     fn refetch(&self, fragment: &FragmentDefinition) -> Option<RefetchPlan> {
         let metadata = RefetchableMetadata::find(&fragment.directives)?;
         let operation = metadata.operation_name.0.lookup().to_string();
