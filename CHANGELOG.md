@@ -3,7 +3,7 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
-## Unreleased
+## 0.12.0 (Palianytsia) — 2026-10-08
 
 - Baton and Apollo Kotlin end to end on a phone: `kotlin/samples/apollo-android`,
   the Android sample's twin over Apollo Kotlin 5.2.0 and its memory and SQL
