@@ -93,7 +93,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "9.8.0"
-      - run: gradle --no-daemon :baton:build :goldens:compileKotlinJvm
+      - run: gradle --no-daemon :baton:build :baton-testing:build :goldens:compileKotlinJvm :samples:desktop:build
         working-directory: kotlin
 
   # The package on the current Xcode. Every target builds with warnings as
