@@ -25,6 +25,8 @@ samples/shared/   the Rick and Morty sample's screens, Compose Multiplatform for
 samples/desktop/  the Compose for Desktop app over them: window, menu, inspector pane, screenshots
 samples/android/  the Android app over them, for a phone
 samples/github/   a Compose for Desktop app over GitHub's API, with writes: the twin of examples/GitHubTriage
+benchmarks/android/
+                  the ingest benchmark, an instrumented test of a release build that is not debuggable
 ```
 
 `scripts/check-kotlin-goldens.sh` runs `:goldens:compileKotlinJvm`.
@@ -68,28 +70,44 @@ host against Android's API too (`testAndroidHostTest`).
 
 ### The ingest benchmark
 
-`IngestBenchmark`, in `baton/src/androidDeviceTest`, is the bench the
-ingest budget of `docs/decisions/native-runtimes.md` is measured with: the
-Fixture response (`spec/rickandmorty/characters-page-1.json`, 686 KB, 899
-records) ingested through the plan `batonc` generates from
+`IngestBenchmark`, in `benchmarks/android/src/androidTest`, is the bench
+the ingest budget of `docs/decisions/native-runtimes.md` is measured with:
+the Fixture response (`spec/rickandmorty/characters-page-1.json`, 686 KB,
+899 records) ingested through the plan `batonc` generates from
 `spec/sources/Fixture.graphql` and committed into an empty store, 200 runs
 of warm-up, then the medians of ingest and of commit over 300 runs,
 logged under the tag `BatonIngest` with the device's maker, model and
-Android version. On a connected device (`adb devices` lists one), with
-the compiler built:
+Android version.
+
+The budget's number comes from `benchmarks/android`, a small application
+built with the release build type (signed with the debug key, not
+minified) whose instrumented test is the benchmark, so the process under
+test is not debuggable and ART compiles the runtime as it would an app's.
+On a connected device (`adb devices` lists one; `ANDROID_SERIAL` picks one
+of several), with the compiler built:
+
+```bash
+gradle :benchmarks:android:connectedReleaseAndroidTest
+adb logcat -d -s BatonIngest:I
+```
+
+or, once both APKs are installed (`gradle :benchmarks:android:installRelease
+:benchmarks:android:installReleaseAndroidTest`), with the result in the
+instrument's own output:
+
+```bash
+adb shell dumpsys package baton.benchmarks | grep -m1 flags   # no DEBUGGABLE
+adb shell am instrument -w -e class baton.IngestBenchmark \
+  baton.benchmarks.test/androidx.test.runner.AndroidJUnitRunner
+```
+
+The runtime's device test compiles the same file and runs it in a
+debuggable process, which is how the Android Gradle plugin builds a
+library's device test and which ART runs with less optimization:
 
 ```bash
 gradle :baton:connectedAndroidDeviceTest \
   -Pandroid.testInstrumentationRunnerArguments.class=baton.IngestBenchmark
-adb logcat -d -s BatonIngest:I
-```
-
-or, once the test APK is installed (`gradle :baton:installAndroidDeviceTest`),
-with the result in the instrument's own output:
-
-```bash
-adb shell am instrument -w -e class baton.IngestBenchmark \
-  baton.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
 A number from an emulator is not the budget; the budget is a number on a

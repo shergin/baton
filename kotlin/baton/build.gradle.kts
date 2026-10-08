@@ -149,6 +149,10 @@ kotlin {
         }
         getByName("androidDeviceTest") {
             kotlin.srcDir(generatedBenchmark)
+            // The ingest benchmark, which `benchmarks/android` runs in a
+            // process that is not debuggable; here it runs in the device
+            // test's, which is.
+            kotlin.srcDir(rootDir.resolve("benchmarks/android/src/androidTest/kotlin"))
             // The Fixture response, read as a resource.
             resources.srcDir(repository.resolve("spec/rickandmorty"))
             resources.include("characters-page-1.json")
