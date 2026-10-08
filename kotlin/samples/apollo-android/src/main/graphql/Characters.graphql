@@ -1,0 +1,43 @@
+# The Baton sample's documents (`samples/shared`), as Apollo files them:
+# the fragments a row and a header read, and the screens' queries.
+
+fragment CharacterRow_character on Character {
+  name
+  status
+  species
+  image
+}
+
+fragment CharacterHeader_character on Character {
+  name
+  status
+  species
+  gender
+  image
+  origin { id name }
+  location { id name }
+}
+
+# The list, one page at a time. It also spreads the detail header's
+# fragment, so a selected character's detail renders its header from the
+# cache at once.
+query CharactersScreenQuery($page: Int) {
+  characters(page: $page) {
+    info { count pages next prev }
+    results {
+      id
+      ...CharacterRow_character
+      ...CharacterHeader_character
+    }
+  }
+}
+
+query CharacterHeaderQuery($id: ID!) {
+  character(id: $id) { ...CharacterHeader_character }
+}
+
+query CharacterEpisodesQuery($id: ID!) {
+  character(id: $id) {
+    episode { id name episode air_date }
+  }
+}

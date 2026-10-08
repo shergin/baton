@@ -1,0 +1,10 @@
+# Apollo keys the three entity types by `id`, as Baton does, and resolves
+# `character(id:)` to the record of that id, as Baton's `Query.character`
+# lookup does, so a detail's header reads from the cache the list filled.
+extend schema @link(url: "https://specs.apollo.dev/cache/v0.4", import: ["@typePolicy", "@fieldPolicy"])
+
+extend type Character @typePolicy(keyFields: "id")
+extend type Location @typePolicy(keyFields: "id")
+extend type Episode @typePolicy(keyFields: "id")
+
+extend type Query @fieldPolicy(forField: "character", keyArgs: "id")
