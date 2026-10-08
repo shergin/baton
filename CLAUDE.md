@@ -41,6 +41,15 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
   runs the main context, it hands writing and updating tests to an
   Opus-based subagent.
 
+## Delegation
+
+- Work that changes no source code and needs no deep architectural
+  research is delegated to a subagent running Opus, not Fable: running
+  benchmarks or the check list, checking something online, reading an
+  issue, a release or a log, verifying a published artifact. Fable keeps
+  the design, the source changes and the judgement of what the results
+  mean.
+
 ## Git
 
 - One meaningful change per commit; imperative subject under about fifty
