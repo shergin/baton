@@ -3,9 +3,12 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.ConnectionPlan
 import baton.Document
+import baton.FieldError
+import baton.FieldErrors
 import baton.Lens
 import baton.Lookup
 import baton.OperationHandle
@@ -20,6 +23,161 @@ import baton.Selection
 import baton.StorageKey
 import baton.Variable
 import baton.Variables
+
+/** Lens for `fragment TestCaughtAppearances_character on Character`. */
+@Stable
+class TestCaughtAppearances_character(override val anchor: Anchor) : Lens {
+    val episode: Result<List<Episode>> get() = anchor.caughtRequiredList(Slots.Character.episode, Episode::fieldErrors, ::Episode)
+    override fun equals(other: Any?): Boolean = other is TestCaughtAppearances_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** Whether the deferred part that carries this fragment has arrived. */
+        fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.episode)
+    }
+
+    @Stable
+    class Episode(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Episode.name)
+        override fun equals(other: Any?): Boolean = other is TestCaughtAppearances_character.Episode && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.name, errors)
+                return errors
+            }
+            /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): TestCaughtAppearances_character.Episode = caught(anchor).getOrThrow()
+            /** The lens, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<TestCaughtAppearances_character.Episode> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(TestCaughtAppearances_character.Episode(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+}
+
+/** Lens for `fragment TestLogEdges_connection on NoteConnection`. */
+@Stable
+class TestLogEdges_connection(override val anchor: Anchor) : Lens {
+    val edges: List<Edges> get() = anchor.requiredList(Slots.NoteConnection.edges, ::Edges)
+    override fun equals(other: Any?): Boolean = other is TestLogEdges_connection && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles. */
+        fun satisfied(anchor: Anchor): Boolean {
+            if (!anchor.hasValue(Slots.NoteConnection.edges, "edges", log = true)) return false
+            return true
+        }
+    }
+
+    @Stable
+    class Edges(override val anchor: Anchor) : Lens {
+        val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+        override fun equals(other: Any?): Boolean = other is TestLogEdges_connection.Edges && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+}
+
+/** Lens for `fragment TestLoggedNotes_character on Character`. */
+@Stable
+class TestLoggedNotes_character(override val anchor: Anchor) : Lens {
+    val notes: Notes get() = Notes(anchor.requiredLinked(Slots.Character.notes_f89852, Types.NoteConnection))
+    override fun equals(other: Any?): Boolean = other is TestLoggedNotes_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    @Stable
+    class Notes(override val anchor: Anchor) : Lens {
+        val totalCount: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val testLogEdges: TestLogEdges_connection?
+            get() {
+                if (!TestLogEdges_connection.satisfied(anchor)) return null
+                return TestLogEdges_connection(anchor.entering())
+            }
+        override fun equals(other: Any?): Boolean = other is TestLoggedNotes_character.Notes && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+}
+
+/** Lens for `fragment TestOriginAndEpisode_character on Character`. */
+@Stable
+class TestOriginAndEpisode_character(override val anchor: Anchor) : Lens {
+    val origin: Origin? get() = anchor.linked(Slots.Character.origin)?.let(::Origin)
+    val episode: List<Episode> get() = anchor.requiredList(Slots.Character.episode, ::Episode)
+    override fun equals(other: Any?): Boolean = other is TestOriginAndEpisode_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** Whether the deferred part that carries this fragment has arrived. */
+        fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.episode)
+    }
+
+    @Stable
+    class Origin(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Location.name)
+        override fun equals(other: Any?): Boolean = other is TestOriginAndEpisode_character.Origin && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Episode(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Episode.name)
+        override fun equals(other: Any?): Boolean = other is TestOriginAndEpisode_character.Episode && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+}
+
+/** Lens for `fragment TestThrowingOrigin_character on Character`. */
+@Stable
+class TestThrowingOrigin_character(override val anchor: Anchor) : Lens {
+    val origin: Origin get() = Origin(anchor.throwingLinked(Slots.Character.origin, "origin", { true }))
+    override fun equals(other: Any?): Boolean = other is TestThrowingOrigin_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectErrors(Slots.Character.origin, Origin::fieldErrors, errors)
+            anchor.collectRequired(Slots.Character.origin, "origin", errors)
+            return errors
+        }
+        /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): TestThrowingOrigin_character = caught(anchor).getOrThrow()
+        /** The lens, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<TestThrowingOrigin_character> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(TestThrowingOrigin_character(anchor)) else Result.failure(FieldErrors(errors))
+        }
+    }
+
+    @Stable
+    class Origin(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Location.name)
+        override fun equals(other: Any?): Boolean = other is TestThrowingOrigin_character.Origin && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.name, errors)
+                return errors
+            }
+            /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): TestThrowingOrigin_character.Origin = caught(anchor).getOrThrow()
+            /** The lens, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<TestThrowingOrigin_character.Origin> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(TestThrowingOrigin_character.Origin(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+}
 
 /** Operation value for `query TestCaughtEpisodes`. */
 class TestCaughtEpisodes(val id: String) : QueryOperation<TestCaughtEpisodes.Data> {
@@ -57,7 +215,43 @@ class TestCaughtEpisodes(val id: String) : QueryOperation<TestCaughtEpisodes.Dat
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestCaughtEpisodes.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val caught: Result<List<Caught>> get() = anchor.caughtRequiredList(Slots.Character.episode, Caught::fieldErrors, ::Caught)
+            override fun equals(other: Any?): Boolean = other is TestCaughtEpisodes.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Caught(override val anchor: Anchor) : Lens {
+                val name: String? get() = anchor.string(Slots.Episode.name)
+                override fun equals(other: Any?): Boolean = other is TestCaughtEpisodes.Data.Character.Caught && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                companion object {
+                    /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                    fun fieldErrors(anchor: Anchor): List<FieldError> {
+                        val errors = mutableListOf<FieldError>()
+                        anchor.collectError(Slots.Episode.name, errors)
+                        return errors
+                    }
+                    /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                    fun throwing(anchor: Anchor): TestCaughtEpisodes.Data.Character.Caught = caught(anchor).getOrThrow()
+                    /** The lens, or the field errors in it as a `Result`. */
+                    fun caught(anchor: Anchor): Result<TestCaughtEpisodes.Data.Character.Caught> {
+                        val errors = fieldErrors(anchor)
+                        return if (errors.isEmpty()) Result.success(TestCaughtEpisodes.Data.Character.Caught(anchor)) else Result.failure(FieldErrors(errors))
+                    }
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestCaughtPartQuery`. */
@@ -99,7 +293,58 @@ class TestCaughtPartQuery(val id: String) : QueryOperation<TestCaughtPartQuery.D
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestCaughtPartQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectErrors(anchor.owner.slot(Slots.Query.character_bca4f9), Character::fieldErrors, errors)
+                return errors
+            }
+            /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): TestCaughtPartQuery.Data = caught(anchor).getOrThrow()
+            /** The lens, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<TestCaughtPartQuery.Data> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(TestCaughtPartQuery.Data(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            val testCaughtAppearances: TestCaughtAppearances_character?
+                get() {
+                    if (!TestCaughtAppearances_character.isPresent(anchor)) return null
+                    return TestCaughtAppearances_character(anchor.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestCaughtPartQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                fun fieldErrors(anchor: Anchor): List<FieldError> {
+                    val errors = mutableListOf<FieldError>()
+                    anchor.collectError(Slots.Character.id, errors)
+                    anchor.collectError(Slots.Character.name, errors)
+                    return errors
+                }
+                /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                fun throwing(anchor: Anchor): TestCaughtPartQuery.Data.Character = caught(anchor).getOrThrow()
+                /** The lens, or the field errors in it as a `Result`. */
+                fun caught(anchor: Anchor): Result<TestCaughtPartQuery.Data.Character> {
+                    val errors = fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(TestCaughtPartQuery.Data.Character(anchor)) else Result.failure(FieldErrors(errors))
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestCollidingErrors`. */
@@ -139,7 +384,78 @@ class TestCollidingErrors(val id: String) : QueryOperation<TestCollidingErrors.D
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val types: TypesLens? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::TypesLens)
+        val typesLens: TypesLens2? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::TypesLens2)
+        override fun equals(other: Any?): Boolean = other is TestCollidingErrors.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectErrors(anchor.owner.slot(Slots.Query.character_bca4f9), TypesLens::fieldErrors, errors)
+                anchor.collectErrors(anchor.owner.slot(Slots.Query.character_bca4f9), TypesLens2::fieldErrors, errors)
+                return errors
+            }
+            /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): TestCollidingErrors.Data = caught(anchor).getOrThrow()
+            /** The lens, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<TestCollidingErrors.Data> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(TestCollidingErrors.Data(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+
+        @Stable
+        class TypesLens(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestCollidingErrors.Data.TypesLens && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                fun fieldErrors(anchor: Anchor): List<FieldError> {
+                    val errors = mutableListOf<FieldError>()
+                    anchor.collectError(Slots.Character.id, errors)
+                    return errors
+                }
+                /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                fun throwing(anchor: Anchor): TestCollidingErrors.Data.TypesLens = caught(anchor).getOrThrow()
+                /** The lens, or the field errors in it as a `Result`. */
+                fun caught(anchor: Anchor): Result<TestCollidingErrors.Data.TypesLens> {
+                    val errors = fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(TestCollidingErrors.Data.TypesLens(anchor)) else Result.failure(FieldErrors(errors))
+                }
+            }
+        }
+
+        @Stable
+        class TypesLens2(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            override fun equals(other: Any?): Boolean = other is TestCollidingErrors.Data.TypesLens2 && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                fun fieldErrors(anchor: Anchor): List<FieldError> {
+                    val errors = mutableListOf<FieldError>()
+                    anchor.collectError(Slots.Character.id, errors)
+                    anchor.collectError(Slots.Character.name, errors)
+                    return errors
+                }
+                /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                fun throwing(anchor: Anchor): TestCollidingErrors.Data.TypesLens2 = caught(anchor).getOrThrow()
+                /** The lens, or the field errors in it as a `Result`. */
+                fun caught(anchor: Anchor): Result<TestCollidingErrors.Data.TypesLens2> {
+                    val errors = fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(TestCollidingErrors.Data.TypesLens2(anchor)) else Result.failure(FieldErrors(errors))
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestCollidingRequired`. */
@@ -179,7 +495,58 @@ class TestCollidingRequired(val id: String) : QueryOperation<TestCollidingRequir
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val types: TypesLens? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::TypesLens)
+        val typesLens: TypesLens2 get() = TypesLens2(anchor.requiredLinked(anchor.owner.slot(Slots.Query.character_bca4f9), Types.Character))
+        override fun equals(other: Any?): Boolean = other is TestCollidingRequired.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            /** Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles. */
+            fun satisfied(anchor: Anchor): Boolean {
+                if (anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(TypesLens2::satisfied) != true) return anchor.requiredMissing("typesLens", log = false)
+                return true
+            }
+            /** The path of the first `@required` field that is missing, which bubbles to the root. */
+            fun missingRequiredField(anchor: Anchor): String? {
+                run {
+                    val child = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)) ?: run { return "typesLens" }
+                    val missing = TypesLens2.missingRequiredField(child)
+                    if (missing != null) { return missing }
+                }
+                return null
+            }
+        }
+
+        @Stable
+        class TypesLens(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestCollidingRequired.Data.TypesLens && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class TypesLens2(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String get() = anchor.requiredString(Slots.Character.name)
+            override fun equals(other: Any?): Boolean = other is TestCollidingRequired.Data.TypesLens2 && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles. */
+                fun satisfied(anchor: Anchor): Boolean {
+                    if (!anchor.hasValue(Slots.Character.name, "typesLens.name", log = false)) return false
+                    return true
+                }
+                /** The path of the first `@required` field that is missing, which bubbles to the root. */
+                fun missingRequiredField(anchor: Anchor): String? {
+                    if (!anchor.hasValue(Slots.Character.name, "typesLens.name", log = false)) return "typesLens.name"
+                    return null
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestFilteredCharacters`. */
@@ -212,7 +579,20 @@ class TestFilteredCharacters(val filters: List<FilterCharacter>) : QueryOperatio
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val charactersMatching: List<CharactersMatching>? get() = anchor.list(anchor.owner.slot(Slots.Query.charactersMatching_ca82bd), ::CharactersMatching)
+        override fun equals(other: Any?): Boolean = other is TestFilteredCharacters.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class CharactersMatching(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            override fun equals(other: Any?): Boolean = other is TestFilteredCharacters.Data.CharactersMatching && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestKeywordVariables`. */
@@ -260,7 +640,26 @@ class TestKeywordVariables(val where: String, val `in`: String) : QueryOperation
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_8fc9fb))?.let(::Character)
+        val search: List<Search>? get() = anchor.list(anchor.owner.slot(Slots.Query.search_823c67), ::Search)
+        override fun equals(other: Any?): Boolean = other is TestKeywordVariables.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestKeywordVariables.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Search(override val anchor: Anchor) : Lens {
+            override fun equals(other: Any?): Boolean = other is TestKeywordVariables.Data.Search && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestLoggedOrigin`. */
@@ -300,7 +699,58 @@ class TestLoggedOrigin(val id: String) : QueryOperation<TestLoggedOrigin.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character get() = Character(anchor.requiredLinked(anchor.owner.slot(Slots.Query.character_bca4f9), Types.Character))
+        override fun equals(other: Any?): Boolean = other is TestLoggedOrigin.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            /** Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles. */
+            fun satisfied(anchor: Anchor): Boolean {
+                if (anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(Character::satisfied) != true) return anchor.requiredMissing("character", log = true)
+                return true
+            }
+            /** The path of the first `@required` field that is missing, which bubbles to the root. */
+            fun missingRequiredField(anchor: Anchor): String? {
+                run {
+                    val child = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)) ?: run { anchor.requiredMissing("character", log = true); return "character" }
+                    val missing = Character.missingRequiredField(child)
+                    if (missing != null) { anchor.requiredMissing("character", log = true); return missing }
+                }
+                return null
+            }
+        }
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val origin: Origin get() = Origin(anchor.requiredLinked(Slots.Character.origin, Types.Location))
+            override fun equals(other: Any?): Boolean = other is TestLoggedOrigin.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles. */
+                fun satisfied(anchor: Anchor): Boolean {
+                    if (!anchor.hasValue(Slots.Character.origin, "character.origin", log = true)) return false
+                    return true
+                }
+                /** The path of the first `@required` field that is missing, which bubbles to the root. */
+                fun missingRequiredField(anchor: Anchor): String? {
+                    if (!anchor.hasValue(Slots.Character.origin, "character.origin", log = true)) return "character.origin"
+                    return null
+                }
+            }
+
+            @Stable
+            class Origin(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Location.id)
+                val name: String? get() = anchor.string(Slots.Location.name)
+                override fun equals(other: Any?): Boolean = other is TestLoggedOrigin.Data.Character.Origin && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestRequiredOrigin`. */
@@ -340,7 +790,58 @@ class TestRequiredOrigin(val id: String) : QueryOperation<TestRequiredOrigin.Dat
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character get() = Character(anchor.requiredLinked(anchor.owner.slot(Slots.Query.character_bca4f9), Types.Character))
+        override fun equals(other: Any?): Boolean = other is TestRequiredOrigin.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            /** Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles. */
+            fun satisfied(anchor: Anchor): Boolean {
+                if (anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(Character::satisfied) != true) return anchor.requiredMissing("character", log = false)
+                return true
+            }
+            /** The path of the first `@required` field that is missing, which bubbles to the root. */
+            fun missingRequiredField(anchor: Anchor): String? {
+                run {
+                    val child = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)) ?: run { return "character" }
+                    val missing = Character.missingRequiredField(child)
+                    if (missing != null) { return missing }
+                }
+                return null
+            }
+        }
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val origin: Origin get() = Origin(anchor.requiredLinked(Slots.Character.origin, Types.Location))
+            override fun equals(other: Any?): Boolean = other is TestRequiredOrigin.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles. */
+                fun satisfied(anchor: Anchor): Boolean {
+                    if (!anchor.hasValue(Slots.Character.origin, "character.origin", log = false)) return false
+                    return true
+                }
+                /** The path of the first `@required` field that is missing, which bubbles to the root. */
+                fun missingRequiredField(anchor: Anchor): String? {
+                    if (!anchor.hasValue(Slots.Character.origin, "character.origin", log = false)) return "character.origin"
+                    return null
+                }
+            }
+
+            @Stable
+            class Origin(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Location.id)
+                val name: String? get() = anchor.string(Slots.Location.name)
+                override fun equals(other: Any?): Boolean = other is TestRequiredOrigin.Data.Character.Origin && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestReservedNames`. */
@@ -407,7 +908,40 @@ class TestReservedNames(val id: String) : QueryOperation<TestReservedNames.Data>
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val sites: SitesLens? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::SitesLens)
+        val types: TypesLens? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::TypesLens)
+        val slots: SlotsLens? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::SlotsLens)
+        override fun equals(other: Any?): Boolean = other is TestReservedNames.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class SitesLens(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val testNotes: TestNotes_character
+                get() {
+                    val bound = anchor.binding(Sites.TestReservedNames_testNotes) { mapOf("count" to Variable.Int(1), "cursor" to Variable.Null) }
+                    return TestNotes_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestReservedNames.Data.SitesLens && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class TypesLens(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestReservedNames.Data.TypesLens && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class SlotsLens(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestReservedNames.Data.SlotsLens && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestStandaloneFragmentsQuery`. */
@@ -458,7 +992,33 @@ class TestStandaloneFragmentsQuery(val id: String) : QueryOperation<TestStandalo
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestStandaloneFragmentsQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val testThrowingOrigin: TestThrowingOrigin_character get() = TestThrowingOrigin_character.throwing(anchor.entering())
+            val testLoggedNotes: TestLoggedNotes_character get() = TestLoggedNotes_character(anchor.entering())
+            val notes: Notes get() = Notes(anchor.requiredLinked(Slots.Character.notes_f89852, Types.NoteConnection))
+            override fun equals(other: Any?): Boolean = other is TestStandaloneFragmentsQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Notes(override val anchor: Anchor) : Lens {
+                val testLogEdges: TestLogEdges_connection?
+                    get() {
+                        if (!TestLogEdges_connection.satisfied(anchor)) return null
+                        return TestLogEdges_connection(anchor.entering())
+                    }
+                override fun equals(other: Any?): Boolean = other is TestStandaloneFragmentsQuery.Data.Character.Notes && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestStrictEpisodes`. */
@@ -498,7 +1058,78 @@ class TestStrictEpisodes(val id: String) : QueryOperation<TestStrictEpisodes.Dat
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestStrictEpisodes.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectErrors(anchor.owner.slot(Slots.Query.character_bca4f9), Character::fieldErrors, errors)
+                return errors
+            }
+            /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): TestStrictEpisodes.Data = caught(anchor).getOrThrow()
+            /** The lens, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<TestStrictEpisodes.Data> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(TestStrictEpisodes.Data(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val episode: List<Episode> get() = anchor.requiredList(Slots.Character.episode, ::Episode)
+            override fun equals(other: Any?): Boolean = other is TestStrictEpisodes.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                fun fieldErrors(anchor: Anchor): List<FieldError> {
+                    val errors = mutableListOf<FieldError>()
+                    anchor.collectError(Slots.Character.id, errors)
+                    anchor.collectListErrors(Slots.Character.episode, Episode::fieldErrors, errors)
+                    return errors
+                }
+                /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                fun throwing(anchor: Anchor): TestStrictEpisodes.Data.Character = caught(anchor).getOrThrow()
+                /** The lens, or the field errors in it as a `Result`. */
+                fun caught(anchor: Anchor): Result<TestStrictEpisodes.Data.Character> {
+                    val errors = fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(TestStrictEpisodes.Data.Character(anchor)) else Result.failure(FieldErrors(errors))
+                }
+            }
+
+            @Stable
+            class Episode(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Episode.id)
+                val name: String? get() = anchor.string(Slots.Episode.name)
+                override fun equals(other: Any?): Boolean = other is TestStrictEpisodes.Data.Character.Episode && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                companion object {
+                    /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                    fun fieldErrors(anchor: Anchor): List<FieldError> {
+                        val errors = mutableListOf<FieldError>()
+                        anchor.collectError(Slots.Episode.id, errors)
+                        anchor.collectError(Slots.Episode.name, errors)
+                        return errors
+                    }
+                    /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                    fun throwing(anchor: Anchor): TestStrictEpisodes.Data.Character.Episode = caught(anchor).getOrThrow()
+                    /** The lens, or the field errors in it as a `Result`. */
+                    fun caught(anchor: Anchor): Result<TestStrictEpisodes.Data.Character.Episode> {
+                        val errors = fieldErrors(anchor)
+                        return if (errors.isEmpty()) Result.success(TestStrictEpisodes.Data.Character.Episode(anchor)) else Result.failure(FieldErrors(errors))
+                    }
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestStrictOrigin`. */
@@ -538,7 +1169,78 @@ class TestStrictOrigin(val id: String) : QueryOperation<TestStrictOrigin.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestStrictOrigin.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectErrors(anchor.owner.slot(Slots.Query.character_bca4f9), Character::fieldErrors, errors)
+                return errors
+            }
+            /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): TestStrictOrigin.Data = caught(anchor).getOrThrow()
+            /** The lens, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<TestStrictOrigin.Data> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(TestStrictOrigin.Data(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val origin: Origin? get() = anchor.linked(Slots.Character.origin)?.let(::Origin)
+            override fun equals(other: Any?): Boolean = other is TestStrictOrigin.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                fun fieldErrors(anchor: Anchor): List<FieldError> {
+                    val errors = mutableListOf<FieldError>()
+                    anchor.collectError(Slots.Character.id, errors)
+                    anchor.collectErrors(Slots.Character.origin, Origin::fieldErrors, errors)
+                    return errors
+                }
+                /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                fun throwing(anchor: Anchor): TestStrictOrigin.Data.Character = caught(anchor).getOrThrow()
+                /** The lens, or the field errors in it as a `Result`. */
+                fun caught(anchor: Anchor): Result<TestStrictOrigin.Data.Character> {
+                    val errors = fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(TestStrictOrigin.Data.Character(anchor)) else Result.failure(FieldErrors(errors))
+                }
+            }
+
+            @Stable
+            class Origin(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Location.id)
+                val name: String? get() = anchor.string(Slots.Location.name)
+                override fun equals(other: Any?): Boolean = other is TestStrictOrigin.Data.Character.Origin && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                companion object {
+                    /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                    fun fieldErrors(anchor: Anchor): List<FieldError> {
+                        val errors = mutableListOf<FieldError>()
+                        anchor.collectError(Slots.Location.id, errors)
+                        anchor.collectError(Slots.Location.name, errors)
+                        return errors
+                    }
+                    /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                    fun throwing(anchor: Anchor): TestStrictOrigin.Data.Character.Origin = caught(anchor).getOrThrow()
+                    /** The lens, or the field errors in it as a `Result`. */
+                    fun caught(anchor: Anchor): Result<TestStrictOrigin.Data.Character.Origin> {
+                        val errors = fieldErrors(anchor)
+                        return if (errors.isEmpty()) Result.success(TestStrictOrigin.Data.Character.Origin(anchor)) else Result.failure(FieldErrors(errors))
+                    }
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestSwiftNames`. */
@@ -605,7 +1307,165 @@ class TestSwiftNames(val id: String) : QueryOperation<TestSwiftNames.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val type: Type? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Type)
+        val self: Self? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Self)
+        val protocol: Protocol? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Protocol)
+        val any: AnyLens? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::AnyLens)
+        val mainActor: MainActor? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::MainActor)
+        val baton: Baton? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Baton)
+        val abstractSlots: AbstractSlotsLens? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::AbstractSlotsLens)
+        val result: ResultLens? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::ResultLens)
+        val optional: Optional? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Optional)
+        val string: StringLens? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::StringLens)
+        val int: IntLens? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::IntLens)
+        val double: DoubleLens? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::DoubleLens)
+        val bool: Bool? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Bool)
+        val owner: Owner? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Owner)
+        val caught: Result<Caught?> get() = anchor.caught(anchor.owner.slot(Slots.Query.character_bca4f9), Caught::fieldErrors) { it.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Caught) }
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        val tokenizer: Tokenizer? get() = anchor.linked(Slots.Query.tokenizer)?.let(::Tokenizer)
+        override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Type(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.Type && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Self(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.Self && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Protocol(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.Protocol && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class AnyLens(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.AnyLens && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class MainActor(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.MainActor && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Baton(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.Baton && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class AbstractSlotsLens(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.AbstractSlotsLens && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class ResultLens(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.ResultLens && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Optional(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.Optional && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class StringLens(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.StringLens && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class IntLens(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.IntLens && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class DoubleLens(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.DoubleLens && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Bool(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.Bool && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Owner(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.Owner && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Caught(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.Caught && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                fun fieldErrors(anchor: Anchor): List<FieldError> {
+                    val errors = mutableListOf<FieldError>()
+                    anchor.collectError(Slots.Character.id, errors)
+                    return errors
+                }
+                /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                fun throwing(anchor: Anchor): TestSwiftNames.Data.Caught = caught(anchor).getOrThrow()
+                /** The lens, or the field errors in it as a `Result`. */
+                fun caught(anchor: Anchor): Result<TestSwiftNames.Data.Caught> {
+                    val errors = fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(TestSwiftNames.Data.Caught(anchor)) else Result.failure(FieldErrors(errors))
+                }
+            }
+        }
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Tokenizer(override val anchor: Anchor) : Lens {
+            val ratio: Double? get() = anchor.double(Slots.Tokenizer.ratio)
+            val count: Int? get() = anchor.int(Slots.Tokenizer.count)
+            val flag: Boolean? get() = anchor.bool(Slots.Tokenizer.flag)
+            override fun equals(other: Any?): Boolean = other is TestSwiftNames.Data.Tokenizer && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestThrowingNode`. */
@@ -646,7 +1506,76 @@ class TestThrowingNode(val id: String) : QueryOperation<TestThrowingNode.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is TestThrowingNode.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectErrors(anchor.owner.slot(Slots.Query.node_8f7d08), Node::fieldErrors, errors)
+                return errors
+            }
+            /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): TestThrowingNode.Data = caught(anchor).getOrThrow()
+            /** The lens, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<TestThrowingNode.Data> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(TestThrowingNode.Data(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+            val asCharacter: AsCharacter? get() = if (anchor.record.type == Types.Character) AsCharacter(anchor) else null
+            override fun equals(other: Any?): Boolean = other is TestThrowingNode.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                fun fieldErrors(anchor: Anchor): List<FieldError> {
+                    val errors = mutableListOf<FieldError>()
+                    anchor.collectError(AbstractSlots.Node.id.on(anchor.record.type), errors)
+                    if (anchor.record.type == Types.Character) errors.addAll(AsCharacter.fieldErrors(anchor))
+                    return errors
+                }
+                /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                fun throwing(anchor: Anchor): TestThrowingNode.Data.Node = caught(anchor).getOrThrow()
+                /** The lens, or the field errors in it as a `Result`. */
+                fun caught(anchor: Anchor): Result<TestThrowingNode.Data.Node> {
+                    val errors = fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(TestThrowingNode.Data.Node(anchor)) else Result.failure(FieldErrors(errors))
+                }
+            }
+
+            @Stable
+            class AsCharacter(override val anchor: Anchor) : Lens {
+                val name: String? get() = anchor.string(Slots.Character.name)
+                override fun equals(other: Any?): Boolean = other is TestThrowingNode.Data.Node.AsCharacter && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                companion object {
+                    /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                    fun fieldErrors(anchor: Anchor): List<FieldError> {
+                        val errors = mutableListOf<FieldError>()
+                        anchor.collectError(Slots.Character.name, errors)
+                        return errors
+                    }
+                    /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                    fun throwing(anchor: Anchor): TestThrowingNode.Data.Node.AsCharacter = caught(anchor).getOrThrow()
+                    /** The lens, or the field errors in it as a `Result`. */
+                    fun caught(anchor: Anchor): Result<TestThrowingNode.Data.Node.AsCharacter> {
+                        val errors = fieldErrors(anchor)
+                        return if (errors.isEmpty()) Result.success(TestThrowingNode.Data.Node.AsCharacter(anchor)) else Result.failure(FieldErrors(errors))
+                    }
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestTwoFieldPartQuery`. */
@@ -694,7 +1623,25 @@ class TestTwoFieldPartQuery(val id: String) : QueryOperation<TestTwoFieldPartQue
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestTwoFieldPartQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            val testOriginAndEpisode: TestOriginAndEpisode_character?
+                get() {
+                    if (!TestOriginAndEpisode_character.isPresent(anchor)) return null
+                    return TestOriginAndEpisode_character(anchor.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestTwoFieldPartQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestTwoScopes`. */
@@ -762,7 +1709,39 @@ class TestTwoScopes(val a: String, val b: String) : QueryOperation<TestTwoScopes
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val first: First? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_800bca))?.let(::First)
+        val second: Second? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_ac9202))?.let(::Second)
+        override fun equals(other: Any?): Boolean = other is TestTwoScopes.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class First(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            val testNotes: TestNotes_character
+                get() {
+                    val bound = anchor.binding(Sites.TestTwoScopes_testNotes) { mapOf("count" to Variable.Int(1), "cursor" to Variable.Null) }
+                    return TestNotes_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestTwoScopes.Data.First && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Second(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            val testNotes: TestNotes_character
+                get() {
+                    val bound = anchor.binding(Sites.TestTwoScopes_testNotes_2) { mapOf("count" to Variable.Int(3), "cursor" to Variable.Null) }
+                    return TestNotes_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestTwoScopes.Data.Second && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestUncaughtPartQuery`. */
@@ -805,5 +1784,56 @@ class TestUncaughtPartQuery(val id: String) : QueryOperation<TestUncaughtPartQue
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestUncaughtPartQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectErrors(anchor.owner.slot(Slots.Query.character_bca4f9), Character::fieldErrors, errors)
+                return errors
+            }
+            /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): TestUncaughtPartQuery.Data = caught(anchor).getOrThrow()
+            /** The lens, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<TestUncaughtPartQuery.Data> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(TestUncaughtPartQuery.Data(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            val testAppearances: TestAppearances_character?
+                get() {
+                    if (!TestAppearances_character.isPresent(anchor)) return null
+                    return TestAppearances_character(anchor.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestUncaughtPartQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                fun fieldErrors(anchor: Anchor): List<FieldError> {
+                    val errors = mutableListOf<FieldError>()
+                    anchor.collectError(Slots.Character.id, errors)
+                    anchor.collectError(Slots.Character.name, errors)
+                    return errors
+                }
+                /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                fun throwing(anchor: Anchor): TestUncaughtPartQuery.Data.Character = caught(anchor).getOrThrow()
+                /** The lens, or the field errors in it as a `Result`. */
+                fun caught(anchor: Anchor): Result<TestUncaughtPartQuery.Data.Character> {
+                    val errors = fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(TestUncaughtPartQuery.Data.Character(anchor)) else Result.failure(FieldErrors(errors))
+                }
+            }
+        }
+    }
 }

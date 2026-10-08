@@ -3,6 +3,7 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
 import baton.Lens
@@ -64,7 +65,38 @@ class TestDrafts : QueryOperation<TestDrafts.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(Slots.Query.character_9e6829)?.let(::Character)
+        val drafts: List<Drafts>? get() = anchor.list(Slots.Query.drafts, ::Drafts)
+        override fun equals(other: Any?): Boolean = other is TestDrafts.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            override fun equals(other: Any?): Boolean = other is TestDrafts.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Drafts(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Draft.id)
+            val text: String? get() = anchor.string(Slots.Draft.text)
+            val about: About? get() = anchor.linked(Slots.Draft.about)?.let(::About)
+            override fun equals(other: Any?): Boolean = other is TestDrafts.Data.Drafts && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class About(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                val name: String? get() = anchor.string(Slots.Character.name)
+                override fun equals(other: Any?): Boolean = other is TestDrafts.Data.Drafts.About && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestPinnedCharacter`. */
@@ -100,5 +132,21 @@ class TestPinnedCharacter(val id: String) : QueryOperation<TestPinnedCharacter.D
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestPinnedCharacter.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            val status: String? get() = anchor.string(Slots.Character.status)
+            val isPinned: Boolean? get() = anchor.bool(Slots.Character.isPinned)
+            val note: String? get() = anchor.string(Slots.Character.note)
+            override fun equals(other: Any?): Boolean = other is TestPinnedCharacter.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }

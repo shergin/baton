@@ -3,6 +3,7 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
 import baton.Lens
@@ -19,6 +20,36 @@ import baton.Selection
 import baton.StorageKey
 import baton.Variable
 import baton.Variables
+
+/** Lens for `fragment TestKeyArguments_query on Query`. */
+@Stable
+class TestKeyArguments_query(override val anchor: Anchor) : Lens {
+    val charactersByIds: List<CharactersByIds>? get() = anchor.list(anchor.owner.slot(Slots.Query.charactersByIds_59a627), ::CharactersByIds)
+    val characters: Characters? get() = anchor.linked(anchor.owner.slot(Slots.Query.characters_2b5ffd))?.let(::Characters)
+    override fun equals(other: Any?): Boolean = other is TestKeyArguments_query && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    @Stable
+    class CharactersByIds(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is TestKeyArguments_query.CharactersByIds && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Characters(override val anchor: Anchor) : Lens {
+        val info: Info? get() = anchor.linked(Slots.Characters.info)?.let(::Info)
+        override fun equals(other: Any?): Boolean = other is TestKeyArguments_query.Characters && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Info(override val anchor: Anchor) : Lens {
+            val count: Int? get() = anchor.int(Slots.Info.count)
+            override fun equals(other: Any?): Boolean = other is TestKeyArguments_query.Characters.Info && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+}
 
 /** Operation value for `query TestKeys`. */
 class TestKeys(val id: String, val name: String? = null) : QueryOperation<TestKeys.Data> {
@@ -78,7 +109,49 @@ class TestKeys(val id: String, val name: String? = null) : QueryOperation<TestKe
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val search: List<Search>? get() = anchor.list(Slots.Query.search_6286a6, ::Search)
+        val character: Character? get() = anchor.linked(Slots.Query.character_4a2dfc)?.let(::Character)
+        val charactersByIds: List<CharactersByIds>? get() = anchor.list(anchor.owner.slot(Slots.Query.charactersByIds_0b7f7b), ::CharactersByIds)
+        val characters: Characters? get() = anchor.linked(anchor.owner.slot(Slots.Query.characters_498461))?.let(::Characters)
+        override fun equals(other: Any?): Boolean = other is TestKeys.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Search(override val anchor: Anchor) : Lens {
+            override fun equals(other: Any?): Boolean = other is TestKeys.Data.Search && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val name: String? get() = anchor.string(Slots.Character.name)
+            override fun equals(other: Any?): Boolean = other is TestKeys.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class CharactersByIds(override val anchor: Anchor) : Lens {
+            val name: String? get() = anchor.string(Slots.Character.name)
+            override fun equals(other: Any?): Boolean = other is TestKeys.Data.CharactersByIds && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Characters(override val anchor: Anchor) : Lens {
+            val info: Info? get() = anchor.linked(Slots.Characters.info)?.let(::Info)
+            override fun equals(other: Any?): Boolean = other is TestKeys.Data.Characters && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Info(override val anchor: Anchor) : Lens {
+                val count: Int? get() = anchor.int(Slots.Info.count)
+                override fun equals(other: Any?): Boolean = other is TestKeys.Data.Characters.Info && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestNoteCounts`. */
@@ -123,7 +196,43 @@ class TestNoteCounts(val page: Int? = null, val count: Int? = null) : QueryOpera
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val characters: Characters? get() = anchor.linked(anchor.owner.slot(Slots.Query.characters_5517f9))?.let(::Characters)
+        override fun equals(other: Any?): Boolean = other is TestNoteCounts.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Characters(override val anchor: Anchor) : Lens {
+            val results: List<Results>? get() = anchor.list(Slots.Characters.results, ::Results)
+            override fun equals(other: Any?): Boolean = other is TestNoteCounts.Data.Characters && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Results(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                val name: String? get() = anchor.string(Slots.Character.name)
+                val pinned: Pinned get() = Pinned(anchor.requiredLinked(Slots.Character.notes_8f8f78, Types.NoteConnection))
+                val recent: Recent get() = Recent(anchor.requiredLinked(anchor.owner.slot(Slots.Character.notes_041c11), Types.NoteConnection))
+                override fun equals(other: Any?): Boolean = other is TestNoteCounts.Data.Characters.Results && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                @Stable
+                class Pinned(override val anchor: Anchor) : Lens {
+                    val totalCount: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+                    override fun equals(other: Any?): Boolean = other is TestNoteCounts.Data.Characters.Results.Pinned && other.anchor == anchor
+                    override fun hashCode(): Int = anchor.hashCode()
+                }
+
+                @Stable
+                class Recent(override val anchor: Anchor) : Lens {
+                    val totalCount: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+                    override fun equals(other: Any?): Boolean = other is TestNoteCounts.Data.Characters.Results.Recent && other.anchor == anchor
+                    override fun hashCode(): Int = anchor.hashCode()
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestSpreadKeys`. */
@@ -169,5 +278,37 @@ class TestSpreadKeys(val id: String, val name: String? = null) : QueryOperation<
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        val named: Named? get() = anchor.linked(anchor.owner.slot(Slots.Query.characters_192531))?.let(::Named)
+        val testKeyArguments: TestKeyArguments_query
+            get() {
+                val bound = anchor.binding(Sites.TestSpreadKeys_testKeyArguments) { mapOf("ids" to Variable.List(listOf((anchor.variables["id"] ?: Variable.Null), Variable.String("2"))), "filter" to Variable.Object(mapOf("status" to Variable.String("Alive"), "name" to (anchor.variables["name"] ?: Variable.Null)))) }
+                return TestKeyArguments_query(bound.entering())
+            }
+        override fun equals(other: Any?): Boolean = other is TestSpreadKeys.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val name: String? get() = anchor.string(Slots.Character.name)
+            override fun equals(other: Any?): Boolean = other is TestSpreadKeys.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Named(override val anchor: Anchor) : Lens {
+            val info: Info? get() = anchor.linked(Slots.Characters.info)?.let(::Info)
+            override fun equals(other: Any?): Boolean = other is TestSpreadKeys.Data.Named && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Info(override val anchor: Anchor) : Lens {
+                val count: Int? get() = anchor.int(Slots.Info.count)
+                override fun equals(other: Any?): Boolean = other is TestSpreadKeys.Data.Named.Info && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }

@@ -3,6 +3,7 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
 import baton.Guard
@@ -21,6 +22,39 @@ import baton.Selection
 import baton.StorageKey
 import baton.Variable
 import baton.Variables
+
+/** Lens for `fragment TestFavorite_character on Character`. */
+@Stable
+class TestFavorite_character(override val anchor: Anchor) : Lens {
+    val id: String? get() = anchor.string(Slots.Character.id)
+    val name: String? get() = anchor.string(Slots.Character.name)
+    val favorite: Boolean? get() = anchor.bool(Slots.Character.favorite)
+    override fun equals(other: Any?): Boolean = other is TestFavorite_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+}
+
+/** Lens for `fragment TestRenamePayload_mutation on Mutation`. */
+@Stable
+class TestRenamePayload_mutation(override val anchor: Anchor) : Lens {
+    val rename: Rename? get() = anchor.linked(Slots.Mutation.rename)?.let(::Rename)
+    override fun equals(other: Any?): Boolean = other is TestRenamePayload_mutation && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    @Stable
+    class Rename(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(Slots.FavoritePayload.character)?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestRenamePayload_mutation.Rename && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            override fun equals(other: Any?): Boolean = other is TestRenamePayload_mutation.Rename.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+}
 
 /** Operation value for `query TestFavoriteQuery`. */
 class TestFavoriteQuery(val id: String) : QueryOperation<TestFavoriteQuery.Data> {
@@ -53,7 +87,20 @@ class TestFavoriteQuery(val id: String) : QueryOperation<TestFavoriteQuery.Data>
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestFavoriteQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val testFavorite: TestFavorite_character get() = TestFavorite_character(anchor.entering())
+            override fun equals(other: Any?): Boolean = other is TestFavoriteQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestNode`. */
@@ -93,7 +140,36 @@ class TestNode(val id: String) : QueryOperation<TestNode.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is TestNode.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val asCharacter: AsCharacter? get() = if (anchor.record.type == Types.Character) AsCharacter(anchor) else null
+            val asEpisode: AsEpisode? get() = if (anchor.record.type == Types.Episode) AsEpisode(anchor) else null
+            override fun equals(other: Any?): Boolean = other is TestNode.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class AsCharacter(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                val name: String? get() = anchor.string(Slots.Character.name)
+                override fun equals(other: Any?): Boolean = other is TestNode.Data.Node.AsCharacter && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsEpisode(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Episode.id)
+                val name: String? get() = anchor.string(Slots.Episode.name)
+                override fun equals(other: Any?): Boolean = other is TestNode.Data.Node.AsEpisode && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `mutation TestRename`. */
@@ -130,7 +206,27 @@ class TestRename(val id: String, val name: String) : MutationOperation<TestRenam
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val rename: Rename? get() = anchor.linked(Slots.Mutation.rename)?.let(::Rename)
+        override fun equals(other: Any?): Boolean = other is TestRename.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Rename(override val anchor: Anchor) : Lens {
+            val character: Character? get() = anchor.linked(Slots.FavoritePayload.character)?.let(::Character)
+            override fun equals(other: Any?): Boolean = other is TestRename.Data.Rename && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Character(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                val name: String? get() = anchor.string(Slots.Character.name)
+                override fun equals(other: Any?): Boolean = other is TestRename.Data.Rename.Character && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `mutation TestRenameThroughFragment`. */
@@ -167,7 +263,12 @@ class TestRenameThroughFragment(val id: String, val name: String) : MutationOper
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val testRenamePayload: TestRenamePayload_mutation get() = TestRenamePayload_mutation(anchor.entering())
+        override fun equals(other: Any?): Boolean = other is TestRenameThroughFragment.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
 }
 
 /** Operation value for `mutation TestRenameWithOrigin`. */
@@ -211,7 +312,36 @@ class TestRenameWithOrigin(val id: String, val name: String, val withOrigin: Boo
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val rename: Rename? get() = anchor.linked(Slots.Mutation.rename)?.let(::Rename)
+        override fun equals(other: Any?): Boolean = other is TestRenameWithOrigin.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Rename(override val anchor: Anchor) : Lens {
+            val character: Character? get() = anchor.linked(Slots.FavoritePayload.character)?.let(::Character)
+            override fun equals(other: Any?): Boolean = other is TestRenameWithOrigin.Data.Rename && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Character(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                val name: String? get() = anchor.string(Slots.Character.name)
+                val origin: Origin? get() = if (anchor.owner.selects(Guards.withOrigin_true)) anchor.linked(Slots.Character.origin)?.let(::Origin) else null
+                override fun equals(other: Any?): Boolean = other is TestRenameWithOrigin.Data.Rename.Character && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                @Stable
+                class Origin(override val anchor: Anchor) : Lens {
+                    val id: String? get() = anchor.string(Slots.Location.id)
+                    val name: String? get() = anchor.string(Slots.Location.name)
+                    override fun equals(other: Any?): Boolean = other is TestRenameWithOrigin.Data.Rename.Character.Origin && other.anchor == anchor
+                    override fun hashCode(): Int = anchor.hashCode()
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestSearch`. */
@@ -264,7 +394,37 @@ class TestSearch(val name: String) : QueryOperation<TestSearch.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val search: List<Search>? get() = anchor.list(anchor.owner.slot(Slots.Query.search_954c44), ::Search)
+        override fun equals(other: Any?): Boolean = other is TestSearch.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Search(override val anchor: Anchor) : Lens {
+            val asCharacter: AsCharacter? get() = if (anchor.record.type == Types.Character) AsCharacter(anchor) else null
+            val asLocation: AsLocation? get() = if (anchor.record.type == Types.Location) AsLocation(anchor) else null
+            override fun equals(other: Any?): Boolean = other is TestSearch.Data.Search && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class AsCharacter(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                val name: String? get() = anchor.string(Slots.Character.name)
+                override fun equals(other: Any?): Boolean = other is TestSearch.Data.Search.AsCharacter && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsLocation(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Location.id)
+                val name: String? get() = anchor.string(Slots.Location.name)
+                val dimension: String? get() = anchor.string(Slots.Location.dimension)
+                override fun equals(other: Any?): Boolean = other is TestSearch.Data.Search.AsLocation && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestSearchOrigins`. */
@@ -317,7 +477,33 @@ class TestSearchOrigins(val name: String) : QueryOperation<TestSearchOrigins.Dat
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val search: List<Search>? get() = anchor.list(anchor.owner.slot(Slots.Query.search_954c44), ::Search)
+        override fun equals(other: Any?): Boolean = other is TestSearchOrigins.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Search(override val anchor: Anchor) : Lens {
+            val asCharacter: AsCharacter? get() = if (anchor.record.type == Types.Character) AsCharacter(anchor) else null
+            override fun equals(other: Any?): Boolean = other is TestSearchOrigins.Data.Search && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class AsCharacter(override val anchor: Anchor) : Lens {
+                val origin: Origin? get() = anchor.linked(Slots.Character.origin)?.let(::Origin)
+                override fun equals(other: Any?): Boolean = other is TestSearchOrigins.Data.Search.AsCharacter && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                @Stable
+                class Origin(override val anchor: Anchor) : Lens {
+                    val name: String? get() = anchor.string(Slots.Location.name)
+                    override fun equals(other: Any?): Boolean = other is TestSearchOrigins.Data.Search.AsCharacter.Origin && other.anchor == anchor
+                    override fun hashCode(): Int = anchor.hashCode()
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `mutation TestSetFavorite`. */
@@ -355,5 +541,26 @@ class TestSetFavorite(val id: String, val favorite: Boolean) : MutationOperation
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val setFavorite: SetFavorite? get() = anchor.linked(Slots.Mutation.setFavorite)?.let(::SetFavorite)
+        override fun equals(other: Any?): Boolean = other is TestSetFavorite.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class SetFavorite(override val anchor: Anchor) : Lens {
+            val character: Character? get() = anchor.linked(Slots.FavoritePayload.character)?.let(::Character)
+            override fun equals(other: Any?): Boolean = other is TestSetFavorite.Data.SetFavorite && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Character(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                val name: String? get() = anchor.string(Slots.Character.name)
+                val favorite: Boolean? get() = anchor.bool(Slots.Character.favorite)
+                override fun equals(other: Any?): Boolean = other is TestSetFavorite.Data.SetFavorite.Character && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }

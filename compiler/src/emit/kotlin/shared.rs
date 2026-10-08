@@ -16,7 +16,7 @@ use crate::kotlin_names::{
     UNDECLARED, enum_type_name, enum_value_name, input_field_name, input_type_name, slot_name,
     type_constant,
 };
-use crate::names::{keyed_types, possible_types};
+use crate::names::{guard_name, keyed_types, possible_types};
 use crate::pipeline::TypeKind;
 
 /// A connection type's cells: its edge and page info types.
@@ -202,6 +202,50 @@ pub(super) fn shared_text(
                 ));
             },
         );
+    }
+    // The objects below declare fields, not getters: two names a getter would
+    // spell alike, `Any_true` and `any_true`, keep one each.
+    if !shared.guards.is_empty() {
+        writer.blank();
+        writer.line("/** The conditions `@include` and `@skip` put on selections, which an owner settles once each. */");
+        writer.block("object Guards", |writer| {
+            for guard in &shared.guards {
+                writer.line(format!(
+                    "@JvmField val {} = Guard({}, passing = {})",
+                    guard_name(&guard.variable, guard.passing),
+                    string_literal(&guard.variable),
+                    guard.passing
+                ));
+            }
+        });
+    }
+    if !shared.sites.is_empty() {
+        writer.blank();
+        writer.line(
+            "/** The spreads with `@arguments`, where an owner binds a fragment's scope once. */",
+        );
+        writer.block("object Sites", |writer| {
+            for site in &shared.sites {
+                writer.line(format!("@JvmField val {site} = ArgumentSite()"));
+            }
+        });
+    }
+    if !shared.abstract_slots.is_empty() {
+        writer.blank();
+        writer.line("/** Storage keys read on interfaces and unions, each resolved once per concrete type. */");
+        writer.block("object AbstractSlots", |writer| {
+            for (type_name, slots) in by_type(&shared.abstract_slots) {
+                writer.block(format!("object {}", slot_name(type_name)), |writer| {
+                    for slot in slots {
+                        writer.line(format!(
+                            "@JvmField val {} = AbstractSlot({})",
+                            slot_member(slot),
+                            string_literal(&slot.template)
+                        ));
+                    }
+                });
+            }
+        });
     }
     let body = writer.finish();
     format!("{}{body}", header(package, &body, &[]))

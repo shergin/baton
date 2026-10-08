@@ -13,9 +13,11 @@ kotlin {
         commonMain.dependencies {
             // The runtime depends on the standard library, kotlinx-coroutines
             // and the Compose runtime, and nothing else; the image's engine
-            // and the transports are each target's actuals.
+            // and the transports are each target's actuals. Generated code
+            // names Compose's `Stable`, so the Compose runtime is part of the
+            // runtime's API.
             implementation(libs.coroutines.core)
-            implementation(compose.runtime)
+            api(compose.runtime)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

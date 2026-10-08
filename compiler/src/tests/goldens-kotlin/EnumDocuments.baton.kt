@@ -3,6 +3,7 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
 import baton.Lens
@@ -50,7 +51,19 @@ class TestCharactersWithStatus(val status: Status, val any: List<Status>? = null
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val charactersWithStatus: List<CharactersWithStatus>? get() = anchor.list(anchor.owner.slot(Slots.Query.charactersWithStatus_deb51f), ::CharactersWithStatus)
+        override fun equals(other: Any?): Boolean = other is TestCharactersWithStatus.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class CharactersWithStatus(override val anchor: Anchor) : Lens {
+            val name: String? get() = anchor.string(Slots.Character.name)
+            override fun equals(other: Any?): Boolean = other is TestCharactersWithStatus.Data.CharactersWithStatus && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `mutation TestSetStatuses`. */
@@ -81,5 +94,17 @@ class TestSetStatuses : MutationOperation<TestSetStatuses.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val setLists: SetLists? get() = anchor.linked(Slots.Mutation.setLists)?.let(::SetLists)
+        override fun equals(other: Any?): Boolean = other is TestSetStatuses.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class SetLists(override val anchor: Anchor) : Lens {
+            val statuses: List<Status?>? get() = anchor.nullableEnumValues(Slots.ListsPayload.statuses, Status::of)
+            override fun equals(other: Any?): Boolean = other is TestSetStatuses.Data.SetLists && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }

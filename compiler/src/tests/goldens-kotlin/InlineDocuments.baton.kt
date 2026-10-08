@@ -3,8 +3,12 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
+import baton.FieldError
+import baton.FieldErrors
+import baton.Generated
 import baton.Guard
 import baton.Lens
 import baton.Lookup
@@ -20,6 +24,355 @@ import baton.Selection
 import baton.StorageKey
 import baton.Variable
 import baton.Variables
+
+/** Value of `fragment TestAssetValue_asset on Asset @inline`. */
+data class TestAssetValue_asset(
+    val uuid: String,
+    val name: String?,
+    val price: java.math.BigDecimal?,
+    val listedAt: java.time.Instant?,
+    val page: java.net.URI?,
+    val prices: List<java.math.BigDecimal?>?,
+    val caughtSize: Result<Int?>,
+) {
+    /** Reads the fragment's fields out of the record, once, at the call. */
+    @Generated
+    constructor(anchor: Anchor) : this(
+        anchor.requiredString(Slots.Asset.uuid),
+        anchor.string(Slots.Asset.name),
+        anchor.mapped(Slots.Asset.price, baton.scalars.Decimals),
+        anchor.mapped(Slots.Asset.listedAt, baton.scalars.DateTimes),
+        anchor.mapped(Slots.Asset.page, baton.scalars.Urls),
+        anchor.nullableMappedList(Slots.Asset.prices, baton.scalars.Decimals),
+        anchor.caught(Slots.Asset.size) { it.int(Slots.Asset.size) },
+    )
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectError(Slots.Asset.uuid, errors)
+            anchor.collectError(Slots.Asset.name, errors)
+            anchor.collectError(Slots.Asset.price, errors)
+            anchor.collectConversion(Slots.Asset.price, baton.scalars.Decimals, "price", errors)
+            anchor.collectError(Slots.Asset.listedAt, errors)
+            anchor.collectConversion(Slots.Asset.listedAt, baton.scalars.DateTimes, "listedAt", errors)
+            anchor.collectError(Slots.Asset.page, errors)
+            anchor.collectConversion(Slots.Asset.page, baton.scalars.Urls, "page", errors)
+            anchor.collectError(Slots.Asset.prices, errors)
+            return errors
+        }
+        /** The value, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): TestAssetValue_asset = caught(anchor).getOrThrow()
+        /** The value, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<TestAssetValue_asset> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(TestAssetValue_asset(anchor)) else Result.failure(FieldErrors(errors))
+        }
+    }
+}
+
+/** Lens for `fragment TestCard_character on Character`. */
+@Stable
+class TestCard_character(override val anchor: Anchor) : Lens {
+    val name: String? get() = anchor.string(Slots.Character.name)
+    val testCharacterValue: TestCharacterValue_character get() = TestCharacterValue_character(anchor.entering())
+    override fun equals(other: Any?): Boolean = other is TestCard_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+}
+
+/** Value of `fragment TestCharacterValue_character on Character @inline`. */
+data class TestCharacterValue_character(
+    val id: String?,
+    val name: String?,
+    val status: String?,
+    val origin: Origin?,
+    val episode: List<Episode>,
+) {
+    /** Reads the fragment's fields out of the record, once, at the call. */
+    @Generated
+    constructor(anchor: Anchor) : this(
+        anchor.string(Slots.Character.id),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.status),
+        anchor.linked(Slots.Character.origin)?.let { Origin(it) },
+        anchor.requiredValues(Slots.Character.episode) { Episode(it) },
+    )
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectError(Slots.Character.id, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.status, errors)
+            anchor.collectErrors(Slots.Character.origin, Origin::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Episode::fieldErrors, errors)
+            return errors
+        }
+        /** The value, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): TestCharacterValue_character = caught(anchor).getOrThrow()
+        /** The value, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<TestCharacterValue_character> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(TestCharacterValue_character(anchor)) else Result.failure(FieldErrors(errors))
+        }
+        /** Whether the deferred part that carries this fragment has arrived. */
+        fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.id) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.status) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.episode)
+    }
+
+    data class Origin(
+        val testOriginValue: TestOriginValue_location,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            TestOriginValue_location(anchor.entering()),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                errors.addAll(TestOriginValue_location.fieldErrors(anchor))
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): TestCharacterValue_character.Origin = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<TestCharacterValue_character.Origin> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(TestCharacterValue_character.Origin(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Episode(
+        val id: String?,
+        val name: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+            anchor.string(Slots.Episode.name),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                anchor.collectError(Slots.Episode.name, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): TestCharacterValue_character.Episode = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<TestCharacterValue_character.Episode> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(TestCharacterValue_character.Episode(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+}
+
+/** Value of `fragment TestNamedValue_character on Character @inline`. */
+data class TestNamedValue_character(
+    val name: String?,
+) {
+    /** Reads the fragment's fields out of the record, once, at the call. */
+    @Generated
+    constructor(anchor: Anchor) : this(
+        anchor.string(Slots.Character.name),
+    )
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectError(Slots.Character.name, errors)
+            return errors
+        }
+        /** The value, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): TestNamedValue_character = caught(anchor).getOrThrow()
+        /** The value, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<TestNamedValue_character> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(TestNamedValue_character(anchor)) else Result.failure(FieldErrors(errors))
+        }
+    }
+}
+
+/** Value of `fragment TestNotesValue_character on Character @inline`. */
+data class TestNotesValue_character(
+    val notes: Notes,
+) {
+    /** Reads the fragment's fields out of the record, once, at the call. */
+    @Generated
+    constructor(anchor: Anchor) : this(
+        Notes(anchor.requiredLinked(anchor.owner.slot(Slots.Character.notes_041c11), Types.NoteConnection)),
+    )
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectErrors(anchor.owner.slot(Slots.Character.notes_041c11), Notes::fieldErrors, errors)
+            return errors
+        }
+        /** The value, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): TestNotesValue_character = caught(anchor).getOrThrow()
+        /** The value, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<TestNotesValue_character> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(TestNotesValue_character(anchor)) else Result.failure(FieldErrors(errors))
+        }
+    }
+
+    data class Notes(
+        val totalCount: Int,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.requiredInt(Slots.NoteConnection.totalCount),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.NoteConnection.totalCount, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): TestNotesValue_character.Notes = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<TestNotesValue_character.Notes> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(TestNotesValue_character.Notes(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+}
+
+/** Value of `fragment TestOriginValue_location on Location @inline`. */
+data class TestOriginValue_location(
+    val id: String?,
+    val name: String?,
+    val dimension: String?,
+) {
+    /** Reads the fragment's fields out of the record, once, at the call. */
+    @Generated
+    constructor(anchor: Anchor) : this(
+        anchor.string(Slots.Location.id),
+        anchor.string(Slots.Location.name),
+        anchor.string(Slots.Location.dimension),
+    )
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectError(Slots.Location.id, errors)
+            anchor.collectError(Slots.Location.name, errors)
+            anchor.collectError(Slots.Location.dimension, errors)
+            return errors
+        }
+        /** The value, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): TestOriginValue_location = caught(anchor).getOrThrow()
+        /** The value, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<TestOriginValue_location> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(TestOriginValue_location(anchor)) else Result.failure(FieldErrors(errors))
+        }
+    }
+}
+
+/** Value of `fragment TestResultValue_searchResult on SearchResult @inline`. */
+data class TestResultValue_searchResult(
+    val asCharacter: AsCharacter?,
+    val asLocation: AsLocation?,
+) {
+    /** Reads the fragment's fields out of the record, once, at the call. */
+    @Generated
+    constructor(anchor: Anchor) : this(
+        if (anchor.record.type == Types.Character) AsCharacter(anchor) else null,
+        if (anchor.record.type == Types.Location) AsLocation(anchor) else null,
+    )
+
+    data class AsCharacter(
+        val name: String?,
+        val status: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Character.name),
+            anchor.string(Slots.Character.status),
+        )
+    }
+
+    data class AsLocation(
+        val name: String?,
+        val dimension: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.name),
+            anchor.string(Slots.Location.dimension),
+        )
+    }
+}
+
+/** Value of `fragment TestScanningValue_character on Character @inline`. */
+data class TestScanningValue_character(
+    val id: String?,
+    val testNotesValue: TestNotesValue_character,
+    val named: TestNamedValue_character?,
+    val caughtCharacter: Result<TestCharacterValue_character>,
+) {
+    /** Reads the fragment's fields out of the record, once, at the call. */
+    @Generated
+    constructor(anchor: Anchor) : this(
+        anchor.string(Slots.Character.id),
+        run {
+            val bound = anchor.binding(Sites.TestScanningValue_character_testNotesValue) { mapOf("count" to Variable.Int(1)) }
+            return@run TestNotesValue_character(bound.entering())
+        },
+        run {
+            if (!anchor.owner.selects(Guards.withName_true)) return@run null
+            return@run TestNamedValue_character(anchor.entering())
+        },
+        run {
+            val errors = TestCharacterValue_character.fieldErrors(anchor)
+            return@run if (errors.isEmpty()) Result.success(TestCharacterValue_character(anchor.entering())) else Result.failure(FieldErrors(errors))
+        },
+    )
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectError(Slots.Character.id, errors)
+            run {
+                val bound = anchor.binding(Sites.TestScanningValue_character_testNotesValue) { mapOf("count" to Variable.Int(1)) }
+                errors.addAll(TestNotesValue_character.fieldErrors(bound))
+            }
+            if (anchor.owner.selects(Guards.withName_true)) errors.addAll(TestNamedValue_character.fieldErrors(anchor))
+            return errors
+        }
+        /** The value, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): TestScanningValue_character = caught(anchor).getOrThrow()
+        /** The value, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<TestScanningValue_character> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(TestScanningValue_character(anchor)) else Result.failure(FieldErrors(errors))
+        }
+    }
+}
 
 /** Operation value for `query TestAssetValuesQuery`. */
 class TestAssetValuesQuery : QueryOperation<TestAssetValuesQuery.Data> {
@@ -57,7 +410,19 @@ class TestAssetValuesQuery : QueryOperation<TestAssetValuesQuery.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val assets: List<Assets>? get() = anchor.list(Slots.Query.assets, ::Assets)
+        override fun equals(other: Any?): Boolean = other is TestAssetValuesQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Assets(override val anchor: Anchor) : Lens {
+            val testAssetValue: TestAssetValue_asset get() = TestAssetValue_asset.throwing(anchor.entering())
+            override fun equals(other: Any?): Boolean = other is TestAssetValuesQuery.Data.Assets && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestCaughtValueQuery`. */
@@ -106,7 +471,24 @@ class TestCaughtValueQuery(val id: String) : QueryOperation<TestCaughtValueQuery
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestCaughtValueQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val caughtValue: Result<TestCharacterValue_character>
+                get() {
+                    val errors = TestCharacterValue_character.fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(TestCharacterValue_character(anchor.entering())) else Result.failure(FieldErrors(errors))
+                }
+            override fun equals(other: Any?): Boolean = other is TestCaughtValueQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestDeferredValueQuery`. */
@@ -157,7 +539,24 @@ class TestDeferredValueQuery(val id: String) : QueryOperation<TestDeferredValueQ
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestDeferredValueQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val testCharacterValue: TestCharacterValue_character?
+                get() {
+                    if (!TestCharacterValue_character.isPresent(anchor)) return null
+                    return TestCharacterValue_character(anchor.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestDeferredValueQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestInlineQuery`. */
@@ -212,7 +611,25 @@ class TestInlineQuery(val id: String, val withNotes: Boolean) : QueryOperation<T
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestInlineQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val testCard: TestCard_character get() = TestCard_character(anchor.entering())
+            val notesValue: TestNotesValue_character?
+                get() {
+                    val bound = anchor.binding(Sites.TestInlineQuery_notesValue) { mapOf("count" to Variable.Int(1)) }
+                    if (!anchor.owner.selects(Guards.withNotes_true)) return null
+                    return TestNotesValue_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestInlineQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestResultValuesQuery`. */
@@ -266,7 +683,19 @@ class TestResultValuesQuery(val name: String) : QueryOperation<TestResultValuesQ
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val search: List<Search>? get() = anchor.list(anchor.owner.slot(Slots.Query.search_954c44), ::Search)
+        override fun equals(other: Any?): Boolean = other is TestResultValuesQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Search(override val anchor: Anchor) : Lens {
+            val testResultValue: TestResultValue_searchResult get() = TestResultValue_searchResult(anchor.entering())
+            override fun equals(other: Any?): Boolean = other is TestResultValuesQuery.Data.Search && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestScanningValueQuery`. */
@@ -321,5 +750,21 @@ class TestScanningValueQuery(val id: String, val withName: Boolean) : QueryOpera
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestScanningValueQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val testScanningValue: TestScanningValue_character
+                get() {
+                    val bound = anchor.binding(Sites.TestScanningValueQuery_testScanningValue) { mapOf("withName" to anchor.variables["withName"]) }
+                    return TestScanningValue_character.throwing(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestScanningValueQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }

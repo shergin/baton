@@ -3,9 +3,13 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.ConnectionPlan
 import baton.Document
+import baton.FieldError
+import baton.FieldErrors
+import baton.Generated
 import baton.Lens
 import baton.Lookup
 import baton.MutationOperation
@@ -15,12 +19,231 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.Refetch
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
 import baton.Variable
 import baton.Variables
+
+/** Lens for `fragment Fragment on Character`. */
+@Stable
+class Fragment(override val anchor: Anchor) : Lens {
+    val status: String? get() = anchor.string(Slots.Character.status)
+    override fun equals(other: Any?): Boolean = other is Fragment && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectError(Slots.Character.status, errors)
+            return errors
+        }
+        /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): Fragment = caught(anchor).getOrThrow()
+        /** The lens, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<Fragment> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(Fragment(anchor)) else Result.failure(FieldErrors(errors))
+        }
+    }
+}
+
+/** Lens for `fragment TestCaughtProfile_character on Character`. */
+@Stable
+class TestCaughtProfile_character(override val anchor: Anchor) : Lens {
+    val name: String? get() = anchor.string(Slots.Character.name)
+    val origin: Origin? get() = anchor.linked(Slots.Character.origin)?.let(::Origin)
+    override fun equals(other: Any?): Boolean = other is TestCaughtProfile_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectErrors(Slots.Character.origin, Origin::fieldErrors, errors)
+            return errors
+        }
+        /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): TestCaughtProfile_character = caught(anchor).getOrThrow()
+        /** The lens, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<TestCaughtProfile_character> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(TestCaughtProfile_character(anchor)) else Result.failure(FieldErrors(errors))
+        }
+    }
+
+    @Stable
+    class Origin(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Location.name)
+        override fun equals(other: Any?): Boolean = other is TestCaughtProfile_character.Origin && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.name, errors)
+                return errors
+            }
+            /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): TestCaughtProfile_character.Origin = caught(anchor).getOrThrow()
+            /** The lens, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<TestCaughtProfile_character.Origin> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(TestCaughtProfile_character.Origin(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+}
+
+/** Lens for `fragment TestCaughtStrict_character on Character`. */
+@Stable
+class TestCaughtStrict_character(override val anchor: Anchor) : Lens {
+    val species: String get() = anchor.requiredString(Slots.Character.species)
+    override fun equals(other: Any?): Boolean = other is TestCaughtStrict_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectError(Slots.Character.species, errors)
+            return errors
+        }
+        /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): TestCaughtStrict_character = caught(anchor).getOrThrow()
+        /** The lens, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<TestCaughtStrict_character> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(TestCaughtStrict_character(anchor)) else Result.failure(FieldErrors(errors))
+        }
+    }
+}
+
+/** Lens for `fragment TestEdgesNames_character on Character`. */
+@Stable
+class TestEdgesNames_character(override val anchor: Anchor) : Lens {
+    val notes: Notes get() = Notes(anchor.requiredLinked(Slots.Character.__TestEdgesNames_notes_connection, Types.NoteConnection))
+    override fun equals(other: Any?): Boolean = other is TestEdgesNames_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    @Stable
+    class Notes(override val anchor: Anchor) : Lens {
+        val Edges: Edges2 get() = Edges2(anchor.requiredLinked(Slots.NoteConnection.pageInfo, Types.PageInfo))
+        @get:JvmName("getEdges2") val edges: List<Edges3>? get() = anchor.list(Slots.NoteConnection.edges, ::Edges3)
+        val pageInfo: PageInfo get() = PageInfo(anchor.requiredLinked(Slots.NoteConnection.pageInfo, Types.PageInfo))
+        /** The edges' nodes, in order, without nulls. */
+        val nodes: List<Edges3.Node> get() = anchor.nodes(Slots.NoteConnection.connection, { Edges3.Node(it) })
+        /** Whether the server has edges after the last one, from the merged `pageInfo`. */
+        val hasNext: Boolean get() = anchor.hasNext(Slots.NoteConnection.connection)
+        val hasPrevious: Boolean get() = anchor.hasPrevious(Slots.NoteConnection.connection)
+        val isLoadingNext: Boolean get() = anchor.isLoadingNext(Slots.NoteConnection.connection)
+        val isLoadingPrevious: Boolean get() = anchor.isLoadingPrevious(Slots.NoteConnection.connection)
+        /** Relay's connection id, for the `connections` argument of the edge directives. */
+        val connectionID: String get() = anchor.record.key
+        override fun equals(other: Any?): Boolean = other is TestEdgesNames_character.Notes && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Edges2(override val anchor: Anchor) : Lens {
+            val hasNextPage: Boolean get() = anchor.requiredBool(Slots.PageInfo.hasNextPage)
+            override fun equals(other: Any?): Boolean = other is TestEdgesNames_character.Notes.Edges2 && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Edges3(override val anchor: Anchor) : Lens {
+            val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+            val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+            override fun equals(other: Any?): Boolean = other is TestEdgesNames_character.Notes.Edges3 && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Node(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                val text: String? get() = anchor.string(Slots.Note.text)
+                override fun equals(other: Any?): Boolean = other is TestEdgesNames_character.Notes.Edges3.Node && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+
+        @Stable
+        class PageInfo(override val anchor: Anchor) : Lens {
+            val endCursor: String? get() = anchor.string(Slots.PageInfo.endCursor)
+            val hasNextPage: Boolean get() = anchor.requiredBool(Slots.PageInfo.hasNextPage)
+            override fun equals(other: Any?): Boolean = other is TestEdgesNames_character.Notes.PageInfo && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+}
+
+/** Lens for `fragment TestProgramNames_character on Character`. */
+@Stable
+class TestProgramNames_character(override val anchor: Anchor) : Lens {
+    val testProgramNamesRefetchQuery: TestProgramNamesRefetchQueryLens? get() = anchor.linked(Slots.Character.origin)?.let(::TestProgramNamesRefetchQueryLens)
+    val testCaughtProfile_character: TestCaughtProfile_characterLens? get() = anchor.linked(Slots.Character.location)?.let(::TestCaughtProfile_characterLens)
+    val testCaughtProfile: TestCaughtProfile_character get() = TestCaughtProfile_character(anchor.entering())
+    val id: String? get() = anchor.string(Slots.Character.id)
+    /** Fetches the fragment again through `TestProgramNamesRefetchQuery` with its current variables; the records update in place. */
+    suspend fun refetch(): Unit = anchor.refetch(TestProgramNamesRefetchQuery, Companion.refetchable)
+    override fun equals(other: Any?): Boolean = other is TestProgramNames_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** How the fragment is fetched again: `TestProgramNamesRefetchQuery` with the lens's variables. */
+        @Generated
+        val refetchable: Refetch = Refetch(variables = listOf("id"), identifier = "id", identity = Slots.Character.id, first = null, after = null, last = null, before = null)
+    }
+
+    @Stable
+    class TestProgramNamesRefetchQueryLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Location.name)
+        override fun equals(other: Any?): Boolean = other is TestProgramNames_character.TestProgramNamesRefetchQueryLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class TestCaughtProfile_characterLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Location.name)
+        override fun equals(other: Any?): Boolean = other is TestProgramNames_character.TestCaughtProfile_characterLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+}
+
+/** Lens for `fragment testLowercase on Character`. */
+@Stable
+class testLowercase(override val anchor: Anchor) : Lens {
+    val name: String? get() = anchor.string(Slots.Character.name)
+    override fun equals(other: Any?): Boolean = other is testLowercase && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+}
+
+/** Lens for `fragment testLowercaseRequired on Character`. */
+@Stable
+class testLowercaseRequired(override val anchor: Anchor) : Lens {
+    val origin: Origin get() = Origin(anchor.requiredLinked(Slots.Character.origin, Types.Location))
+    override fun equals(other: Any?): Boolean = other is testLowercaseRequired && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles. */
+        fun satisfied(anchor: Anchor): Boolean {
+            if (!anchor.hasValue(Slots.Character.origin, "origin", log = false)) return false
+            return true
+        }
+    }
+
+    @Stable
+    class Origin(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Location.name)
+        override fun equals(other: Any?): Boolean = other is testLowercaseRequired.Origin && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+}
 
 /** Operation value for `mutation TestBuilderNames`. */
 class TestBuilderNames(val id: String, val favorite: Boolean, val self: String) : MutationOperation<TestBuilderNames.Data> {
@@ -70,7 +293,75 @@ class TestBuilderNames(val id: String, val favorite: Boolean, val self: String) 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val type: Type? get() = anchor.linked(Slots.Mutation.setFavorite_10eb38)?.let(::Type)
+        val self: Self? get() = anchor.linked(Slots.Mutation.setFavorite_e62d42)?.let(::Self)
+        val string: StringLens? get() = anchor.linked(Slots.Mutation.setFavorite_937be0)?.let(::StringLens)
+        val sendable: Sendable? get() = anchor.linked(Slots.Mutation.setFavorite_a93f6b)?.let(::Sendable)
+        override fun equals(other: Any?): Boolean = other is TestBuilderNames.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Type(override val anchor: Anchor) : Lens {
+            val character: Character? get() = anchor.linked(Slots.FavoritePayload.character)?.let(::Character)
+            override fun equals(other: Any?): Boolean = other is TestBuilderNames.Data.Type && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Character(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                val favorite: Boolean? get() = anchor.bool(Slots.Character.favorite)
+                override fun equals(other: Any?): Boolean = other is TestBuilderNames.Data.Type.Character && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+
+        @Stable
+        class Self(override val anchor: Anchor) : Lens {
+            val character: Character? get() = anchor.linked(Slots.FavoritePayload.character)?.let(::Character)
+            override fun equals(other: Any?): Boolean = other is TestBuilderNames.Data.Self && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Character(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                val favorite: Boolean? get() = anchor.bool(Slots.Character.favorite)
+                override fun equals(other: Any?): Boolean = other is TestBuilderNames.Data.Self.Character && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+
+        @Stable
+        class StringLens(override val anchor: Anchor) : Lens {
+            val character: Character? get() = anchor.linked(Slots.FavoritePayload.character)?.let(::Character)
+            override fun equals(other: Any?): Boolean = other is TestBuilderNames.Data.StringLens && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Character(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                val name: String? get() = anchor.string(Slots.Character.name)
+                override fun equals(other: Any?): Boolean = other is TestBuilderNames.Data.StringLens.Character && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+
+        @Stable
+        class Sendable(override val anchor: Anchor) : Lens {
+            val character: Character? get() = anchor.linked(Slots.FavoritePayload.character)?.let(::Character)
+            override fun equals(other: Any?): Boolean = other is TestBuilderNames.Data.Sendable && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Character(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                val favorite: Boolean? get() = anchor.bool(Slots.Character.favorite)
+                override fun equals(other: Any?): Boolean = other is TestBuilderNames.Data.Sendable.Character && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestCaughtSpreads`. */
@@ -132,7 +423,53 @@ class TestCaughtSpreads(val id: String) : QueryOperation<TestCaughtSpreads.Data>
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is TestCaughtSpreads.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val profile: Result<TestCaughtProfile_character>
+                get() {
+                    val errors = TestCaughtProfile_character.fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(TestCaughtProfile_character(anchor.entering())) else Result.failure(FieldErrors(errors))
+                }
+            val nulledProfile: TestCaughtProfile_character?
+                get() {
+                    if (!TestCaughtProfile_character.fieldErrors(anchor).isEmpty()) return null
+                    return TestCaughtProfile_character(anchor.entering())
+                }
+            val strict: Result<TestCaughtStrict_character>
+                get() {
+                    val errors = TestCaughtStrict_character.fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(TestCaughtStrict_character(anchor.entering())) else Result.failure(FieldErrors(errors))
+                }
+            val nulledStrict: TestCaughtStrict_character?
+                get() {
+                    if (!TestCaughtStrict_character.fieldErrors(anchor).isEmpty()) return null
+                    return TestCaughtStrict_character(anchor.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestCaughtSpreads.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+            val profile: Result<TestCaughtProfile_character?>
+                get() {
+                    if (!(anchor.record.type == Types.Character)) return Result.success(null)
+                    val errors = TestCaughtProfile_character.fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(TestCaughtProfile_character(anchor.entering())) else Result.failure(FieldErrors(errors))
+                }
+            override fun equals(other: Any?): Boolean = other is TestCaughtSpreads.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `mutation TestCommitVariable`. */
@@ -170,7 +507,28 @@ class TestCommitVariable(val commit: String) : MutationOperation<TestCommitVaria
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val setFavorite: SetFavorite? get() = anchor.linked(Slots.Mutation.setFavorite)?.let(::SetFavorite)
+        override fun equals(other: Any?): Boolean = other is TestCommitVariable.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class SetFavorite(override val anchor: Anchor) : Lens {
+            val character: Character? get() = anchor.linked(Slots.FavoritePayload.character)?.let(::Character)
+            override fun equals(other: Any?): Boolean = other is TestCommitVariable.Data.SetFavorite && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Character(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                val name: String? get() = anchor.string(Slots.Character.name)
+                val favorite: Boolean? get() = anchor.bool(Slots.Character.favorite)
+                override fun equals(other: Any?): Boolean = other is TestCommitVariable.Data.SetFavorite.Character && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestConditionNames`. */
@@ -235,7 +593,51 @@ class TestConditionNames(val id: String, val name: String) : QueryOperation<Test
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val namesake: Namesake? get() = anchor.linked(anchor.owner.slot(Slots.Query.namesake_9b6471))?.let(::Namesake)
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is TestConditionNames.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Namesake(override val anchor: Anchor) : Lens {
+            val asCharacter: String? get() = anchor.string(AbstractSlots.Named.name.on(anchor.record.type))
+            val asCharacter2: AsCharacter2? get() = if (anchor.record.type == Types.Character) AsCharacter2(anchor) else null
+            override fun equals(other: Any?): Boolean = other is TestConditionNames.Data.Namesake && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class AsCharacter2(override val anchor: Anchor) : Lens {
+                val status: String? get() = anchor.string(Slots.Character.status)
+                override fun equals(other: Any?): Boolean = other is TestConditionNames.Data.Namesake.AsCharacter2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+            val asCharacter: AsCharacter? get() = if (anchor.record.type == Types.Episode) AsCharacter(anchor) else null
+            val asCharacter2: AsCharacter2? get() = if (anchor.record.type == Types.Character) AsCharacter2(anchor) else null
+            override fun equals(other: Any?): Boolean = other is TestConditionNames.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class AsCharacter(override val anchor: Anchor) : Lens {
+                val name: String? get() = anchor.string(Slots.Episode.name)
+                override fun equals(other: Any?): Boolean = other is TestConditionNames.Data.Node.AsCharacter && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsCharacter2(override val anchor: Anchor) : Lens {
+                val name: String? get() = anchor.string(Slots.Character.name)
+                override fun equals(other: Any?): Boolean = other is TestConditionNames.Data.Node.AsCharacter2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestEdgesNamesQuery`. */
@@ -299,7 +701,19 @@ class TestEdgesNamesQuery(val id: String) : QueryOperation<TestEdgesNamesQuery.D
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestEdgesNamesQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val testEdgesNames: TestEdgesNames_character get() = TestEdgesNames_character(anchor.entering())
+            override fun equals(other: Any?): Boolean = other is TestEdgesNamesQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestEscapedText`. */
@@ -341,7 +755,18 @@ class TestEscapedText : QueryOperation<TestEscapedText.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val search: List<Search>? get() = anchor.list(Slots.Query.search_b80531, ::Search)
+        override fun equals(other: Any?): Boolean = other is TestEscapedText.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Search(override val anchor: Anchor) : Lens {
+            override fun equals(other: Any?): Boolean = other is TestEscapedText.Data.Search && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestFragmentNamedFields`. */
@@ -386,7 +811,44 @@ class TestFragmentNamedFields(val id: String) : QueryOperation<TestFragmentNamed
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestFragmentNamedFields.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val TestCaughtProfile_character: String? get() = anchor.string(Slots.Character.name)
+            val TestCaughtStrict_character: String? get() = anchor.string(Slots.Character.species)
+            val testCaughtProfile: TestCaughtProfile_character get() = TestCaughtProfile_character(anchor.entering())
+            val testCaughtStrict: TestCaughtStrict_character get() = Companion.TestCaughtStrict_character_.throwing(anchor.entering())
+            val caughtProfile: Result<TestCaughtProfile_character>
+                get() {
+                    val errors = Companion.TestCaughtProfile_character_.fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(TestCaughtProfile_character(anchor.entering())) else Result.failure(FieldErrors(errors))
+                }
+            val nulledProfile: TestCaughtProfile_character?
+                get() {
+                    if (!Companion.TestCaughtProfile_character_.fieldErrors(anchor).isEmpty()) return null
+                    return TestCaughtProfile_character(anchor.entering())
+                }
+            val Fragment: String? get() = anchor.string(Slots.Character.status)
+            val nulledFragment: Fragment?
+                get() {
+                    if (!Companion.Fragment_.fieldErrors(anchor).isEmpty()) return null
+                    return Fragment(anchor.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestFragmentNamedFields.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                private val Fragment_ = Fragment
+                private val TestCaughtProfile_character_ = TestCaughtProfile_character
+                private val TestCaughtStrict_character_ = TestCaughtStrict_character
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestHasherVariable`. */
@@ -419,7 +881,20 @@ class TestHasherVariable(val hasher: String) : QueryOperation<TestHasherVariable
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_662906))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestHasherVariable.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            override fun equals(other: Any?): Boolean = other is TestHasherVariable.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `mutation TestListPayload`. */
@@ -456,7 +931,25 @@ class TestListPayload : MutationOperation<TestListPayload.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val setLists: SetLists? get() = anchor.linked(Slots.Mutation.setLists)?.let(::SetLists)
+        override fun equals(other: Any?): Boolean = other is TestListPayload.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class SetLists(override val anchor: Anchor) : Lens {
+            val strings: List<String?>? get() = anchor.nullableStrings(Slots.ListsPayload.strings)
+            val ids: List<String> get() = anchor.requiredStrings(Slots.ListsPayload.ids)
+            val counts: List<Int?>? get() = anchor.nullableInts(Slots.ListsPayload.counts)
+            val ratios: List<Double?>? get() = anchor.nullableDoubles(Slots.ListsPayload.ratios)
+            val flags: List<Boolean?>? get() = anchor.nullableBools(Slots.ListsPayload.flags)
+            val jsons: List<String?>? get() = anchor.nullableStrings(Slots.ListsPayload.jsons)
+            val statuses: List<Status?>? get() = anchor.nullableEnumValues(Slots.ListsPayload.statuses, Status::of)
+            override fun equals(other: Any?): Boolean = other is TestListPayload.Data.SetLists && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestLowercaseSpreads`. */
@@ -496,7 +989,28 @@ class TestLowercaseSpreads(val id: String) : QueryOperation<TestLowercaseSpreads
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestLowercaseSpreads.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val testLowercase: testLowercase get() = testLowercase(anchor.entering())
+            val testLowercaseRequired: testLowercaseRequired?
+                get() {
+                    if (!Companion.testLowercaseRequired_.satisfied(anchor)) return null
+                    return testLowercaseRequired(anchor.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestLowercaseSpreads.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                private val testLowercaseRequired_ = testLowercaseRequired
+            }
+        }
+    }
 }
 
 /** Operation value for `mutation TestModuleNamedPayload`. */
@@ -533,7 +1047,27 @@ class TestModuleNamedPayload(val id: String) : MutationOperation<TestModuleNamed
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val setFavorite: SetFavorite? get() = anchor.linked(Slots.Mutation.setFavorite)?.let(::SetFavorite)
+        override fun equals(other: Any?): Boolean = other is TestModuleNamedPayload.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class SetFavorite(override val anchor: Anchor) : Lens {
+            val Baton: Baton2? get() = anchor.linked(Slots.FavoritePayload.character)?.let(::Baton2)
+            override fun equals(other: Any?): Boolean = other is TestModuleNamedPayload.Data.SetFavorite && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Baton2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                val Baton: String? get() = anchor.string(Slots.Character.name)
+                override fun equals(other: Any?): Boolean = other is TestModuleNamedPayload.Data.SetFavorite.Baton2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestProgramNamesQuery`. */
@@ -575,7 +1109,19 @@ class TestProgramNamesQuery(val id: String) : QueryOperation<TestProgramNamesQue
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestProgramNamesQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val testProgramNames: TestProgramNames_character get() = TestProgramNames_character(anchor.entering())
+            override fun equals(other: Any?): Boolean = other is TestProgramNamesQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestProgramNamesRefetchQuery`. */
@@ -624,7 +1170,23 @@ class TestProgramNamesRefetchQuery(val id: String) : QueryOperation<TestProgramN
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is TestProgramNamesRefetchQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val testProgramNames: TestProgramNames_character?
+                get() {
+                    if (!(anchor.record.type == Types.Character)) return null
+                    return TestProgramNames_character(anchor.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestProgramNamesRefetchQuery.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestSpreadNames`. */
@@ -658,5 +1220,18 @@ class TestSpreadNames(val id: String) : QueryOperation<TestSpreadNames.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestSpreadNames.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val testCaughtStrict: String? get() = anchor.string(Slots.Character.species)
+            val testCaughtStrict_character: TestCaughtStrict_character get() = TestCaughtStrict_character.throwing(anchor.entering())
+            override fun equals(other: Any?): Boolean = other is TestSpreadNames.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }

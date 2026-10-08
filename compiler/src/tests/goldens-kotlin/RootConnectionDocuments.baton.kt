@@ -3,10 +3,12 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.ConnectionCursor
 import baton.ConnectionPlan
 import baton.Document
+import baton.Generated
 import baton.Lens
 import baton.OperationHandle
 import baton.OperationKind
@@ -14,12 +16,73 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.Refetch
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
 import baton.Variable
 import baton.Variables
+
+/** Lens for `fragment TestRootNotes_query on Query`. */
+@Stable
+class TestRootNotes_query(override val anchor: Anchor) : Lens {
+    val notes: Notes get() = Notes(anchor.requiredLinked(Slots.Query.__TestRootNotes_notes_connection, Types.NoteConnection))
+    /** Fetches the fragment again through `TestRootNotesPaginationQuery` with its current variables; the records update in place. */
+    suspend fun refetch(): Unit = anchor.refetch(TestRootNotesPaginationQuery, Companion.refetchable)
+    override fun equals(other: Any?): Boolean = other is TestRootNotes_query && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** How the fragment is fetched again: `TestRootNotesPaginationQuery` with the lens's variables. */
+        @Generated
+        val refetchable: Refetch = Refetch(variables = listOf("count", "cursor"), identifier = null, identity = null, first = "count", after = "cursor", last = null, before = null)
+    }
+
+    @Stable
+    class Notes(override val anchor: Anchor) : Lens {
+        val totalCount: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val edges: List<Edges>? get() = anchor.list(Slots.NoteConnection.edges, ::Edges)
+        val pageInfo: PageInfo get() = PageInfo(anchor.requiredLinked(Slots.NoteConnection.pageInfo, Types.PageInfo))
+        /** The edges' nodes, in order, without nulls. */
+        val nodes: List<Edges.Node> get() = anchor.nodes(Slots.NoteConnection.connection, { Edges.Node(it) })
+        /** Whether the server has edges after the last one, from the merged `pageInfo`. */
+        val hasNext: Boolean get() = anchor.hasNext(Slots.NoteConnection.connection)
+        val hasPrevious: Boolean get() = anchor.hasPrevious(Slots.NoteConnection.connection)
+        val isLoadingNext: Boolean get() = anchor.isLoadingNext(Slots.NoteConnection.connection)
+        val isLoadingPrevious: Boolean get() = anchor.isLoadingPrevious(Slots.NoteConnection.connection)
+        /** Relay's connection id, for the `connections` argument of the edge directives. */
+        val connectionID: String get() = anchor.record.key
+        /** Fetches the next `count` edges through `TestRootNotesPaginationQuery` and appends them; a no-op while loading or at the end. */
+        suspend fun loadNext(count: Int = 2): Unit = anchor.loadNext(TestRootNotesPaginationQuery, Slots.NoteConnection.connection, TestRootNotes_query.refetchable, count)
+        override fun equals(other: Any?): Boolean = other is TestRootNotes_query.Notes && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Edges(override val anchor: Anchor) : Lens {
+            val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+            val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+            override fun equals(other: Any?): Boolean = other is TestRootNotes_query.Notes.Edges && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Node(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                val text: String? get() = anchor.string(Slots.Note.text)
+                override fun equals(other: Any?): Boolean = other is TestRootNotes_query.Notes.Edges.Node && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+
+        @Stable
+        class PageInfo(override val anchor: Anchor) : Lens {
+            val endCursor: String? get() = anchor.string(Slots.PageInfo.endCursor)
+            val hasNextPage: Boolean get() = anchor.requiredBool(Slots.PageInfo.hasNextPage)
+            override fun equals(other: Any?): Boolean = other is TestRootNotes_query.Notes.PageInfo && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+}
 
 /** Operation value for `query TestRootNotesPaginationQuery`. */
 class TestRootNotesPaginationQuery(val count: Int? = null, val cursor: String? = null) : QueryOperation<TestRootNotesPaginationQuery.Data> {
@@ -71,7 +134,16 @@ class TestRootNotesPaginationQuery(val count: Int? = null, val cursor: String? =
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val testRootNotes: TestRootNotes_query
+            get() {
+                val bound = anchor.binding(Sites.TestRootNotesPaginationQuery_testRootNotes) { mapOf("count" to anchor.variables["count"], "cursor" to anchor.variables["cursor"]) }
+                return TestRootNotes_query(bound.entering())
+            }
+        override fun equals(other: Any?): Boolean = other is TestRootNotesPaginationQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
 }
 
 /** Operation value for `query TestRootNotesQuery`. */
@@ -124,5 +196,14 @@ class TestRootNotesQuery : QueryOperation<TestRootNotesQuery.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val testRootNotes: TestRootNotes_query
+            get() {
+                val bound = anchor.binding(Sites.TestRootNotesQuery_testRootNotes) { mapOf("count" to Variable.Int(2), "cursor" to Variable.Null) }
+                return TestRootNotes_query(bound.entering())
+            }
+        override fun equals(other: Any?): Boolean = other is TestRootNotesQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
 }

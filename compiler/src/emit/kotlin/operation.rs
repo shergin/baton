@@ -3,6 +3,7 @@
 //! among it, and whose `Data` is the root lens.
 
 use super::super::writer::Writer;
+use super::lens::Lenses;
 use super::literal::{
     Base, Converters, ValueShape, jvm_getters, optional_value_expression, property_read,
     string_literal, variable_literal,
@@ -14,11 +15,9 @@ use crate::kotlin_names::escape;
 use crate::pipeline::OperationKind;
 
 /// The operation's class.
-pub(super) fn operation_text(
-    operation: &OperationValue,
-    shared: &Shared,
-    converters: &Converters,
-) -> String {
+pub(super) fn operation_text(operation: &OperationValue, lenses: &Lenses) -> String {
+    let shared = lenses.shared;
+    let converters = lenses.converters;
     let mut writer = Writer::new();
     let class = escape(&operation.name);
     writer.line(format!(
@@ -74,7 +73,11 @@ pub(super) fn operation_text(
         writer.blank();
         companion(writer, operation, shared);
         writer.blank();
-        writer.line("class Data(override val anchor: Anchor) : Lens");
+        lenses.lens(
+            writer,
+            &operation.data,
+            &format!("{class}.{}", escape(&operation.data.name)),
+        );
     });
     writer.finish()
 }

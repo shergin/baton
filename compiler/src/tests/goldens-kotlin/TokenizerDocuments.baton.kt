@@ -3,6 +3,7 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
 import baton.Lens
@@ -57,5 +58,27 @@ class TestTokenizerQuery : QueryOperation<TestTokenizerQuery.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val tokenizer: Tokenizer? get() = anchor.linked(Slots.Query.tokenizer)?.let(::Tokenizer)
+        override fun equals(other: Any?): Boolean = other is TestTokenizerQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Tokenizer(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Tokenizer.id)
+            val text: String? get() = anchor.string(Slots.Tokenizer.text)
+            val strings: List<String?>? get() = anchor.nullableStrings(Slots.Tokenizer.strings)
+            val count: Int? get() = anchor.int(Slots.Tokenizer.count)
+            val counts: List<Int?>? get() = anchor.nullableInts(Slots.Tokenizer.counts)
+            val ratio: Double? get() = anchor.double(Slots.Tokenizer.ratio)
+            val ratios: List<Double?>? get() = anchor.nullableDoubles(Slots.Tokenizer.ratios)
+            val flag: Boolean? get() = anchor.bool(Slots.Tokenizer.flag)
+            val flags: List<Boolean?>? get() = anchor.nullableBools(Slots.Tokenizer.flags)
+            val json: String? get() = anchor.string(Slots.Tokenizer.json)
+            val jsons: List<String?>? get() = anchor.nullableStrings(Slots.Tokenizer.jsons)
+            override fun equals(other: Any?): Boolean = other is TestTokenizerQuery.Data.Tokenizer && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }

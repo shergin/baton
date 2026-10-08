@@ -1,14 +1,17 @@
-//! The Kotlin emitter: operation values with their plans, and the shared
-//! file of interned types and slots, the schema's enums and its input
-//! objects. A fragment's lens, an operation's root lens beyond its anchor,
-//! and a mutation's optimistic builder come with the readers.
+//! The Kotlin emitter: fragments' lenses and `@inline` fragments' values,
+//! operation values with their plans and root lenses, and the shared file of
+//! interned types and slots, the conditions and argument sites, the
+//! schema's enums and its input objects. A mutation's optimistic response
+//! and action come next.
 //!
 //! Output per host file `X.kt` is `X.baton.kt`, in the host's package; the
 //! code of a `.graphql` source and the shared `Baton.baton.kt` take the
 //! package `baton.json` names under `kotlin`. One printer per output:
-//! `shared` writes the shared file, `operation` the operation values and
-//! `plan` their plans; `literal` holds what they share.
+//! `shared` writes the shared file, `lens` the lenses and values,
+//! `operation` the operation values and `plan` their plans; `literal`
+//! holds what they share.
 
+mod lens;
 mod literal;
 mod operation;
 mod plan;
@@ -18,10 +21,9 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use super::Output;
 use crate::config::Config;
-use crate::decide::{
-    NormalizationKind, NormalizationSelection, OperationValue, Program, VariableBase,
-};
-use crate::kotlin_names::{KotlinNaming, RUNTIME_NAMES, enum_type_name, input_type_name};
+use crate::decide::{NormalizationKind, NormalizationSelection, Program, ReaderPlan};
+use crate::kotlin_names::{KotlinNaming, RUNTIME_NAMES, STABLE, enum_type_name, input_type_name};
+use lens::Lenses;
 use literal::Converters;
 use shared::ConnectionTypes;
 
@@ -81,26 +83,34 @@ impl Kotlin {
     /// The Kotlin of a program decided in this target's names.
     pub fn emit(&self, program: &Program) -> Output {
         let converters = Converters { types: &self.types };
+        let lenses = Lenses {
+            converters: &converters,
+            fragments: program
+                .fragments
+                .iter()
+                .map(|fragment| (fragment.name.as_str(), &fragment.lens))
+                .collect(),
+            shared: &program.shared,
+        };
         let mut bodies: BTreeMap<String, Vec<String>> = BTreeMap::new();
         for fragment in &program.fragments {
-            bodies.entry(fragment.source.clone()).or_default();
+            bodies
+                .entry(fragment.source.clone())
+                .or_default()
+                .push(lenses.fragment_text(fragment));
         }
         for operation in &program.operations {
             bodies
                 .entry(operation.source.clone())
                 .or_default()
-                .push(operation::operation_text(
-                    operation,
-                    &program.shared,
-                    &converters,
-                ));
+                .push(operation::operation_text(operation, &lenses));
         }
         let files = bodies
             .into_iter()
             .map(|(source, texts)| {
                 let package = self.package_of(&source);
                 let body = texts.join("\n");
-                let shared_imports = self.shared_imports(program, &source, package);
+                let shared_imports = self.shared_imports(program, &body, package);
                 let text = if body.is_empty() {
                     format!("{GENERATED}\n{}", package_line(package))
                 } else {
@@ -112,7 +122,7 @@ impl Kotlin {
         Output {
             shared: shared::shared_text(
                 &program.shared,
-                &connections(&program.operations),
+                &connections(program),
                 &converters,
                 self.shared_package.as_deref(),
             ),
@@ -120,46 +130,31 @@ impl Kotlin {
         }
     }
 
-    /// What the code of `source`, in `package`, names from the shared file
-    /// in another package: `Types`, `Slots`, and the enums and input
-    /// objects its variables take.
-    fn shared_imports(
-        &self,
-        program: &Program,
-        source: &str,
-        package: Option<&str>,
-    ) -> Vec<String> {
+    /// What `body`, the code of a file in `package`, names from the shared
+    /// file in another package: its objects, enums and input objects.
+    fn shared_imports(&self, program: &Program, body: &str, package: Option<&str>) -> Vec<String> {
         let Some(shared) = self.shared_package.as_deref() else {
             return Vec::new();
         };
         if package == Some(shared) {
             return Vec::new();
         }
-        let operations: Vec<&OperationValue> = program
-            .operations
-            .iter()
-            .filter(|operation| operation.source == source)
-            .collect();
-        if operations.is_empty() {
-            return Vec::new();
-        }
-        let mut names: BTreeSet<String> =
-            BTreeSet::from(["Slots".to_string(), "Types".to_string()]);
-        for operation in operations {
-            for variable in &operation.variables {
-                match &variable.shape.base {
-                    VariableBase::Input(name) => {
-                        names.insert(input_type_name(name));
-                    }
-                    VariableBase::Scalar(crate::decide::Primitive::Enum(name)) => {
-                        names.insert(enum_type_name(name));
-                    }
-                    VariableBase::Scalar(_) => {}
-                }
-            }
-        }
-        names
+        let spelled = identifiers(body);
+        let mut declared: BTreeSet<String> = ["Types", "Slots", "AbstractSlots", "Guards", "Sites"]
             .into_iter()
+            .map(str::to_string)
+            .collect();
+        declared.extend(program.shared.enums.keys().map(|name| enum_type_name(name)));
+        declared.extend(
+            program
+                .shared
+                .inputs
+                .keys()
+                .map(|name| input_type_name(name)),
+        );
+        declared
+            .into_iter()
+            .filter(|name| spelled.contains(name.as_str()))
             .map(|name| format!("{shared}.{name}"))
             .collect()
     }
@@ -183,6 +178,11 @@ pub(super) fn header(package: Option<&str>, body: &str, extra: &[String]) -> Str
         .filter(|name| spelled.contains(**name))
         .map(|name| format!("baton.{name}"))
         .collect();
+    // A lens is stable to Compose: equal by its anchor, and every read
+    // registers what it reads.
+    if body.contains("@Stable\n") {
+        imports.push(STABLE.to_string());
+    }
     imports.extend(extra.iter().cloned());
     imports.sort();
     imports.dedup();
@@ -234,14 +234,31 @@ fn identifiers(body: &str) -> BTreeSet<&str> {
     names
 }
 
-/// Each connection type the plans paginate, with its edge and page info
-/// types.
-fn connections(operations: &[OperationValue]) -> BTreeMap<String, ConnectionTypes> {
+/// Each connection type the plans paginate or a lens reads the state of,
+/// with its edge and page info types.
+fn connections(program: &Program) -> BTreeMap<String, ConnectionTypes> {
     let mut connections = BTreeMap::new();
-    for operation in operations {
+    for operation in &program.operations {
         collect_connections(&operation.normalization, &mut connections);
+        lens_connections(&operation.data, &mut connections);
+    }
+    for fragment in &program.fragments {
+        lens_connections(&fragment.lens, &mut connections);
     }
     connections
+}
+
+fn lens_connections(lens: &ReaderPlan, into: &mut BTreeMap<String, ConnectionTypes>) {
+    if let Some(connection) = &lens.connection {
+        into.entry(connection.connection_type.clone())
+            .or_insert_with(|| ConnectionTypes {
+                edge: connection.edge_type.clone(),
+                page_info: connection.page_info_type.clone(),
+            });
+    }
+    for child in &lens.nested {
+        lens_connections(child, into);
+    }
 }
 
 fn collect_connections(

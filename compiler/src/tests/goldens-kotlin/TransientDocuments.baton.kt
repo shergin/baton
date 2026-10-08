@@ -3,6 +3,7 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
 import baton.Lens
@@ -57,7 +58,29 @@ class TestCharacterSecret : QueryOperation<TestCharacterSecret.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(Slots.Query.character_9e6829)?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestCharacterSecret.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            val secret: Secret? get() = anchor.linked(Slots.Character.secret)?.let(::Secret)
+            override fun equals(other: Any?): Boolean = other is TestCharacterSecret.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Secret(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Secret.id)
+                val body: String? get() = anchor.string(Slots.Secret.body)
+                override fun equals(other: Any?): Boolean = other is TestCharacterSecret.Data.Character.Secret && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestSecrets`. */
@@ -97,5 +120,27 @@ class TestSecrets(val code: String) : QueryOperation<TestSecrets.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val secrets: List<Secrets>? get() = anchor.list(anchor.owner.slot(Slots.Query.secrets_df579e), ::Secrets)
+        val character: Character? get() = anchor.linked(Slots.Query.character_9e6829)?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestSecrets.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Secrets(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Secret.id)
+            val body: String? get() = anchor.string(Slots.Secret.body)
+            override fun equals(other: Any?): Boolean = other is TestSecrets.Data.Secrets && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            override fun equals(other: Any?): Boolean = other is TestSecrets.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }

@@ -63,6 +63,14 @@ impl Writer {
         self.line(close);
     }
 
+    /// What `body` writes one level deeper, with no brace: a getter under
+    /// the property it belongs to.
+    pub(super) fn indented(&mut self, body: impl FnOnce(&mut Writer)) {
+        self.depth += 1;
+        body(self);
+        self.depth -= 1;
+    }
+
     /// The depth the next line is written at, for a printer that lays out
     /// an expression over several lines by itself.
     pub(super) fn depth(&self) -> usize {

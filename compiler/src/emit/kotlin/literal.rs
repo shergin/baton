@@ -4,7 +4,7 @@
 
 use std::collections::BTreeMap;
 
-use crate::decide::{KeyPart, ListShape, Primitive, SlotRef};
+use crate::decide::{KeyPart, ListShape, Primitive, ScalarShape, SlotRef};
 use crate::kotlin_names::{enum_type_name, input_type_name, slot_name, type_constant};
 use crate::pipeline::ConstantPlan;
 
@@ -117,21 +117,39 @@ pub(super) struct Converters<'a> {
 }
 
 impl Converters<'_> {
-    /// The base's Kotlin type: a mapped scalar's is the type the
-    /// configuration names beside its converter.
+    /// The base's Kotlin type.
     fn base_type(&self, base: &Base) -> String {
         match base {
             Base::Input(name) => input_type_name(name),
-            Base::Scalar(Primitive::String) => "String".to_string(),
-            Base::Scalar(Primitive::Int) => "Int".to_string(),
-            Base::Scalar(Primitive::Double) => "Double".to_string(),
-            Base::Scalar(Primitive::Bool) => "Boolean".to_string(),
-            Base::Scalar(Primitive::Enum(name)) => enum_type_name(name),
-            Base::Scalar(Primitive::Mapped(converter)) => self
+            Base::Scalar(primitive) => self.primitive_type(primitive),
+        }
+    }
+
+    /// A primitive's Kotlin type: a mapped scalar's is the type the
+    /// configuration names beside its converter.
+    pub(super) fn primitive_type(&self, primitive: &Primitive) -> String {
+        match primitive {
+            Primitive::String => "String".to_string(),
+            Primitive::Int => "Int".to_string(),
+            Primitive::Double => "Double".to_string(),
+            Primitive::Bool => "Boolean".to_string(),
+            Primitive::Enum(name) => enum_type_name(name),
+            Primitive::Mapped(converter) => self
                 .types
                 .get(converter)
                 .cloned()
                 .unwrap_or_else(|| panic!("the configuration names a type for `{converter}`")),
+        }
+    }
+
+    /// A scalar field's Kotlin type as a lens reads it: the primitive, or a
+    /// list of it, of nullable elements where the schema types them so.
+    pub(super) fn scalar_type(&self, shape: &ScalarShape) -> String {
+        let base = self.primitive_type(&shape.primitive);
+        match shape.list {
+            Some(list) if list.non_null => format!("List<{base}>"),
+            Some(_) => format!("List<{base}?>"),
+            None => base,
         }
     }
 

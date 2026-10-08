@@ -3,11 +3,13 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.ConnectionCursor
 import baton.ConnectionPlan
 import baton.Document
 import baton.Edit
+import baton.Generated
 import baton.Lens
 import baton.Lookup
 import baton.MutationOperation
@@ -17,12 +19,418 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.Refetch
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
 import baton.Variable
 import baton.Variables
+
+/** Lens for `fragment TestAuthorNotes_note on Note`. */
+@Stable
+class TestAuthorNotes_note(override val anchor: Anchor) : Lens {
+    val id: String? get() = anchor.string(Slots.Note.id)
+    val author: Author? get() = anchor.linked(Slots.Note.author)?.let(::Author)
+    /** Fetches the fragment again through `TestAuthorNotesPaginationQuery` with its current variables; the records update in place. */
+    suspend fun refetch(): Unit = anchor.refetch(TestAuthorNotesPaginationQuery, Companion.refetchable)
+    override fun equals(other: Any?): Boolean = other is TestAuthorNotes_note && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** How the fragment is fetched again: `TestAuthorNotesPaginationQuery` with the lens's variables. */
+        @Generated
+        val refetchable: Refetch = Refetch(variables = listOf("count", "cursor", "id"), identifier = "id", identity = Slots.Note.id, first = "count", after = "cursor", last = null, before = null)
+    }
+
+    @Stable
+    class Author(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Character.id)
+        val name: String? get() = anchor.string(Slots.Character.name)
+        val notes: Notes get() = Notes(anchor.requiredLinked(Slots.Character.__TestAuthorNotes_notes_connection, Types.NoteConnection))
+        override fun equals(other: Any?): Boolean = other is TestAuthorNotes_note.Author && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Notes(override val anchor: Anchor) : Lens {
+            val edges: List<Edges>? get() = anchor.list(Slots.NoteConnection.edges, ::Edges)
+            val pageInfo: PageInfo get() = PageInfo(anchor.requiredLinked(Slots.NoteConnection.pageInfo, Types.PageInfo))
+            /** The edges' nodes, in order, without nulls. */
+            val nodes: List<Edges.Node> get() = anchor.nodes(Slots.NoteConnection.connection, { Edges.Node(it) })
+            /** Whether the server has edges after the last one, from the merged `pageInfo`. */
+            val hasNext: Boolean get() = anchor.hasNext(Slots.NoteConnection.connection)
+            val hasPrevious: Boolean get() = anchor.hasPrevious(Slots.NoteConnection.connection)
+            val isLoadingNext: Boolean get() = anchor.isLoadingNext(Slots.NoteConnection.connection)
+            val isLoadingPrevious: Boolean get() = anchor.isLoadingPrevious(Slots.NoteConnection.connection)
+            /** Relay's connection id, for the `connections` argument of the edge directives. */
+            val connectionID: String get() = anchor.record.key
+            /** Fetches the next `count` edges through `TestAuthorNotesPaginationQuery` and appends them; a no-op while loading or at the end. */
+            suspend fun loadNext(count: Int = 2): Unit = anchor.loadNext(TestAuthorNotesPaginationQuery, Slots.NoteConnection.connection, TestAuthorNotes_note.refetchable, count)
+            override fun equals(other: Any?): Boolean = other is TestAuthorNotes_note.Author.Notes && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Edges(override val anchor: Anchor) : Lens {
+                val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+                val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+                override fun equals(other: Any?): Boolean = other is TestAuthorNotes_note.Author.Notes.Edges && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                @Stable
+                class Node(override val anchor: Anchor) : Lens {
+                    val id: String? get() = anchor.string(Slots.Note.id)
+                    val text: String? get() = anchor.string(Slots.Note.text)
+                    override fun equals(other: Any?): Boolean = other is TestAuthorNotes_note.Author.Notes.Edges.Node && other.anchor == anchor
+                    override fun hashCode(): Int = anchor.hashCode()
+                }
+            }
+
+            @Stable
+            class PageInfo(override val anchor: Anchor) : Lens {
+                val endCursor: String? get() = anchor.string(Slots.PageInfo.endCursor)
+                val hasNextPage: Boolean get() = anchor.requiredBool(Slots.PageInfo.hasNextPage)
+                override fun equals(other: Any?): Boolean = other is TestAuthorNotes_note.Author.Notes.PageInfo && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
+}
+
+/** Lens for `fragment TestDeferredNotes_character on Character`. */
+@Stable
+class TestDeferredNotes_character(override val anchor: Anchor) : Lens {
+    val notes: Notes get() = Notes(anchor.requiredLinked(Slots.Character.__TestDeferredNotes_notes_connection, Types.NoteConnection))
+    val id: String? get() = anchor.string(Slots.Character.id)
+    /** Fetches the fragment again through `TestDeferredNotesPaginationQuery` with its current variables; the records update in place. */
+    suspend fun refetch(): Unit = anchor.refetch(TestDeferredNotesPaginationQuery, Companion.refetchable)
+    override fun equals(other: Any?): Boolean = other is TestDeferredNotes_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** How the fragment is fetched again: `TestDeferredNotesPaginationQuery` with the lens's variables. */
+        @Generated
+        val refetchable: Refetch = Refetch(variables = listOf("count", "cursor", "id"), identifier = "id", identity = Slots.Character.id, first = "count", after = "cursor", last = null, before = null)
+    }
+
+    @Stable
+    class Notes(override val anchor: Anchor) : Lens {
+        val edges: List<Edges>? get() = anchor.list(Slots.NoteConnection.edges, ::Edges)
+        val pageInfo: PageInfo get() = PageInfo(anchor.requiredLinked(Slots.NoteConnection.pageInfo, Types.PageInfo))
+        /** The edges' nodes, in order, without nulls. */
+        val nodes: List<Edges.Node> get() = anchor.nodes(Slots.NoteConnection.connection, { Edges.Node(it) })
+        /** Whether the server has edges after the last one, from the merged `pageInfo`. */
+        val hasNext: Boolean get() = anchor.hasNext(Slots.NoteConnection.connection)
+        val hasPrevious: Boolean get() = anchor.hasPrevious(Slots.NoteConnection.connection)
+        val isLoadingNext: Boolean get() = anchor.isLoadingNext(Slots.NoteConnection.connection)
+        val isLoadingPrevious: Boolean get() = anchor.isLoadingPrevious(Slots.NoteConnection.connection)
+        /** Relay's connection id, for the `connections` argument of the edge directives. */
+        val connectionID: String get() = anchor.record.key
+        /** Fetches the next `count` edges through `TestDeferredNotesPaginationQuery` and appends them; a no-op while loading or at the end. */
+        suspend fun loadNext(count: Int = 2): Unit = anchor.loadNext(TestDeferredNotesPaginationQuery, Slots.NoteConnection.connection, TestDeferredNotes_character.refetchable, count)
+        override fun equals(other: Any?): Boolean = other is TestDeferredNotes_character.Notes && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Edges(override val anchor: Anchor) : Lens {
+            val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+            val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+            override fun equals(other: Any?): Boolean = other is TestDeferredNotes_character.Notes.Edges && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Node(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                val testNoteText: TestNoteText_note?
+                    get() {
+                        if (!TestNoteText_note.isPresent(anchor)) return null
+                        return TestNoteText_note(anchor.entering())
+                    }
+                override fun equals(other: Any?): Boolean = other is TestDeferredNotes_character.Notes.Edges.Node && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+
+        @Stable
+        class PageInfo(override val anchor: Anchor) : Lens {
+            val endCursor: String? get() = anchor.string(Slots.PageInfo.endCursor)
+            val hasNextPage: Boolean get() = anchor.requiredBool(Slots.PageInfo.hasNextPage)
+            override fun equals(other: Any?): Boolean = other is TestDeferredNotes_character.Notes.PageInfo && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+}
+
+/** Lens for `fragment TestHiddenNotes_character on Character`. */
+@Stable
+class TestHiddenNotes_character(override val anchor: Anchor) : Lens {
+    val TestHiddenNotes_character: String? get() = anchor.string(Slots.Character.name)
+    val TestHiddenNotesPaginationQuery: String? get() = anchor.string(Slots.Character.status)
+    val notes: Notes get() = Notes(anchor.requiredLinked(Slots.Character.__TestHiddenNotes_notes_connection, Types.NoteConnection))
+    val id: String? get() = anchor.string(Slots.Character.id)
+    /** Fetches the fragment again through `TestHiddenNotesPaginationQuery` with its current variables; the records update in place. */
+    suspend fun refetch(): Unit = anchor.refetch(Companion.TestHiddenNotesPaginationQuery_, Companion.refetchable)
+    override fun equals(other: Any?): Boolean = other is TestHiddenNotes_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        private val TestHiddenNotesPaginationQuery_ = TestHiddenNotesPaginationQuery
+        /** How the fragment is fetched again: `TestHiddenNotesPaginationQuery` with the lens's variables. */
+        @Generated
+        val refetchable: Refetch = Refetch(variables = listOf("count", "cursor", "id"), identifier = "id", identity = Slots.Character.id, first = "count", after = "cursor", last = null, before = null)
+    }
+
+    @Stable
+    class Notes(override val anchor: Anchor) : Lens {
+        val TestHiddenNotes_character: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val TestHiddenNotesPaginationQuery: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val edges: List<Edges>? get() = anchor.list(Slots.NoteConnection.edges, ::Edges)
+        val pageInfo: PageInfo get() = PageInfo(anchor.requiredLinked(Slots.NoteConnection.pageInfo, Types.PageInfo))
+        /** The edges' nodes, in order, without nulls. */
+        val nodes: List<Edges.Node> get() = anchor.nodes(Slots.NoteConnection.connection, { Edges.Node(it) })
+        /** Whether the server has edges after the last one, from the merged `pageInfo`. */
+        val hasNext: Boolean get() = anchor.hasNext(Slots.NoteConnection.connection)
+        val hasPrevious: Boolean get() = anchor.hasPrevious(Slots.NoteConnection.connection)
+        val isLoadingNext: Boolean get() = anchor.isLoadingNext(Slots.NoteConnection.connection)
+        val isLoadingPrevious: Boolean get() = anchor.isLoadingPrevious(Slots.NoteConnection.connection)
+        /** Relay's connection id, for the `connections` argument of the edge directives. */
+        val connectionID: String get() = anchor.record.key
+        /** Fetches the next `count` edges through `TestHiddenNotesPaginationQuery` and appends them; a no-op while loading or at the end. */
+        suspend fun loadNext(count: Int = 2): Unit = anchor.loadNext(Companion.TestHiddenNotesPaginationQuery_, Slots.NoteConnection.connection, Companion.TestHiddenNotes_character_.refetchable, count)
+        override fun equals(other: Any?): Boolean = other is TestHiddenNotes_character.Notes && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            private val TestHiddenNotesPaginationQuery_ = TestHiddenNotesPaginationQuery
+            private val TestHiddenNotes_character_ = TestHiddenNotes_character
+        }
+
+        @Stable
+        class Edges(override val anchor: Anchor) : Lens {
+            val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+            val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+            override fun equals(other: Any?): Boolean = other is TestHiddenNotes_character.Notes.Edges && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Node(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                val text: String? get() = anchor.string(Slots.Note.text)
+                override fun equals(other: Any?): Boolean = other is TestHiddenNotes_character.Notes.Edges.Node && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+
+        @Stable
+        class PageInfo(override val anchor: Anchor) : Lens {
+            val endCursor: String? get() = anchor.string(Slots.PageInfo.endCursor)
+            val hasNextPage: Boolean get() = anchor.requiredBool(Slots.PageInfo.hasNextPage)
+            override fun equals(other: Any?): Boolean = other is TestHiddenNotes_character.Notes.PageInfo && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+}
+
+/** Lens for `fragment TestHiddenRecentNotes_character on Character`. */
+@Stable
+class TestHiddenRecentNotes_character(override val anchor: Anchor) : Lens {
+    val notes: Notes get() = Notes(anchor.requiredLinked(Slots.Character.__TestHiddenRecentNotes_notes_connection, Types.NoteConnection))
+    val id: String? get() = anchor.string(Slots.Character.id)
+    /** Fetches the fragment again through `TestHiddenRecentNotesPaginationQuery` with its current variables; the records update in place. */
+    suspend fun refetch(): Unit = anchor.refetch(TestHiddenRecentNotesPaginationQuery, Companion.refetchable)
+    override fun equals(other: Any?): Boolean = other is TestHiddenRecentNotes_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** How the fragment is fetched again: `TestHiddenRecentNotesPaginationQuery` with the lens's variables. */
+        @Generated
+        val refetchable: Refetch = Refetch(variables = listOf("count", "cursor", "id"), identifier = "id", identity = Slots.Character.id, first = null, after = null, last = "count", before = "cursor")
+    }
+
+    @Stable
+    class Notes(override val anchor: Anchor) : Lens {
+        val TestHiddenRecentNotes_character: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val TestHiddenRecentNotesPaginationQuery: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val edges: List<Edges>? get() = anchor.list(Slots.NoteConnection.edges, ::Edges)
+        val pageInfo: PageInfo get() = PageInfo(anchor.requiredLinked(Slots.NoteConnection.pageInfo, Types.PageInfo))
+        /** The edges' nodes, in order, without nulls. */
+        val nodes: List<Edges.Node> get() = anchor.nodes(Slots.NoteConnection.connection, { Edges.Node(it) })
+        /** Whether the server has edges after the last one, from the merged `pageInfo`. */
+        val hasNext: Boolean get() = anchor.hasNext(Slots.NoteConnection.connection)
+        val hasPrevious: Boolean get() = anchor.hasPrevious(Slots.NoteConnection.connection)
+        val isLoadingNext: Boolean get() = anchor.isLoadingNext(Slots.NoteConnection.connection)
+        val isLoadingPrevious: Boolean get() = anchor.isLoadingPrevious(Slots.NoteConnection.connection)
+        /** Relay's connection id, for the `connections` argument of the edge directives. */
+        val connectionID: String get() = anchor.record.key
+        /** Fetches the previous `count` edges through `TestHiddenRecentNotesPaginationQuery` and prepends them; a no-op while loading or at the start. */
+        suspend fun loadPrevious(count: Int = 2): Unit = anchor.loadPrevious(Companion.TestHiddenRecentNotesPaginationQuery_, Slots.NoteConnection.connection, Companion.TestHiddenRecentNotes_character_.refetchable, count)
+        override fun equals(other: Any?): Boolean = other is TestHiddenRecentNotes_character.Notes && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            private val TestHiddenRecentNotesPaginationQuery_ = TestHiddenRecentNotesPaginationQuery
+            private val TestHiddenRecentNotes_character_ = TestHiddenRecentNotes_character
+        }
+
+        @Stable
+        class Edges(override val anchor: Anchor) : Lens {
+            val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+            val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+            override fun equals(other: Any?): Boolean = other is TestHiddenRecentNotes_character.Notes.Edges && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Node(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                val text: String? get() = anchor.string(Slots.Note.text)
+                override fun equals(other: Any?): Boolean = other is TestHiddenRecentNotes_character.Notes.Edges.Node && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+
+        @Stable
+        class PageInfo(override val anchor: Anchor) : Lens {
+            val hasPreviousPage: Boolean get() = anchor.requiredBool(Slots.PageInfo.hasPreviousPage)
+            val startCursor: String? get() = anchor.string(Slots.PageInfo.startCursor)
+            override fun equals(other: Any?): Boolean = other is TestHiddenRecentNotes_character.Notes.PageInfo && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+}
+
+/** Lens for `fragment TestNoteText_note on Note`. */
+@Stable
+class TestNoteText_note(override val anchor: Anchor) : Lens {
+    val text: String? get() = anchor.string(Slots.Note.text)
+    override fun equals(other: Any?): Boolean = other is TestNoteText_note && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** Whether the deferred part that carries this fragment has arrived. */
+        fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Note.text)
+    }
+}
+
+/** Lens for `fragment TestNotes_character on Character`. */
+@Stable
+class TestNotes_character(override val anchor: Anchor) : Lens {
+    val name: String? get() = anchor.string(Slots.Character.name)
+    val notes: Notes get() = Notes(anchor.requiredLinked(Slots.Character.__TestNotes_notes_connection, Types.NoteConnection))
+    val id: String? get() = anchor.string(Slots.Character.id)
+    /** Fetches the fragment again through `TestNotesPaginationQuery` with its current variables; the records update in place. */
+    suspend fun refetch(): Unit = anchor.refetch(TestNotesPaginationQuery, Companion.refetchable)
+    override fun equals(other: Any?): Boolean = other is TestNotes_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** How the fragment is fetched again: `TestNotesPaginationQuery` with the lens's variables. */
+        @Generated
+        val refetchable: Refetch = Refetch(variables = listOf("count", "cursor", "id"), identifier = "id", identity = Slots.Character.id, first = "count", after = "cursor", last = null, before = null)
+    }
+
+    @Stable
+    class Notes(override val anchor: Anchor) : Lens {
+        val totalCount: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val edges: List<Edges>? get() = anchor.list(Slots.NoteConnection.edges, ::Edges)
+        val pageInfo: PageInfo get() = PageInfo(anchor.requiredLinked(Slots.NoteConnection.pageInfo, Types.PageInfo))
+        /** The edges' nodes, in order, without nulls. */
+        val nodes: List<Edges.Node> get() = anchor.nodes(Slots.NoteConnection.connection, { Edges.Node(it) })
+        /** Whether the server has edges after the last one, from the merged `pageInfo`. */
+        val hasNext: Boolean get() = anchor.hasNext(Slots.NoteConnection.connection)
+        val hasPrevious: Boolean get() = anchor.hasPrevious(Slots.NoteConnection.connection)
+        val isLoadingNext: Boolean get() = anchor.isLoadingNext(Slots.NoteConnection.connection)
+        val isLoadingPrevious: Boolean get() = anchor.isLoadingPrevious(Slots.NoteConnection.connection)
+        /** Relay's connection id, for the `connections` argument of the edge directives. */
+        val connectionID: String get() = anchor.record.key
+        /** Fetches the next `count` edges through `TestNotesPaginationQuery` and appends them; a no-op while loading or at the end. */
+        suspend fun loadNext(count: Int = 2): Unit = anchor.loadNext(TestNotesPaginationQuery, Slots.NoteConnection.connection, TestNotes_character.refetchable, count)
+        override fun equals(other: Any?): Boolean = other is TestNotes_character.Notes && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Edges(override val anchor: Anchor) : Lens {
+            val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+            val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+            override fun equals(other: Any?): Boolean = other is TestNotes_character.Notes.Edges && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Node(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                val text: String? get() = anchor.string(Slots.Note.text)
+                override fun equals(other: Any?): Boolean = other is TestNotes_character.Notes.Edges.Node && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+
+        @Stable
+        class PageInfo(override val anchor: Anchor) : Lens {
+            val endCursor: String? get() = anchor.string(Slots.PageInfo.endCursor)
+            val hasNextPage: Boolean get() = anchor.requiredBool(Slots.PageInfo.hasNextPage)
+            override fun equals(other: Any?): Boolean = other is TestNotes_character.Notes.PageInfo && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+}
+
+/** Lens for `fragment TestRecentNotes_character on Character`. */
+@Stable
+class TestRecentNotes_character(override val anchor: Anchor) : Lens {
+    val notes: Notes get() = Notes(anchor.requiredLinked(Slots.Character.__TestRecentNotes_notes_connection, Types.NoteConnection))
+    val id: String? get() = anchor.string(Slots.Character.id)
+    /** Fetches the fragment again through `TestRecentNotesPaginationQuery` with its current variables; the records update in place. */
+    suspend fun refetch(): Unit = anchor.refetch(TestRecentNotesPaginationQuery, Companion.refetchable)
+    override fun equals(other: Any?): Boolean = other is TestRecentNotes_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** How the fragment is fetched again: `TestRecentNotesPaginationQuery` with the lens's variables. */
+        @Generated
+        val refetchable: Refetch = Refetch(variables = listOf("count", "cursor", "id"), identifier = "id", identity = Slots.Character.id, first = null, after = null, last = "count", before = "cursor")
+    }
+
+    @Stable
+    class Notes(override val anchor: Anchor) : Lens {
+        val edges: List<Edges>? get() = anchor.list(Slots.NoteConnection.edges, ::Edges)
+        val pageInfo: PageInfo get() = PageInfo(anchor.requiredLinked(Slots.NoteConnection.pageInfo, Types.PageInfo))
+        /** The edges' nodes, in order, without nulls. */
+        val nodes: List<Edges.Node> get() = anchor.nodes(Slots.NoteConnection.connection, { Edges.Node(it) })
+        /** Whether the server has edges after the last one, from the merged `pageInfo`. */
+        val hasNext: Boolean get() = anchor.hasNext(Slots.NoteConnection.connection)
+        val hasPrevious: Boolean get() = anchor.hasPrevious(Slots.NoteConnection.connection)
+        val isLoadingNext: Boolean get() = anchor.isLoadingNext(Slots.NoteConnection.connection)
+        val isLoadingPrevious: Boolean get() = anchor.isLoadingPrevious(Slots.NoteConnection.connection)
+        /** Relay's connection id, for the `connections` argument of the edge directives. */
+        val connectionID: String get() = anchor.record.key
+        /** Fetches the previous `count` edges through `TestRecentNotesPaginationQuery` and prepends them; a no-op while loading or at the start. */
+        suspend fun loadPrevious(count: Int = 2): Unit = anchor.loadPrevious(TestRecentNotesPaginationQuery, Slots.NoteConnection.connection, TestRecentNotes_character.refetchable, count)
+        override fun equals(other: Any?): Boolean = other is TestRecentNotes_character.Notes && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Edges(override val anchor: Anchor) : Lens {
+            val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+            val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+            override fun equals(other: Any?): Boolean = other is TestRecentNotes_character.Notes.Edges && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Node(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                val text: String? get() = anchor.string(Slots.Note.text)
+                override fun equals(other: Any?): Boolean = other is TestRecentNotes_character.Notes.Edges.Node && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+
+        @Stable
+        class PageInfo(override val anchor: Anchor) : Lens {
+            val hasPreviousPage: Boolean get() = anchor.requiredBool(Slots.PageInfo.hasPreviousPage)
+            val startCursor: String? get() = anchor.string(Slots.PageInfo.startCursor)
+            override fun equals(other: Any?): Boolean = other is TestRecentNotes_character.Notes.PageInfo && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+}
 
 /** Operation value for `mutation TestAddNote`. */
 class TestAddNote(val characterId: String, val text: String, val connections: List<String>) : MutationOperation<TestAddNote.Data> {
@@ -64,7 +472,35 @@ class TestAddNote(val characterId: String, val text: String, val connections: Li
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val addNote: AddNote? get() = anchor.linked(Slots.Mutation.addNote)?.let(::AddNote)
+        override fun equals(other: Any?): Boolean = other is TestAddNote.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class AddNote(override val anchor: Anchor) : Lens {
+            val noteEdge: NoteEdge? get() = anchor.linked(Slots.AddNotePayload.noteEdge)?.let(::NoteEdge)
+            override fun equals(other: Any?): Boolean = other is TestAddNote.Data.AddNote && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class NoteEdge(override val anchor: Anchor) : Lens {
+                val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+                val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+                override fun equals(other: Any?): Boolean = other is TestAddNote.Data.AddNote.NoteEdge && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                @Stable
+                class Node(override val anchor: Anchor) : Lens {
+                    val id: String? get() = anchor.string(Slots.Note.id)
+                    val text: String? get() = anchor.string(Slots.Note.text)
+                    override fun equals(other: Any?): Boolean = other is TestAddNote.Data.AddNote.NoteEdge.Node && other.anchor == anchor
+                    override fun hashCode(): Int = anchor.hashCode()
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `mutation TestAddNoteFirst`. */
@@ -107,7 +543,35 @@ class TestAddNoteFirst(val characterId: String, val text: String, val connection
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val addNote: AddNote? get() = anchor.linked(Slots.Mutation.addNote)?.let(::AddNote)
+        override fun equals(other: Any?): Boolean = other is TestAddNoteFirst.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class AddNote(override val anchor: Anchor) : Lens {
+            val noteEdge: NoteEdge? get() = anchor.linked(Slots.AddNotePayload.noteEdge)?.let(::NoteEdge)
+            override fun equals(other: Any?): Boolean = other is TestAddNoteFirst.Data.AddNote && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class NoteEdge(override val anchor: Anchor) : Lens {
+                val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+                val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+                override fun equals(other: Any?): Boolean = other is TestAddNoteFirst.Data.AddNote.NoteEdge && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                @Stable
+                class Node(override val anchor: Anchor) : Lens {
+                    val id: String? get() = anchor.string(Slots.Note.id)
+                    val text: String? get() = anchor.string(Slots.Note.text)
+                    override fun equals(other: Any?): Boolean = other is TestAddNoteFirst.Data.AddNote.NoteEdge.Node && other.anchor == anchor
+                    override fun hashCode(): Int = anchor.hashCode()
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `mutation TestAddNoteNode`. */
@@ -144,7 +608,27 @@ class TestAddNoteNode(val characterId: String, val text: String, val connections
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val addNote: AddNote? get() = anchor.linked(Slots.Mutation.addNote)?.let(::AddNote)
+        override fun equals(other: Any?): Boolean = other is TestAddNoteNode.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class AddNote(override val anchor: Anchor) : Lens {
+            val note: Note? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Note)
+            override fun equals(other: Any?): Boolean = other is TestAddNoteNode.Data.AddNote && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Note(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                val text: String? get() = anchor.string(Slots.Note.text)
+                override fun equals(other: Any?): Boolean = other is TestAddNoteNode.Data.AddNote.Note && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `mutation TestAddNoteNodeFirst`. */
@@ -181,7 +665,27 @@ class TestAddNoteNodeFirst(val characterId: String, val text: String, val connec
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val addNote: AddNote? get() = anchor.linked(Slots.Mutation.addNote)?.let(::AddNote)
+        override fun equals(other: Any?): Boolean = other is TestAddNoteNodeFirst.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class AddNote(override val anchor: Anchor) : Lens {
+            val note: Note? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Note)
+            override fun equals(other: Any?): Boolean = other is TestAddNoteNodeFirst.Data.AddNote && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Note(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                val text: String? get() = anchor.string(Slots.Note.text)
+                override fun equals(other: Any?): Boolean = other is TestAddNoteNodeFirst.Data.AddNote.Note && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `mutation TestAddNoteNodeOfAnotherType`. */
@@ -218,7 +722,27 @@ class TestAddNoteNodeOfAnotherType(val characterId: String, val text: String, va
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val addNote: AddNote? get() = anchor.linked(Slots.Mutation.addNote)?.let(::AddNote)
+        override fun equals(other: Any?): Boolean = other is TestAddNoteNodeOfAnotherType.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class AddNote(override val anchor: Anchor) : Lens {
+            val note: Note? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Note)
+            override fun equals(other: Any?): Boolean = other is TestAddNoteNodeOfAnotherType.Data.AddNote && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Note(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                val text: String? get() = anchor.string(Slots.Note.text)
+                override fun equals(other: Any?): Boolean = other is TestAddNoteNodeOfAnotherType.Data.AddNote.Note && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestAliasQuery`. */
@@ -253,7 +777,19 @@ class TestAliasQuery(val id: String) : QueryOperation<TestAliasQuery.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestAliasQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val row: TestRow_character get() = TestRow_character(anchor.entering())
+            override fun equals(other: Any?): Boolean = other is TestAliasQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestAuthorNotesPaginationQuery`. */
@@ -325,7 +861,24 @@ class TestAuthorNotesPaginationQuery(val count: Int? = null, val cursor: String?
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is TestAuthorNotesPaginationQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val testAuthorNotes: TestAuthorNotes_note?
+                get() {
+                    val bound = anchor.binding(Sites.TestAuthorNotesPaginationQuery_testAuthorNotes) { mapOf("count" to anchor.variables["count"], "cursor" to anchor.variables["cursor"]) }
+                    if (!(anchor.record.type == Types.Note)) return null
+                    return TestAuthorNotes_note(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestAuthorNotesPaginationQuery.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestAuthorNotesQuery`. */
@@ -397,7 +950,24 @@ class TestAuthorNotesQuery(val id: String) : QueryOperation<TestAuthorNotesQuery
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is TestAuthorNotesQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val note: TestAuthorNotes_note?
+                get() {
+                    val bound = anchor.binding(Sites.TestAuthorNotesQuery_note) { mapOf("count" to Variable.Int(2), "cursor" to Variable.Null) }
+                    if (!(anchor.record.type == Types.Note)) return null
+                    return TestAuthorNotes_note(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestAuthorNotesQuery.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestDeferredNotesPaginationQuery`. */
@@ -463,7 +1033,24 @@ class TestDeferredNotesPaginationQuery(val count: Int? = null, val cursor: Strin
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is TestDeferredNotesPaginationQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val testDeferredNotes: TestDeferredNotes_character?
+                get() {
+                    val bound = anchor.binding(Sites.TestDeferredNotesPaginationQuery_testDeferredNotes) { mapOf("count" to anchor.variables["count"], "cursor" to anchor.variables["cursor"]) }
+                    if (!(anchor.record.type == Types.Character)) return null
+                    return TestDeferredNotes_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestDeferredNotesPaginationQuery.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `mutation TestDeleteNote`. */
@@ -494,7 +1081,19 @@ class TestDeleteNote(val id: String) : MutationOperation<TestDeleteNote.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val removeNote: RemoveNote? get() = anchor.linked(Slots.Mutation.removeNote)?.let(::RemoveNote)
+        override fun equals(other: Any?): Boolean = other is TestDeleteNote.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class RemoveNote(override val anchor: Anchor) : Lens {
+            val removedNoteId: String? get() = anchor.string(Slots.RemoveNotePayload.removedNoteId)
+            override fun equals(other: Any?): Boolean = other is TestDeleteNote.Data.RemoveNote && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestHiddenNotesPaginationQuery`. */
@@ -563,7 +1162,24 @@ class TestHiddenNotesPaginationQuery(val count: Int? = null, val cursor: String?
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is TestHiddenNotesPaginationQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val testHiddenNotes: TestHiddenNotes_character?
+                get() {
+                    val bound = anchor.binding(Sites.TestHiddenNotesPaginationQuery_testHiddenNotes) { mapOf("count" to anchor.variables["count"], "cursor" to anchor.variables["cursor"]) }
+                    if (!(anchor.record.type == Types.Character)) return null
+                    return TestHiddenNotes_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestHiddenNotesPaginationQuery.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestHiddenNotesQuery`. */
@@ -625,7 +1241,23 @@ class TestHiddenNotesQuery(val id: String) : QueryOperation<TestHiddenNotesQuery
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestHiddenNotesQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val testHiddenNotes: TestHiddenNotes_character
+                get() {
+                    val bound = anchor.binding(Sites.TestHiddenNotesQuery_testHiddenNotes) { mapOf("count" to Variable.Int(2), "cursor" to Variable.Null) }
+                    return TestHiddenNotes_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestHiddenNotesQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestHiddenRecentNotesPaginationQuery`. */
@@ -692,7 +1324,24 @@ class TestHiddenRecentNotesPaginationQuery(val count: Int? = null, val cursor: S
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is TestHiddenRecentNotesPaginationQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val testHiddenRecentNotes: TestHiddenRecentNotes_character?
+                get() {
+                    val bound = anchor.binding(Sites.TestHiddenRecentNotesPaginationQuery_testHiddenRecentNotes) { mapOf("count" to anchor.variables["count"], "cursor" to anchor.variables["cursor"]) }
+                    if (!(anchor.record.type == Types.Character)) return null
+                    return TestHiddenRecentNotes_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestHiddenRecentNotesPaginationQuery.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestHiddenRecentNotesQuery`. */
@@ -752,7 +1401,23 @@ class TestHiddenRecentNotesQuery(val id: String) : QueryOperation<TestHiddenRece
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestHiddenRecentNotesQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val testHiddenRecentNotes: TestHiddenRecentNotes_character
+                get() {
+                    val bound = anchor.binding(Sites.TestHiddenRecentNotesQuery_testHiddenRecentNotes) { mapOf("count" to Variable.Int(2), "cursor" to Variable.Null) }
+                    return TestHiddenRecentNotes_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestHiddenRecentNotesQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestNotesPaginationQuery`. */
@@ -819,7 +1484,24 @@ class TestNotesPaginationQuery(val count: Int? = null, val cursor: String? = nul
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is TestNotesPaginationQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val testNotes: TestNotes_character?
+                get() {
+                    val bound = anchor.binding(Sites.TestNotesPaginationQuery_testNotes) { mapOf("count" to anchor.variables["count"], "cursor" to anchor.variables["cursor"]) }
+                    if (!(anchor.record.type == Types.Character)) return null
+                    return TestNotes_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestNotesPaginationQuery.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestNotesQuery`. */
@@ -879,7 +1561,23 @@ class TestNotesQuery(val id: String) : QueryOperation<TestNotesQuery.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestNotesQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val testNotes: TestNotes_character
+                get() {
+                    val bound = anchor.binding(Sites.TestNotesQuery_testNotes) { mapOf("count" to Variable.Int(2), "cursor" to Variable.Null) }
+                    return TestNotes_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestNotesQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestNotesSizedQuery`. */
@@ -939,7 +1637,23 @@ class TestNotesSizedQuery(val id: String, val size: Int? = null) : QueryOperatio
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestNotesSizedQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val testNotes: TestNotes_character
+                get() {
+                    val bound = anchor.binding(Sites.TestNotesSizedQuery_testNotes) { mapOf("count" to anchor.variables["size"], "cursor" to Variable.Null) }
+                    return TestNotes_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestNotesSizedQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestRecentNotesPaginationQuery`. */
@@ -1004,7 +1718,24 @@ class TestRecentNotesPaginationQuery(val count: Int? = null, val cursor: String?
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is TestRecentNotesPaginationQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val testRecentNotes: TestRecentNotes_character?
+                get() {
+                    val bound = anchor.binding(Sites.TestRecentNotesPaginationQuery_testRecentNotes) { mapOf("count" to anchor.variables["count"], "cursor" to anchor.variables["cursor"]) }
+                    if (!(anchor.record.type == Types.Character)) return null
+                    return TestRecentNotes_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestRecentNotesPaginationQuery.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestRecentNotesQuery`. */
@@ -1062,7 +1793,23 @@ class TestRecentNotesQuery(val id: String) : QueryOperation<TestRecentNotesQuery
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestRecentNotesQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val testRecentNotes: TestRecentNotes_character
+                get() {
+                    val bound = anchor.binding(Sites.TestRecentNotesQuery_testRecentNotes) { mapOf("count" to Variable.Int(2), "cursor" to Variable.Null) }
+                    return TestRecentNotes_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestRecentNotesQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `mutation TestRemoveNote`. */
@@ -1094,7 +1841,20 @@ class TestRemoveNote(val id: String, val connections: List<String>) : MutationOp
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val removeNote: RemoveNote? get() = anchor.linked(Slots.Mutation.removeNote)?.let(::RemoveNote)
+        override fun equals(other: Any?): Boolean = other is TestRemoveNote.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class RemoveNote(override val anchor: Anchor) : Lens {
+            val removedNoteId: String? get() = anchor.string(Slots.RemoveNotePayload.removedNoteId)
+            val deleted: String? get() = anchor.string(Slots.RemoveNotePayload.removedNoteId)
+            override fun equals(other: Any?): Boolean = other is TestRemoveNote.Data.RemoveNote && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestTwoPagesQuery`. */
@@ -1166,5 +1926,115 @@ class TestTwoPagesQuery(val id: String) : QueryOperation<TestTwoPagesQuery.Data>
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is TestTwoPagesQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val notes: Notes get() = Notes(anchor.requiredLinked(Slots.Character.__TestTwoPages_notes_connection, Types.NoteConnection))
+            override fun equals(other: Any?): Boolean = other is TestTwoPagesQuery.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Notes(override val anchor: Anchor) : Lens {
+                val edges: List<Edges>? get() = anchor.list(Slots.NoteConnection.edges, ::Edges)
+                val pageInfo: PageInfo get() = PageInfo(anchor.requiredLinked(Slots.NoteConnection.pageInfo, Types.PageInfo))
+                /** The edges' nodes, in order, without nulls. */
+                val nodes: List<Edges.Node> get() = anchor.nodes(Slots.NoteConnection.connection, { Edges.Node(it) })
+                /** Whether the server has edges after the last one, from the merged `pageInfo`. */
+                val hasNext: Boolean get() = anchor.hasNext(Slots.NoteConnection.connection)
+                val hasPrevious: Boolean get() = anchor.hasPrevious(Slots.NoteConnection.connection)
+                val isLoadingNext: Boolean get() = anchor.isLoadingNext(Slots.NoteConnection.connection)
+                val isLoadingPrevious: Boolean get() = anchor.isLoadingPrevious(Slots.NoteConnection.connection)
+                /** Relay's connection id, for the `connections` argument of the edge directives. */
+                val connectionID: String get() = anchor.record.key
+                override fun equals(other: Any?): Boolean = other is TestTwoPagesQuery.Data.Character.Notes && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                @Stable
+                class Edges(override val anchor: Anchor) : Lens {
+                    val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+                    val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+                    override fun equals(other: Any?): Boolean = other is TestTwoPagesQuery.Data.Character.Notes.Edges && other.anchor == anchor
+                    override fun hashCode(): Int = anchor.hashCode()
+
+                    @Stable
+                    class Node(override val anchor: Anchor) : Lens {
+                        val id: String? get() = anchor.string(Slots.Note.id)
+                        val text: String? get() = anchor.string(Slots.Note.text)
+                        override fun equals(other: Any?): Boolean = other is TestTwoPagesQuery.Data.Character.Notes.Edges.Node && other.anchor == anchor
+                        override fun hashCode(): Int = anchor.hashCode()
+                    }
+                }
+
+                @Stable
+                class PageInfo(override val anchor: Anchor) : Lens {
+                    val endCursor: String? get() = anchor.string(Slots.PageInfo.endCursor)
+                    val hasNextPage: Boolean get() = anchor.requiredBool(Slots.PageInfo.hasNextPage)
+                    override fun equals(other: Any?): Boolean = other is TestTwoPagesQuery.Data.Character.Notes.PageInfo && other.anchor == anchor
+                    override fun hashCode(): Int = anchor.hashCode()
+                }
+            }
+        }
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val asCharacter: AsCharacter? get() = if (anchor.record.type == Types.Character) AsCharacter(anchor) else null
+            override fun equals(other: Any?): Boolean = other is TestTwoPagesQuery.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class AsCharacter(override val anchor: Anchor) : Lens {
+                val notes: Notes get() = Notes(anchor.requiredLinked(Slots.Character.__TestTwoPages_notes_connection, Types.NoteConnection))
+                override fun equals(other: Any?): Boolean = other is TestTwoPagesQuery.Data.Node.AsCharacter && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                @Stable
+                class Notes(override val anchor: Anchor) : Lens {
+                    val edges: List<Edges>? get() = anchor.list(Slots.NoteConnection.edges, ::Edges)
+                    val pageInfo: PageInfo get() = PageInfo(anchor.requiredLinked(Slots.NoteConnection.pageInfo, Types.PageInfo))
+                    /** The edges' nodes, in order, without nulls. */
+                    val nodes: List<Edges.Node> get() = anchor.nodes(Slots.NoteConnection.connection, { Edges.Node(it) })
+                    /** Whether the server has edges after the last one, from the merged `pageInfo`. */
+                    val hasNext: Boolean get() = anchor.hasNext(Slots.NoteConnection.connection)
+                    val hasPrevious: Boolean get() = anchor.hasPrevious(Slots.NoteConnection.connection)
+                    val isLoadingNext: Boolean get() = anchor.isLoadingNext(Slots.NoteConnection.connection)
+                    val isLoadingPrevious: Boolean get() = anchor.isLoadingPrevious(Slots.NoteConnection.connection)
+                    /** Relay's connection id, for the `connections` argument of the edge directives. */
+                    val connectionID: String get() = anchor.record.key
+                    override fun equals(other: Any?): Boolean = other is TestTwoPagesQuery.Data.Node.AsCharacter.Notes && other.anchor == anchor
+                    override fun hashCode(): Int = anchor.hashCode()
+
+                    @Stable
+                    class Edges(override val anchor: Anchor) : Lens {
+                        val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+                        val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+                        override fun equals(other: Any?): Boolean = other is TestTwoPagesQuery.Data.Node.AsCharacter.Notes.Edges && other.anchor == anchor
+                        override fun hashCode(): Int = anchor.hashCode()
+
+                        @Stable
+                        class Node(override val anchor: Anchor) : Lens {
+                            val id: String? get() = anchor.string(Slots.Note.id)
+                            val text: String? get() = anchor.string(Slots.Note.text)
+                            override fun equals(other: Any?): Boolean = other is TestTwoPagesQuery.Data.Node.AsCharacter.Notes.Edges.Node && other.anchor == anchor
+                            override fun hashCode(): Int = anchor.hashCode()
+                        }
+                    }
+
+                    @Stable
+                    class PageInfo(override val anchor: Anchor) : Lens {
+                        val endCursor: String? get() = anchor.string(Slots.PageInfo.endCursor)
+                        val hasNextPage: Boolean get() = anchor.requiredBool(Slots.PageInfo.hasNextPage)
+                        override fun equals(other: Any?): Boolean = other is TestTwoPagesQuery.Data.Node.AsCharacter.Notes.PageInfo && other.anchor == anchor
+                        override fun hashCode(): Int = anchor.hashCode()
+                    }
+                }
+            }
+        }
+    }
 }

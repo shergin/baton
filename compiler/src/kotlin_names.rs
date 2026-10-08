@@ -52,8 +52,10 @@ pub const KEYWORDS: [&str; 28] = [
 /// unqualified. A fragment or an operation of one of these names would
 /// conflict with the import in its own file; one the generated code comes to
 /// spell joins the list in the same change.
-pub const RUNTIME_NAMES: [&str; 36] = [
+pub const RUNTIME_NAMES: [&str; 42] = [
+    "AbstractSlot",
     "Anchor",
+    "ArgumentSite",
     "ConnectionCursor",
     "ConnectionPlan",
     "ConnectionSlots",
@@ -61,6 +63,9 @@ pub const RUNTIME_NAMES: [&str; 36] = [
     "DynamicKey",
     "Edit",
     "ErrorBehavior",
+    "FieldError",
+    "FieldErrors",
+    "Generated",
     "GeneratedEnum",
     "Guard",
     "InputObject",
@@ -76,6 +81,7 @@ pub const RUNTIME_NAMES: [&str; 36] = [
     "Plan",
     "PlanField",
     "QueryOperation",
+    "Refetch",
     "Registry",
     "Resolution",
     "ScalarKind",
@@ -91,6 +97,10 @@ pub const RUNTIME_NAMES: [&str; 36] = [
     "Format1",
 ];
 
+/// Compose's annotation every lens carries, imported by its full name: a
+/// lens is equal by its anchor, and a read registers what it reads.
+pub const STABLE: &str = "androidx.compose.runtime.Stable";
+
 /// What the generated code spells from the standard library: the types
 /// variables take and lenses return, and `Any` an `equals` takes. A
 /// fragment or an operation of one of these names, declared in the
@@ -100,14 +110,18 @@ pub const STANDARD_LIBRARY_NAMES: [&str; 10] = [
 ];
 
 /// What a nested lens may not be named: the companion every class may
-/// have, the runtime's and the standard library's types a lens spells, and
-/// the shared objects.
-pub const LENS_RESERVED_NAMES: [&str; 14] = [
+/// have, the runtime's, Compose's and the standard library's types a lens
+/// or a value spells, and the shared objects. A nested class is the nearest
+/// declaration of its name to every body of the lens it is nested in.
+pub const LENS_RESERVED_NAMES: [&str; 24] = [
     "Companion",
     "Lens",
     "Anchor",
     "Types",
     "Slots",
+    "AbstractSlots",
+    "Guards",
+    "Sites",
     "String",
     "Int",
     "Long",
@@ -117,6 +131,13 @@ pub const LENS_RESERVED_NAMES: [&str; 14] = [
     "List",
     "Result",
     "Unit",
+    "Stable",
+    "Generated",
+    "FieldError",
+    "FieldErrors",
+    "Refetch",
+    "Variable",
+    "Variables",
 ];
 
 /// What a nested optimistic-response builder may not be named.
@@ -364,6 +385,7 @@ impl Naming for KotlinNaming {
         for name in RUNTIME_NAMES {
             names.push((name, format!("the runtime's `{name}`")));
         }
+        names.push(("Stable", "Compose's `Stable`".to_string()));
         names
     }
 
@@ -463,6 +485,12 @@ impl Naming for KotlinNaming {
         for name in ["equals", "hashCode", "toString"] {
             members.push((name, format!("the `{name}` every class has")));
         }
+        // A getter reaches its lens's static members, and what an accessor
+        // would hide from it, through the companion.
+        members.push((
+            "Companion",
+            "the lens's companion object `Companion`".to_string(),
+        ));
         members
     }
 }

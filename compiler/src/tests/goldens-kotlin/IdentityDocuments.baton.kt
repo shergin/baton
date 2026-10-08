@@ -3,6 +3,7 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
 import baton.Lens
@@ -51,7 +52,19 @@ class TestAssetNameQuery(val uuid: String) : QueryOperation<TestAssetNameQuery.D
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val asset: Asset? get() = anchor.linked(anchor.owner.slot(Slots.Query.asset_9e39ed))?.let(::Asset)
+        override fun equals(other: Any?): Boolean = other is TestAssetNameQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Asset(override val anchor: Anchor) : Lens {
+            val name: String? get() = anchor.string(Slots.Asset.name)
+            override fun equals(other: Any?): Boolean = other is TestAssetNameQuery.Data.Asset && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestAssetQuery`. */
@@ -92,7 +105,28 @@ class TestAssetQuery(val uuid: String) : QueryOperation<TestAssetQuery.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val asset: Asset? get() = anchor.linked(anchor.owner.slot(Slots.Query.asset_9e39ed))?.let(::Asset)
+        override fun equals(other: Any?): Boolean = other is TestAssetQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Asset(override val anchor: Anchor) : Lens {
+            val owner: Owner? get() = anchor.linked(Slots.Asset.owner)?.let(::Owner)
+            val uuid: String get() = anchor.requiredString(Slots.Asset.uuid)
+            val name: String? get() = anchor.string(Slots.Asset.name)
+            override fun equals(other: Any?): Boolean = other is TestAssetQuery.Data.Asset && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Owner(override val anchor: Anchor) : Lens {
+                val name: String? get() = anchor.string(Slots.Character.name)
+                override fun equals(other: Any?): Boolean = other is TestAssetQuery.Data.Asset.Owner && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestAssetsQuery`. */
@@ -127,7 +161,20 @@ class TestAssetsQuery : QueryOperation<TestAssetsQuery.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val assets: List<Assets>? get() = anchor.list(Slots.Query.assets, ::Assets)
+        override fun equals(other: Any?): Boolean = other is TestAssetsQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Assets(override val anchor: Anchor) : Lens {
+            val name: String? get() = anchor.string(Slots.Asset.name)
+            val size: Int? get() = anchor.int(Slots.Asset.size)
+            override fun equals(other: Any?): Boolean = other is TestAssetsQuery.Data.Assets && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestQuoteQuery`. */
@@ -161,7 +208,21 @@ class TestQuoteQuery(val base: String, val quote: String) : QueryOperation<TestQ
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val quote: Quote? get() = anchor.linked(anchor.owner.slot(Slots.Query.quote_bd29fc))?.let(::Quote)
+        override fun equals(other: Any?): Boolean = other is TestQuoteQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Quote(override val anchor: Anchor) : Lens {
+            val base: String get() = anchor.requiredString(Slots.Quote.base)
+            val quote: String get() = anchor.requiredString(Slots.Quote.quote)
+            val rate: Double? get() = anchor.double(Slots.Quote.rate)
+            override fun equals(other: Any?): Boolean = other is TestQuoteQuery.Data.Quote && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestQuotesQuery`. */
@@ -195,5 +256,17 @@ class TestQuotesQuery : QueryOperation<TestQuotesQuery.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val quotes: List<Quotes>? get() = anchor.list(Slots.Query.quotes, ::Quotes)
+        override fun equals(other: Any?): Boolean = other is TestQuotesQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Quotes(override val anchor: Anchor) : Lens {
+            val rate: Double? get() = anchor.double(Slots.Quote.rate)
+            override fun equals(other: Any?): Boolean = other is TestQuotesQuery.Data.Quotes && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }

@@ -3,8 +3,11 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
+import baton.FieldError
+import baton.FieldErrors
 import baton.Lens
 import baton.OperationHandle
 import baton.OperationKind
@@ -18,6 +21,59 @@ import baton.Selection
 import baton.StorageKey
 import baton.Variable
 import baton.Variables
+
+/** Lens for `fragment TestCaughtPrices_asset on Asset`. */
+@Stable
+class TestCaughtPrices_asset(override val anchor: Anchor) : Lens {
+    val price: Result<java.math.BigDecimal?> get() = anchor.caughtOptionalMapped(Slots.Asset.price, "price", baton.scalars.Decimals)
+    val listedAt: Result<java.time.Instant> get() = anchor.caughtMapped(Slots.Asset.listedAt, "listedAt", baton.scalars.DateTimes)
+    val page: java.net.URI? get() = anchor.mapped(Slots.Asset.page, baton.scalars.Urls)
+    override fun equals(other: Any?): Boolean = other is TestCaughtPrices_asset && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+}
+
+/** Lens for `fragment TestRequiredPrice_asset on Asset`. */
+@Stable
+class TestRequiredPrice_asset(override val anchor: Anchor) : Lens {
+    val price: java.math.BigDecimal get() = anchor.throwingMapped(Slots.Asset.price, "price", baton.scalars.Decimals)
+    override fun equals(other: Any?): Boolean = other is TestRequiredPrice_asset && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles. */
+        fun satisfied(anchor: Anchor): Boolean {
+            if (!anchor.converts(Slots.Asset.price, baton.scalars.Decimals, "price", log = false)) return false
+            return true
+        }
+    }
+}
+
+/** Lens for `fragment TestThrowingPrices_asset on Asset`. */
+@Stable
+class TestThrowingPrices_asset(override val anchor: Anchor) : Lens {
+    val price: java.math.BigDecimal? get() = anchor.mapped(Slots.Asset.price, baton.scalars.Decimals)
+    val prices: List<java.math.BigDecimal?>? get() = anchor.nullableMappedList(Slots.Asset.prices, baton.scalars.Decimals)
+    override fun equals(other: Any?): Boolean = other is TestThrowingPrices_asset && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectError(Slots.Asset.price, errors)
+            anchor.collectConversion(Slots.Asset.price, baton.scalars.Decimals, "price", errors)
+            anchor.collectError(Slots.Asset.prices, errors)
+            return errors
+        }
+        /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): TestThrowingPrices_asset = caught(anchor).getOrThrow()
+        /** The lens, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<TestThrowingPrices_asset> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(TestThrowingPrices_asset(anchor)) else Result.failure(FieldErrors(errors))
+        }
+    }
+}
 
 /** Operation value for `query TestAssetPricesQuery`. */
 class TestAssetPricesQuery : QueryOperation<TestAssetPricesQuery.Data> {
@@ -53,7 +109,23 @@ class TestAssetPricesQuery : QueryOperation<TestAssetPricesQuery.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val assets: List<Assets>? get() = anchor.list(Slots.Query.assets, ::Assets)
+        override fun equals(other: Any?): Boolean = other is TestAssetPricesQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Assets(override val anchor: Anchor) : Lens {
+            val uuid: String get() = anchor.requiredString(Slots.Asset.uuid)
+            val price: java.math.BigDecimal? get() = anchor.mapped(Slots.Asset.price, baton.scalars.Decimals)
+            val listedAt: java.time.Instant? get() = anchor.mapped(Slots.Asset.listedAt, baton.scalars.DateTimes)
+            val page: java.net.URI? get() = anchor.mapped(Slots.Asset.page, baton.scalars.Urls)
+            val prices: List<java.math.BigDecimal?>? get() = anchor.nullableMappedList(Slots.Asset.prices, baton.scalars.Decimals)
+            override fun equals(other: Any?): Boolean = other is TestAssetPricesQuery.Data.Assets && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestPricedAssetsQuery`. */
@@ -90,5 +162,24 @@ class TestPricedAssetsQuery(val price: java.math.BigDecimal, val among: List<jav
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val assetsPricedAbove: List<AssetsPricedAbove>? get() = anchor.list(anchor.owner.slot(Slots.Query.assetsPricedAbove_914469), ::AssetsPricedAbove)
+        override fun equals(other: Any?): Boolean = other is TestPricedAssetsQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class AssetsPricedAbove(override val anchor: Anchor) : Lens {
+            val uuid: String get() = anchor.requiredString(Slots.Asset.uuid)
+            val testCaughtPrices: TestCaughtPrices_asset get() = TestCaughtPrices_asset(anchor.entering())
+            val testThrowingPrices: TestThrowingPrices_asset get() = TestThrowingPrices_asset.throwing(anchor.entering())
+            val testRequiredPrice: TestRequiredPrice_asset?
+                get() {
+                    if (!TestRequiredPrice_asset.satisfied(anchor)) return null
+                    return TestRequiredPrice_asset(anchor.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is TestPricedAssetsQuery.Data.AssetsPricedAbove && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }

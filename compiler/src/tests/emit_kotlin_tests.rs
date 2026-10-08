@@ -92,20 +92,6 @@ fn a_nullable_variable_without_a_default_is_left_out_when_unset() {
 }
 
 #[test]
-fn a_variable_named_like_a_receiver_property_is_read_by_its_own_name() {
-    let output = emitted(
-        "Screen.kt",
-        Some("app.generated"),
-        "query Probe($size: Int, $keys: ID!) { characters(page: $size) { info { count } } character(id: $keys) { id } }",
-    );
-    let text = file(&output);
-    assert!(text.contains(
-        "Variables.of(\"size\" to size?.let { Variable.of(it) }, \"keys\" to Variable.of(keys))"
-    ));
-    assert!(!text.contains("this@"));
-}
-
-#[test]
 fn a_nullable_variable_with_a_default_is_sent_as_its_default_when_null() {
     let output = emitted(
         "Screen.kt",
@@ -236,6 +222,86 @@ fn two_variables_the_jvm_names_alike_get_getters_of_their_own() {
         file(&output)
             .contains("class Probe(val Any: String, @get:JvmName(\"getAny2\") val any: String)")
     );
+}
+
+#[test]
+fn a_variable_named_like_a_receiver_property_is_read_by_its_own_name() {
+    let output = emitted(
+        "Screen.kt",
+        Some("app.generated"),
+        "query Probe($size: Int, $keys: ID!) { characters(page: $size) { info { count } } character(id: $keys) { id } }",
+    );
+    let text = file(&output);
+    assert!(text.contains(
+        "Variables.of(\"size\" to size?.let { Variable.of(it) }, \"keys\" to Variable.of(keys))"
+    ));
+    assert!(!text.contains("this@"));
+}
+
+#[test]
+fn a_lens_reads_each_field_through_the_reader_the_swift_lens_calls() {
+    let output = emitted(
+        "Screen.kt",
+        Some("app.generated"),
+        "query Probe($id: ID!) { character(id: $id) { name favorite origin { name } episode { name } } }",
+    );
+    let text = file(&output);
+    assert!(text.contains("    @Stable\n    class Data(override val anchor: Anchor) : Lens {\n"));
+    assert!(text.contains(
+        "val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)"
+    ));
+    assert!(text.contains("val name: String? get() = anchor.string(Slots.Character.name)"));
+    assert!(text.contains("val favorite: Boolean? get() = anchor.bool(Slots.Character.favorite)"));
+    assert!(text.contains(
+        "val origin: Origin? get() = anchor.linked(Slots.Character.origin)?.let(::Origin)"
+    ));
+    assert!(text.contains(
+        "val episode: List<Episode> get() = anchor.requiredList(Slots.Character.episode, ::Episode)"
+    ));
+    assert!(text.contains(
+        "override fun equals(other: Any?): Boolean = other is Probe.Data.Character && other.anchor == anchor"
+    ));
+    assert!(text.contains("\nimport androidx.compose.runtime.Stable\n"));
+}
+
+#[test]
+fn a_required_field_bubbles_through_the_companion_of_its_lens() {
+    let output = emitted(
+        "Screen.kt",
+        Some("app.generated"),
+        "query Probe($id: ID!) { character(id: $id) { ...Profile } } fragment Profile on Character { name @required(action: LOG) }",
+    );
+    let text = file(&output);
+    assert!(text.contains("fun satisfied(anchor: Anchor): Boolean {"));
+    assert!(text.contains(
+        "if (!anchor.hasValue(Slots.Character.name, \"name\", log = true)) return false"
+    ));
+    assert!(text.contains("if (!Profile.satisfied(anchor)) return null"));
+    assert!(text.contains("return Profile(anchor.entering())"));
+}
+
+#[test]
+fn a_spread_whose_fragment_a_field_hides_reaches_it_through_the_companion() {
+    let output = emitted(
+        "Screen.kt",
+        Some("app.generated"),
+        "query Probe($id: ID!) { character(id: $id) { Profile: name ...Profile } } fragment Profile on Character { name @required(action: LOG) }",
+    );
+    let text = file(&output);
+    assert!(text.contains("if (!Companion.Profile_.satisfied(anchor)) return null"));
+    assert!(text.contains("private val Profile_ = Profile"));
+}
+
+#[test]
+fn an_enum_reads_through_the_generated_of() {
+    let output = emitted(
+        "Screen.kt",
+        Some("app.generated"),
+        "mutation Probe { setLists { statuses } }",
+    );
+    assert!(file(&output).contains(
+        "val statuses: List<Status?>? get() = anchor.nullableEnumValues(Slots.ListsPayload.statuses, Status::of)"
+    ));
 }
 
 #[test]

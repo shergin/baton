@@ -3,8 +3,11 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
+import baton.FieldError
+import baton.FieldErrors
 import baton.Lens
 import baton.OperationHandle
 import baton.OperationKind
@@ -47,7 +50,35 @@ class TestCaughtNames : QueryOperation<TestCaughtNames.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val types: Result<TypesLens?> get() = anchor.caught(Slots.Query.types, TypesLens::fieldErrors) { it.linked(Slots.Query.types)?.let(::TypesLens) }
+        override fun equals(other: Any?): Boolean = other is TestCaughtNames.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class TypesLens(override val anchor: Anchor) : Lens {
+            val Baton: String? get() = anchor.string(Slots.Types_.Baton)
+            override fun equals(other: Any?): Boolean = other is TestCaughtNames.Data.TypesLens && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                fun fieldErrors(anchor: Anchor): List<FieldError> {
+                    val errors = mutableListOf<FieldError>()
+                    anchor.collectError(Slots.Types_.Baton, errors)
+                    return errors
+                }
+                /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                fun throwing(anchor: Anchor): TestCaughtNames.Data.TypesLens = caught(anchor).getOrThrow()
+                /** The lens, or the field errors in it as a `Result`. */
+                fun caught(anchor: Anchor): Result<TestCaughtNames.Data.TypesLens> {
+                    val errors = fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(TestCaughtNames.Data.TypesLens(anchor)) else Result.failure(FieldErrors(errors))
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `query TestNames`. */
@@ -82,7 +113,22 @@ class TestNames : QueryOperation<TestNames.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val types: TypesLens? get() = anchor.linked(Slots.Query.types)?.let(::TypesLens)
+        override fun equals(other: Any?): Boolean = other is TestNames.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class TypesLens(override val anchor: Anchor) : Lens {
+            val Type: String? get() = anchor.string(Slots.Types_.Type)
+            val Protocol: String? get() = anchor.string(Slots.Types_.Protocol)
+            val Baton: String? get() = anchor.string(Slots.Types_.Baton)
+            val Any: String? get() = anchor.string(Slots.Types_.Any)
+            override fun equals(other: Any?): Boolean = other is TestNames.Data.TypesLens && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query TestSpellings`. */
@@ -129,5 +175,69 @@ class TestSpellings : QueryOperation<TestSpellings.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val spellings: List<Spellings>? get() = anchor.list(Slots.Query.spellings, ::Spellings)
+        override fun equals(other: Any?): Boolean = other is TestSpellings.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Spellings(override val anchor: Anchor) : Lens {
+            val asSpelled: AsSpelled? get() = if (Types.Spelled_possible.includes(anchor.record.type)) AsSpelled(anchor) else null
+            val asBaton: AsBaton? get() = if (anchor.record.type == Types.Baton) AsBaton(anchor) else null
+            val asType: AsType? get() = if (anchor.record.type == Types.Type) AsType(anchor) else null
+            val asProtocol: AsProtocol? get() = if (anchor.record.type == Types.Protocol) AsProtocol(anchor) else null
+            val asSet: AsSet? get() = if (anchor.record.type == Types.Set) AsSet(anchor) else null
+            val asAny: AsAny? get() = if (anchor.record.type == Types.Any) AsAny(anchor) else null
+            override fun equals(other: Any?): Boolean = other is TestSpellings.Data.Spellings && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class AsSpelled(override val anchor: Anchor) : Lens {
+                val label: String? get() = anchor.string(AbstractSlots.Spelled.label.on(anchor.record.type))
+                override fun equals(other: Any?): Boolean = other is TestSpellings.Data.Spellings.AsSpelled && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsBaton(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Baton.id)
+                val label: String? get() = anchor.string(Slots.Baton.label)
+                override fun equals(other: Any?): Boolean = other is TestSpellings.Data.Spellings.AsBaton && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsType(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Type.id)
+                val label: String? get() = anchor.string(Slots.Type.label)
+                override fun equals(other: Any?): Boolean = other is TestSpellings.Data.Spellings.AsType && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsProtocol(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Protocol.id)
+                val label: String? get() = anchor.string(Slots.Protocol.label)
+                override fun equals(other: Any?): Boolean = other is TestSpellings.Data.Spellings.AsProtocol && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsSet(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Set.id)
+                val label: String? get() = anchor.string(Slots.Set.label)
+                override fun equals(other: Any?): Boolean = other is TestSpellings.Data.Spellings.AsSet && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsAny(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Any.id)
+                val label: String? get() = anchor.string(Slots.Any.label)
+                override fun equals(other: Any?): Boolean = other is TestSpellings.Data.Spellings.AsAny && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }

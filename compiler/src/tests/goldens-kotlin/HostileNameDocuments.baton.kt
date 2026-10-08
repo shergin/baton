@@ -3,10 +3,15 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.ConnectionCursor
 import baton.ConnectionPlan
 import baton.Document
+import baton.ErrorBehavior
+import baton.FieldError
+import baton.FieldErrors
+import baton.Generated
 import baton.Guard
 import baton.Lens
 import baton.Lookup
@@ -17,14 +22,13622 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.Refetch
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
 import baton.SubscriptionHandle
 import baton.SubscriptionOperation
+import baton.Transient
 import baton.Variable
 import baton.Variables
+
+/** Lens for `fragment HostileAbstract_node on Node`. */
+@Stable
+class HostileAbstract_node(override val anchor: Anchor) : Lens {
+    val Type: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Protocol: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Any: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val self: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    @get:JvmName("getSelf2") val Self: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val init: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val deinit: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val subscript: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    @get:JvmName("getClass2") val `class`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val struct: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val enum: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val func: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `var`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val let: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val import: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val extension: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val operator: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val static: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val default: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val case: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val switch: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `if`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `else`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `for`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `in`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `while`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val repeat: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `return`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `break`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `continue`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val where: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `is`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `as`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `try`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `throw`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val throws: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val guard: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val defer: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `do`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val catch: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `true`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `false`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val nil: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `super`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val internal: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val private: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val public: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val fileprivate: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val open: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val inout: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `typealias`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val associatedtype: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    @get:JvmName("getProtocol2") val protocol: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val some: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    @get:JvmName("getAny2") val any: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val rethrows: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val fallthrough: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val precedencegroup: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val `_`: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val async: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val await: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val borrowing: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val consume: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val consuming: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val copy: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val discard: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val each: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val isolated: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val sending: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val then: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val unsafe: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val satisfied: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val missingRequiredField: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val fieldErrors: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val isPresent: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val throwing: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val caught: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val refetchable: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val refetch: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val connection: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val nodes: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val hasNext: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val hasPrevious: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val isLoadingNext: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val isLoadingPrevious: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val connectionID: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val loadNext: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val loadPrevious: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val bound: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val errors: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val child: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val missing: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val count: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val fields: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val lhs: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val rhs: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val hasher: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val selection0: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val selection: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val optimistic: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val selfValue: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val values: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Fragment: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Spread: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Owner: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Query: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Operation: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val RefetchQuery: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val variables: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val resolution: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val name: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val document: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val text: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val plan: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val errorBehavior: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val throwsOnFieldError: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val bubbles: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val hasDeferred: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val cacheExpiration: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Data: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Action: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val OptimisticResponse: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val hash: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val commit: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val callAsFunction: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Op: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val variable: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val payload: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val hashValue: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val phase: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val isRefreshing: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val isStale: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val retry: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val subscription: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Sites: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Guards: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val schemaDigest: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val format: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val transient: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Baton: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Swift: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Set: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Result: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Optional: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val String: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Int: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Double: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Bool: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val MainActor: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    @get:JvmName("getHasher2") val Hasher: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val Sendable: String? get() = anchor.string(AbstractSlots.Node.id.on(anchor.record.type))
+    val asCharacter: AsCharacter? get() = if (anchor.record.type == Types.Character) AsCharacter(anchor) else null
+    override fun equals(other: Any?): Boolean = other is HostileAbstract_node && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    @Stable
+    class AsCharacter(override val anchor: Anchor) : Lens {
+        val status: String? get() = anchor.string(Slots.Character.status)
+        override fun equals(other: Any?): Boolean = other is HostileAbstract_node.AsCharacter && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+}
+
+/** Lens for `fragment HostileArguments_character on Character`. */
+@Stable
+class HostileArguments_character(override val anchor: Anchor) : Lens {
+    val name: String? get() = if ((anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selection0_true) || anchor.owner.selects(Guards.selection_true) || anchor.owner.selects(Guards.optimistic_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.values_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.Action_true) || anchor.owner.selects(Guards.OptimisticResponse_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.payload_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.subscription_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true))) anchor.string(Slots.Character.name) else null
+    val id: String? get() = anchor.string(Slots.Character.id)
+    /** Fetches the fragment again through `HostileArgumentsRefetchQuery` with its current variables; the records update in place. */
+    suspend fun refetch(): Unit = anchor.refetch(HostileArgumentsRefetchQuery, Companion.refetchable)
+    override fun equals(other: Any?): Boolean = other is HostileArguments_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** How the fragment is fetched again: `HostileArgumentsRefetchQuery` with the lens's variables. */
+        @Generated
+        val refetchable: Refetch = Refetch(variables = listOf("AbstractSlots", "Action", "Any", "Bool", "Double", "Fragment", "Hasher", "Int", "MainActor", "Op", "Operation", "OptimisticResponse", "Optional", "Owner", "Protocol", "Query", "RefetchQuery", "Result", "Self", "Sendable", "Set", "Spread", "String", "Swift", "Type", "_", "anchor", "any", "as", "associatedtype", "async", "await", "borrowing", "bound", "break", "bubbles", "cacheExpiration", "callAsFunction", "case", "catch", "caught", "child", "class", "commit", "connection", "connectionID", "consume", "consuming", "continue", "copy", "count", "default", "defer", "deinit", "discard", "do", "document", "each", "else", "enum", "errorBehavior", "errors", "extension", "fallthrough", "false", "fieldErrors", "fields", "fileprivate", "for", "format", "func", "guard", "hasDeferred", "hasNext", "hasPrevious", "hash", "hasher", "if", "import", "in", "init", "inout", "internal", "is", "isLoadingNext", "isLoadingPrevious", "isPresent", "isolated", "let", "lhs", "loadNext", "loadPrevious", "missing", "missingRequiredField", "name", "nil", "nodes", "open", "operator", "optimistic", "payload", "plan", "precedencegroup", "private", "protocol", "public", "recordID", "refetch", "refetchable", "repeat", "rethrows", "retry", "return", "rhs", "satisfied", "schemaDigest", "selection", "selection0", "self", "selfValue", "sending", "some", "static", "struct", "subscript", "subscription", "super", "switch", "text", "then", "throw", "throwing", "throws", "throwsOnFieldError", "transient", "true", "try", "typealias", "unsafe", "values", "var", "variable", "where", "while", "id"), identifier = "id", identity = Slots.Character.id, first = null, after = null, last = null, before = null)
+    }
+}
+
+/** Lens for `fragment HostileBodies_character on Character`. */
+@Stable
+class HostileBodies_character(override val anchor: Anchor) : Lens {
+    val Type: String? get() = anchor.string(Slots.Character.name)
+    val Protocol: String? get() = anchor.string(Slots.Character.name)
+    val Any: String? get() = anchor.string(Slots.Character.name)
+    val self: String? get() = anchor.string(Slots.Character.name)
+    val init: String? get() = anchor.string(Slots.Character.name)
+    val deinit: String? get() = anchor.string(Slots.Character.name)
+    val subscript: String? get() = anchor.string(Slots.Character.name)
+    @get:JvmName("getClass2") val `class`: String? get() = anchor.string(Slots.Character.name)
+    val struct: String? get() = anchor.string(Slots.Character.name)
+    val enum: String? get() = anchor.string(Slots.Character.name)
+    val func: String? get() = anchor.string(Slots.Character.name)
+    val `var`: String? get() = anchor.string(Slots.Character.name)
+    val let: String? get() = anchor.string(Slots.Character.name)
+    val import: String? get() = anchor.string(Slots.Character.name)
+    val extension: String? get() = anchor.string(Slots.Character.name)
+    val operator: String? get() = anchor.string(Slots.Character.name)
+    val static: String? get() = anchor.string(Slots.Character.name)
+    val default: String? get() = anchor.string(Slots.Character.name)
+    val case: String? get() = anchor.string(Slots.Character.name)
+    val switch: String? get() = anchor.string(Slots.Character.name)
+    val `if`: String? get() = anchor.string(Slots.Character.name)
+    val `else`: String? get() = anchor.string(Slots.Character.name)
+    val `for`: String? get() = anchor.string(Slots.Character.name)
+    val `in`: String? get() = anchor.string(Slots.Character.name)
+    val `while`: String? get() = anchor.string(Slots.Character.name)
+    val repeat: String? get() = anchor.string(Slots.Character.name)
+    val `return`: String? get() = anchor.string(Slots.Character.name)
+    val `break`: String? get() = anchor.string(Slots.Character.name)
+    val `continue`: String? get() = anchor.string(Slots.Character.name)
+    val where: String? get() = anchor.string(Slots.Character.name)
+    val `is`: String? get() = anchor.string(Slots.Character.name)
+    val `as`: String? get() = anchor.string(Slots.Character.name)
+    val `try`: String? get() = anchor.string(Slots.Character.name)
+    val `throw`: String? get() = anchor.string(Slots.Character.name)
+    val throws: String? get() = anchor.string(Slots.Character.name)
+    val guard: String? get() = anchor.string(Slots.Character.name)
+    val defer: String? get() = anchor.string(Slots.Character.name)
+    val `do`: String? get() = anchor.string(Slots.Character.name)
+    val catch: String? get() = anchor.string(Slots.Character.name)
+    val `true`: String? get() = anchor.string(Slots.Character.name)
+    val `false`: String? get() = anchor.string(Slots.Character.name)
+    val nil: String? get() = anchor.string(Slots.Character.name)
+    val `super`: String? get() = anchor.string(Slots.Character.name)
+    val internal: String? get() = anchor.string(Slots.Character.name)
+    val private: String? get() = anchor.string(Slots.Character.name)
+    val public: String? get() = anchor.string(Slots.Character.name)
+    val fileprivate: String? get() = anchor.string(Slots.Character.name)
+    val open: String? get() = anchor.string(Slots.Character.name)
+    val inout: String? get() = anchor.string(Slots.Character.name)
+    val `typealias`: String? get() = anchor.string(Slots.Character.name)
+    val associatedtype: String? get() = anchor.string(Slots.Character.name)
+    @get:JvmName("getProtocol2") val protocol: String? get() = anchor.string(Slots.Character.name)
+    val some: String? get() = anchor.string(Slots.Character.name)
+    @get:JvmName("getAny2") val any: String? get() = anchor.string(Slots.Character.name)
+    val rethrows: String? get() = anchor.string(Slots.Character.name)
+    val fallthrough: String? get() = anchor.string(Slots.Character.name)
+    val precedencegroup: String? get() = anchor.string(Slots.Character.name)
+    val `_`: String? get() = anchor.string(Slots.Character.name)
+    val async: String? get() = anchor.string(Slots.Character.name)
+    val await: String? get() = anchor.string(Slots.Character.name)
+    val borrowing: String? get() = anchor.string(Slots.Character.name)
+    val consume: String? get() = anchor.string(Slots.Character.name)
+    val consuming: String? get() = anchor.string(Slots.Character.name)
+    val copy: String? get() = anchor.string(Slots.Character.name)
+    val discard: String? get() = anchor.string(Slots.Character.name)
+    val each: String? get() = anchor.string(Slots.Character.name)
+    val isolated: String? get() = anchor.string(Slots.Character.name)
+    val sending: String? get() = anchor.string(Slots.Character.name)
+    val then: String? get() = anchor.string(Slots.Character.name)
+    val unsafe: String? get() = anchor.string(Slots.Character.name)
+    val satisfied: String? get() = anchor.string(Slots.Character.name)
+    val missingRequiredField: String? get() = anchor.string(Slots.Character.name)
+    val fieldErrors: String? get() = anchor.string(Slots.Character.name)
+    val isPresent: String? get() = anchor.string(Slots.Character.name)
+    val throwing: String? get() = anchor.string(Slots.Character.name)
+    val caught: String? get() = anchor.string(Slots.Character.name)
+    val refetchable: String? get() = anchor.string(Slots.Character.name)
+    val refetch: String? get() = anchor.string(Slots.Character.name)
+    val connection: String? get() = anchor.string(Slots.Character.name)
+    val nodes: String? get() = anchor.string(Slots.Character.name)
+    val hasNext: String? get() = anchor.string(Slots.Character.name)
+    val hasPrevious: String? get() = anchor.string(Slots.Character.name)
+    val isLoadingNext: String? get() = anchor.string(Slots.Character.name)
+    val isLoadingPrevious: String? get() = anchor.string(Slots.Character.name)
+    val connectionID: String? get() = anchor.string(Slots.Character.name)
+    val loadNext: String? get() = anchor.string(Slots.Character.name)
+    val loadPrevious: String? get() = anchor.string(Slots.Character.name)
+    val bound: String? get() = anchor.string(Slots.Character.name)
+    val errors: String? get() = anchor.string(Slots.Character.name)
+    val child: String? get() = anchor.string(Slots.Character.name)
+    val missing: String? get() = anchor.string(Slots.Character.name)
+    val count: String? get() = anchor.string(Slots.Character.name)
+    val fields: String? get() = anchor.string(Slots.Character.name)
+    val lhs: String? get() = anchor.string(Slots.Character.name)
+    val rhs: String? get() = anchor.string(Slots.Character.name)
+    val hasher: String? get() = anchor.string(Slots.Character.name)
+    val selection0: String? get() = anchor.string(Slots.Character.name)
+    val selection: String? get() = anchor.string(Slots.Character.name)
+    val optimistic: String? get() = anchor.string(Slots.Character.name)
+    val selfValue: String? get() = anchor.string(Slots.Character.name)
+    val values: String? get() = anchor.string(Slots.Character.name)
+    val Fragment: String? get() = anchor.string(Slots.Character.name)
+    val Spread: String? get() = anchor.string(Slots.Character.name)
+    val Owner: String? get() = anchor.string(Slots.Character.name)
+    val Query: String? get() = anchor.string(Slots.Character.name)
+    val Operation: String? get() = anchor.string(Slots.Character.name)
+    val RefetchQuery: String? get() = anchor.string(Slots.Character.name)
+    val variables: String? get() = anchor.string(Slots.Character.name)
+    val resolution: String? get() = anchor.string(Slots.Character.name)
+    val name: String? get() = anchor.string(Slots.Character.name)
+    val document: String? get() = anchor.string(Slots.Character.name)
+    val text: String? get() = anchor.string(Slots.Character.name)
+    val plan: String? get() = anchor.string(Slots.Character.name)
+    val errorBehavior: String? get() = anchor.string(Slots.Character.name)
+    val throwsOnFieldError: String? get() = anchor.string(Slots.Character.name)
+    val bubbles: String? get() = anchor.string(Slots.Character.name)
+    val hasDeferred: String? get() = anchor.string(Slots.Character.name)
+    val cacheExpiration: String? get() = anchor.string(Slots.Character.name)
+    val Data: String? get() = anchor.string(Slots.Character.name)
+    val Action: String? get() = anchor.string(Slots.Character.name)
+    val OptimisticResponse: String? get() = anchor.string(Slots.Character.name)
+    val hash: String? get() = anchor.string(Slots.Character.name)
+    val commit: String? get() = anchor.string(Slots.Character.name)
+    val callAsFunction: String? get() = anchor.string(Slots.Character.name)
+    val Op: String? get() = anchor.string(Slots.Character.name)
+    val variable: String? get() = anchor.string(Slots.Character.name)
+    val payload: String? get() = anchor.string(Slots.Character.name)
+    val hashValue: String? get() = anchor.string(Slots.Character.name)
+    val phase: String? get() = anchor.string(Slots.Character.name)
+    val isRefreshing: String? get() = anchor.string(Slots.Character.name)
+    val isStale: String? get() = anchor.string(Slots.Character.name)
+    val retry: String? get() = anchor.string(Slots.Character.name)
+    val subscription: String? get() = anchor.string(Slots.Character.name)
+    val Guards: String? get() = anchor.string(Slots.Character.name)
+    val AbstractSlots: String? get() = anchor.string(Slots.Character.name)
+    val schemaDigest: String? get() = anchor.string(Slots.Character.name)
+    val format: String? get() = anchor.string(Slots.Character.name)
+    val transient: String? get() = anchor.string(Slots.Character.name)
+    val Baton: String? get() = anchor.string(Slots.Character.name)
+    val Swift: String? get() = anchor.string(Slots.Character.name)
+    val Set: String? get() = anchor.string(Slots.Character.name)
+    val Result: String? get() = anchor.string(Slots.Character.name)
+    val Optional: String? get() = anchor.string(Slots.Character.name)
+    val String: String? get() = anchor.string(Slots.Character.name)
+    val Int: String? get() = anchor.string(Slots.Character.name)
+    val Double: String? get() = anchor.string(Slots.Character.name)
+    val Bool: String? get() = anchor.string(Slots.Character.name)
+    val MainActor: String? get() = anchor.string(Slots.Character.name)
+    @get:JvmName("getHasher2") val Hasher: String? get() = anchor.string(Slots.Character.name)
+    val Sendable: String? get() = anchor.string(Slots.Character.name)
+    val species: String get() = anchor.throwing(Slots.Character.species, "species") { it.string(Slots.Character.species) }
+    val origin: Origin get() = Origin(anchor.requiredLinked(Slots.Character.origin, Types.Location))
+    val hostileBound: HostileBound_character?
+        get() {
+            val bound = anchor.binding(Sites.HostileBodies_character_hostileBound) { mapOf("flag" to Variable.Bool(false)) }
+            if (!HostileBound_character.satisfied(bound)) return null
+            return HostileBound_character(bound.entering())
+        }
+    val hostileDeferred: HostileDeferred_character?
+        get() {
+            if (!HostileDeferred_character.isPresent(anchor)) return null
+            return HostileDeferred_character(anchor.entering())
+        }
+    val caughtSpread: Result<HostileCaught_character>
+        get() {
+            val errors = HostileCaught_character.fieldErrors(anchor)
+            return if (errors.isEmpty()) Companion.Result_.success(HostileCaught_character(anchor.entering())) else Companion.Result_.failure(FieldErrors(errors))
+        }
+    val id: String? get() = anchor.string(Slots.Character.id)
+    /** Fetches the fragment again through `HostileBodiesRefetchQuery` with its current variables; the records update in place. */
+    suspend fun refetch(): Unit = anchor.refetch(HostileBodiesRefetchQuery, Companion.refetchable)
+    override fun equals(other: Any?): Boolean = other is HostileBodies_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        private val Result_ = Result
+        /** How the fragment is fetched again: `HostileBodiesRefetchQuery` with the lens's variables. */
+        @Generated
+        val refetchable: Refetch = Refetch(variables = listOf("id"), identifier = "id", identity = Slots.Character.id, first = null, after = null, last = null, before = null)
+        /** Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles. */
+        fun satisfied(anchor: Anchor): Boolean {
+            if (anchor.linked(Slots.Character.origin)?.let(Origin::satisfied) != true) return anchor.requiredMissing("origin", log = false)
+            return true
+        }
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.species, errors)
+            anchor.collectRequired(Slots.Character.species, "species", errors)
+            anchor.collectErrors(Slots.Character.origin, Origin::fieldErrors, errors)
+            anchor.collectError(Slots.Character.id, errors)
+            return errors
+        }
+        /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): HostileBodies_character = caught(anchor).getOrThrow()
+        /** The lens, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<HostileBodies_character> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(HostileBodies_character(anchor)) else Result.failure(FieldErrors(errors))
+        }
+    }
+
+    @Stable
+    class Origin(override val anchor: Anchor) : Lens {
+        val name: String get() = anchor.requiredString(Slots.Location.name)
+        override fun equals(other: Any?): Boolean = other is HostileBodies_character.Origin && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            /** Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles. */
+            fun satisfied(anchor: Anchor): Boolean {
+                if (!anchor.hasValue(Slots.Location.name, "origin.name", log = false)) return false
+                return true
+            }
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.name, errors)
+                return errors
+            }
+            /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileBodies_character.Origin = caught(anchor).getOrThrow()
+            /** The lens, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileBodies_character.Origin> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileBodies_character.Origin(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+}
+
+/** Lens for `fragment HostileBound_character on Character`. */
+@Stable
+class HostileBound_character(override val anchor: Anchor) : Lens {
+    val name: String? get() = if (anchor.owner.selects(Guards.flag_true)) anchor.string(Slots.Character.name) else null
+    val origin: Origin get() = Origin(anchor.requiredLinked(Slots.Character.origin, Types.Location))
+    override fun equals(other: Any?): Boolean = other is HostileBound_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles. */
+        fun satisfied(anchor: Anchor): Boolean {
+            if (anchor.owner.selects(Guards.flag_true)) {
+            }
+            if (!anchor.hasValue(Slots.Character.origin, "origin", log = false)) return false
+            return true
+        }
+    }
+
+    @Stable
+    class Origin(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileBound_character.Origin && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+}
+
+/** Lens for `fragment HostileCaught_character on Character`. */
+@Stable
+class HostileCaught_character(override val anchor: Anchor) : Lens {
+    val name: String? get() = anchor.string(Slots.Character.name)
+    override fun equals(other: Any?): Boolean = other is HostileCaught_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectError(Slots.Character.name, errors)
+            return errors
+        }
+        /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): HostileCaught_character = caught(anchor).getOrThrow()
+        /** The lens, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<HostileCaught_character> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(HostileCaught_character(anchor)) else Result.failure(FieldErrors(errors))
+        }
+    }
+}
+
+/** Lens for `fragment HostileConnectionNodes_character on Character`. */
+@Stable
+class HostileConnectionNodes_character(override val anchor: Anchor) : Lens {
+    val notes: Notes get() = Notes(anchor.requiredLinked(Slots.Character.__HostileConnectionNodes_notes_connection, Types.NoteConnection))
+    override fun equals(other: Any?): Boolean = other is HostileConnectionNodes_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    @Stable
+    class Notes(override val anchor: Anchor) : Lens {
+        val nodes: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val edges: List<Edges>? get() = anchor.list(Slots.NoteConnection.edges, ::Edges)
+        val pageInfo: PageInfo get() = PageInfo(anchor.requiredLinked(Slots.NoteConnection.pageInfo, Types.PageInfo))
+        /** Whether the server has edges after the last one, from the merged `pageInfo`. */
+        val hasNext: Boolean get() = anchor.hasNext(Slots.NoteConnection.connection)
+        val hasPrevious: Boolean get() = anchor.hasPrevious(Slots.NoteConnection.connection)
+        val isLoadingNext: Boolean get() = anchor.isLoadingNext(Slots.NoteConnection.connection)
+        val isLoadingPrevious: Boolean get() = anchor.isLoadingPrevious(Slots.NoteConnection.connection)
+        /** Relay's connection id, for the `connections` argument of the edge directives. */
+        val connectionID: String get() = anchor.record.key
+        override fun equals(other: Any?): Boolean = other is HostileConnectionNodes_character.Notes && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Edges(override val anchor: Anchor) : Lens {
+            val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+            val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+            override fun equals(other: Any?): Boolean = other is HostileConnectionNodes_character.Notes.Edges && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Node(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostileConnectionNodes_character.Notes.Edges.Node && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+
+        @Stable
+        class PageInfo(override val anchor: Anchor) : Lens {
+            val endCursor: String? get() = anchor.string(Slots.PageInfo.endCursor)
+            val hasNextPage: Boolean get() = anchor.requiredBool(Slots.PageInfo.hasNextPage)
+            override fun equals(other: Any?): Boolean = other is HostileConnectionNodes_character.Notes.PageInfo && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+}
+
+/** Lens for `fragment HostileConnection_character on Character`. */
+@Stable
+class HostileConnection_character(override val anchor: Anchor) : Lens {
+    val notes: Notes get() = Notes(anchor.requiredLinked(Slots.Character.__HostileConnection_notes_connection, Types.NoteConnection))
+    val id: String? get() = anchor.string(Slots.Character.id)
+    /** Fetches the fragment again through `HostileConnectionRefetchQuery` with its current variables; the records update in place. */
+    suspend fun refetch(): Unit = anchor.refetch(HostileConnectionRefetchQuery, Companion.refetchable)
+    override fun equals(other: Any?): Boolean = other is HostileConnection_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** How the fragment is fetched again: `HostileConnectionRefetchQuery` with the lens's variables. */
+        @Generated
+        val refetchable: Refetch = Refetch(variables = listOf("count", "cursor", "id"), identifier = "id", identity = Slots.Character.id, first = "count", after = "cursor", last = null, before = null)
+    }
+
+    @Stable
+    class Notes(override val anchor: Anchor) : Lens {
+        val Type: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Protocol: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Any: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val self: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val init: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val deinit: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val subscript: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        @get:JvmName("getClass2") val `class`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val struct: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val enum: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val func: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `var`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val let: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val import: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val extension: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val operator: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val static: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val default: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val case: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val switch: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `if`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `else`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `for`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `in`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `while`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val repeat: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `return`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `break`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `continue`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val where: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `is`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `as`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `try`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `throw`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val throws: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val guard: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val defer: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `do`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val catch: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `true`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `false`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val nil: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `super`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val internal: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val private: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val public: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val fileprivate: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val open: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val inout: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `typealias`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val associatedtype: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        @get:JvmName("getProtocol2") val protocol: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val some: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        @get:JvmName("getAny2") val any: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val rethrows: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val fallthrough: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val precedencegroup: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val `_`: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val async: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val await: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val borrowing: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val consume: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val consuming: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val copy: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val discard: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val each: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val isolated: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val sending: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val then: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val unsafe: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val satisfied: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val missingRequiredField: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val fieldErrors: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val isPresent: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val throwing: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val caught: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val refetchable: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val refetch: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val connection: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val loadNext: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val loadPrevious: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val bound: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val errors: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val child: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val missing: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val count: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val fields: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val lhs: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val rhs: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val hasher: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val selection0: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val selection: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val optimistic: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val selfValue: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val values: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Fragment: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Spread: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Owner: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Query: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Operation: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val RefetchQuery: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val variables: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val resolution: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val name: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val document: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val text: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val plan: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val errorBehavior: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val throwsOnFieldError: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val bubbles: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val hasDeferred: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val cacheExpiration: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Data: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Action: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val OptimisticResponse: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val hash: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val commit: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val callAsFunction: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Op: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val variable: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val payload: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val hashValue: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val phase: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val isRefreshing: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val isStale: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val retry: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val subscription: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Sites: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Guards: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val AbstractSlots: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val schemaDigest: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val format: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val transient: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Baton: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Swift: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Set: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Result: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Optional: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val String: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Int: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Double: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Bool: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val MainActor: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        @get:JvmName("getHasher2") val Hasher: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val Sendable: Int get() = anchor.requiredInt(Slots.NoteConnection.totalCount)
+        val edges: List<Edges>? get() = anchor.list(Slots.NoteConnection.edges, ::Edges)
+        val pageInfo: PageInfo get() = PageInfo(anchor.requiredLinked(Slots.NoteConnection.pageInfo, Types.PageInfo))
+        /** The edges' nodes, in order, without nulls. */
+        val nodes: List<Edges.Node> get() = anchor.nodes(Slots.NoteConnection.connection, { Edges.Node(it) })
+        /** Whether the server has edges after the last one, from the merged `pageInfo`. */
+        val hasNext: Boolean get() = anchor.hasNext(Slots.NoteConnection.connection)
+        val hasPrevious: Boolean get() = anchor.hasPrevious(Slots.NoteConnection.connection)
+        val isLoadingNext: Boolean get() = anchor.isLoadingNext(Slots.NoteConnection.connection)
+        val isLoadingPrevious: Boolean get() = anchor.isLoadingPrevious(Slots.NoteConnection.connection)
+        /** Relay's connection id, for the `connections` argument of the edge directives. */
+        val connectionID: String get() = anchor.record.key
+        /** Fetches the next `count` edges through `HostileConnectionRefetchQuery` and appends them; a no-op while loading or at the end. */
+        suspend fun loadNext(count: Int = 2): Unit = anchor.loadNext(HostileConnectionRefetchQuery, Slots.NoteConnection.connection, HostileConnection_character.refetchable, count)
+        override fun equals(other: Any?): Boolean = other is HostileConnection_character.Notes && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Edges(override val anchor: Anchor) : Lens {
+            val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+            val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+            override fun equals(other: Any?): Boolean = other is HostileConnection_character.Notes.Edges && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Node(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostileConnection_character.Notes.Edges.Node && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+
+        @Stable
+        class PageInfo(override val anchor: Anchor) : Lens {
+            val endCursor: String? get() = anchor.string(Slots.PageInfo.endCursor)
+            val hasNextPage: Boolean get() = anchor.requiredBool(Slots.PageInfo.hasNextPage)
+            override fun equals(other: Any?): Boolean = other is HostileConnection_character.Notes.PageInfo && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+}
+
+/** Lens for `fragment HostileDeferred_character on Character`. */
+@Stable
+class HostileDeferred_character(override val anchor: Anchor) : Lens {
+    val name: String? get() = anchor.string(Slots.Character.name)
+    override fun equals(other: Any?): Boolean = other is HostileDeferred_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    companion object {
+        /** Whether the deferred part that carries this fragment has arrived. */
+        fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.name)
+    }
+}
+
+/** Value of `fragment HostileInlineLinks_character on Character @inline`. */
+data class HostileInlineLinks_character(
+    val Type: Type2?,
+    val Protocol: Protocol2?,
+    val Any: AnyLens?,
+    val self: Self2?,
+    @get:JvmName("getSelf2") val Self: Self3?,
+    val init: Init?,
+    val deinit: Deinit?,
+    val subscript: Subscript?,
+    @get:JvmName("getClass2") val `class`: Class?,
+    val struct: Struct?,
+    val enum: Enum?,
+    val func: Func?,
+    val `var`: Var?,
+    val let: Let?,
+    val import: Import?,
+    val extension: Extension?,
+    val operator: Operator?,
+    val static: Static?,
+    val default: Default?,
+    val case: Case?,
+    val switch: Switch?,
+    val `if`: If?,
+    val `else`: Else?,
+    val `for`: For?,
+    val `in`: In?,
+    val `while`: While?,
+    val repeat: Repeat?,
+    val `return`: Return?,
+    val `break`: Break?,
+    val `continue`: Continue?,
+    val where: Where?,
+    val `is`: Is?,
+    val `as`: As?,
+    val `try`: Try?,
+    val `throw`: Throw?,
+    val throws: Throws?,
+    val guard: Guard?,
+    val defer: Defer?,
+    val `do`: Do?,
+    val catch: Catch?,
+    val `true`: True?,
+    val `false`: False?,
+    val nil: Nil?,
+    val `super`: Super?,
+    val internal: Internal?,
+    val private: Private?,
+    val public: Public?,
+    val fileprivate: Fileprivate?,
+    val open: Open?,
+    val inout: Inout?,
+    val `typealias`: Typealias?,
+    val associatedtype: Associatedtype?,
+    @get:JvmName("getProtocol2") val protocol: Protocol3?,
+    val some: Some?,
+    @get:JvmName("getAny2") val any: AnyLens2?,
+    val rethrows: Rethrows?,
+    val fallthrough: Fallthrough?,
+    val precedencegroup: Precedencegroup?,
+    val `_`: _2?,
+    val async: Async?,
+    val await: Await?,
+    val borrowing: Borrowing?,
+    val consume: Consume?,
+    val consuming: Consuming?,
+    val copy: Copy?,
+    val discard: Discard?,
+    val each: Each?,
+    val isolated: Isolated?,
+    val sending: Sending?,
+    val then: Then?,
+    val unsafe: Unsafe?,
+    val satisfied: Satisfied?,
+    val missingRequiredField: MissingRequiredField?,
+    val fieldErrors: FieldErrorsLens?,
+    val isPresent: IsPresent?,
+    val throwing: Throwing?,
+    val caught: Caught?,
+    val refetchable: Refetchable?,
+    val refetch: RefetchLens?,
+    val connection: Connection?,
+    val nodes: Nodes?,
+    val hasNext: HasNext?,
+    val hasPrevious: HasPrevious?,
+    val isLoadingNext: IsLoadingNext?,
+    val isLoadingPrevious: IsLoadingPrevious?,
+    val connectionID: ConnectionID?,
+    val loadNext: LoadNext?,
+    val loadPrevious: LoadPrevious?,
+    val bound: Bound?,
+    val errors: Errors?,
+    val child: Child?,
+    val missing: Missing?,
+    val count: Count?,
+    val fields: Fields?,
+    val lhs: Lhs?,
+    val rhs: Rhs?,
+    val hasher: Hasher2?,
+    val selection0: Selection0?,
+    val selection: Selection?,
+    val optimistic: Optimistic?,
+    val selfValue: SelfValue?,
+    val values: Values?,
+    val Fragment: FragmentLens?,
+    val Spread: Spread2?,
+    val Owner: Owner2?,
+    val Query: Query2?,
+    val Operation: Operation2?,
+    val RefetchQuery: RefetchQuery2?,
+    val variables: VariablesLens?,
+    val resolution: Resolution?,
+    val name: Name?,
+    val document: Document?,
+    val text: Text?,
+    val plan: Plan?,
+    val errorBehavior: ErrorBehavior?,
+    val throwsOnFieldError: ThrowsOnFieldError?,
+    val bubbles: Bubbles?,
+    val hasDeferred: HasDeferred?,
+    val cacheExpiration: CacheExpiration?,
+    val Data: Data2?,
+    val Action: Action2?,
+    val OptimisticResponse: OptimisticResponse2?,
+    val hash: Hash?,
+    val commit: Commit?,
+    val callAsFunction: CallAsFunction?,
+    val Op: Op2?,
+    val variable: VariableLens?,
+    val payload: Payload?,
+    val hashValue: HashValue?,
+    val phase: Phase?,
+    val isRefreshing: IsRefreshing?,
+    val isStale: IsStale?,
+    val retry: Retry?,
+    val subscription: Subscription?,
+    val Types: TypesLens?,
+    val Sites: SitesLens?,
+    val Guards: GuardsLens?,
+    val AbstractSlots: AbstractSlotsLens?,
+    val schemaDigest: SchemaDigest?,
+    val format: Format?,
+    val transient: Transient?,
+    val Baton: Baton2?,
+    val Swift: Swift2?,
+    val Set: Set2?,
+    val Result: ResultLens?,
+    val Optional: Optional2?,
+    val String: StringLens?,
+    val Int: IntLens?,
+    val Double: DoubleLens?,
+    val Bool: Bool2?,
+    val MainActor: MainActor2?,
+    @get:JvmName("getHasher2") val Hasher: Hasher3?,
+    val Sendable: Sendable2?,
+) {
+    /** Reads the fragment's fields out of the record, once, at the call. */
+    @Generated
+    constructor(anchor: Anchor) : this(
+        anchor.linked(Slots.Character.origin)?.let { Type2(it) },
+        anchor.linked(Slots.Character.origin)?.let { Protocol2(it) },
+        anchor.linked(Slots.Character.origin)?.let { AnyLens(it) },
+        anchor.linked(Slots.Character.origin)?.let { Self2(it) },
+        anchor.linked(Slots.Character.origin)?.let { Self3(it) },
+        anchor.linked(Slots.Character.origin)?.let { Init(it) },
+        anchor.linked(Slots.Character.origin)?.let { Deinit(it) },
+        anchor.linked(Slots.Character.origin)?.let { Subscript(it) },
+        anchor.linked(Slots.Character.origin)?.let { Class(it) },
+        anchor.linked(Slots.Character.origin)?.let { Struct(it) },
+        anchor.linked(Slots.Character.origin)?.let { Enum(it) },
+        anchor.linked(Slots.Character.origin)?.let { Func(it) },
+        anchor.linked(Slots.Character.origin)?.let { Var(it) },
+        anchor.linked(Slots.Character.origin)?.let { Let(it) },
+        anchor.linked(Slots.Character.origin)?.let { Import(it) },
+        anchor.linked(Slots.Character.origin)?.let { Extension(it) },
+        anchor.linked(Slots.Character.origin)?.let { Operator(it) },
+        anchor.linked(Slots.Character.origin)?.let { Static(it) },
+        anchor.linked(Slots.Character.origin)?.let { Default(it) },
+        anchor.linked(Slots.Character.origin)?.let { Case(it) },
+        anchor.linked(Slots.Character.origin)?.let { Switch(it) },
+        anchor.linked(Slots.Character.origin)?.let { If(it) },
+        anchor.linked(Slots.Character.origin)?.let { Else(it) },
+        anchor.linked(Slots.Character.origin)?.let { For(it) },
+        anchor.linked(Slots.Character.origin)?.let { In(it) },
+        anchor.linked(Slots.Character.origin)?.let { While(it) },
+        anchor.linked(Slots.Character.origin)?.let { Repeat(it) },
+        anchor.linked(Slots.Character.origin)?.let { Return(it) },
+        anchor.linked(Slots.Character.origin)?.let { Break(it) },
+        anchor.linked(Slots.Character.origin)?.let { Continue(it) },
+        anchor.linked(Slots.Character.origin)?.let { Where(it) },
+        anchor.linked(Slots.Character.origin)?.let { Is(it) },
+        anchor.linked(Slots.Character.origin)?.let { As(it) },
+        anchor.linked(Slots.Character.origin)?.let { Try(it) },
+        anchor.linked(Slots.Character.origin)?.let { Throw(it) },
+        anchor.linked(Slots.Character.origin)?.let { Throws(it) },
+        anchor.linked(Slots.Character.origin)?.let { Guard(it) },
+        anchor.linked(Slots.Character.origin)?.let { Defer(it) },
+        anchor.linked(Slots.Character.origin)?.let { Do(it) },
+        anchor.linked(Slots.Character.origin)?.let { Catch(it) },
+        anchor.linked(Slots.Character.origin)?.let { True(it) },
+        anchor.linked(Slots.Character.origin)?.let { False(it) },
+        anchor.linked(Slots.Character.origin)?.let { Nil(it) },
+        anchor.linked(Slots.Character.origin)?.let { Super(it) },
+        anchor.linked(Slots.Character.origin)?.let { Internal(it) },
+        anchor.linked(Slots.Character.origin)?.let { Private(it) },
+        anchor.linked(Slots.Character.origin)?.let { Public(it) },
+        anchor.linked(Slots.Character.origin)?.let { Fileprivate(it) },
+        anchor.linked(Slots.Character.origin)?.let { Open(it) },
+        anchor.linked(Slots.Character.origin)?.let { Inout(it) },
+        anchor.linked(Slots.Character.origin)?.let { Typealias(it) },
+        anchor.linked(Slots.Character.origin)?.let { Associatedtype(it) },
+        anchor.linked(Slots.Character.origin)?.let { Protocol3(it) },
+        anchor.linked(Slots.Character.origin)?.let { Some(it) },
+        anchor.linked(Slots.Character.origin)?.let { AnyLens2(it) },
+        anchor.linked(Slots.Character.origin)?.let { Rethrows(it) },
+        anchor.linked(Slots.Character.origin)?.let { Fallthrough(it) },
+        anchor.linked(Slots.Character.origin)?.let { Precedencegroup(it) },
+        anchor.linked(Slots.Character.origin)?.let { _2(it) },
+        anchor.linked(Slots.Character.origin)?.let { Async(it) },
+        anchor.linked(Slots.Character.origin)?.let { Await(it) },
+        anchor.linked(Slots.Character.origin)?.let { Borrowing(it) },
+        anchor.linked(Slots.Character.origin)?.let { Consume(it) },
+        anchor.linked(Slots.Character.origin)?.let { Consuming(it) },
+        anchor.linked(Slots.Character.origin)?.let { Copy(it) },
+        anchor.linked(Slots.Character.origin)?.let { Discard(it) },
+        anchor.linked(Slots.Character.origin)?.let { Each(it) },
+        anchor.linked(Slots.Character.origin)?.let { Isolated(it) },
+        anchor.linked(Slots.Character.origin)?.let { Sending(it) },
+        anchor.linked(Slots.Character.origin)?.let { Then(it) },
+        anchor.linked(Slots.Character.origin)?.let { Unsafe(it) },
+        anchor.linked(Slots.Character.origin)?.let { Satisfied(it) },
+        anchor.linked(Slots.Character.origin)?.let { MissingRequiredField(it) },
+        anchor.linked(Slots.Character.origin)?.let { FieldErrorsLens(it) },
+        anchor.linked(Slots.Character.origin)?.let { IsPresent(it) },
+        anchor.linked(Slots.Character.origin)?.let { Throwing(it) },
+        anchor.linked(Slots.Character.origin)?.let { Caught(it) },
+        anchor.linked(Slots.Character.origin)?.let { Refetchable(it) },
+        anchor.linked(Slots.Character.origin)?.let { RefetchLens(it) },
+        anchor.linked(Slots.Character.origin)?.let { Connection(it) },
+        anchor.linked(Slots.Character.origin)?.let { Nodes(it) },
+        anchor.linked(Slots.Character.origin)?.let { HasNext(it) },
+        anchor.linked(Slots.Character.origin)?.let { HasPrevious(it) },
+        anchor.linked(Slots.Character.origin)?.let { IsLoadingNext(it) },
+        anchor.linked(Slots.Character.origin)?.let { IsLoadingPrevious(it) },
+        anchor.linked(Slots.Character.origin)?.let { ConnectionID(it) },
+        anchor.linked(Slots.Character.origin)?.let { LoadNext(it) },
+        anchor.linked(Slots.Character.origin)?.let { LoadPrevious(it) },
+        anchor.linked(Slots.Character.origin)?.let { Bound(it) },
+        anchor.linked(Slots.Character.origin)?.let { Errors(it) },
+        anchor.linked(Slots.Character.origin)?.let { Child(it) },
+        anchor.linked(Slots.Character.origin)?.let { Missing(it) },
+        anchor.linked(Slots.Character.origin)?.let { Count(it) },
+        anchor.linked(Slots.Character.origin)?.let { Fields(it) },
+        anchor.linked(Slots.Character.origin)?.let { Lhs(it) },
+        anchor.linked(Slots.Character.origin)?.let { Rhs(it) },
+        anchor.linked(Slots.Character.origin)?.let { Hasher2(it) },
+        anchor.linked(Slots.Character.origin)?.let { Selection0(it) },
+        anchor.linked(Slots.Character.origin)?.let { Selection(it) },
+        anchor.linked(Slots.Character.origin)?.let { Optimistic(it) },
+        anchor.linked(Slots.Character.origin)?.let { SelfValue(it) },
+        anchor.linked(Slots.Character.origin)?.let { Values(it) },
+        anchor.linked(Slots.Character.origin)?.let { FragmentLens(it) },
+        anchor.linked(Slots.Character.origin)?.let { Spread2(it) },
+        anchor.linked(Slots.Character.origin)?.let { Owner2(it) },
+        anchor.linked(Slots.Character.origin)?.let { Query2(it) },
+        anchor.linked(Slots.Character.origin)?.let { Operation2(it) },
+        anchor.linked(Slots.Character.origin)?.let { RefetchQuery2(it) },
+        anchor.linked(Slots.Character.origin)?.let { VariablesLens(it) },
+        anchor.linked(Slots.Character.origin)?.let { Resolution(it) },
+        anchor.linked(Slots.Character.origin)?.let { Name(it) },
+        anchor.linked(Slots.Character.origin)?.let { Document(it) },
+        anchor.linked(Slots.Character.origin)?.let { Text(it) },
+        anchor.linked(Slots.Character.origin)?.let { Plan(it) },
+        anchor.linked(Slots.Character.origin)?.let { ErrorBehavior(it) },
+        anchor.linked(Slots.Character.origin)?.let { ThrowsOnFieldError(it) },
+        anchor.linked(Slots.Character.origin)?.let { Bubbles(it) },
+        anchor.linked(Slots.Character.origin)?.let { HasDeferred(it) },
+        anchor.linked(Slots.Character.origin)?.let { CacheExpiration(it) },
+        anchor.linked(Slots.Character.origin)?.let { Data2(it) },
+        anchor.linked(Slots.Character.origin)?.let { Action2(it) },
+        anchor.linked(Slots.Character.origin)?.let { OptimisticResponse2(it) },
+        anchor.linked(Slots.Character.origin)?.let { Hash(it) },
+        anchor.linked(Slots.Character.origin)?.let { Commit(it) },
+        anchor.linked(Slots.Character.origin)?.let { CallAsFunction(it) },
+        anchor.linked(Slots.Character.origin)?.let { Op2(it) },
+        anchor.linked(Slots.Character.origin)?.let { VariableLens(it) },
+        anchor.linked(Slots.Character.origin)?.let { Payload(it) },
+        anchor.linked(Slots.Character.origin)?.let { HashValue(it) },
+        anchor.linked(Slots.Character.origin)?.let { Phase(it) },
+        anchor.linked(Slots.Character.origin)?.let { IsRefreshing(it) },
+        anchor.linked(Slots.Character.origin)?.let { IsStale(it) },
+        anchor.linked(Slots.Character.origin)?.let { Retry(it) },
+        anchor.linked(Slots.Character.origin)?.let { Subscription(it) },
+        anchor.linked(Slots.Character.origin)?.let { TypesLens(it) },
+        anchor.linked(Slots.Character.origin)?.let { SitesLens(it) },
+        anchor.linked(Slots.Character.origin)?.let { GuardsLens(it) },
+        anchor.linked(Slots.Character.origin)?.let { AbstractSlotsLens(it) },
+        anchor.linked(Slots.Character.origin)?.let { SchemaDigest(it) },
+        anchor.linked(Slots.Character.origin)?.let { Format(it) },
+        anchor.linked(Slots.Character.origin)?.let { Transient(it) },
+        anchor.linked(Slots.Character.origin)?.let { Baton2(it) },
+        anchor.linked(Slots.Character.origin)?.let { Swift2(it) },
+        anchor.linked(Slots.Character.origin)?.let { Set2(it) },
+        anchor.linked(Slots.Character.origin)?.let { ResultLens(it) },
+        anchor.linked(Slots.Character.origin)?.let { Optional2(it) },
+        anchor.linked(Slots.Character.origin)?.let { StringLens(it) },
+        anchor.linked(Slots.Character.origin)?.let { IntLens(it) },
+        anchor.linked(Slots.Character.origin)?.let { DoubleLens(it) },
+        anchor.linked(Slots.Character.origin)?.let { Bool2(it) },
+        anchor.linked(Slots.Character.origin)?.let { MainActor2(it) },
+        anchor.linked(Slots.Character.origin)?.let { Hasher3(it) },
+        anchor.linked(Slots.Character.origin)?.let { Sendable2(it) },
+    )
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectErrors(Slots.Character.origin, Type2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Protocol2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, AnyLens::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Self2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Self3::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Init::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Deinit::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Subscript::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Class::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Struct::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Enum::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Func::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Var::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Let::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Import::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Extension::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Operator::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Static::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Default::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Case::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Switch::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, If::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Else::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, For::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, In::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, While::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Repeat::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Return::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Break::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Continue::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Where::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Is::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, As::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Try::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Throw::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Throws::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Guard::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Defer::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Do::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Catch::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, True::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, False::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Nil::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Super::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Internal::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Private::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Public::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Fileprivate::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Open::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Inout::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Typealias::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Associatedtype::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Protocol3::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Some::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, AnyLens2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Rethrows::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Fallthrough::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Precedencegroup::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, _2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Async::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Await::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Borrowing::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Consume::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Consuming::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Copy::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Discard::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Each::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Isolated::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Sending::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Then::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Unsafe::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Satisfied::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, MissingRequiredField::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, FieldErrorsLens::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, IsPresent::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Throwing::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Caught::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Refetchable::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, RefetchLens::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Connection::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Nodes::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, HasNext::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, HasPrevious::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, IsLoadingNext::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, IsLoadingPrevious::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, ConnectionID::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, LoadNext::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, LoadPrevious::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Bound::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Errors::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Child::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Missing::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Count::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Fields::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Lhs::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Rhs::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Hasher2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Selection0::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Selection::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Optimistic::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, SelfValue::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Values::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, FragmentLens::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Spread2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Owner2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Query2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Operation2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, RefetchQuery2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, VariablesLens::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Resolution::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Name::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Document::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Text::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Plan::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, ErrorBehavior::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, ThrowsOnFieldError::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Bubbles::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, HasDeferred::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, CacheExpiration::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Data2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Action2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, OptimisticResponse2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Hash::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Commit::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, CallAsFunction::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Op2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, VariableLens::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Payload::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, HashValue::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Phase::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, IsRefreshing::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, IsStale::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Retry::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Subscription::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, TypesLens::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, SitesLens::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, GuardsLens::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, AbstractSlotsLens::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, SchemaDigest::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Format::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Transient::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Baton2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Swift2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Set2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, ResultLens::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Optional2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, StringLens::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, IntLens::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, DoubleLens::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Bool2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, MainActor2::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Hasher3::fieldErrors, errors)
+            anchor.collectErrors(Slots.Character.origin, Sendable2::fieldErrors, errors)
+            return errors
+        }
+        /** The value, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): HostileInlineLinks_character = caught(anchor).getOrThrow()
+        /** The value, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<HostileInlineLinks_character> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(HostileInlineLinks_character(anchor)) else Result.failure(FieldErrors(errors))
+        }
+        /** Whether the deferred part that carries this fragment has arrived. */
+        fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin)
+    }
+
+    data class Type2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Type2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Type2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Type2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Protocol2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Protocol2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Protocol2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Protocol2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class AnyLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.AnyLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.AnyLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.AnyLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Self2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Self2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Self2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Self2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Self3(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Self3 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Self3> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Self3(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Init(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Init = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Init> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Init(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Deinit(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Deinit = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Deinit> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Deinit(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Subscript(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Subscript = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Subscript> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Subscript(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Class(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Class = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Class> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Class(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Struct(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Struct = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Struct> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Struct(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Enum(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Enum = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Enum> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Enum(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Func(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Func = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Func> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Func(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Var(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Var = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Var> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Var(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Let(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Let = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Let> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Let(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Import(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Import = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Import> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Import(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Extension(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Extension = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Extension> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Extension(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Operator(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Operator = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Operator> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Operator(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Static(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Static = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Static> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Static(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Default(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Default = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Default> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Default(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Case(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Case = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Case> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Case(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Switch(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Switch = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Switch> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Switch(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class If(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.If = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.If> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.If(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Else(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Else = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Else> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Else(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class For(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.For = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.For> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.For(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class In(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.In = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.In> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.In(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class While(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.While = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.While> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.While(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Repeat(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Repeat = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Repeat> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Repeat(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Return(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Return = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Return> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Return(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Break(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Break = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Break> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Break(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Continue(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Continue = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Continue> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Continue(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Where(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Where = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Where> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Where(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Is(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Is = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Is> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Is(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class As(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.As = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.As> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.As(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Try(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Try = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Try> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Try(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Throw(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Throw = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Throw> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Throw(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Throws(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Throws = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Throws> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Throws(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Guard(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Guard = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Guard> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Guard(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Defer(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Defer = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Defer> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Defer(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Do(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Do = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Do> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Do(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Catch(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Catch = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Catch> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Catch(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class True(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.True = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.True> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.True(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class False(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.False = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.False> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.False(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Nil(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Nil = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Nil> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Nil(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Super(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Super = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Super> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Super(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Internal(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Internal = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Internal> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Internal(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Private(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Private = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Private> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Private(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Public(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Public = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Public> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Public(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Fileprivate(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Fileprivate = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Fileprivate> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Fileprivate(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Open(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Open = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Open> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Open(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Inout(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Inout = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Inout> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Inout(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Typealias(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Typealias = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Typealias> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Typealias(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Associatedtype(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Associatedtype = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Associatedtype> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Associatedtype(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Protocol3(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Protocol3 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Protocol3> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Protocol3(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Some(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Some = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Some> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Some(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class AnyLens2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.AnyLens2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.AnyLens2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.AnyLens2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Rethrows(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Rethrows = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Rethrows> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Rethrows(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Fallthrough(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Fallthrough = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Fallthrough> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Fallthrough(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Precedencegroup(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Precedencegroup = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Precedencegroup> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Precedencegroup(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class _2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character._2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character._2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character._2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Async(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Async = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Async> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Async(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Await(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Await = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Await> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Await(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Borrowing(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Borrowing = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Borrowing> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Borrowing(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Consume(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Consume = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Consume> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Consume(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Consuming(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Consuming = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Consuming> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Consuming(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Copy(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Copy = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Copy> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Copy(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Discard(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Discard = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Discard> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Discard(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Each(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Each = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Each> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Each(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Isolated(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Isolated = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Isolated> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Isolated(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Sending(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Sending = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Sending> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Sending(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Then(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Then = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Then> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Then(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Unsafe(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Unsafe = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Unsafe> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Unsafe(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Satisfied(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Satisfied = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Satisfied> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Satisfied(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class MissingRequiredField(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.MissingRequiredField = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.MissingRequiredField> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.MissingRequiredField(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class FieldErrorsLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.FieldErrorsLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.FieldErrorsLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.FieldErrorsLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class IsPresent(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.IsPresent = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.IsPresent> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.IsPresent(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Throwing(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Throwing = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Throwing> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Throwing(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Caught(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Caught = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Caught> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Caught(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Refetchable(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Refetchable = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Refetchable> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Refetchable(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class RefetchLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.RefetchLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.RefetchLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.RefetchLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Connection(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Connection = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Connection> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Connection(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Nodes(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Nodes = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Nodes> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Nodes(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class HasNext(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.HasNext = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.HasNext> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.HasNext(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class HasPrevious(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.HasPrevious = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.HasPrevious> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.HasPrevious(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class IsLoadingNext(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.IsLoadingNext = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.IsLoadingNext> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.IsLoadingNext(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class IsLoadingPrevious(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.IsLoadingPrevious = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.IsLoadingPrevious> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.IsLoadingPrevious(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class ConnectionID(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.ConnectionID = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.ConnectionID> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.ConnectionID(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class LoadNext(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.LoadNext = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.LoadNext> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.LoadNext(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class LoadPrevious(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.LoadPrevious = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.LoadPrevious> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.LoadPrevious(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Bound(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Bound = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Bound> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Bound(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Errors(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Errors = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Errors> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Errors(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Child(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Child = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Child> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Child(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Missing(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Missing = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Missing> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Missing(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Count(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Count = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Count> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Count(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Fields(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Fields = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Fields> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Fields(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Lhs(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Lhs = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Lhs> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Lhs(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Rhs(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Rhs = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Rhs> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Rhs(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Hasher2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Hasher2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Hasher2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Hasher2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Selection0(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Selection0 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Selection0> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Selection0(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Selection(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Selection = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Selection> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Selection(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Optimistic(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Optimistic = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Optimistic> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Optimistic(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class SelfValue(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.SelfValue = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.SelfValue> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.SelfValue(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Values(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Values = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Values> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Values(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class FragmentLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.FragmentLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.FragmentLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.FragmentLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Spread2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Spread2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Spread2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Spread2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Owner2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Owner2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Owner2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Owner2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Query2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Query2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Query2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Query2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Operation2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Operation2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Operation2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Operation2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class RefetchQuery2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.RefetchQuery2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.RefetchQuery2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.RefetchQuery2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class VariablesLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.VariablesLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.VariablesLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.VariablesLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Resolution(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Resolution = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Resolution> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Resolution(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Name(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Name = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Name> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Name(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Document(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Document = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Document> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Document(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Text(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Text = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Text> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Text(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Plan(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Plan = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Plan> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Plan(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class ErrorBehavior(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.ErrorBehavior = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.ErrorBehavior> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.ErrorBehavior(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class ThrowsOnFieldError(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.ThrowsOnFieldError = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.ThrowsOnFieldError> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.ThrowsOnFieldError(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Bubbles(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Bubbles = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Bubbles> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Bubbles(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class HasDeferred(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.HasDeferred = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.HasDeferred> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.HasDeferred(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class CacheExpiration(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.CacheExpiration = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.CacheExpiration> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.CacheExpiration(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Data2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Data2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Data2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Data2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Action2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Action2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Action2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Action2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class OptimisticResponse2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.OptimisticResponse2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.OptimisticResponse2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.OptimisticResponse2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Hash(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Hash = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Hash> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Hash(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Commit(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Commit = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Commit> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Commit(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class CallAsFunction(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.CallAsFunction = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.CallAsFunction> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.CallAsFunction(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Op2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Op2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Op2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Op2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class VariableLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.VariableLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.VariableLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.VariableLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Payload(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Payload = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Payload> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Payload(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class HashValue(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.HashValue = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.HashValue> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.HashValue(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Phase(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Phase = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Phase> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Phase(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class IsRefreshing(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.IsRefreshing = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.IsRefreshing> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.IsRefreshing(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class IsStale(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.IsStale = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.IsStale> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.IsStale(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Retry(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Retry = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Retry> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Retry(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Subscription(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Subscription = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Subscription> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Subscription(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class TypesLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.TypesLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.TypesLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.TypesLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class SitesLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.SitesLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.SitesLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.SitesLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class GuardsLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.GuardsLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.GuardsLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.GuardsLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class AbstractSlotsLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.AbstractSlotsLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.AbstractSlotsLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.AbstractSlotsLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class SchemaDigest(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.SchemaDigest = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.SchemaDigest> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.SchemaDigest(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Format(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Format = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Format> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Format(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Transient(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Transient = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Transient> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Transient(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Baton2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Baton2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Baton2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Baton2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Swift2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Swift2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Swift2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Swift2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Set2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Set2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Set2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Set2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class ResultLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.ResultLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.ResultLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.ResultLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Optional2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Optional2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Optional2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Optional2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class StringLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.StringLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.StringLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.StringLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class IntLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.IntLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.IntLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.IntLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class DoubleLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.DoubleLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.DoubleLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.DoubleLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Bool2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Bool2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Bool2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Bool2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class MainActor2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.MainActor2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.MainActor2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.MainActor2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Hasher3(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Hasher3 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Hasher3> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Hasher3(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Sendable2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Location.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Location.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlineLinks_character.Sendable2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlineLinks_character.Sendable2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Sendable2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+}
+
+/** Value of `fragment HostileInlinePlurals_character on Character @inline`. */
+data class HostileInlinePlurals_character(
+    val Type: List<Type2>,
+    val Protocol: List<Protocol2>,
+    val Any: List<AnyLens>,
+    val self: List<Self2>,
+    @get:JvmName("getSelf2") val Self: List<Self3>,
+    val init: List<Init>,
+    val deinit: List<Deinit>,
+    val subscript: List<Subscript>,
+    @get:JvmName("getClass2") val `class`: List<Class>,
+    val struct: List<Struct>,
+    val enum: List<Enum>,
+    val func: List<Func>,
+    val `var`: List<Var>,
+    val let: List<Let>,
+    val import: List<Import>,
+    val extension: List<Extension>,
+    val operator: List<Operator>,
+    val static: List<Static>,
+    val default: List<Default>,
+    val case: List<Case>,
+    val switch: List<Switch>,
+    val `if`: List<If>,
+    val `else`: List<Else>,
+    val `for`: List<For>,
+    val `in`: List<In>,
+    val `while`: List<While>,
+    val repeat: List<Repeat>,
+    val `return`: List<Return>,
+    val `break`: List<Break>,
+    val `continue`: List<Continue>,
+    val where: List<Where>,
+    val `is`: List<Is>,
+    val `as`: List<As>,
+    val `try`: List<Try>,
+    val `throw`: List<Throw>,
+    val throws: List<Throws>,
+    val guard: List<Guard>,
+    val defer: List<Defer>,
+    val `do`: List<Do>,
+    val catch: List<Catch>,
+    val `true`: List<True>,
+    val `false`: List<False>,
+    val nil: List<Nil>,
+    val `super`: List<Super>,
+    val internal: List<Internal>,
+    val private: List<Private>,
+    val public: List<Public>,
+    val fileprivate: List<Fileprivate>,
+    val open: List<Open>,
+    val inout: List<Inout>,
+    val `typealias`: List<Typealias>,
+    val associatedtype: List<Associatedtype>,
+    @get:JvmName("getProtocol2") val protocol: List<Protocol3>,
+    val some: List<Some>,
+    @get:JvmName("getAny2") val any: List<AnyLens2>,
+    val rethrows: List<Rethrows>,
+    val fallthrough: List<Fallthrough>,
+    val precedencegroup: List<Precedencegroup>,
+    val `_`: List<_2>,
+    val async: List<Async>,
+    val await: List<Await>,
+    val borrowing: List<Borrowing>,
+    val consume: List<Consume>,
+    val consuming: List<Consuming>,
+    val copy: List<Copy>,
+    val discard: List<Discard>,
+    val each: List<Each>,
+    val isolated: List<Isolated>,
+    val sending: List<Sending>,
+    val then: List<Then>,
+    val unsafe: List<Unsafe>,
+    val satisfied: List<Satisfied>,
+    val missingRequiredField: List<MissingRequiredField>,
+    val fieldErrors: List<FieldErrorsLens>,
+    val isPresent: List<IsPresent>,
+    val throwing: List<Throwing>,
+    val caught: List<Caught>,
+    val refetchable: List<Refetchable>,
+    val refetch: List<RefetchLens>,
+    val connection: List<Connection>,
+    val nodes: List<Nodes>,
+    val hasNext: List<HasNext>,
+    val hasPrevious: List<HasPrevious>,
+    val isLoadingNext: List<IsLoadingNext>,
+    val isLoadingPrevious: List<IsLoadingPrevious>,
+    val connectionID: List<ConnectionID>,
+    val loadNext: List<LoadNext>,
+    val loadPrevious: List<LoadPrevious>,
+    val bound: List<Bound>,
+    val errors: List<Errors>,
+    val child: List<Child>,
+    val missing: List<Missing>,
+    val count: List<Count>,
+    val fields: List<Fields>,
+    val lhs: List<Lhs>,
+    val rhs: List<Rhs>,
+    val hasher: List<Hasher2>,
+    val selection0: List<Selection0>,
+    val selection: List<Selection>,
+    val optimistic: List<Optimistic>,
+    val selfValue: List<SelfValue>,
+    val values: List<Values>,
+    val Fragment: List<FragmentLens>,
+    val Spread: List<Spread2>,
+    val Owner: List<Owner2>,
+    val Query: List<Query2>,
+    val Operation: List<Operation2>,
+    val RefetchQuery: List<RefetchQuery2>,
+    val variables: List<VariablesLens>,
+    val resolution: List<Resolution>,
+    val name: List<Name>,
+    val document: List<Document>,
+    val text: List<Text>,
+    val plan: List<Plan>,
+    val errorBehavior: List<ErrorBehavior>,
+    val throwsOnFieldError: List<ThrowsOnFieldError>,
+    val bubbles: List<Bubbles>,
+    val hasDeferred: List<HasDeferred>,
+    val cacheExpiration: List<CacheExpiration>,
+    val Data: List<Data2>,
+    val Action: List<Action2>,
+    val OptimisticResponse: List<OptimisticResponse2>,
+    val hash: List<Hash>,
+    val commit: List<Commit>,
+    val callAsFunction: List<CallAsFunction>,
+    val Op: List<Op2>,
+    val variable: List<VariableLens>,
+    val payload: List<Payload>,
+    val hashValue: List<HashValue>,
+    val phase: List<Phase>,
+    val isRefreshing: List<IsRefreshing>,
+    val isStale: List<IsStale>,
+    val retry: List<Retry>,
+    val subscription: List<Subscription>,
+    val Types: List<TypesLens>,
+    val Sites: List<SitesLens>,
+    val Guards: List<GuardsLens>,
+    val AbstractSlots: List<AbstractSlotsLens>,
+    val schemaDigest: List<SchemaDigest>,
+    val format: List<Format>,
+    val transient: List<Transient>,
+    val Baton: List<Baton2>,
+    val Swift: List<Swift2>,
+    val Set: List<Set2>,
+    val Result: List<ResultLens>,
+    val Optional: List<Optional2>,
+    val String: List<StringLens>,
+    val Int: List<IntLens>,
+    val Double: List<DoubleLens>,
+    val Bool: List<Bool2>,
+    val MainActor: List<MainActor2>,
+    @get:JvmName("getHasher2") val Hasher: List<Hasher3>,
+    val Sendable: List<Sendable2>,
+) {
+    /** Reads the fragment's fields out of the record, once, at the call. */
+    @Generated
+    constructor(anchor: Anchor) : this(
+        anchor.requiredValues(Slots.Character.episode) { Type2(it) },
+        anchor.requiredValues(Slots.Character.episode) { Protocol2(it) },
+        anchor.requiredValues(Slots.Character.episode) { AnyLens(it) },
+        anchor.requiredValues(Slots.Character.episode) { Self2(it) },
+        anchor.requiredValues(Slots.Character.episode) { Self3(it) },
+        anchor.requiredValues(Slots.Character.episode) { Init(it) },
+        anchor.requiredValues(Slots.Character.episode) { Deinit(it) },
+        anchor.requiredValues(Slots.Character.episode) { Subscript(it) },
+        anchor.requiredValues(Slots.Character.episode) { Class(it) },
+        anchor.requiredValues(Slots.Character.episode) { Struct(it) },
+        anchor.requiredValues(Slots.Character.episode) { Enum(it) },
+        anchor.requiredValues(Slots.Character.episode) { Func(it) },
+        anchor.requiredValues(Slots.Character.episode) { Var(it) },
+        anchor.requiredValues(Slots.Character.episode) { Let(it) },
+        anchor.requiredValues(Slots.Character.episode) { Import(it) },
+        anchor.requiredValues(Slots.Character.episode) { Extension(it) },
+        anchor.requiredValues(Slots.Character.episode) { Operator(it) },
+        anchor.requiredValues(Slots.Character.episode) { Static(it) },
+        anchor.requiredValues(Slots.Character.episode) { Default(it) },
+        anchor.requiredValues(Slots.Character.episode) { Case(it) },
+        anchor.requiredValues(Slots.Character.episode) { Switch(it) },
+        anchor.requiredValues(Slots.Character.episode) { If(it) },
+        anchor.requiredValues(Slots.Character.episode) { Else(it) },
+        anchor.requiredValues(Slots.Character.episode) { For(it) },
+        anchor.requiredValues(Slots.Character.episode) { In(it) },
+        anchor.requiredValues(Slots.Character.episode) { While(it) },
+        anchor.requiredValues(Slots.Character.episode) { Repeat(it) },
+        anchor.requiredValues(Slots.Character.episode) { Return(it) },
+        anchor.requiredValues(Slots.Character.episode) { Break(it) },
+        anchor.requiredValues(Slots.Character.episode) { Continue(it) },
+        anchor.requiredValues(Slots.Character.episode) { Where(it) },
+        anchor.requiredValues(Slots.Character.episode) { Is(it) },
+        anchor.requiredValues(Slots.Character.episode) { As(it) },
+        anchor.requiredValues(Slots.Character.episode) { Try(it) },
+        anchor.requiredValues(Slots.Character.episode) { Throw(it) },
+        anchor.requiredValues(Slots.Character.episode) { Throws(it) },
+        anchor.requiredValues(Slots.Character.episode) { Guard(it) },
+        anchor.requiredValues(Slots.Character.episode) { Defer(it) },
+        anchor.requiredValues(Slots.Character.episode) { Do(it) },
+        anchor.requiredValues(Slots.Character.episode) { Catch(it) },
+        anchor.requiredValues(Slots.Character.episode) { True(it) },
+        anchor.requiredValues(Slots.Character.episode) { False(it) },
+        anchor.requiredValues(Slots.Character.episode) { Nil(it) },
+        anchor.requiredValues(Slots.Character.episode) { Super(it) },
+        anchor.requiredValues(Slots.Character.episode) { Internal(it) },
+        anchor.requiredValues(Slots.Character.episode) { Private(it) },
+        anchor.requiredValues(Slots.Character.episode) { Public(it) },
+        anchor.requiredValues(Slots.Character.episode) { Fileprivate(it) },
+        anchor.requiredValues(Slots.Character.episode) { Open(it) },
+        anchor.requiredValues(Slots.Character.episode) { Inout(it) },
+        anchor.requiredValues(Slots.Character.episode) { Typealias(it) },
+        anchor.requiredValues(Slots.Character.episode) { Associatedtype(it) },
+        anchor.requiredValues(Slots.Character.episode) { Protocol3(it) },
+        anchor.requiredValues(Slots.Character.episode) { Some(it) },
+        anchor.requiredValues(Slots.Character.episode) { AnyLens2(it) },
+        anchor.requiredValues(Slots.Character.episode) { Rethrows(it) },
+        anchor.requiredValues(Slots.Character.episode) { Fallthrough(it) },
+        anchor.requiredValues(Slots.Character.episode) { Precedencegroup(it) },
+        anchor.requiredValues(Slots.Character.episode) { _2(it) },
+        anchor.requiredValues(Slots.Character.episode) { Async(it) },
+        anchor.requiredValues(Slots.Character.episode) { Await(it) },
+        anchor.requiredValues(Slots.Character.episode) { Borrowing(it) },
+        anchor.requiredValues(Slots.Character.episode) { Consume(it) },
+        anchor.requiredValues(Slots.Character.episode) { Consuming(it) },
+        anchor.requiredValues(Slots.Character.episode) { Copy(it) },
+        anchor.requiredValues(Slots.Character.episode) { Discard(it) },
+        anchor.requiredValues(Slots.Character.episode) { Each(it) },
+        anchor.requiredValues(Slots.Character.episode) { Isolated(it) },
+        anchor.requiredValues(Slots.Character.episode) { Sending(it) },
+        anchor.requiredValues(Slots.Character.episode) { Then(it) },
+        anchor.requiredValues(Slots.Character.episode) { Unsafe(it) },
+        anchor.requiredValues(Slots.Character.episode) { Satisfied(it) },
+        anchor.requiredValues(Slots.Character.episode) { MissingRequiredField(it) },
+        anchor.requiredValues(Slots.Character.episode) { FieldErrorsLens(it) },
+        anchor.requiredValues(Slots.Character.episode) { IsPresent(it) },
+        anchor.requiredValues(Slots.Character.episode) { Throwing(it) },
+        anchor.requiredValues(Slots.Character.episode) { Caught(it) },
+        anchor.requiredValues(Slots.Character.episode) { Refetchable(it) },
+        anchor.requiredValues(Slots.Character.episode) { RefetchLens(it) },
+        anchor.requiredValues(Slots.Character.episode) { Connection(it) },
+        anchor.requiredValues(Slots.Character.episode) { Nodes(it) },
+        anchor.requiredValues(Slots.Character.episode) { HasNext(it) },
+        anchor.requiredValues(Slots.Character.episode) { HasPrevious(it) },
+        anchor.requiredValues(Slots.Character.episode) { IsLoadingNext(it) },
+        anchor.requiredValues(Slots.Character.episode) { IsLoadingPrevious(it) },
+        anchor.requiredValues(Slots.Character.episode) { ConnectionID(it) },
+        anchor.requiredValues(Slots.Character.episode) { LoadNext(it) },
+        anchor.requiredValues(Slots.Character.episode) { LoadPrevious(it) },
+        anchor.requiredValues(Slots.Character.episode) { Bound(it) },
+        anchor.requiredValues(Slots.Character.episode) { Errors(it) },
+        anchor.requiredValues(Slots.Character.episode) { Child(it) },
+        anchor.requiredValues(Slots.Character.episode) { Missing(it) },
+        anchor.requiredValues(Slots.Character.episode) { Count(it) },
+        anchor.requiredValues(Slots.Character.episode) { Fields(it) },
+        anchor.requiredValues(Slots.Character.episode) { Lhs(it) },
+        anchor.requiredValues(Slots.Character.episode) { Rhs(it) },
+        anchor.requiredValues(Slots.Character.episode) { Hasher2(it) },
+        anchor.requiredValues(Slots.Character.episode) { Selection0(it) },
+        anchor.requiredValues(Slots.Character.episode) { Selection(it) },
+        anchor.requiredValues(Slots.Character.episode) { Optimistic(it) },
+        anchor.requiredValues(Slots.Character.episode) { SelfValue(it) },
+        anchor.requiredValues(Slots.Character.episode) { Values(it) },
+        anchor.requiredValues(Slots.Character.episode) { FragmentLens(it) },
+        anchor.requiredValues(Slots.Character.episode) { Spread2(it) },
+        anchor.requiredValues(Slots.Character.episode) { Owner2(it) },
+        anchor.requiredValues(Slots.Character.episode) { Query2(it) },
+        anchor.requiredValues(Slots.Character.episode) { Operation2(it) },
+        anchor.requiredValues(Slots.Character.episode) { RefetchQuery2(it) },
+        anchor.requiredValues(Slots.Character.episode) { VariablesLens(it) },
+        anchor.requiredValues(Slots.Character.episode) { Resolution(it) },
+        anchor.requiredValues(Slots.Character.episode) { Name(it) },
+        anchor.requiredValues(Slots.Character.episode) { Document(it) },
+        anchor.requiredValues(Slots.Character.episode) { Text(it) },
+        anchor.requiredValues(Slots.Character.episode) { Plan(it) },
+        anchor.requiredValues(Slots.Character.episode) { ErrorBehavior(it) },
+        anchor.requiredValues(Slots.Character.episode) { ThrowsOnFieldError(it) },
+        anchor.requiredValues(Slots.Character.episode) { Bubbles(it) },
+        anchor.requiredValues(Slots.Character.episode) { HasDeferred(it) },
+        anchor.requiredValues(Slots.Character.episode) { CacheExpiration(it) },
+        anchor.requiredValues(Slots.Character.episode) { Data2(it) },
+        anchor.requiredValues(Slots.Character.episode) { Action2(it) },
+        anchor.requiredValues(Slots.Character.episode) { OptimisticResponse2(it) },
+        anchor.requiredValues(Slots.Character.episode) { Hash(it) },
+        anchor.requiredValues(Slots.Character.episode) { Commit(it) },
+        anchor.requiredValues(Slots.Character.episode) { CallAsFunction(it) },
+        anchor.requiredValues(Slots.Character.episode) { Op2(it) },
+        anchor.requiredValues(Slots.Character.episode) { VariableLens(it) },
+        anchor.requiredValues(Slots.Character.episode) { Payload(it) },
+        anchor.requiredValues(Slots.Character.episode) { HashValue(it) },
+        anchor.requiredValues(Slots.Character.episode) { Phase(it) },
+        anchor.requiredValues(Slots.Character.episode) { IsRefreshing(it) },
+        anchor.requiredValues(Slots.Character.episode) { IsStale(it) },
+        anchor.requiredValues(Slots.Character.episode) { Retry(it) },
+        anchor.requiredValues(Slots.Character.episode) { Subscription(it) },
+        anchor.requiredValues(Slots.Character.episode) { TypesLens(it) },
+        anchor.requiredValues(Slots.Character.episode) { SitesLens(it) },
+        anchor.requiredValues(Slots.Character.episode) { GuardsLens(it) },
+        anchor.requiredValues(Slots.Character.episode) { AbstractSlotsLens(it) },
+        anchor.requiredValues(Slots.Character.episode) { SchemaDigest(it) },
+        anchor.requiredValues(Slots.Character.episode) { Format(it) },
+        anchor.requiredValues(Slots.Character.episode) { Transient(it) },
+        anchor.requiredValues(Slots.Character.episode) { Baton2(it) },
+        anchor.requiredValues(Slots.Character.episode) { Swift2(it) },
+        anchor.requiredValues(Slots.Character.episode) { Set2(it) },
+        anchor.requiredValues(Slots.Character.episode) { ResultLens(it) },
+        anchor.requiredValues(Slots.Character.episode) { Optional2(it) },
+        anchor.requiredValues(Slots.Character.episode) { StringLens(it) },
+        anchor.requiredValues(Slots.Character.episode) { IntLens(it) },
+        anchor.requiredValues(Slots.Character.episode) { DoubleLens(it) },
+        anchor.requiredValues(Slots.Character.episode) { Bool2(it) },
+        anchor.requiredValues(Slots.Character.episode) { MainActor2(it) },
+        anchor.requiredValues(Slots.Character.episode) { Hasher3(it) },
+        anchor.requiredValues(Slots.Character.episode) { Sendable2(it) },
+    )
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectListErrors(Slots.Character.episode, Type2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Protocol2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, AnyLens::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Self2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Self3::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Init::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Deinit::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Subscript::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Class::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Struct::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Enum::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Func::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Var::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Let::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Import::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Extension::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Operator::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Static::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Default::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Case::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Switch::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, If::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Else::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, For::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, In::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, While::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Repeat::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Return::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Break::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Continue::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Where::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Is::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, As::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Try::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Throw::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Throws::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Guard::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Defer::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Do::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Catch::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, True::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, False::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Nil::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Super::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Internal::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Private::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Public::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Fileprivate::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Open::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Inout::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Typealias::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Associatedtype::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Protocol3::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Some::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, AnyLens2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Rethrows::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Fallthrough::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Precedencegroup::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, _2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Async::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Await::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Borrowing::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Consume::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Consuming::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Copy::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Discard::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Each::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Isolated::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Sending::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Then::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Unsafe::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Satisfied::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, MissingRequiredField::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, FieldErrorsLens::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, IsPresent::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Throwing::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Caught::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Refetchable::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, RefetchLens::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Connection::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Nodes::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, HasNext::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, HasPrevious::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, IsLoadingNext::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, IsLoadingPrevious::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, ConnectionID::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, LoadNext::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, LoadPrevious::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Bound::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Errors::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Child::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Missing::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Count::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Fields::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Lhs::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Rhs::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Hasher2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Selection0::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Selection::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Optimistic::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, SelfValue::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Values::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, FragmentLens::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Spread2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Owner2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Query2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Operation2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, RefetchQuery2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, VariablesLens::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Resolution::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Name::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Document::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Text::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Plan::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, ErrorBehavior::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, ThrowsOnFieldError::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Bubbles::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, HasDeferred::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, CacheExpiration::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Data2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Action2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, OptimisticResponse2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Hash::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Commit::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, CallAsFunction::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Op2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, VariableLens::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Payload::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, HashValue::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Phase::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, IsRefreshing::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, IsStale::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Retry::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Subscription::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, TypesLens::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, SitesLens::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, GuardsLens::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, AbstractSlotsLens::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, SchemaDigest::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Format::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Transient::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Baton2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Swift2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Set2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, ResultLens::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Optional2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, StringLens::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, IntLens::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, DoubleLens::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Bool2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, MainActor2::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Hasher3::fieldErrors, errors)
+            anchor.collectListErrors(Slots.Character.episode, Sendable2::fieldErrors, errors)
+            return errors
+        }
+        /** The value, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): HostileInlinePlurals_character = caught(anchor).getOrThrow()
+        /** The value, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<HostileInlinePlurals_character> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character(anchor)) else Result.failure(FieldErrors(errors))
+        }
+        /** Whether the deferred part that carries this fragment has arrived. */
+        fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode)
+    }
+
+    data class Type2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Type2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Type2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Type2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Protocol2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Protocol2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Protocol2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Protocol2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class AnyLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.AnyLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.AnyLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.AnyLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Self2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Self2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Self2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Self2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Self3(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Self3 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Self3> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Self3(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Init(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Init = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Init> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Init(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Deinit(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Deinit = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Deinit> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Deinit(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Subscript(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Subscript = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Subscript> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Subscript(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Class(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Class = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Class> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Class(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Struct(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Struct = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Struct> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Struct(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Enum(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Enum = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Enum> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Enum(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Func(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Func = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Func> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Func(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Var(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Var = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Var> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Var(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Let(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Let = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Let> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Let(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Import(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Import = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Import> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Import(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Extension(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Extension = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Extension> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Extension(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Operator(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Operator = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Operator> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Operator(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Static(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Static = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Static> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Static(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Default(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Default = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Default> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Default(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Case(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Case = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Case> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Case(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Switch(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Switch = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Switch> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Switch(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class If(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.If = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.If> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.If(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Else(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Else = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Else> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Else(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class For(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.For = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.For> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.For(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class In(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.In = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.In> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.In(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class While(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.While = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.While> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.While(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Repeat(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Repeat = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Repeat> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Repeat(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Return(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Return = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Return> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Return(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Break(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Break = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Break> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Break(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Continue(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Continue = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Continue> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Continue(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Where(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Where = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Where> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Where(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Is(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Is = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Is> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Is(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class As(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.As = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.As> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.As(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Try(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Try = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Try> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Try(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Throw(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Throw = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Throw> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Throw(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Throws(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Throws = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Throws> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Throws(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Guard(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Guard = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Guard> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Guard(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Defer(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Defer = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Defer> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Defer(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Do(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Do = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Do> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Do(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Catch(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Catch = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Catch> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Catch(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class True(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.True = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.True> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.True(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class False(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.False = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.False> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.False(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Nil(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Nil = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Nil> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Nil(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Super(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Super = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Super> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Super(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Internal(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Internal = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Internal> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Internal(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Private(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Private = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Private> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Private(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Public(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Public = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Public> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Public(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Fileprivate(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Fileprivate = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Fileprivate> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Fileprivate(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Open(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Open = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Open> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Open(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Inout(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Inout = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Inout> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Inout(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Typealias(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Typealias = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Typealias> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Typealias(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Associatedtype(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Associatedtype = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Associatedtype> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Associatedtype(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Protocol3(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Protocol3 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Protocol3> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Protocol3(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Some(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Some = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Some> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Some(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class AnyLens2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.AnyLens2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.AnyLens2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.AnyLens2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Rethrows(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Rethrows = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Rethrows> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Rethrows(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Fallthrough(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Fallthrough = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Fallthrough> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Fallthrough(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Precedencegroup(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Precedencegroup = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Precedencegroup> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Precedencegroup(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class _2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character._2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character._2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character._2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Async(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Async = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Async> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Async(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Await(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Await = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Await> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Await(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Borrowing(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Borrowing = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Borrowing> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Borrowing(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Consume(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Consume = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Consume> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Consume(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Consuming(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Consuming = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Consuming> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Consuming(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Copy(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Copy = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Copy> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Copy(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Discard(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Discard = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Discard> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Discard(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Each(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Each = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Each> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Each(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Isolated(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Isolated = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Isolated> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Isolated(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Sending(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Sending = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Sending> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Sending(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Then(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Then = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Then> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Then(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Unsafe(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Unsafe = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Unsafe> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Unsafe(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Satisfied(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Satisfied = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Satisfied> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Satisfied(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class MissingRequiredField(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.MissingRequiredField = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.MissingRequiredField> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.MissingRequiredField(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class FieldErrorsLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.FieldErrorsLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.FieldErrorsLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.FieldErrorsLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class IsPresent(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.IsPresent = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.IsPresent> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.IsPresent(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Throwing(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Throwing = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Throwing> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Throwing(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Caught(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Caught = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Caught> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Caught(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Refetchable(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Refetchable = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Refetchable> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Refetchable(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class RefetchLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.RefetchLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.RefetchLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.RefetchLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Connection(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Connection = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Connection> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Connection(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Nodes(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Nodes = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Nodes> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Nodes(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class HasNext(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.HasNext = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.HasNext> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.HasNext(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class HasPrevious(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.HasPrevious = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.HasPrevious> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.HasPrevious(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class IsLoadingNext(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.IsLoadingNext = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.IsLoadingNext> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.IsLoadingNext(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class IsLoadingPrevious(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.IsLoadingPrevious = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.IsLoadingPrevious> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.IsLoadingPrevious(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class ConnectionID(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.ConnectionID = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.ConnectionID> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.ConnectionID(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class LoadNext(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.LoadNext = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.LoadNext> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.LoadNext(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class LoadPrevious(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.LoadPrevious = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.LoadPrevious> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.LoadPrevious(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Bound(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Bound = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Bound> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Bound(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Errors(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Errors = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Errors> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Errors(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Child(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Child = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Child> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Child(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Missing(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Missing = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Missing> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Missing(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Count(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Count = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Count> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Count(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Fields(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Fields = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Fields> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Fields(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Lhs(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Lhs = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Lhs> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Lhs(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Rhs(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Rhs = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Rhs> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Rhs(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Hasher2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Hasher2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Hasher2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Hasher2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Selection0(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Selection0 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Selection0> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Selection0(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Selection(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Selection = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Selection> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Selection(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Optimistic(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Optimistic = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Optimistic> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Optimistic(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class SelfValue(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.SelfValue = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.SelfValue> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.SelfValue(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Values(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Values = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Values> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Values(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class FragmentLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.FragmentLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.FragmentLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.FragmentLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Spread2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Spread2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Spread2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Spread2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Owner2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Owner2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Owner2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Owner2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Query2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Query2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Query2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Query2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Operation2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Operation2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Operation2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Operation2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class RefetchQuery2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.RefetchQuery2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.RefetchQuery2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.RefetchQuery2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class VariablesLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.VariablesLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.VariablesLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.VariablesLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Resolution(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Resolution = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Resolution> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Resolution(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Name(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Name = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Name> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Name(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Document(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Document = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Document> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Document(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Text(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Text = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Text> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Text(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Plan(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Plan = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Plan> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Plan(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class ErrorBehavior(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.ErrorBehavior = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.ErrorBehavior> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.ErrorBehavior(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class ThrowsOnFieldError(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.ThrowsOnFieldError = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.ThrowsOnFieldError> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.ThrowsOnFieldError(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Bubbles(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Bubbles = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Bubbles> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Bubbles(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class HasDeferred(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.HasDeferred = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.HasDeferred> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.HasDeferred(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class CacheExpiration(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.CacheExpiration = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.CacheExpiration> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.CacheExpiration(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Data2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Data2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Data2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Data2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Action2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Action2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Action2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Action2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class OptimisticResponse2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.OptimisticResponse2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.OptimisticResponse2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.OptimisticResponse2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Hash(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Hash = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Hash> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Hash(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Commit(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Commit = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Commit> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Commit(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class CallAsFunction(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.CallAsFunction = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.CallAsFunction> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.CallAsFunction(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Op2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Op2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Op2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Op2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class VariableLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.VariableLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.VariableLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.VariableLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Payload(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Payload = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Payload> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Payload(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class HashValue(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.HashValue = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.HashValue> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.HashValue(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Phase(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Phase = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Phase> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Phase(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class IsRefreshing(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.IsRefreshing = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.IsRefreshing> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.IsRefreshing(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class IsStale(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.IsStale = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.IsStale> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.IsStale(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Retry(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Retry = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Retry> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Retry(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Subscription(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Subscription = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Subscription> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Subscription(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class TypesLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.TypesLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.TypesLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.TypesLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class SitesLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.SitesLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.SitesLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.SitesLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class GuardsLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.GuardsLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.GuardsLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.GuardsLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class AbstractSlotsLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.AbstractSlotsLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.AbstractSlotsLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.AbstractSlotsLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class SchemaDigest(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.SchemaDigest = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.SchemaDigest> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.SchemaDigest(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Format(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Format = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Format> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Format(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Transient(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Transient = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Transient> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Transient(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Baton2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Baton2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Baton2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Baton2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Swift2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Swift2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Swift2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Swift2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Set2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Set2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Set2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Set2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class ResultLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.ResultLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.ResultLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.ResultLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Optional2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Optional2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Optional2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Optional2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class StringLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.StringLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.StringLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.StringLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class IntLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.IntLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.IntLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.IntLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class DoubleLens(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.DoubleLens = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.DoubleLens> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.DoubleLens(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Bool2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Bool2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Bool2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Bool2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class MainActor2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.MainActor2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.MainActor2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.MainActor2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Hasher3(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Hasher3 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Hasher3> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Hasher3(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+
+    data class Sendable2(
+        val id: String?,
+    ) {
+        /** Reads the fragment's fields out of the record, once, at the call. */
+        @Generated
+        constructor(anchor: Anchor) : this(
+            anchor.string(Slots.Episode.id),
+        )
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectError(Slots.Episode.id, errors)
+                return errors
+            }
+            /** The value, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileInlinePlurals_character.Sendable2 = caught(anchor).getOrThrow()
+            /** The value, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileInlinePlurals_character.Sendable2> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Sendable2(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+    }
+}
+
+/** Value of `fragment HostileInlineScalars_character on Character @inline`. */
+data class HostileInlineScalars_character(
+    val Type: String?,
+    val Protocol: String?,
+    val Any: String?,
+    val self: String?,
+    @get:JvmName("getSelf2") val Self: String?,
+    val init: String?,
+    val deinit: String?,
+    val subscript: String?,
+    @get:JvmName("getClass2") val `class`: String?,
+    val struct: String?,
+    val enum: String?,
+    val func: String?,
+    val `var`: String?,
+    val let: String?,
+    val import: String?,
+    val extension: String?,
+    val operator: String?,
+    val static: String?,
+    val default: String?,
+    val case: String?,
+    val switch: String?,
+    val `if`: String?,
+    val `else`: String?,
+    val `for`: String?,
+    val `in`: String?,
+    val `while`: String?,
+    val repeat: String?,
+    val `return`: String?,
+    val `break`: String?,
+    val `continue`: String?,
+    val where: String?,
+    val `is`: String?,
+    val `as`: String?,
+    val `try`: String?,
+    val `throw`: String?,
+    val throws: String?,
+    val guard: String?,
+    val defer: String?,
+    val `do`: String?,
+    val catch: String?,
+    val `true`: String?,
+    val `false`: String?,
+    val nil: String?,
+    val `super`: String?,
+    val internal: String?,
+    val private: String?,
+    val public: String?,
+    val fileprivate: String?,
+    val open: String?,
+    val inout: String?,
+    val `typealias`: String?,
+    val associatedtype: String?,
+    @get:JvmName("getProtocol2") val protocol: String?,
+    val some: String?,
+    @get:JvmName("getAny2") val any: String?,
+    val rethrows: String?,
+    val fallthrough: String?,
+    val precedencegroup: String?,
+    val `_`: String?,
+    val async: String?,
+    val await: String?,
+    val borrowing: String?,
+    val consume: String?,
+    val consuming: String?,
+    val copy: String?,
+    val discard: String?,
+    val each: String?,
+    val isolated: String?,
+    val sending: String?,
+    val then: String?,
+    val unsafe: String?,
+    val satisfied: String?,
+    val missingRequiredField: String?,
+    val fieldErrors: String?,
+    val isPresent: String?,
+    val throwing: String?,
+    val caught: String?,
+    val refetchable: String?,
+    val refetch: String?,
+    val connection: String?,
+    val nodes: String?,
+    val hasNext: String?,
+    val hasPrevious: String?,
+    val isLoadingNext: String?,
+    val isLoadingPrevious: String?,
+    val connectionID: String?,
+    val loadNext: String?,
+    val loadPrevious: String?,
+    val bound: String?,
+    val errors: String?,
+    val child: String?,
+    val missing: String?,
+    val count: String?,
+    val fields: String?,
+    val lhs: String?,
+    val rhs: String?,
+    val hasher: String?,
+    val selection0: String?,
+    val selection: String?,
+    val optimistic: String?,
+    val selfValue: String?,
+    val values: String?,
+    val Fragment: String?,
+    val Spread: String?,
+    val Owner: String?,
+    val Query: String?,
+    val Operation: String?,
+    val RefetchQuery: String?,
+    val variables: String?,
+    val resolution: String?,
+    val name: String?,
+    val document: String?,
+    val text: String?,
+    val plan: String?,
+    val errorBehavior: String?,
+    val throwsOnFieldError: String?,
+    val bubbles: String?,
+    val hasDeferred: String?,
+    val cacheExpiration: String?,
+    val Data: String?,
+    val Action: String?,
+    val OptimisticResponse: String?,
+    val hash: String?,
+    val commit: String?,
+    val callAsFunction: String?,
+    val Op: String?,
+    val variable: String?,
+    val payload: String?,
+    val hashValue: String?,
+    val phase: String?,
+    val isRefreshing: String?,
+    val isStale: String?,
+    val retry: String?,
+    val subscription: String?,
+    val Types: String?,
+    val Sites: String?,
+    val Guards: String?,
+    val AbstractSlots: String?,
+    val schemaDigest: String?,
+    val format: String?,
+    val transient: String?,
+    val Baton: String?,
+    val Swift: String?,
+    val Set: String?,
+    val Result: String?,
+    val Optional: String?,
+    val String: String?,
+    val Int: String?,
+    val Double: String?,
+    val Bool: String?,
+    val MainActor: String?,
+    @get:JvmName("getHasher2") val Hasher: String?,
+    val Sendable: String?,
+) {
+    /** Reads the fragment's fields out of the record, once, at the call. */
+    @Generated
+    constructor(anchor: Anchor) : this(
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+        anchor.string(Slots.Character.name),
+    )
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            anchor.collectError(Slots.Character.name, errors)
+            return errors
+        }
+        /** The value, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): HostileInlineScalars_character = caught(anchor).getOrThrow()
+        /** The value, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<HostileInlineScalars_character> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(HostileInlineScalars_character(anchor)) else Result.failure(FieldErrors(errors))
+        }
+        /** Whether the deferred part that carries this fragment has arrived. */
+        fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name)
+    }
+}
+
+/** Value of `fragment HostileInlineSpreadTarget_character on Character @inline`. */
+data class HostileInlineSpreadTarget_character(
+    val name: String?,
+) {
+    /** Reads the fragment's fields out of the record, once, at the call. */
+    @Generated
+    constructor(anchor: Anchor) : this(
+        anchor.string(Slots.Character.name),
+    )
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            anchor.collectError(Slots.Character.name, errors)
+            return errors
+        }
+        /** The value, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): HostileInlineSpreadTarget_character = caught(anchor).getOrThrow()
+        /** The value, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<HostileInlineSpreadTarget_character> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(HostileInlineSpreadTarget_character(anchor)) else Result.failure(FieldErrors(errors))
+        }
+    }
+}
+
+/** Value of `fragment HostileInlineSpreads_character on Character @inline`. */
+data class HostileInlineSpreads_character(
+    val Type: HostileInlineSpreadTarget_character,
+    val Protocol: HostileInlineSpreadTarget_character,
+    val Any: HostileInlineSpreadTarget_character,
+    val self: HostileInlineSpreadTarget_character,
+    @get:JvmName("getSelf2") val Self: HostileInlineSpreadTarget_character,
+    val init: HostileInlineSpreadTarget_character,
+    val deinit: HostileInlineSpreadTarget_character,
+    val subscript: HostileInlineSpreadTarget_character,
+    @get:JvmName("getClass2") val `class`: HostileInlineSpreadTarget_character,
+    val struct: HostileInlineSpreadTarget_character,
+    val enum: HostileInlineSpreadTarget_character,
+    val func: HostileInlineSpreadTarget_character,
+    val `var`: HostileInlineSpreadTarget_character,
+    val let: HostileInlineSpreadTarget_character,
+    val import: HostileInlineSpreadTarget_character,
+    val extension: HostileInlineSpreadTarget_character,
+    val operator: HostileInlineSpreadTarget_character,
+    val static: HostileInlineSpreadTarget_character,
+    val default: HostileInlineSpreadTarget_character,
+    val case: HostileInlineSpreadTarget_character,
+    val switch: HostileInlineSpreadTarget_character,
+    val `if`: HostileInlineSpreadTarget_character,
+    val `else`: HostileInlineSpreadTarget_character,
+    val `for`: HostileInlineSpreadTarget_character,
+    val `in`: HostileInlineSpreadTarget_character,
+    val `while`: HostileInlineSpreadTarget_character,
+    val repeat: HostileInlineSpreadTarget_character,
+    val `return`: HostileInlineSpreadTarget_character,
+    val `break`: HostileInlineSpreadTarget_character,
+    val `continue`: HostileInlineSpreadTarget_character,
+    val where: HostileInlineSpreadTarget_character,
+    val `is`: HostileInlineSpreadTarget_character,
+    val `as`: HostileInlineSpreadTarget_character,
+    val `try`: HostileInlineSpreadTarget_character,
+    val `throw`: HostileInlineSpreadTarget_character,
+    val throws: HostileInlineSpreadTarget_character,
+    val guard: HostileInlineSpreadTarget_character,
+    val defer: HostileInlineSpreadTarget_character,
+    val `do`: HostileInlineSpreadTarget_character,
+    val catch: HostileInlineSpreadTarget_character,
+    val `true`: HostileInlineSpreadTarget_character,
+    val `false`: HostileInlineSpreadTarget_character,
+    val nil: HostileInlineSpreadTarget_character,
+    val `super`: HostileInlineSpreadTarget_character,
+    val internal: HostileInlineSpreadTarget_character,
+    val private: HostileInlineSpreadTarget_character,
+    val public: HostileInlineSpreadTarget_character,
+    val fileprivate: HostileInlineSpreadTarget_character,
+    val open: HostileInlineSpreadTarget_character,
+    val inout: HostileInlineSpreadTarget_character,
+    val `typealias`: HostileInlineSpreadTarget_character,
+    val associatedtype: HostileInlineSpreadTarget_character,
+    @get:JvmName("getProtocol2") val protocol: HostileInlineSpreadTarget_character,
+    val some: HostileInlineSpreadTarget_character,
+    @get:JvmName("getAny2") val any: HostileInlineSpreadTarget_character,
+    val rethrows: HostileInlineSpreadTarget_character,
+    val fallthrough: HostileInlineSpreadTarget_character,
+    val precedencegroup: HostileInlineSpreadTarget_character,
+    val `_`: HostileInlineSpreadTarget_character,
+    val async: HostileInlineSpreadTarget_character,
+    val await: HostileInlineSpreadTarget_character,
+    val borrowing: HostileInlineSpreadTarget_character,
+    val consume: HostileInlineSpreadTarget_character,
+    val consuming: HostileInlineSpreadTarget_character,
+    val copy: HostileInlineSpreadTarget_character,
+    val discard: HostileInlineSpreadTarget_character,
+    val each: HostileInlineSpreadTarget_character,
+    val isolated: HostileInlineSpreadTarget_character,
+    val sending: HostileInlineSpreadTarget_character,
+    val then: HostileInlineSpreadTarget_character,
+    val unsafe: HostileInlineSpreadTarget_character,
+    val satisfied: HostileInlineSpreadTarget_character,
+    val missingRequiredField: HostileInlineSpreadTarget_character,
+    val fieldErrors: HostileInlineSpreadTarget_character,
+    val isPresent: HostileInlineSpreadTarget_character,
+    val throwing: HostileInlineSpreadTarget_character,
+    val caught: HostileInlineSpreadTarget_character,
+    val refetchable: HostileInlineSpreadTarget_character,
+    val refetch: HostileInlineSpreadTarget_character,
+    val connection: HostileInlineSpreadTarget_character,
+    val nodes: HostileInlineSpreadTarget_character,
+    val hasNext: HostileInlineSpreadTarget_character,
+    val hasPrevious: HostileInlineSpreadTarget_character,
+    val isLoadingNext: HostileInlineSpreadTarget_character,
+    val isLoadingPrevious: HostileInlineSpreadTarget_character,
+    val connectionID: HostileInlineSpreadTarget_character,
+    val loadNext: HostileInlineSpreadTarget_character,
+    val loadPrevious: HostileInlineSpreadTarget_character,
+    val bound: HostileInlineSpreadTarget_character,
+    val errors: HostileInlineSpreadTarget_character,
+    val child: HostileInlineSpreadTarget_character,
+    val missing: HostileInlineSpreadTarget_character,
+    val count: HostileInlineSpreadTarget_character,
+    val fields: HostileInlineSpreadTarget_character,
+    val lhs: HostileInlineSpreadTarget_character,
+    val rhs: HostileInlineSpreadTarget_character,
+    val hasher: HostileInlineSpreadTarget_character,
+    val selection0: HostileInlineSpreadTarget_character,
+    val selection: HostileInlineSpreadTarget_character,
+    val optimistic: HostileInlineSpreadTarget_character,
+    val selfValue: HostileInlineSpreadTarget_character,
+    val values: HostileInlineSpreadTarget_character,
+    val Fragment: HostileInlineSpreadTarget_character,
+    val Spread: HostileInlineSpreadTarget_character,
+    val Owner: HostileInlineSpreadTarget_character,
+    val Query: HostileInlineSpreadTarget_character,
+    val Operation: HostileInlineSpreadTarget_character,
+    val RefetchQuery: HostileInlineSpreadTarget_character,
+    val variables: HostileInlineSpreadTarget_character,
+    val resolution: HostileInlineSpreadTarget_character,
+    val name: HostileInlineSpreadTarget_character,
+    val document: HostileInlineSpreadTarget_character,
+    val text: HostileInlineSpreadTarget_character,
+    val plan: HostileInlineSpreadTarget_character,
+    val errorBehavior: HostileInlineSpreadTarget_character,
+    val throwsOnFieldError: HostileInlineSpreadTarget_character,
+    val bubbles: HostileInlineSpreadTarget_character,
+    val hasDeferred: HostileInlineSpreadTarget_character,
+    val cacheExpiration: HostileInlineSpreadTarget_character,
+    val Data: HostileInlineSpreadTarget_character,
+    val Action: HostileInlineSpreadTarget_character,
+    val OptimisticResponse: HostileInlineSpreadTarget_character,
+    val hash: HostileInlineSpreadTarget_character,
+    val commit: HostileInlineSpreadTarget_character,
+    val callAsFunction: HostileInlineSpreadTarget_character,
+    val Op: HostileInlineSpreadTarget_character,
+    val variable: HostileInlineSpreadTarget_character,
+    val payload: HostileInlineSpreadTarget_character,
+    val hashValue: HostileInlineSpreadTarget_character,
+    val phase: HostileInlineSpreadTarget_character,
+    val isRefreshing: HostileInlineSpreadTarget_character,
+    val isStale: HostileInlineSpreadTarget_character,
+    val retry: HostileInlineSpreadTarget_character,
+    val subscription: HostileInlineSpreadTarget_character,
+    val Types: HostileInlineSpreadTarget_character,
+    val Slots: HostileInlineSpreadTarget_character,
+    val Sites: HostileInlineSpreadTarget_character,
+    val Guards: HostileInlineSpreadTarget_character,
+    val AbstractSlots: HostileInlineSpreadTarget_character,
+    val schemaDigest: HostileInlineSpreadTarget_character,
+    val format: HostileInlineSpreadTarget_character,
+    val transient: HostileInlineSpreadTarget_character,
+    val Baton: HostileInlineSpreadTarget_character,
+    val Swift: HostileInlineSpreadTarget_character,
+    val Set: HostileInlineSpreadTarget_character,
+    val Result: HostileInlineSpreadTarget_character,
+    val Optional: HostileInlineSpreadTarget_character,
+    val String: HostileInlineSpreadTarget_character,
+    val Int: HostileInlineSpreadTarget_character,
+    val Double: HostileInlineSpreadTarget_character,
+    val Bool: HostileInlineSpreadTarget_character,
+    val MainActor: HostileInlineSpreadTarget_character,
+    @get:JvmName("getHasher2") val Hasher: HostileInlineSpreadTarget_character,
+    val Sendable: HostileInlineSpreadTarget_character,
+) {
+    /** Reads the fragment's fields out of the record, once, at the call. */
+    @Generated
+    constructor(anchor: Anchor) : this(
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+        HostileInlineSpreadTarget_character(anchor.entering()),
+    )
+
+    companion object {
+        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+        fun fieldErrors(anchor: Anchor): List<FieldError> {
+            val errors = mutableListOf<FieldError>()
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            errors.addAll(HostileInlineSpreadTarget_character.fieldErrors(anchor))
+            return errors
+        }
+        /** The value, or the field errors in it as a thrown `FieldErrors`. */
+        fun throwing(anchor: Anchor): HostileInlineSpreads_character = caught(anchor).getOrThrow()
+        /** The value, or the field errors in it as a `Result`. */
+        fun caught(anchor: Anchor): Result<HostileInlineSpreads_character> {
+            val errors = fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(HostileInlineSpreads_character(anchor)) else Result.failure(FieldErrors(errors))
+        }
+        /** Whether the deferred part that carries this fragment has arrived. */
+        fun isPresent(anchor: Anchor): Boolean = true
+    }
+}
+
+/** Lens for `fragment HostileLinks_character on Character`. */
+@Stable
+class HostileLinks_character(override val anchor: Anchor) : Lens {
+    val Type: Type2? get() = anchor.linked(Slots.Character.origin)?.let(::Type2)
+    val Protocol: Protocol2? get() = anchor.linked(Slots.Character.origin)?.let(::Protocol2)
+    val Any: AnyLens? get() = anchor.linked(Slots.Character.origin)?.let(::AnyLens)
+    val self: Self2? get() = anchor.linked(Slots.Character.origin)?.let(::Self2)
+    @get:JvmName("getSelf2") val Self: Self3? get() = anchor.linked(Slots.Character.origin)?.let(::Self3)
+    val init: Init? get() = anchor.linked(Slots.Character.origin)?.let(::Init)
+    val deinit: Deinit? get() = anchor.linked(Slots.Character.origin)?.let(::Deinit)
+    val subscript: Subscript? get() = anchor.linked(Slots.Character.origin)?.let(::Subscript)
+    @get:JvmName("getClass2") val `class`: Class? get() = anchor.linked(Slots.Character.origin)?.let(::Class)
+    val struct: Struct? get() = anchor.linked(Slots.Character.origin)?.let(::Struct)
+    val enum: Enum? get() = anchor.linked(Slots.Character.origin)?.let(::Enum)
+    val func: Func? get() = anchor.linked(Slots.Character.origin)?.let(::Func)
+    val `var`: Var? get() = anchor.linked(Slots.Character.origin)?.let(::Var)
+    val let: Let? get() = anchor.linked(Slots.Character.origin)?.let(::Let)
+    val import: Import? get() = anchor.linked(Slots.Character.origin)?.let(::Import)
+    val extension: Extension? get() = anchor.linked(Slots.Character.origin)?.let(::Extension)
+    val operator: Operator? get() = anchor.linked(Slots.Character.origin)?.let(::Operator)
+    val static: Static? get() = anchor.linked(Slots.Character.origin)?.let(::Static)
+    val default: Default? get() = anchor.linked(Slots.Character.origin)?.let(::Default)
+    val case: Case? get() = anchor.linked(Slots.Character.origin)?.let(::Case)
+    val switch: Switch? get() = anchor.linked(Slots.Character.origin)?.let(::Switch)
+    val `if`: If? get() = anchor.linked(Slots.Character.origin)?.let(::If)
+    val `else`: Else? get() = anchor.linked(Slots.Character.origin)?.let(::Else)
+    val `for`: For? get() = anchor.linked(Slots.Character.origin)?.let(::For)
+    val `in`: In? get() = anchor.linked(Slots.Character.origin)?.let(::In)
+    val `while`: While? get() = anchor.linked(Slots.Character.origin)?.let(::While)
+    val repeat: Repeat? get() = anchor.linked(Slots.Character.origin)?.let(::Repeat)
+    val `return`: Return? get() = anchor.linked(Slots.Character.origin)?.let(::Return)
+    val `break`: Break? get() = anchor.linked(Slots.Character.origin)?.let(::Break)
+    val `continue`: Continue? get() = anchor.linked(Slots.Character.origin)?.let(::Continue)
+    val where: Where? get() = anchor.linked(Slots.Character.origin)?.let(::Where)
+    val `is`: Is? get() = anchor.linked(Slots.Character.origin)?.let(::Is)
+    val `as`: As? get() = anchor.linked(Slots.Character.origin)?.let(::As)
+    val `try`: Try? get() = anchor.linked(Slots.Character.origin)?.let(::Try)
+    val `throw`: Throw? get() = anchor.linked(Slots.Character.origin)?.let(::Throw)
+    val throws: Throws? get() = anchor.linked(Slots.Character.origin)?.let(::Throws)
+    val guard: Guard? get() = anchor.linked(Slots.Character.origin)?.let(::Guard)
+    val defer: Defer? get() = anchor.linked(Slots.Character.origin)?.let(::Defer)
+    val `do`: Do? get() = anchor.linked(Slots.Character.origin)?.let(::Do)
+    val catch: Catch? get() = anchor.linked(Slots.Character.origin)?.let(::Catch)
+    val `true`: True? get() = anchor.linked(Slots.Character.origin)?.let(::True)
+    val `false`: False? get() = anchor.linked(Slots.Character.origin)?.let(::False)
+    val nil: Nil? get() = anchor.linked(Slots.Character.origin)?.let(::Nil)
+    val `super`: Super? get() = anchor.linked(Slots.Character.origin)?.let(::Super)
+    val internal: Internal? get() = anchor.linked(Slots.Character.origin)?.let(::Internal)
+    val private: Private? get() = anchor.linked(Slots.Character.origin)?.let(::Private)
+    val public: Public? get() = anchor.linked(Slots.Character.origin)?.let(::Public)
+    val fileprivate: Fileprivate? get() = anchor.linked(Slots.Character.origin)?.let(::Fileprivate)
+    val open: Open? get() = anchor.linked(Slots.Character.origin)?.let(::Open)
+    val inout: Inout? get() = anchor.linked(Slots.Character.origin)?.let(::Inout)
+    val `typealias`: Typealias? get() = anchor.linked(Slots.Character.origin)?.let(::Typealias)
+    val associatedtype: Associatedtype? get() = anchor.linked(Slots.Character.origin)?.let(::Associatedtype)
+    @get:JvmName("getProtocol2") val protocol: Protocol3? get() = anchor.linked(Slots.Character.origin)?.let(::Protocol3)
+    val some: Some? get() = anchor.linked(Slots.Character.origin)?.let(::Some)
+    @get:JvmName("getAny2") val any: AnyLens2? get() = anchor.linked(Slots.Character.origin)?.let(::AnyLens2)
+    val rethrows: Rethrows? get() = anchor.linked(Slots.Character.origin)?.let(::Rethrows)
+    val fallthrough: Fallthrough? get() = anchor.linked(Slots.Character.origin)?.let(::Fallthrough)
+    val precedencegroup: Precedencegroup? get() = anchor.linked(Slots.Character.origin)?.let(::Precedencegroup)
+    val `_`: _2? get() = anchor.linked(Slots.Character.origin)?.let(::_2)
+    val async: Async? get() = anchor.linked(Slots.Character.origin)?.let(::Async)
+    val await: Await? get() = anchor.linked(Slots.Character.origin)?.let(::Await)
+    val borrowing: Borrowing? get() = anchor.linked(Slots.Character.origin)?.let(::Borrowing)
+    val consume: Consume? get() = anchor.linked(Slots.Character.origin)?.let(::Consume)
+    val consuming: Consuming? get() = anchor.linked(Slots.Character.origin)?.let(::Consuming)
+    val copy: Copy? get() = anchor.linked(Slots.Character.origin)?.let(::Copy)
+    val discard: Discard? get() = anchor.linked(Slots.Character.origin)?.let(::Discard)
+    val each: Each? get() = anchor.linked(Slots.Character.origin)?.let(::Each)
+    val isolated: Isolated? get() = anchor.linked(Slots.Character.origin)?.let(::Isolated)
+    val sending: Sending? get() = anchor.linked(Slots.Character.origin)?.let(::Sending)
+    val then: Then? get() = anchor.linked(Slots.Character.origin)?.let(::Then)
+    val unsafe: Unsafe? get() = anchor.linked(Slots.Character.origin)?.let(::Unsafe)
+    val satisfied: Satisfied? get() = anchor.linked(Slots.Character.origin)?.let(::Satisfied)
+    val missingRequiredField: MissingRequiredField? get() = anchor.linked(Slots.Character.origin)?.let(::MissingRequiredField)
+    val fieldErrors: FieldErrorsLens? get() = anchor.linked(Slots.Character.origin)?.let(::FieldErrorsLens)
+    val isPresent: IsPresent? get() = anchor.linked(Slots.Character.origin)?.let(::IsPresent)
+    val throwing: Throwing? get() = anchor.linked(Slots.Character.origin)?.let(::Throwing)
+    val caught: Caught? get() = anchor.linked(Slots.Character.origin)?.let(::Caught)
+    val refetchable: Refetchable? get() = anchor.linked(Slots.Character.origin)?.let(::Refetchable)
+    val refetch: RefetchLens? get() = anchor.linked(Slots.Character.origin)?.let(::RefetchLens)
+    val connection: Connection? get() = anchor.linked(Slots.Character.origin)?.let(::Connection)
+    val nodes: Nodes? get() = anchor.linked(Slots.Character.origin)?.let(::Nodes)
+    val hasNext: HasNext? get() = anchor.linked(Slots.Character.origin)?.let(::HasNext)
+    val hasPrevious: HasPrevious? get() = anchor.linked(Slots.Character.origin)?.let(::HasPrevious)
+    val isLoadingNext: IsLoadingNext? get() = anchor.linked(Slots.Character.origin)?.let(::IsLoadingNext)
+    val isLoadingPrevious: IsLoadingPrevious? get() = anchor.linked(Slots.Character.origin)?.let(::IsLoadingPrevious)
+    val connectionID: ConnectionID? get() = anchor.linked(Slots.Character.origin)?.let(::ConnectionID)
+    val loadNext: LoadNext? get() = anchor.linked(Slots.Character.origin)?.let(::LoadNext)
+    val loadPrevious: LoadPrevious? get() = anchor.linked(Slots.Character.origin)?.let(::LoadPrevious)
+    val bound: Bound? get() = anchor.linked(Slots.Character.origin)?.let(::Bound)
+    val errors: Errors? get() = anchor.linked(Slots.Character.origin)?.let(::Errors)
+    val child: Child? get() = anchor.linked(Slots.Character.origin)?.let(::Child)
+    val missing: Missing? get() = anchor.linked(Slots.Character.origin)?.let(::Missing)
+    val count: Count? get() = anchor.linked(Slots.Character.origin)?.let(::Count)
+    val fields: Fields? get() = anchor.linked(Slots.Character.origin)?.let(::Fields)
+    val lhs: Lhs? get() = anchor.linked(Slots.Character.origin)?.let(::Lhs)
+    val rhs: Rhs? get() = anchor.linked(Slots.Character.origin)?.let(::Rhs)
+    val hasher: Hasher2? get() = anchor.linked(Slots.Character.origin)?.let(::Hasher2)
+    val selection0: Selection0? get() = anchor.linked(Slots.Character.origin)?.let(::Selection0)
+    val selection: Selection? get() = anchor.linked(Slots.Character.origin)?.let(::Selection)
+    val optimistic: Optimistic? get() = anchor.linked(Slots.Character.origin)?.let(::Optimistic)
+    val selfValue: SelfValue? get() = anchor.linked(Slots.Character.origin)?.let(::SelfValue)
+    val values: Values? get() = anchor.linked(Slots.Character.origin)?.let(::Values)
+    val Fragment: FragmentLens? get() = anchor.linked(Slots.Character.origin)?.let(::FragmentLens)
+    val Spread: Spread2? get() = anchor.linked(Slots.Character.origin)?.let(::Spread2)
+    val Owner: Owner2? get() = anchor.linked(Slots.Character.origin)?.let(::Owner2)
+    val Query: Query2? get() = anchor.linked(Slots.Character.origin)?.let(::Query2)
+    val Operation: Operation2? get() = anchor.linked(Slots.Character.origin)?.let(::Operation2)
+    val RefetchQuery: RefetchQuery2? get() = anchor.linked(Slots.Character.origin)?.let(::RefetchQuery2)
+    val variables: VariablesLens? get() = anchor.linked(Slots.Character.origin)?.let(::VariablesLens)
+    val resolution: Resolution? get() = anchor.linked(Slots.Character.origin)?.let(::Resolution)
+    val name: Name? get() = anchor.linked(Slots.Character.origin)?.let(::Name)
+    val document: Document? get() = anchor.linked(Slots.Character.origin)?.let(::Document)
+    val text: Text? get() = anchor.linked(Slots.Character.origin)?.let(::Text)
+    val plan: Plan? get() = anchor.linked(Slots.Character.origin)?.let(::Plan)
+    val errorBehavior: ErrorBehavior? get() = anchor.linked(Slots.Character.origin)?.let(::ErrorBehavior)
+    val throwsOnFieldError: ThrowsOnFieldError? get() = anchor.linked(Slots.Character.origin)?.let(::ThrowsOnFieldError)
+    val bubbles: Bubbles? get() = anchor.linked(Slots.Character.origin)?.let(::Bubbles)
+    val hasDeferred: HasDeferred? get() = anchor.linked(Slots.Character.origin)?.let(::HasDeferred)
+    val cacheExpiration: CacheExpiration? get() = anchor.linked(Slots.Character.origin)?.let(::CacheExpiration)
+    val Data: Data2? get() = anchor.linked(Slots.Character.origin)?.let(::Data2)
+    val Action: Action2? get() = anchor.linked(Slots.Character.origin)?.let(::Action2)
+    val OptimisticResponse: OptimisticResponse2? get() = anchor.linked(Slots.Character.origin)?.let(::OptimisticResponse2)
+    val hash: Hash? get() = anchor.linked(Slots.Character.origin)?.let(::Hash)
+    val commit: Commit? get() = anchor.linked(Slots.Character.origin)?.let(::Commit)
+    val callAsFunction: CallAsFunction? get() = anchor.linked(Slots.Character.origin)?.let(::CallAsFunction)
+    val Op: Op2? get() = anchor.linked(Slots.Character.origin)?.let(::Op2)
+    val variable: VariableLens? get() = anchor.linked(Slots.Character.origin)?.let(::VariableLens)
+    val payload: Payload? get() = anchor.linked(Slots.Character.origin)?.let(::Payload)
+    val hashValue: HashValue? get() = anchor.linked(Slots.Character.origin)?.let(::HashValue)
+    val phase: Phase? get() = anchor.linked(Slots.Character.origin)?.let(::Phase)
+    val isRefreshing: IsRefreshing? get() = anchor.linked(Slots.Character.origin)?.let(::IsRefreshing)
+    val isStale: IsStale? get() = anchor.linked(Slots.Character.origin)?.let(::IsStale)
+    val retry: Retry? get() = anchor.linked(Slots.Character.origin)?.let(::Retry)
+    val subscription: Subscription? get() = anchor.linked(Slots.Character.origin)?.let(::Subscription)
+    val Types: TypesLens? get() = anchor.linked(Slots.Character.origin)?.let(::TypesLens)
+    val Sites: SitesLens? get() = anchor.linked(Slots.Character.origin)?.let(::SitesLens)
+    val Guards: GuardsLens? get() = anchor.linked(Slots.Character.origin)?.let(::GuardsLens)
+    val AbstractSlots: AbstractSlotsLens? get() = anchor.linked(Slots.Character.origin)?.let(::AbstractSlotsLens)
+    val schemaDigest: SchemaDigest? get() = anchor.linked(Slots.Character.origin)?.let(::SchemaDigest)
+    val format: Format? get() = anchor.linked(Slots.Character.origin)?.let(::Format)
+    val transient: Transient? get() = anchor.linked(Slots.Character.origin)?.let(::Transient)
+    val Baton: Baton2? get() = anchor.linked(Slots.Character.origin)?.let(::Baton2)
+    val Swift: Swift2? get() = anchor.linked(Slots.Character.origin)?.let(::Swift2)
+    val Set: Set2? get() = anchor.linked(Slots.Character.origin)?.let(::Set2)
+    val Result: ResultLens? get() = anchor.linked(Slots.Character.origin)?.let(::ResultLens)
+    val Optional: Optional2? get() = anchor.linked(Slots.Character.origin)?.let(::Optional2)
+    val String: StringLens? get() = anchor.linked(Slots.Character.origin)?.let(::StringLens)
+    val Int: IntLens? get() = anchor.linked(Slots.Character.origin)?.let(::IntLens)
+    val Double: DoubleLens? get() = anchor.linked(Slots.Character.origin)?.let(::DoubleLens)
+    val Bool: Bool2? get() = anchor.linked(Slots.Character.origin)?.let(::Bool2)
+    val MainActor: MainActor2? get() = anchor.linked(Slots.Character.origin)?.let(::MainActor2)
+    @get:JvmName("getHasher2") val Hasher: Hasher3? get() = anchor.linked(Slots.Character.origin)?.let(::Hasher3)
+    val Sendable: Sendable2? get() = anchor.linked(Slots.Character.origin)?.let(::Sendable2)
+    override fun equals(other: Any?): Boolean = other is HostileLinks_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    @Stable
+    class Type2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Type2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Protocol2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Protocol2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class AnyLens(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.AnyLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Self2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Self2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Self3(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Self3 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Init(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Init && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Deinit(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Deinit && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Subscript(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Subscript && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Class(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Class && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Struct(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Struct && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Enum(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Enum && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Func(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Func && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Var(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Var && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Let(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Let && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Import(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Import && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Extension(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Extension && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Operator(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Operator && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Static(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Static && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Default(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Default && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Case(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Case && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Switch(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Switch && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class If(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.If && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Else(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Else && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class For(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.For && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class In(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.In && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class While(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.While && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Repeat(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Repeat && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Return(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Return && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Break(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Break && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Continue(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Continue && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Where(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Where && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Is(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Is && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class As(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.As && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Try(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Try && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Throw(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Throw && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Throws(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Throws && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Guard(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Guard && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Defer(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Defer && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Do(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Do && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Catch(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Catch && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class True(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.True && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class False(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.False && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Nil(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Nil && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Super(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Super && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Internal(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Internal && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Private(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Private && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Public(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Public && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Fileprivate(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Fileprivate && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Open(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Open && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Inout(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Inout && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Typealias(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Typealias && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Associatedtype(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Associatedtype && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Protocol3(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Protocol3 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Some(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Some && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class AnyLens2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.AnyLens2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Rethrows(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Rethrows && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Fallthrough(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Fallthrough && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Precedencegroup(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Precedencegroup && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class _2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character._2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Async(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Async && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Await(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Await && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Borrowing(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Borrowing && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Consume(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Consume && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Consuming(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Consuming && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Copy(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Copy && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Discard(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Discard && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Each(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Each && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Isolated(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Isolated && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Sending(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Sending && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Then(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Then && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Unsafe(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Unsafe && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Satisfied(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Satisfied && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class MissingRequiredField(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.MissingRequiredField && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class FieldErrorsLens(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.FieldErrorsLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class IsPresent(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.IsPresent && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Throwing(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Throwing && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Caught(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Caught && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Refetchable(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Refetchable && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class RefetchLens(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.RefetchLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Connection(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Connection && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Nodes(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Nodes && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class HasNext(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.HasNext && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class HasPrevious(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.HasPrevious && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class IsLoadingNext(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.IsLoadingNext && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class IsLoadingPrevious(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.IsLoadingPrevious && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class ConnectionID(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.ConnectionID && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class LoadNext(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.LoadNext && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class LoadPrevious(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.LoadPrevious && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Bound(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Bound && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Errors(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Errors && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Child(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Child && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Missing(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Missing && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Count(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Count && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Fields(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Fields && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Lhs(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Lhs && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Rhs(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Rhs && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Hasher2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Hasher2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Selection0(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Selection0 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Selection(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Selection && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Optimistic(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Optimistic && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class SelfValue(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.SelfValue && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Values(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Values && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class FragmentLens(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.FragmentLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Spread2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Spread2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Owner2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Owner2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Query2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Query2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Operation2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Operation2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class RefetchQuery2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.RefetchQuery2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class VariablesLens(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.VariablesLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Resolution(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Resolution && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Name(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Name && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Document(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Document && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Text(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Text && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Plan(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Plan && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class ErrorBehavior(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.ErrorBehavior && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class ThrowsOnFieldError(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.ThrowsOnFieldError && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Bubbles(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Bubbles && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class HasDeferred(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.HasDeferred && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class CacheExpiration(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.CacheExpiration && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Data2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Data2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Action2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Action2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class OptimisticResponse2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.OptimisticResponse2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Hash(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Hash && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Commit(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Commit && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class CallAsFunction(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.CallAsFunction && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Op2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Op2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class VariableLens(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.VariableLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Payload(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Payload && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class HashValue(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.HashValue && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Phase(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Phase && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class IsRefreshing(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.IsRefreshing && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class IsStale(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.IsStale && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Retry(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Retry && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Subscription(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Subscription && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class TypesLens(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.TypesLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class SitesLens(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.SitesLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class GuardsLens(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.GuardsLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class AbstractSlotsLens(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.AbstractSlotsLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class SchemaDigest(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.SchemaDigest && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Format(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Format && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Transient(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Transient && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Baton2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Baton2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Swift2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Swift2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Set2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Set2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class ResultLens(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.ResultLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Optional2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Optional2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class StringLens(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.StringLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class IntLens(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.IntLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class DoubleLens(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.DoubleLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Bool2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Bool2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class MainActor2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.MainActor2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Hasher3(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Hasher3 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Sendable2(override val anchor: Anchor) : Lens {
+        val id: String? get() = anchor.string(Slots.Location.id)
+        override fun equals(other: Any?): Boolean = other is HostileLinks_character.Sendable2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+}
+
+/** Lens for `fragment HostileScalars_character on Character`. */
+@Stable
+class HostileScalars_character(override val anchor: Anchor) : Lens {
+    val Type: String? get() = anchor.string(Slots.Character.name)
+    val Protocol: String? get() = anchor.string(Slots.Character.name)
+    val Any: String? get() = anchor.string(Slots.Character.name)
+    val self: String? get() = anchor.string(Slots.Character.name)
+    @get:JvmName("getSelf2") val Self: String? get() = anchor.string(Slots.Character.name)
+    val init: String? get() = anchor.string(Slots.Character.name)
+    val deinit: String? get() = anchor.string(Slots.Character.name)
+    val subscript: String? get() = anchor.string(Slots.Character.name)
+    @get:JvmName("getClass2") val `class`: String? get() = anchor.string(Slots.Character.name)
+    val struct: String? get() = anchor.string(Slots.Character.name)
+    val enum: String? get() = anchor.string(Slots.Character.name)
+    val func: String? get() = anchor.string(Slots.Character.name)
+    val `var`: String? get() = anchor.string(Slots.Character.name)
+    val let: String? get() = anchor.string(Slots.Character.name)
+    val import: String? get() = anchor.string(Slots.Character.name)
+    val extension: String? get() = anchor.string(Slots.Character.name)
+    val operator: String? get() = anchor.string(Slots.Character.name)
+    val static: String? get() = anchor.string(Slots.Character.name)
+    val default: String? get() = anchor.string(Slots.Character.name)
+    val case: String? get() = anchor.string(Slots.Character.name)
+    val switch: String? get() = anchor.string(Slots.Character.name)
+    val `if`: String? get() = anchor.string(Slots.Character.name)
+    val `else`: String? get() = anchor.string(Slots.Character.name)
+    val `for`: String? get() = anchor.string(Slots.Character.name)
+    val `in`: String? get() = anchor.string(Slots.Character.name)
+    val `while`: String? get() = anchor.string(Slots.Character.name)
+    val repeat: String? get() = anchor.string(Slots.Character.name)
+    val `return`: String? get() = anchor.string(Slots.Character.name)
+    val `break`: String? get() = anchor.string(Slots.Character.name)
+    val `continue`: String? get() = anchor.string(Slots.Character.name)
+    val where: String? get() = anchor.string(Slots.Character.name)
+    val `is`: String? get() = anchor.string(Slots.Character.name)
+    val `as`: String? get() = anchor.string(Slots.Character.name)
+    val `try`: String? get() = anchor.string(Slots.Character.name)
+    val `throw`: String? get() = anchor.string(Slots.Character.name)
+    val throws: String? get() = anchor.string(Slots.Character.name)
+    val guard: String? get() = anchor.string(Slots.Character.name)
+    val defer: String? get() = anchor.string(Slots.Character.name)
+    val `do`: String? get() = anchor.string(Slots.Character.name)
+    val catch: String? get() = anchor.string(Slots.Character.name)
+    val `true`: String? get() = anchor.string(Slots.Character.name)
+    val `false`: String? get() = anchor.string(Slots.Character.name)
+    val nil: String? get() = anchor.string(Slots.Character.name)
+    val `super`: String? get() = anchor.string(Slots.Character.name)
+    val internal: String? get() = anchor.string(Slots.Character.name)
+    val private: String? get() = anchor.string(Slots.Character.name)
+    val public: String? get() = anchor.string(Slots.Character.name)
+    val fileprivate: String? get() = anchor.string(Slots.Character.name)
+    val open: String? get() = anchor.string(Slots.Character.name)
+    val inout: String? get() = anchor.string(Slots.Character.name)
+    val `typealias`: String? get() = anchor.string(Slots.Character.name)
+    val associatedtype: String? get() = anchor.string(Slots.Character.name)
+    @get:JvmName("getProtocol2") val protocol: String? get() = anchor.string(Slots.Character.name)
+    val some: String? get() = anchor.string(Slots.Character.name)
+    @get:JvmName("getAny2") val any: String? get() = anchor.string(Slots.Character.name)
+    val rethrows: String? get() = anchor.string(Slots.Character.name)
+    val fallthrough: String? get() = anchor.string(Slots.Character.name)
+    val precedencegroup: String? get() = anchor.string(Slots.Character.name)
+    val `_`: String? get() = anchor.string(Slots.Character.name)
+    val async: String? get() = anchor.string(Slots.Character.name)
+    val await: String? get() = anchor.string(Slots.Character.name)
+    val borrowing: String? get() = anchor.string(Slots.Character.name)
+    val consume: String? get() = anchor.string(Slots.Character.name)
+    val consuming: String? get() = anchor.string(Slots.Character.name)
+    val copy: String? get() = anchor.string(Slots.Character.name)
+    val discard: String? get() = anchor.string(Slots.Character.name)
+    val each: String? get() = anchor.string(Slots.Character.name)
+    val isolated: String? get() = anchor.string(Slots.Character.name)
+    val sending: String? get() = anchor.string(Slots.Character.name)
+    val then: String? get() = anchor.string(Slots.Character.name)
+    val unsafe: String? get() = anchor.string(Slots.Character.name)
+    val satisfied: String? get() = anchor.string(Slots.Character.name)
+    val missingRequiredField: String? get() = anchor.string(Slots.Character.name)
+    val fieldErrors: String? get() = anchor.string(Slots.Character.name)
+    val isPresent: String? get() = anchor.string(Slots.Character.name)
+    val throwing: String? get() = anchor.string(Slots.Character.name)
+    val caught: String? get() = anchor.string(Slots.Character.name)
+    val refetchable: String? get() = anchor.string(Slots.Character.name)
+    val refetch: String? get() = anchor.string(Slots.Character.name)
+    val connection: String? get() = anchor.string(Slots.Character.name)
+    val nodes: String? get() = anchor.string(Slots.Character.name)
+    val hasNext: String? get() = anchor.string(Slots.Character.name)
+    val hasPrevious: String? get() = anchor.string(Slots.Character.name)
+    val isLoadingNext: String? get() = anchor.string(Slots.Character.name)
+    val isLoadingPrevious: String? get() = anchor.string(Slots.Character.name)
+    val connectionID: String? get() = anchor.string(Slots.Character.name)
+    val loadNext: String? get() = anchor.string(Slots.Character.name)
+    val loadPrevious: String? get() = anchor.string(Slots.Character.name)
+    val bound: String? get() = anchor.string(Slots.Character.name)
+    val errors: String? get() = anchor.string(Slots.Character.name)
+    val child: String? get() = anchor.string(Slots.Character.name)
+    val missing: String? get() = anchor.string(Slots.Character.name)
+    val count: String? get() = anchor.string(Slots.Character.name)
+    val fields: String? get() = anchor.string(Slots.Character.name)
+    val lhs: String? get() = anchor.string(Slots.Character.name)
+    val rhs: String? get() = anchor.string(Slots.Character.name)
+    val hasher: String? get() = anchor.string(Slots.Character.name)
+    val selection0: String? get() = anchor.string(Slots.Character.name)
+    val selection: String? get() = anchor.string(Slots.Character.name)
+    val optimistic: String? get() = anchor.string(Slots.Character.name)
+    val selfValue: String? get() = anchor.string(Slots.Character.name)
+    val values: String? get() = anchor.string(Slots.Character.name)
+    val Fragment: String? get() = anchor.string(Slots.Character.name)
+    val Spread: String? get() = anchor.string(Slots.Character.name)
+    val Owner: String? get() = anchor.string(Slots.Character.name)
+    val Query: String? get() = anchor.string(Slots.Character.name)
+    val Operation: String? get() = anchor.string(Slots.Character.name)
+    val RefetchQuery: String? get() = anchor.string(Slots.Character.name)
+    val variables: String? get() = anchor.string(Slots.Character.name)
+    val resolution: String? get() = anchor.string(Slots.Character.name)
+    val name: String? get() = anchor.string(Slots.Character.name)
+    val document: String? get() = anchor.string(Slots.Character.name)
+    val text: String? get() = anchor.string(Slots.Character.name)
+    val plan: String? get() = anchor.string(Slots.Character.name)
+    val errorBehavior: String? get() = anchor.string(Slots.Character.name)
+    val throwsOnFieldError: String? get() = anchor.string(Slots.Character.name)
+    val bubbles: String? get() = anchor.string(Slots.Character.name)
+    val hasDeferred: String? get() = anchor.string(Slots.Character.name)
+    val cacheExpiration: String? get() = anchor.string(Slots.Character.name)
+    val Data: String? get() = anchor.string(Slots.Character.name)
+    val Action: String? get() = anchor.string(Slots.Character.name)
+    val OptimisticResponse: String? get() = anchor.string(Slots.Character.name)
+    val hash: String? get() = anchor.string(Slots.Character.name)
+    val commit: String? get() = anchor.string(Slots.Character.name)
+    val callAsFunction: String? get() = anchor.string(Slots.Character.name)
+    val Op: String? get() = anchor.string(Slots.Character.name)
+    val variable: String? get() = anchor.string(Slots.Character.name)
+    val payload: String? get() = anchor.string(Slots.Character.name)
+    val hashValue: String? get() = anchor.string(Slots.Character.name)
+    val phase: String? get() = anchor.string(Slots.Character.name)
+    val isRefreshing: String? get() = anchor.string(Slots.Character.name)
+    val isStale: String? get() = anchor.string(Slots.Character.name)
+    val retry: String? get() = anchor.string(Slots.Character.name)
+    val subscription: String? get() = anchor.string(Slots.Character.name)
+    val Types: String? get() = anchor.string(Slots.Character.name)
+    val Sites: String? get() = anchor.string(Slots.Character.name)
+    val Guards: String? get() = anchor.string(Slots.Character.name)
+    val AbstractSlots: String? get() = anchor.string(Slots.Character.name)
+    val schemaDigest: String? get() = anchor.string(Slots.Character.name)
+    val format: String? get() = anchor.string(Slots.Character.name)
+    val transient: String? get() = anchor.string(Slots.Character.name)
+    val Baton: String? get() = anchor.string(Slots.Character.name)
+    val Swift: String? get() = anchor.string(Slots.Character.name)
+    val Set: String? get() = anchor.string(Slots.Character.name)
+    val Result: String? get() = anchor.string(Slots.Character.name)
+    val Optional: String? get() = anchor.string(Slots.Character.name)
+    val String: String? get() = anchor.string(Slots.Character.name)
+    val Int: String? get() = anchor.string(Slots.Character.name)
+    val Double: String? get() = anchor.string(Slots.Character.name)
+    val Bool: String? get() = anchor.string(Slots.Character.name)
+    val MainActor: String? get() = anchor.string(Slots.Character.name)
+    @get:JvmName("getHasher2") val Hasher: String? get() = anchor.string(Slots.Character.name)
+    val Sendable: String? get() = anchor.string(Slots.Character.name)
+    override fun equals(other: Any?): Boolean = other is HostileScalars_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+}
+
+/** Lens for `fragment HostileSelections_character on Character`. */
+@Stable
+class HostileSelections_character(override val anchor: Anchor) : Lens {
+    val Type: Type2 get() = Type2(anchor)
+    val Protocol: Protocol2 get() = Protocol2(anchor)
+    val Any: AnyLens get() = AnyLens(anchor)
+    val self: Self2 get() = Self2(anchor)
+    @get:JvmName("getSelf2") val Self: Self3 get() = Self3(anchor)
+    val init: Init get() = Init(anchor)
+    val deinit: Deinit get() = Deinit(anchor)
+    val subscript: Subscript get() = Subscript(anchor)
+    @get:JvmName("getClass2") val `class`: Class get() = Class(anchor)
+    val struct: Struct get() = Struct(anchor)
+    val enum: Enum get() = Enum(anchor)
+    val func: Func get() = Func(anchor)
+    val `var`: Var get() = Var(anchor)
+    val let: Let get() = Let(anchor)
+    val import: Import get() = Import(anchor)
+    val extension: Extension get() = Extension(anchor)
+    val operator: Operator get() = Operator(anchor)
+    val static: Static get() = Static(anchor)
+    val default: Default get() = Default(anchor)
+    val case: Case get() = Case(anchor)
+    val switch: Switch get() = Switch(anchor)
+    val `if`: If get() = If(anchor)
+    val `else`: Else get() = Else(anchor)
+    val `for`: For get() = For(anchor)
+    val `in`: In get() = In(anchor)
+    val `while`: While get() = While(anchor)
+    val repeat: Repeat get() = Repeat(anchor)
+    val `return`: Return get() = Return(anchor)
+    val `break`: Break get() = Break(anchor)
+    val `continue`: Continue get() = Continue(anchor)
+    val where: Where get() = Where(anchor)
+    val `is`: Is get() = Is(anchor)
+    val `as`: As get() = As(anchor)
+    val `try`: Try get() = Try(anchor)
+    val `throw`: Throw get() = Throw(anchor)
+    val throws: Throws get() = Throws(anchor)
+    val guard: Guard get() = Guard(anchor)
+    val defer: Defer get() = Defer(anchor)
+    val `do`: Do get() = Do(anchor)
+    val catch: Catch get() = Catch(anchor)
+    val `true`: True get() = True(anchor)
+    val `false`: False get() = False(anchor)
+    val nil: Nil get() = Nil(anchor)
+    val `super`: Super get() = Super(anchor)
+    val internal: Internal get() = Internal(anchor)
+    val private: Private get() = Private(anchor)
+    val public: Public get() = Public(anchor)
+    val fileprivate: Fileprivate get() = Fileprivate(anchor)
+    val open: Open get() = Open(anchor)
+    val inout: Inout get() = Inout(anchor)
+    val `typealias`: Typealias get() = Typealias(anchor)
+    val associatedtype: Associatedtype get() = Associatedtype(anchor)
+    @get:JvmName("getProtocol2") val protocol: Protocol3 get() = Protocol3(anchor)
+    val some: Some get() = Some(anchor)
+    @get:JvmName("getAny2") val any: AnyLens2 get() = AnyLens2(anchor)
+    val rethrows: Rethrows get() = Rethrows(anchor)
+    val fallthrough: Fallthrough get() = Fallthrough(anchor)
+    val precedencegroup: Precedencegroup get() = Precedencegroup(anchor)
+    val `_`: _2 get() = _2(anchor)
+    val async: Async get() = Async(anchor)
+    val await: Await get() = Await(anchor)
+    val borrowing: Borrowing get() = Borrowing(anchor)
+    val consume: Consume get() = Consume(anchor)
+    val consuming: Consuming get() = Consuming(anchor)
+    val copy: Copy get() = Copy(anchor)
+    val discard: Discard get() = Discard(anchor)
+    val each: Each get() = Each(anchor)
+    val isolated: Isolated get() = Isolated(anchor)
+    val sending: Sending get() = Sending(anchor)
+    val then: Then get() = Then(anchor)
+    val unsafe: Unsafe get() = Unsafe(anchor)
+    val satisfied: Satisfied get() = Satisfied(anchor)
+    val missingRequiredField: MissingRequiredField get() = MissingRequiredField(anchor)
+    val fieldErrors: FieldErrorsLens get() = FieldErrorsLens(anchor)
+    val isPresent: IsPresent get() = IsPresent(anchor)
+    val throwing: Throwing get() = Throwing(anchor)
+    val caught: Caught get() = Caught(anchor)
+    val refetchable: Refetchable get() = Refetchable(anchor)
+    val refetch: RefetchLens get() = RefetchLens(anchor)
+    val connection: Connection get() = Connection(anchor)
+    val nodes: Nodes get() = Nodes(anchor)
+    val hasNext: HasNext get() = HasNext(anchor)
+    val hasPrevious: HasPrevious get() = HasPrevious(anchor)
+    val isLoadingNext: IsLoadingNext get() = IsLoadingNext(anchor)
+    val isLoadingPrevious: IsLoadingPrevious get() = IsLoadingPrevious(anchor)
+    val connectionID: ConnectionID get() = ConnectionID(anchor)
+    val loadNext: LoadNext get() = LoadNext(anchor)
+    val loadPrevious: LoadPrevious get() = LoadPrevious(anchor)
+    val bound: Bound get() = Bound(anchor)
+    val errors: Errors get() = Errors(anchor)
+    val child: Child get() = Child(anchor)
+    val missing: Missing get() = Missing(anchor)
+    val count: Count get() = Count(anchor)
+    val fields: Fields get() = Fields(anchor)
+    val lhs: Lhs get() = Lhs(anchor)
+    val rhs: Rhs get() = Rhs(anchor)
+    val hasher: Hasher2 get() = Hasher2(anchor)
+    val selection0: Selection0 get() = Selection0(anchor)
+    val selection: Selection get() = Selection(anchor)
+    val optimistic: Optimistic get() = Optimistic(anchor)
+    val selfValue: SelfValue get() = SelfValue(anchor)
+    val values: Values get() = Values(anchor)
+    val Fragment: FragmentLens get() = FragmentLens(anchor)
+    val Spread: Spread2 get() = Spread2(anchor)
+    val Owner: Owner2 get() = Owner2(anchor)
+    val Query: Query2 get() = Query2(anchor)
+    val Operation: Operation2 get() = Operation2(anchor)
+    val RefetchQuery: RefetchQuery2 get() = RefetchQuery2(anchor)
+    val variables: VariablesLens get() = VariablesLens(anchor)
+    val resolution: Resolution get() = Resolution(anchor)
+    val name: Name get() = Name(anchor)
+    val document: Document get() = Document(anchor)
+    val text: Text get() = Text(anchor)
+    val plan: Plan get() = Plan(anchor)
+    val errorBehavior: ErrorBehavior get() = ErrorBehavior(anchor)
+    val throwsOnFieldError: ThrowsOnFieldError get() = ThrowsOnFieldError(anchor)
+    val bubbles: Bubbles get() = Bubbles(anchor)
+    val hasDeferred: HasDeferred get() = HasDeferred(anchor)
+    val cacheExpiration: CacheExpiration get() = CacheExpiration(anchor)
+    val Data: Data2 get() = Data2(anchor)
+    val Action: Action2 get() = Action2(anchor)
+    val OptimisticResponse: OptimisticResponse2 get() = OptimisticResponse2(anchor)
+    val hash: Hash get() = Hash(anchor)
+    val commit: Commit get() = Commit(anchor)
+    val callAsFunction: CallAsFunction get() = CallAsFunction(anchor)
+    val Op: Op2 get() = Op2(anchor)
+    val variable: VariableLens get() = VariableLens(anchor)
+    val payload: Payload get() = Payload(anchor)
+    val hashValue: HashValue get() = HashValue(anchor)
+    val phase: Phase get() = Phase(anchor)
+    val isRefreshing: IsRefreshing get() = IsRefreshing(anchor)
+    val isStale: IsStale get() = IsStale(anchor)
+    val retry: Retry get() = Retry(anchor)
+    val subscription: Subscription get() = Subscription(anchor)
+    val Types: TypesLens get() = TypesLens(anchor)
+    val Sites: SitesLens get() = SitesLens(anchor)
+    val Guards: GuardsLens get() = GuardsLens(anchor)
+    val AbstractSlots: AbstractSlotsLens get() = AbstractSlotsLens(anchor)
+    val schemaDigest: SchemaDigest get() = SchemaDigest(anchor)
+    val format: Format get() = Format(anchor)
+    val transient: Transient get() = Transient(anchor)
+    val Baton: Baton2 get() = Baton2(anchor)
+    val Swift: Swift2 get() = Swift2(anchor)
+    val Set: Set2 get() = Set2(anchor)
+    val Result: ResultLens get() = ResultLens(anchor)
+    val Optional: Optional2 get() = Optional2(anchor)
+    val String: StringLens get() = StringLens(anchor)
+    val Int: IntLens get() = IntLens(anchor)
+    val Double: DoubleLens get() = DoubleLens(anchor)
+    val Bool: Bool2 get() = Bool2(anchor)
+    val MainActor: MainActor2 get() = MainActor2(anchor)
+    @get:JvmName("getHasher2") val Hasher: Hasher3 get() = Hasher3(anchor)
+    val Sendable: Sendable2 get() = Sendable2(anchor)
+    override fun equals(other: Any?): Boolean = other is HostileSelections_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+
+    @Stable
+    class Type2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Type2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Protocol2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Protocol2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class AnyLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.AnyLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Self2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Self2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Self3(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Self3 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Init(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Init && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Deinit(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Deinit && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Subscript(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Subscript && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Class(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Class && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Struct(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Struct && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Enum(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Enum && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Func(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Func && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Var(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Var && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Let(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Let && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Import(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Import && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Extension(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Extension && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Operator(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Operator && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Static(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Static && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Default(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Default && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Case(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Case && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Switch(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Switch && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class If(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.If && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Else(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Else && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class For(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.For && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class In(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.In && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class While(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.While && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Repeat(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Repeat && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Return(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Return && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Break(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Break && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Continue(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Continue && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Where(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Where && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Is(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Is && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class As(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.As && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Try(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Try && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Throw(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Throw && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Throws(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Throws && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Guard(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Guard && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Defer(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Defer && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Do(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Do && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Catch(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Catch && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class True(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.True && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class False(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.False && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Nil(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Nil && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Super(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Super && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Internal(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Internal && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Private(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Private && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Public(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Public && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Fileprivate(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Fileprivate && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Open(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Open && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Inout(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Inout && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Typealias(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Typealias && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Associatedtype(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Associatedtype && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Protocol3(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Protocol3 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Some(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Some && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class AnyLens2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.AnyLens2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Rethrows(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Rethrows && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Fallthrough(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Fallthrough && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Precedencegroup(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Precedencegroup && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class _2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character._2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Async(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Async && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Await(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Await && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Borrowing(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Borrowing && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Consume(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Consume && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Consuming(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Consuming && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Copy(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Copy && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Discard(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Discard && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Each(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Each && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Isolated(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Isolated && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Sending(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Sending && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Then(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Then && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Unsafe(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Unsafe && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Satisfied(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Satisfied && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class MissingRequiredField(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.MissingRequiredField && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class FieldErrorsLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.FieldErrorsLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class IsPresent(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.IsPresent && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Throwing(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Throwing && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Caught(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Caught && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Refetchable(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Refetchable && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class RefetchLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.RefetchLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Connection(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Connection && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Nodes(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Nodes && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class HasNext(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.HasNext && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class HasPrevious(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.HasPrevious && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class IsLoadingNext(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.IsLoadingNext && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class IsLoadingPrevious(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.IsLoadingPrevious && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class ConnectionID(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.ConnectionID && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class LoadNext(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.LoadNext && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class LoadPrevious(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.LoadPrevious && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Bound(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Bound && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Errors(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Errors && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Child(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Child && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Missing(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Missing && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Count(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Count && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Fields(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Fields && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Lhs(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Lhs && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Rhs(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Rhs && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Hasher2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Hasher2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Selection0(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Selection0 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Selection(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Selection && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Optimistic(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Optimistic && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class SelfValue(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.SelfValue && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Values(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Values && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class FragmentLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.FragmentLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Spread2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Spread2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Owner2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Owner2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Query2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Query2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Operation2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Operation2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class RefetchQuery2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.RefetchQuery2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class VariablesLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.VariablesLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Resolution(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Resolution && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Name(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Name && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Document(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Document && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Text(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Text && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Plan(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Plan && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class ErrorBehavior(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.ErrorBehavior && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class ThrowsOnFieldError(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.ThrowsOnFieldError && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Bubbles(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Bubbles && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class HasDeferred(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.HasDeferred && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class CacheExpiration(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.CacheExpiration && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Data2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Data2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Action2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Action2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class OptimisticResponse2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.OptimisticResponse2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Hash(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Hash && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Commit(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Commit && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class CallAsFunction(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.CallAsFunction && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Op2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Op2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class VariableLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.VariableLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Payload(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Payload && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class HashValue(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.HashValue && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Phase(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Phase && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class IsRefreshing(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.IsRefreshing && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class IsStale(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.IsStale && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Retry(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Retry && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Subscription(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Subscription && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class TypesLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.TypesLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class SitesLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.SitesLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class GuardsLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.GuardsLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class AbstractSlotsLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.AbstractSlotsLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class SchemaDigest(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.SchemaDigest && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Format(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Format && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Transient(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Transient && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Baton2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Baton2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Swift2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Swift2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Set2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Set2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class ResultLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.ResultLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Optional2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Optional2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class StringLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.StringLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class IntLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.IntLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class DoubleLens(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.DoubleLens && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Bool2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Bool2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class MainActor2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.MainActor2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Hasher3(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Hasher3 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+
+    @Stable
+    class Sendable2(override val anchor: Anchor) : Lens {
+        val name: String? get() = anchor.string(Slots.Character.name)
+        override fun equals(other: Any?): Boolean = other is HostileSelections_character.Sendable2 && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+    }
+}
+
+/** Lens for `fragment HostileSpreadTarget_character on Character`. */
+@Stable
+class HostileSpreadTarget_character(override val anchor: Anchor) : Lens {
+    val name: String? get() = anchor.string(Slots.Character.name)
+    override fun equals(other: Any?): Boolean = other is HostileSpreadTarget_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+}
+
+/** Lens for `fragment HostileSpreads_character on Character`. */
+@Stable
+class HostileSpreads_character(override val anchor: Anchor) : Lens {
+    val Type: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Protocol: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Any: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val self: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    @get:JvmName("getSelf2") val Self: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val init: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val deinit: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val subscript: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    @get:JvmName("getClass2") val `class`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val struct: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val enum: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val func: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `var`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val let: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val import: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val extension: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val operator: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val static: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val default: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val case: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val switch: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `if`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `else`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `for`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `in`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `while`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val repeat: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `return`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `break`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `continue`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val where: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `is`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `as`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `try`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `throw`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val throws: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val guard: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val defer: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `do`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val catch: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `true`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `false`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val nil: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `super`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val internal: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val private: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val public: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val fileprivate: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val open: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val inout: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `typealias`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val associatedtype: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    @get:JvmName("getProtocol2") val protocol: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val some: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    @get:JvmName("getAny2") val any: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val rethrows: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val fallthrough: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val precedencegroup: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val `_`: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val async: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val await: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val borrowing: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val consume: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val consuming: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val copy: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val discard: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val each: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val isolated: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val sending: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val then: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val unsafe: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val satisfied: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val missingRequiredField: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val fieldErrors: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val isPresent: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val throwing: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val caught: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val refetchable: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val refetch: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val connection: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val nodes: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val hasNext: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val hasPrevious: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val isLoadingNext: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val isLoadingPrevious: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val connectionID: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val loadNext: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val loadPrevious: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val bound: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val errors: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val child: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val missing: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val count: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val fields: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val lhs: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val rhs: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val hasher: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val selection0: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val selection: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val optimistic: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val selfValue: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val values: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Fragment: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Spread: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Owner: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Query: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Operation: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val RefetchQuery: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val variables: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val resolution: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val name: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val document: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val text: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val plan: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val errorBehavior: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val throwsOnFieldError: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val bubbles: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val hasDeferred: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val cacheExpiration: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Data: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Action: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val OptimisticResponse: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val hash: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val commit: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val callAsFunction: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Op: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val variable: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val payload: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val hashValue: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val phase: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val isRefreshing: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val isStale: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val retry: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val subscription: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Types: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Slots: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Sites: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Guards: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val AbstractSlots: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val schemaDigest: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val format: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val transient: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Baton: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Swift: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Set: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Result: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Optional: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val String: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Int: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Double: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Bool: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val MainActor: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    @get:JvmName("getHasher2") val Hasher: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    val Sendable: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+    override fun equals(other: Any?): Boolean = other is HostileSpreads_character && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+}
+
+/** Lens for `fragment _hostileHidden on Character`. */
+@Stable
+class _hostileHidden(override val anchor: Anchor) : Lens {
+    val name: String? get() = anchor.string(Slots.Character.name)
+    override fun equals(other: Any?): Boolean = other is _hostileHidden && other.anchor == anchor
+    override fun hashCode(): Int = anchor.hashCode()
+}
 
 /** Operation value for `query HostileArgumentsRefetchQuery`. */
 class HostileArgumentsRefetchQuery(val AbstractSlots: Boolean? = null, val Action: Boolean? = null, val Any: Boolean? = null, val Bool: Boolean? = null, val Double: Boolean? = null, val Fragment: Boolean? = null, val Hasher: Boolean? = null, val Int: Boolean? = null, val MainActor: Boolean? = null, val Op: Boolean? = null, val Operation: Boolean? = null, val OptimisticResponse: Boolean? = null, val Optional: Boolean? = null, val Owner: Boolean? = null, val Protocol: Boolean? = null, val Query: Boolean? = null, val RefetchQuery: Boolean? = null, val Result: Boolean? = null, val Self: Boolean? = null, val Sendable: Boolean? = null, val Set: Boolean? = null, val Spread: Boolean? = null, val String: Boolean? = null, val Swift: Boolean? = null, @get:JvmName("getType2") val Type: Boolean? = null, val `_`: Boolean? = null, val anchor: Boolean? = null, @get:JvmName("getAny2") val any: Boolean? = null, val `as`: Boolean? = null, val associatedtype: Boolean? = null, val async: Boolean? = null, val await: Boolean? = null, val borrowing: Boolean? = null, val bound: Boolean? = null, val `break`: Boolean? = null, val bubbles: Boolean? = null, val cacheExpiration: Boolean? = null, val callAsFunction: Boolean? = null, val case: Boolean? = null, val catch: Boolean? = null, val caught: Boolean? = null, val child: Boolean? = null, val `class`: Boolean? = null, val commit: Boolean? = null, val connection: Boolean? = null, val connectionID: Boolean? = null, val consume: Boolean? = null, val consuming: Boolean? = null, val `continue`: Boolean? = null, val copy: Boolean? = null, val count: Boolean? = null, val default: Boolean? = null, val defer: Boolean? = null, val deinit: Boolean? = null, val discard: Boolean? = null, val `do`: Boolean? = null, val document: Boolean? = null, val each: Boolean? = null, val `else`: Boolean? = null, val enum: Boolean? = null, val errorBehavior: Boolean? = null, val errors: Boolean? = null, val extension: Boolean? = null, val fallthrough: Boolean? = null, val `false`: Boolean? = null, val fieldErrors: Boolean? = null, val fields: Boolean? = null, val fileprivate: Boolean? = null, val `for`: Boolean? = null, val format: Boolean? = null, val func: Boolean? = null, val guard: Boolean? = null, val hasDeferred: Boolean? = null, val hasNext: Boolean? = null, val hasPrevious: Boolean? = null, val hash: Boolean? = null, @get:JvmName("getHasher2") val hasher: Boolean? = null, val `if`: Boolean? = null, val import: Boolean? = null, val `in`: Boolean? = null, val init: Boolean? = null, val inout: Boolean? = null, val internal: Boolean? = null, val `is`: Boolean? = null, val isLoadingNext: Boolean? = null, val isLoadingPrevious: Boolean? = null, val isPresent: Boolean? = null, val isolated: Boolean? = null, val let: Boolean? = null, val lhs: Boolean? = null, val loadNext: Boolean? = null, val loadPrevious: Boolean? = null, val missing: Boolean? = null, val missingRequiredField: Boolean? = null, val name: Boolean? = null, val nil: Boolean? = null, val nodes: Boolean? = null, val open: Boolean? = null, val operator: Boolean? = null, val optimistic: Boolean? = null, val payload: Boolean? = null, val plan: Boolean? = null, val precedencegroup: Boolean? = null, val private: Boolean? = null, @get:JvmName("getProtocol2") val protocol: Boolean? = null, val public: Boolean? = null, val recordID: Boolean? = null, val refetch: Boolean? = null, val refetchable: Boolean? = null, val repeat: Boolean? = null, val rethrows: Boolean? = null, val retry: Boolean? = null, val `return`: Boolean? = null, val rhs: Boolean? = null, val satisfied: Boolean? = null, val schemaDigest: Boolean? = null, val selection: Boolean? = null, val selection0: Boolean? = null, @get:JvmName("getSelf2") val self: Boolean? = null, val selfValue: Boolean? = null, val sending: Boolean? = null, val some: Boolean? = null, val static: Boolean? = null, val struct: Boolean? = null, val subscript: Boolean? = null, val subscription: Boolean? = null, val `super`: Boolean? = null, val switch: Boolean? = null, val text: Boolean? = null, val then: Boolean? = null, val `throw`: Boolean? = null, val throwing: Boolean? = null, val throws: Boolean? = null, val throwsOnFieldError: Boolean? = null, val transient: Boolean? = null, val `true`: Boolean? = null, val `try`: Boolean? = null, val `typealias`: Boolean? = null, val unsafe: Boolean? = null, val values: Boolean? = null, val `var`: Boolean? = null, val variable: Boolean? = null, val where: Boolean? = null, val `while`: Boolean? = null, val id: String) : QueryOperation<HostileArgumentsRefetchQuery.Data> {
@@ -63,7 +13676,24 @@ class HostileArgumentsRefetchQuery(val AbstractSlots: Boolean? = null, val Actio
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is HostileArgumentsRefetchQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val hostileArguments: HostileArguments_character?
+                get() {
+                    val bound = anchor.binding(Sites.HostileArgumentsRefetchQuery_hostileArguments) { mapOf("Type" to anchor.variables["Type"], "Protocol" to anchor.variables["Protocol"], "Any" to anchor.variables["Any"], "self" to anchor.variables["self"], "Self" to anchor.variables["Self"], "init" to anchor.variables["init"], "deinit" to anchor.variables["deinit"], "subscript" to anchor.variables["subscript"], "class" to anchor.variables["class"], "struct" to anchor.variables["struct"], "enum" to anchor.variables["enum"], "func" to anchor.variables["func"], "var" to anchor.variables["var"], "let" to anchor.variables["let"], "import" to anchor.variables["import"], "extension" to anchor.variables["extension"], "operator" to anchor.variables["operator"], "static" to anchor.variables["static"], "default" to anchor.variables["default"], "case" to anchor.variables["case"], "switch" to anchor.variables["switch"], "if" to anchor.variables["if"], "else" to anchor.variables["else"], "for" to anchor.variables["for"], "in" to anchor.variables["in"], "while" to anchor.variables["while"], "repeat" to anchor.variables["repeat"], "return" to anchor.variables["return"], "break" to anchor.variables["break"], "continue" to anchor.variables["continue"], "where" to anchor.variables["where"], "is" to anchor.variables["is"], "as" to anchor.variables["as"], "try" to anchor.variables["try"], "throw" to anchor.variables["throw"], "throws" to anchor.variables["throws"], "guard" to anchor.variables["guard"], "defer" to anchor.variables["defer"], "do" to anchor.variables["do"], "catch" to anchor.variables["catch"], "true" to anchor.variables["true"], "false" to anchor.variables["false"], "nil" to anchor.variables["nil"], "super" to anchor.variables["super"], "internal" to anchor.variables["internal"], "private" to anchor.variables["private"], "public" to anchor.variables["public"], "fileprivate" to anchor.variables["fileprivate"], "open" to anchor.variables["open"], "inout" to anchor.variables["inout"], "typealias" to anchor.variables["typealias"], "associatedtype" to anchor.variables["associatedtype"], "protocol" to anchor.variables["protocol"], "some" to anchor.variables["some"], "any" to anchor.variables["any"], "rethrows" to anchor.variables["rethrows"], "fallthrough" to anchor.variables["fallthrough"], "precedencegroup" to anchor.variables["precedencegroup"], "_" to anchor.variables["_"], "async" to anchor.variables["async"], "borrowing" to anchor.variables["borrowing"], "consume" to anchor.variables["consume"], "consuming" to anchor.variables["consuming"], "copy" to anchor.variables["copy"], "discard" to anchor.variables["discard"], "each" to anchor.variables["each"], "isolated" to anchor.variables["isolated"], "sending" to anchor.variables["sending"], "then" to anchor.variables["then"], "unsafe" to anchor.variables["unsafe"], "await" to anchor.variables["await"], "anchor" to anchor.variables["anchor"], "recordID" to anchor.variables["recordID"], "satisfied" to anchor.variables["satisfied"], "missingRequiredField" to anchor.variables["missingRequiredField"], "fieldErrors" to anchor.variables["fieldErrors"], "isPresent" to anchor.variables["isPresent"], "throwing" to anchor.variables["throwing"], "caught" to anchor.variables["caught"], "refetchable" to anchor.variables["refetchable"], "refetch" to anchor.variables["refetch"], "connection" to anchor.variables["connection"], "nodes" to anchor.variables["nodes"], "hasNext" to anchor.variables["hasNext"], "hasPrevious" to anchor.variables["hasPrevious"], "isLoadingNext" to anchor.variables["isLoadingNext"], "isLoadingPrevious" to anchor.variables["isLoadingPrevious"], "connectionID" to anchor.variables["connectionID"], "loadNext" to anchor.variables["loadNext"], "loadPrevious" to anchor.variables["loadPrevious"], "bound" to anchor.variables["bound"], "errors" to anchor.variables["errors"], "child" to anchor.variables["child"], "missing" to anchor.variables["missing"], "count" to anchor.variables["count"], "fields" to anchor.variables["fields"], "lhs" to anchor.variables["lhs"], "rhs" to anchor.variables["rhs"], "hasher" to anchor.variables["hasher"], "selection0" to anchor.variables["selection0"], "selection" to anchor.variables["selection"], "optimistic" to anchor.variables["optimistic"], "selfValue" to anchor.variables["selfValue"], "values" to anchor.variables["values"], "Fragment" to anchor.variables["Fragment"], "Spread" to anchor.variables["Spread"], "Owner" to anchor.variables["Owner"], "Query" to anchor.variables["Query"], "Operation" to anchor.variables["Operation"], "RefetchQuery" to anchor.variables["RefetchQuery"], "name" to anchor.variables["name"], "document" to anchor.variables["document"], "text" to anchor.variables["text"], "plan" to anchor.variables["plan"], "errorBehavior" to anchor.variables["errorBehavior"], "throwsOnFieldError" to anchor.variables["throwsOnFieldError"], "bubbles" to anchor.variables["bubbles"], "hasDeferred" to anchor.variables["hasDeferred"], "cacheExpiration" to anchor.variables["cacheExpiration"], "Action" to anchor.variables["Action"], "OptimisticResponse" to anchor.variables["OptimisticResponse"], "hash" to anchor.variables["hash"], "commit" to anchor.variables["commit"], "callAsFunction" to anchor.variables["callAsFunction"], "Op" to anchor.variables["Op"], "variable" to anchor.variables["variable"], "payload" to anchor.variables["payload"], "retry" to anchor.variables["retry"], "subscription" to anchor.variables["subscription"], "AbstractSlots" to anchor.variables["AbstractSlots"], "schemaDigest" to anchor.variables["schemaDigest"], "format" to anchor.variables["format"], "transient" to anchor.variables["transient"], "Swift" to anchor.variables["Swift"], "Set" to anchor.variables["Set"], "Result" to anchor.variables["Result"], "Optional" to anchor.variables["Optional"], "String" to anchor.variables["String"], "Int" to anchor.variables["Int"], "Double" to anchor.variables["Double"], "Bool" to anchor.variables["Bool"], "MainActor" to anchor.variables["MainActor"], "Hasher" to anchor.variables["Hasher"], "Sendable" to anchor.variables["Sendable"]) }
+                    if (!(anchor.record.type == Types.Character)) return null
+                    return HostileArguments_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is HostileArgumentsRefetchQuery.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query HostileBodiesRefetchQuery`. */
@@ -262,7 +13892,23 @@ class HostileBodiesRefetchQuery(val id: String) : QueryOperation<HostileBodiesRe
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is HostileBodiesRefetchQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val hostileBodies: HostileBodies_character?
+                get() {
+                    if (!(anchor.record.type == Types.Character && HostileBodies_character.satisfied(anchor))) return null
+                    return HostileBodies_character.throwing(anchor.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is HostileBodiesRefetchQuery.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query HostileConnectionRefetchQuery`. */
@@ -471,7 +14117,24 @@ class HostileConnectionRefetchQuery(val count: Int? = null, val cursor: String? 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val node: Node? get() = anchor.linked(anchor.owner.slot(Slots.Query.node_8f7d08))?.let(::Node)
+        override fun equals(other: Any?): Boolean = other is HostileConnectionRefetchQuery.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Node(override val anchor: Anchor) : Lens {
+            val hostileConnection: HostileConnection_character?
+                get() {
+                    val bound = anchor.binding(Sites.HostileConnectionRefetchQuery_hostileConnection) { mapOf("count" to anchor.variables["count"], "cursor" to anchor.variables["cursor"]) }
+                    if (!(anchor.record.type == Types.Character)) return null
+                    return HostileConnection_character(bound.entering())
+                }
+            override fun equals(other: Any?): Boolean = other is HostileConnectionRefetchQuery.Data.Node && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query HostileHidden`. */
@@ -504,7 +14167,19 @@ class HostileHidden : QueryOperation<HostileHidden.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(Slots.Query.character_c74a1e)?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is HostileHidden.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val _hostileHidden: _hostileHidden get() = _hostileHidden(anchor.entering())
+            override fun equals(other: Any?): Boolean = other is HostileHidden.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query HostileInlineReach`. */
@@ -1485,7 +15160,79 @@ class HostileInlineReach : QueryOperation<HostileInlineReach.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val scalarsCharacter: ScalarsCharacter? get() = anchor.linked(Slots.Query.character_c74a1e)?.let(::ScalarsCharacter)
+        val linksCharacter: LinksCharacter? get() = anchor.linked(Slots.Query.character_c74a1e)?.let(::LinksCharacter)
+        val pluralsCharacter: PluralsCharacter? get() = anchor.linked(Slots.Query.character_c74a1e)?.let(::PluralsCharacter)
+        val spreadsCharacter: SpreadsCharacter? get() = anchor.linked(Slots.Query.character_c74a1e)?.let(::SpreadsCharacter)
+        override fun equals(other: Any?): Boolean = other is HostileInlineReach.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class ScalarsCharacter(override val anchor: Anchor) : Lens {
+            val hostileInlineScalars: HostileInlineScalars_character?
+                get() {
+                    if (!HostileInlineScalars_character.isPresent(anchor)) return null
+                    return HostileInlineScalars_character.throwing(anchor.entering())
+                }
+            val caughtValue: Result<HostileInlineScalars_character>
+                get() {
+                    val errors = HostileInlineScalars_character.fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(HostileInlineScalars_character(anchor.entering())) else Result.failure(FieldErrors(errors))
+                }
+            override fun equals(other: Any?): Boolean = other is HostileInlineReach.Data.ScalarsCharacter && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class LinksCharacter(override val anchor: Anchor) : Lens {
+            val hostileInlineLinks: HostileInlineLinks_character?
+                get() {
+                    if (!HostileInlineLinks_character.isPresent(anchor)) return null
+                    return HostileInlineLinks_character.throwing(anchor.entering())
+                }
+            val caughtValue: Result<HostileInlineLinks_character>
+                get() {
+                    val errors = HostileInlineLinks_character.fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(HostileInlineLinks_character(anchor.entering())) else Result.failure(FieldErrors(errors))
+                }
+            override fun equals(other: Any?): Boolean = other is HostileInlineReach.Data.LinksCharacter && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class PluralsCharacter(override val anchor: Anchor) : Lens {
+            val hostileInlinePlurals: HostileInlinePlurals_character?
+                get() {
+                    if (!HostileInlinePlurals_character.isPresent(anchor)) return null
+                    return HostileInlinePlurals_character.throwing(anchor.entering())
+                }
+            val caughtValue: Result<HostileInlinePlurals_character>
+                get() {
+                    val errors = HostileInlinePlurals_character.fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character(anchor.entering())) else Result.failure(FieldErrors(errors))
+                }
+            override fun equals(other: Any?): Boolean = other is HostileInlineReach.Data.PluralsCharacter && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class SpreadsCharacter(override val anchor: Anchor) : Lens {
+            val hostileInlineSpreads: HostileInlineSpreads_character?
+                get() {
+                    if (!HostileInlineSpreads_character.isPresent(anchor)) return null
+                    return HostileInlineSpreads_character.throwing(anchor.entering())
+                }
+            val caughtValue: Result<HostileInlineSpreads_character>
+                get() {
+                    val errors = HostileInlineSpreads_character.fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(HostileInlineSpreads_character(anchor.entering())) else Result.failure(FieldErrors(errors))
+                }
+            override fun equals(other: Any?): Boolean = other is HostileInlineReach.Data.SpreadsCharacter && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `mutation HostileMutationVariables`. */
@@ -1522,7 +15269,62 @@ class HostileMutationVariables(@get:JvmName("getType2") val Type: Boolean, val P
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val setFavorite: Result<SetFavorite?> get() = anchor.caught(Slots.Mutation.setFavorite, SetFavorite::fieldErrors) { it.linked(Slots.Mutation.setFavorite)?.let(::SetFavorite) }
+        override fun equals(other: Any?): Boolean = other is HostileMutationVariables.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class SetFavorite(override val anchor: Anchor) : Lens {
+            val character: Character? get() = anchor.linked(Slots.FavoritePayload.character)?.let(::Character)
+            override fun equals(other: Any?): Boolean = other is HostileMutationVariables.Data.SetFavorite && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                fun fieldErrors(anchor: Anchor): List<FieldError> {
+                    val errors = mutableListOf<FieldError>()
+                    anchor.collectErrors(Slots.FavoritePayload.character, Character::fieldErrors, errors)
+                    return errors
+                }
+                /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                fun throwing(anchor: Anchor): HostileMutationVariables.Data.SetFavorite = caught(anchor).getOrThrow()
+                /** The lens, or the field errors in it as a `Result`. */
+                fun caught(anchor: Anchor): Result<HostileMutationVariables.Data.SetFavorite> {
+                    val errors = fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(HostileMutationVariables.Data.SetFavorite(anchor)) else Result.failure(FieldErrors(errors))
+                }
+            }
+
+            @Stable
+            class Character(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                val name: String? get() = if ((anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selection0_true) || anchor.owner.selects(Guards.selection_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.values_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.resolution_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.payload_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.subscription_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true))) anchor.string(Slots.Character.name) else null
+                override fun equals(other: Any?): Boolean = other is HostileMutationVariables.Data.SetFavorite.Character && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                companion object {
+                    /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                    fun fieldErrors(anchor: Anchor): List<FieldError> {
+                        val errors = mutableListOf<FieldError>()
+                        anchor.collectError(Slots.Character.id, errors)
+                        if ((anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selection0_true) || anchor.owner.selects(Guards.selection_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.values_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.resolution_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.payload_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.subscription_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true))) {
+                            anchor.collectError(Slots.Character.name, errors)
+                        }
+                        return errors
+                    }
+                    /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                    fun throwing(anchor: Anchor): HostileMutationVariables.Data.SetFavorite.Character = caught(anchor).getOrThrow()
+                    /** The lens, or the field errors in it as a `Result`. */
+                    fun caught(anchor: Anchor): Result<HostileMutationVariables.Data.SetFavorite.Character> {
+                        val errors = fieldErrors(anchor)
+                        return if (errors.isEmpty()) Result.success(HostileMutationVariables.Data.SetFavorite.Character(anchor)) else Result.failure(FieldErrors(errors))
+                    }
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `mutation HostileNamesake`. */
@@ -1558,7 +15360,26 @@ class HostileNamesake(val HostileNamesake: String) : MutationOperation<HostileNa
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val setFavorite: SetFavorite? get() = anchor.linked(Slots.Mutation.setFavorite)?.let(::SetFavorite)
+        override fun equals(other: Any?): Boolean = other is HostileNamesake.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class SetFavorite(override val anchor: Anchor) : Lens {
+            val character: Character? get() = anchor.linked(Slots.FavoritePayload.character)?.let(::Character)
+            override fun equals(other: Any?): Boolean = other is HostileNamesake.Data.SetFavorite && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Character(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                override fun equals(other: Any?): Boolean = other is HostileNamesake.Data.SetFavorite.Character && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `mutation HostilePayload`. */
@@ -1908,7 +15729,1400 @@ class HostilePayload : MutationOperation<HostilePayload.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val setFavorite: SetFavorite? get() = anchor.linked(Slots.Mutation.setFavorite)?.let(::SetFavorite)
+        val addNote: AddNote? get() = anchor.linked(Slots.Mutation.addNote)?.let(::AddNote)
+        override fun equals(other: Any?): Boolean = other is HostilePayload.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class SetFavorite(override val anchor: Anchor) : Lens {
+            val character: Character? get() = anchor.linked(Slots.FavoritePayload.character)?.let(::Character)
+            override fun equals(other: Any?): Boolean = other is HostilePayload.Data.SetFavorite && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Character(override val anchor: Anchor) : Lens {
+                val Type: String? get() = anchor.string(Slots.Character.name)
+                val Protocol: String? get() = anchor.string(Slots.Character.name)
+                val Any: String? get() = anchor.string(Slots.Character.name)
+                val self: String? get() = anchor.string(Slots.Character.name)
+                @get:JvmName("getSelf2") val Self: String? get() = anchor.string(Slots.Character.name)
+                val init: String? get() = anchor.string(Slots.Character.name)
+                val deinit: String? get() = anchor.string(Slots.Character.name)
+                val subscript: String? get() = anchor.string(Slots.Character.name)
+                @get:JvmName("getClass2") val `class`: String? get() = anchor.string(Slots.Character.name)
+                val struct: String? get() = anchor.string(Slots.Character.name)
+                val enum: String? get() = anchor.string(Slots.Character.name)
+                val func: String? get() = anchor.string(Slots.Character.name)
+                val `var`: String? get() = anchor.string(Slots.Character.name)
+                val let: String? get() = anchor.string(Slots.Character.name)
+                val import: String? get() = anchor.string(Slots.Character.name)
+                val extension: String? get() = anchor.string(Slots.Character.name)
+                val operator: String? get() = anchor.string(Slots.Character.name)
+                val static: String? get() = anchor.string(Slots.Character.name)
+                val default: String? get() = anchor.string(Slots.Character.name)
+                val case: String? get() = anchor.string(Slots.Character.name)
+                val switch: String? get() = anchor.string(Slots.Character.name)
+                val `if`: String? get() = anchor.string(Slots.Character.name)
+                val `else`: String? get() = anchor.string(Slots.Character.name)
+                val `for`: String? get() = anchor.string(Slots.Character.name)
+                val `in`: String? get() = anchor.string(Slots.Character.name)
+                val `while`: String? get() = anchor.string(Slots.Character.name)
+                val repeat: String? get() = anchor.string(Slots.Character.name)
+                val `return`: String? get() = anchor.string(Slots.Character.name)
+                val `break`: String? get() = anchor.string(Slots.Character.name)
+                val `continue`: String? get() = anchor.string(Slots.Character.name)
+                val where: String? get() = anchor.string(Slots.Character.name)
+                val `is`: String? get() = anchor.string(Slots.Character.name)
+                val `as`: String? get() = anchor.string(Slots.Character.name)
+                val `try`: String? get() = anchor.string(Slots.Character.name)
+                val `throw`: String? get() = anchor.string(Slots.Character.name)
+                val throws: String? get() = anchor.string(Slots.Character.name)
+                val guard: String? get() = anchor.string(Slots.Character.name)
+                val defer: String? get() = anchor.string(Slots.Character.name)
+                val `do`: String? get() = anchor.string(Slots.Character.name)
+                val catch: String? get() = anchor.string(Slots.Character.name)
+                val `true`: String? get() = anchor.string(Slots.Character.name)
+                val `false`: String? get() = anchor.string(Slots.Character.name)
+                val nil: String? get() = anchor.string(Slots.Character.name)
+                val `super`: String? get() = anchor.string(Slots.Character.name)
+                val internal: String? get() = anchor.string(Slots.Character.name)
+                val private: String? get() = anchor.string(Slots.Character.name)
+                val public: String? get() = anchor.string(Slots.Character.name)
+                val fileprivate: String? get() = anchor.string(Slots.Character.name)
+                val open: String? get() = anchor.string(Slots.Character.name)
+                val inout: String? get() = anchor.string(Slots.Character.name)
+                val `typealias`: String? get() = anchor.string(Slots.Character.name)
+                val associatedtype: String? get() = anchor.string(Slots.Character.name)
+                @get:JvmName("getProtocol2") val protocol: String? get() = anchor.string(Slots.Character.name)
+                val some: String? get() = anchor.string(Slots.Character.name)
+                @get:JvmName("getAny2") val any: String? get() = anchor.string(Slots.Character.name)
+                val rethrows: String? get() = anchor.string(Slots.Character.name)
+                val fallthrough: String? get() = anchor.string(Slots.Character.name)
+                val precedencegroup: String? get() = anchor.string(Slots.Character.name)
+                val `_`: String? get() = anchor.string(Slots.Character.name)
+                val async: String? get() = anchor.string(Slots.Character.name)
+                val borrowing: String? get() = anchor.string(Slots.Character.name)
+                val consume: String? get() = anchor.string(Slots.Character.name)
+                val consuming: String? get() = anchor.string(Slots.Character.name)
+                val copy: String? get() = anchor.string(Slots.Character.name)
+                val discard: String? get() = anchor.string(Slots.Character.name)
+                val each: String? get() = anchor.string(Slots.Character.name)
+                val isolated: String? get() = anchor.string(Slots.Character.name)
+                val sending: String? get() = anchor.string(Slots.Character.name)
+                val then: String? get() = anchor.string(Slots.Character.name)
+                val unsafe: String? get() = anchor.string(Slots.Character.name)
+                val await: String? get() = anchor.string(Slots.Character.name)
+                val satisfied: String? get() = anchor.string(Slots.Character.name)
+                val missingRequiredField: String? get() = anchor.string(Slots.Character.name)
+                val fieldErrors: String? get() = anchor.string(Slots.Character.name)
+                val isPresent: String? get() = anchor.string(Slots.Character.name)
+                val throwing: String? get() = anchor.string(Slots.Character.name)
+                val caught: String? get() = anchor.string(Slots.Character.name)
+                val refetchable: String? get() = anchor.string(Slots.Character.name)
+                val refetch: String? get() = anchor.string(Slots.Character.name)
+                val connection: String? get() = anchor.string(Slots.Character.name)
+                val nodes: String? get() = anchor.string(Slots.Character.name)
+                val hasNext: String? get() = anchor.string(Slots.Character.name)
+                val hasPrevious: String? get() = anchor.string(Slots.Character.name)
+                val isLoadingNext: String? get() = anchor.string(Slots.Character.name)
+                val isLoadingPrevious: String? get() = anchor.string(Slots.Character.name)
+                val connectionID: String? get() = anchor.string(Slots.Character.name)
+                val loadNext: String? get() = anchor.string(Slots.Character.name)
+                val loadPrevious: String? get() = anchor.string(Slots.Character.name)
+                val bound: String? get() = anchor.string(Slots.Character.name)
+                val errors: String? get() = anchor.string(Slots.Character.name)
+                val child: String? get() = anchor.string(Slots.Character.name)
+                val missing: String? get() = anchor.string(Slots.Character.name)
+                val count: String? get() = anchor.string(Slots.Character.name)
+                val lhs: String? get() = anchor.string(Slots.Character.name)
+                val rhs: String? get() = anchor.string(Slots.Character.name)
+                val hasher: String? get() = anchor.string(Slots.Character.name)
+                val selection0: String? get() = anchor.string(Slots.Character.name)
+                val selection: String? get() = anchor.string(Slots.Character.name)
+                val optimistic: String? get() = anchor.string(Slots.Character.name)
+                val selfValue: String? get() = anchor.string(Slots.Character.name)
+                val values: String? get() = anchor.string(Slots.Character.name)
+                val Fragment: String? get() = anchor.string(Slots.Character.name)
+                val Spread: String? get() = anchor.string(Slots.Character.name)
+                val Owner: String? get() = anchor.string(Slots.Character.name)
+                val Query: String? get() = anchor.string(Slots.Character.name)
+                val Operation: String? get() = anchor.string(Slots.Character.name)
+                val RefetchQuery: String? get() = anchor.string(Slots.Character.name)
+                val fields: String? get() = anchor.string(Slots.Character.name)
+                val variables: String? get() = anchor.string(Slots.Character.name)
+                val resolution: String? get() = anchor.string(Slots.Character.name)
+                val name: String? get() = anchor.string(Slots.Character.name)
+                val document: String? get() = anchor.string(Slots.Character.name)
+                val text: String? get() = anchor.string(Slots.Character.name)
+                val plan: String? get() = anchor.string(Slots.Character.name)
+                val errorBehavior: String? get() = anchor.string(Slots.Character.name)
+                val throwsOnFieldError: String? get() = anchor.string(Slots.Character.name)
+                val bubbles: String? get() = anchor.string(Slots.Character.name)
+                val hasDeferred: String? get() = anchor.string(Slots.Character.name)
+                val cacheExpiration: String? get() = anchor.string(Slots.Character.name)
+                val Data: String? get() = anchor.string(Slots.Character.name)
+                val Action: String? get() = anchor.string(Slots.Character.name)
+                val OptimisticResponse: String? get() = anchor.string(Slots.Character.name)
+                val hash: String? get() = anchor.string(Slots.Character.name)
+                val commit: String? get() = anchor.string(Slots.Character.name)
+                val callAsFunction: String? get() = anchor.string(Slots.Character.name)
+                val Op: String? get() = anchor.string(Slots.Character.name)
+                val payload: String? get() = anchor.string(Slots.Character.name)
+                val hashValue: String? get() = anchor.string(Slots.Character.name)
+                val phase: String? get() = anchor.string(Slots.Character.name)
+                val isRefreshing: String? get() = anchor.string(Slots.Character.name)
+                val isStale: String? get() = anchor.string(Slots.Character.name)
+                val retry: String? get() = anchor.string(Slots.Character.name)
+                val subscription: String? get() = anchor.string(Slots.Character.name)
+                val Types: String? get() = anchor.string(Slots.Character.name)
+                val Sites: String? get() = anchor.string(Slots.Character.name)
+                val Guards: String? get() = anchor.string(Slots.Character.name)
+                val AbstractSlots: String? get() = anchor.string(Slots.Character.name)
+                val schemaDigest: String? get() = anchor.string(Slots.Character.name)
+                val format: String? get() = anchor.string(Slots.Character.name)
+                val transient: String? get() = anchor.string(Slots.Character.name)
+                val Baton: String? get() = anchor.string(Slots.Character.name)
+                val Swift: String? get() = anchor.string(Slots.Character.name)
+                val Set: String? get() = anchor.string(Slots.Character.name)
+                val Result: String? get() = anchor.string(Slots.Character.name)
+                val Optional: String? get() = anchor.string(Slots.Character.name)
+                val String: String? get() = anchor.string(Slots.Character.name)
+                val Int: String? get() = anchor.string(Slots.Character.name)
+                val Double: String? get() = anchor.string(Slots.Character.name)
+                val Bool: String? get() = anchor.string(Slots.Character.name)
+                val MainActor: String? get() = anchor.string(Slots.Character.name)
+                @get:JvmName("getHasher2") val Hasher: String? get() = anchor.string(Slots.Character.name)
+                val Sendable: String? get() = anchor.string(Slots.Character.name)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.SetFavorite.Character && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+
+        @Stable
+        class AddNote(override val anchor: Anchor) : Lens {
+            val Type: Type2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Type2)
+            val Protocol: Protocol2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Protocol2)
+            val Any: AnyLens? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::AnyLens)
+            val self: Self2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Self2)
+            @get:JvmName("getSelf2") val Self: Self3? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Self3)
+            val init: Init? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Init)
+            val deinit: Deinit? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Deinit)
+            val subscript: Subscript? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Subscript)
+            @get:JvmName("getClass2") val `class`: Class? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Class)
+            val struct: Struct? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Struct)
+            val enum: Enum? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Enum)
+            val func: Func? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Func)
+            val `var`: Var? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Var)
+            val let: Let? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Let)
+            val import: Import? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Import)
+            val extension: Extension? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Extension)
+            val operator: Operator? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Operator)
+            val static: Static? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Static)
+            val default: Default? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Default)
+            val case: Case? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Case)
+            val switch: Switch? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Switch)
+            val `if`: If? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::If)
+            val `else`: Else? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Else)
+            val `for`: For? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::For)
+            val `in`: In? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::In)
+            val `while`: While? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::While)
+            val repeat: Repeat? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Repeat)
+            val `return`: Return? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Return)
+            val `break`: Break? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Break)
+            val `continue`: Continue? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Continue)
+            val where: Where? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Where)
+            val `is`: Is? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Is)
+            val `as`: As? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::As)
+            val `try`: Try? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Try)
+            val `throw`: Throw? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Throw)
+            val throws: Throws? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Throws)
+            val guard: Guard? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Guard)
+            val defer: Defer? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Defer)
+            val `do`: Do? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Do)
+            val catch: Catch? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Catch)
+            val `true`: True? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::True)
+            val `false`: False? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::False)
+            val nil: Nil? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Nil)
+            val `super`: Super? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Super)
+            val internal: Internal? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Internal)
+            val private: Private? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Private)
+            val public: Public? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Public)
+            val fileprivate: Fileprivate? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Fileprivate)
+            val open: Open? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Open)
+            val inout: Inout? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Inout)
+            val `typealias`: Typealias? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Typealias)
+            val associatedtype: Associatedtype? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Associatedtype)
+            @get:JvmName("getProtocol2") val protocol: Protocol3? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Protocol3)
+            val some: Some? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Some)
+            @get:JvmName("getAny2") val any: AnyLens2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::AnyLens2)
+            val rethrows: Rethrows? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Rethrows)
+            val fallthrough: Fallthrough? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Fallthrough)
+            val precedencegroup: Precedencegroup? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Precedencegroup)
+            val `_`: _2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::_2)
+            val async: Async? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Async)
+            val borrowing: Borrowing? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Borrowing)
+            val consume: Consume? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Consume)
+            val consuming: Consuming? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Consuming)
+            val copy: Copy? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Copy)
+            val discard: Discard? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Discard)
+            val each: Each? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Each)
+            val isolated: Isolated? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Isolated)
+            val sending: Sending? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Sending)
+            val then: Then? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Then)
+            val unsafe: Unsafe? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Unsafe)
+            val await: Await? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Await)
+            val satisfied: Satisfied? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Satisfied)
+            val missingRequiredField: MissingRequiredField? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::MissingRequiredField)
+            val fieldErrors: FieldErrorsLens? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::FieldErrorsLens)
+            val isPresent: IsPresent? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::IsPresent)
+            val throwing: Throwing? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Throwing)
+            val caught: Caught? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Caught)
+            val refetchable: Refetchable? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Refetchable)
+            val refetch: RefetchLens? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::RefetchLens)
+            val connection: Connection? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Connection)
+            val nodes: Nodes? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Nodes)
+            val hasNext: HasNext? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::HasNext)
+            val hasPrevious: HasPrevious? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::HasPrevious)
+            val isLoadingNext: IsLoadingNext? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::IsLoadingNext)
+            val isLoadingPrevious: IsLoadingPrevious? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::IsLoadingPrevious)
+            val connectionID: ConnectionID? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::ConnectionID)
+            val loadNext: LoadNext? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::LoadNext)
+            val loadPrevious: LoadPrevious? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::LoadPrevious)
+            val bound: Bound? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Bound)
+            val errors: Errors? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Errors)
+            val child: Child? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Child)
+            val missing: Missing? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Missing)
+            val count: Count? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Count)
+            val lhs: Lhs? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Lhs)
+            val rhs: Rhs? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Rhs)
+            val hasher: Hasher2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Hasher2)
+            val selection0: Selection0? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Selection0)
+            val selection: Selection? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Selection)
+            val optimistic: Optimistic? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Optimistic)
+            val selfValue: SelfValue? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::SelfValue)
+            val values: Values? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Values)
+            val Fragment: FragmentLens? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::FragmentLens)
+            val Spread: Spread2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Spread2)
+            val Owner: Owner2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Owner2)
+            val Query: Query2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Query2)
+            val Operation: Operation2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Operation2)
+            val RefetchQuery: RefetchQuery2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::RefetchQuery2)
+            val fields: Fields? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Fields)
+            val variables: VariablesLens? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::VariablesLens)
+            val resolution: Resolution? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Resolution)
+            val name: Name? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Name)
+            val document: Document? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Document)
+            val text: Text? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Text)
+            val plan: Plan? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Plan)
+            val errorBehavior: ErrorBehavior? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::ErrorBehavior)
+            val throwsOnFieldError: ThrowsOnFieldError? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::ThrowsOnFieldError)
+            val bubbles: Bubbles? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Bubbles)
+            val hasDeferred: HasDeferred? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::HasDeferred)
+            val cacheExpiration: CacheExpiration? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::CacheExpiration)
+            val Data: Data2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Data2)
+            val Action: Action2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Action2)
+            val OptimisticResponse: OptimisticResponse2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::OptimisticResponse2)
+            val hash: Hash? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Hash)
+            val commit: Commit? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Commit)
+            val callAsFunction: CallAsFunction? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::CallAsFunction)
+            val Op: Op2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Op2)
+            val payload: Payload? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Payload)
+            val hashValue: HashValue? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::HashValue)
+            val phase: Phase? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Phase)
+            val isRefreshing: IsRefreshing? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::IsRefreshing)
+            val isStale: IsStale? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::IsStale)
+            val retry: Retry? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Retry)
+            val subscription: Subscription? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Subscription)
+            val Types: TypesLens? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::TypesLens)
+            val Sites: SitesLens? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::SitesLens)
+            val Guards: GuardsLens? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::GuardsLens)
+            val AbstractSlots: AbstractSlotsLens? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::AbstractSlotsLens)
+            val schemaDigest: SchemaDigest? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::SchemaDigest)
+            val format: Format? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Format)
+            val transient: Transient? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Transient)
+            val Baton: Baton2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Baton2)
+            val Swift: Swift2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Swift2)
+            val Set: Set2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Set2)
+            val Result: ResultLens? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::ResultLens)
+            val Optional: Optional2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Optional2)
+            val String: StringLens? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::StringLens)
+            val Int: IntLens? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::IntLens)
+            val Double: DoubleLens? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::DoubleLens)
+            val Bool: Bool2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Bool2)
+            val MainActor: MainActor2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::MainActor2)
+            @get:JvmName("getHasher2") val Hasher: Hasher3? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Hasher3)
+            val Sendable: Sendable2? get() = anchor.linked(Slots.AddNotePayload.note)?.let(::Sendable2)
+            override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Type2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Type2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Protocol2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Protocol2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AnyLens(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.AnyLens && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Self2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Self2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Self3(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Self3 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Init(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Init && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Deinit(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Deinit && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Subscript(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Subscript && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Class(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Class && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Struct(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Struct && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Enum(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Enum && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Func(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Func && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Var(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Var && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Let(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Let && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Import(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Import && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Extension(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Extension && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Operator(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Operator && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Static(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Static && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Default(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Default && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Case(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Case && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Switch(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Switch && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class If(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.If && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Else(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Else && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class For(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.For && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class In(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.In && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class While(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.While && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Repeat(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Repeat && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Return(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Return && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Break(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Break && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Continue(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Continue && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Where(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Where && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Is(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Is && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class As(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.As && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Try(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Try && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Throw(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Throw && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Throws(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Throws && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Guard(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Guard && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Defer(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Defer && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Do(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Do && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Catch(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Catch && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class True(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.True && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class False(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.False && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Nil(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Nil && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Super(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Super && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Internal(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Internal && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Private(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Private && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Public(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Public && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Fileprivate(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Fileprivate && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Open(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Open && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Inout(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Inout && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Typealias(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Typealias && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Associatedtype(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Associatedtype && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Protocol3(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Protocol3 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Some(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Some && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AnyLens2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.AnyLens2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Rethrows(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Rethrows && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Fallthrough(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Fallthrough && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Precedencegroup(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Precedencegroup && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class _2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote._2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Async(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Async && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Borrowing(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Borrowing && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Consume(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Consume && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Consuming(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Consuming && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Copy(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Copy && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Discard(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Discard && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Each(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Each && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Isolated(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Isolated && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Sending(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Sending && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Then(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Then && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Unsafe(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Unsafe && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Await(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Await && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Satisfied(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Satisfied && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class MissingRequiredField(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.MissingRequiredField && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class FieldErrorsLens(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.FieldErrorsLens && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class IsPresent(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.IsPresent && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Throwing(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Throwing && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Caught(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Caught && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Refetchable(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Refetchable && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class RefetchLens(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.RefetchLens && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Connection(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Connection && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Nodes(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Nodes && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class HasNext(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.HasNext && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class HasPrevious(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.HasPrevious && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class IsLoadingNext(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.IsLoadingNext && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class IsLoadingPrevious(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.IsLoadingPrevious && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class ConnectionID(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.ConnectionID && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class LoadNext(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.LoadNext && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class LoadPrevious(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.LoadPrevious && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Bound(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Bound && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Errors(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Errors && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Child(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Child && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Missing(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Missing && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Count(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Count && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Lhs(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Lhs && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Rhs(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Rhs && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Hasher2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Hasher2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Selection0(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Selection0 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Selection(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Selection && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Optimistic(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Optimistic && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class SelfValue(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.SelfValue && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Values(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Values && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class FragmentLens(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.FragmentLens && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Spread2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Spread2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Owner2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Owner2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Query2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Query2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Operation2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Operation2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class RefetchQuery2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.RefetchQuery2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Fields(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Fields && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class VariablesLens(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.VariablesLens && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Resolution(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Resolution && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Name(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Name && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Document(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Document && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Text(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Text && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Plan(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Plan && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class ErrorBehavior(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.ErrorBehavior && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class ThrowsOnFieldError(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.ThrowsOnFieldError && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Bubbles(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Bubbles && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class HasDeferred(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.HasDeferred && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class CacheExpiration(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.CacheExpiration && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Data2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Data2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Action2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Action2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class OptimisticResponse2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.OptimisticResponse2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Hash(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Hash && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Commit(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Commit && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class CallAsFunction(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.CallAsFunction && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Op2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Op2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Payload(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Payload && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class HashValue(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.HashValue && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Phase(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Phase && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class IsRefreshing(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.IsRefreshing && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class IsStale(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.IsStale && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Retry(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Retry && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Subscription(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Subscription && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class TypesLens(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.TypesLens && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class SitesLens(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.SitesLens && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class GuardsLens(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.GuardsLens && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AbstractSlotsLens(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.AbstractSlotsLens && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class SchemaDigest(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.SchemaDigest && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Format(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Format && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Transient(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Transient && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Baton2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Baton2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Swift2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Swift2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Set2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Set2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class ResultLens(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.ResultLens && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Optional2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Optional2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class StringLens(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.StringLens && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class IntLens(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.IntLens && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class DoubleLens(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.DoubleLens && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Bool2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Bool2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class MainActor2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.MainActor2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Hasher3(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Hasher3 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class Sendable2(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Note.id)
+                override fun equals(other: Any?): Boolean = other is HostilePayload.Data.AddNote.Sendable2 && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
 }
 
 /** Operation value for `query HostileReach`. */
@@ -2614,7 +17828,67 @@ class HostileReach : QueryOperation<HostileReach.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val scalarsCharacter: ScalarsCharacter? get() = anchor.linked(Slots.Query.character_c74a1e)?.let(::ScalarsCharacter)
+        val linksCharacter: LinksCharacter? get() = anchor.linked(Slots.Query.character_c74a1e)?.let(::LinksCharacter)
+        val selectionsCharacter: SelectionsCharacter? get() = anchor.linked(Slots.Query.character_c74a1e)?.let(::SelectionsCharacter)
+        val spreadTargetCharacter: SpreadTargetCharacter? get() = anchor.linked(Slots.Query.character_c74a1e)?.let(::SpreadTargetCharacter)
+        val spreadsCharacter: SpreadsCharacter? get() = anchor.linked(Slots.Query.character_c74a1e)?.let(::SpreadsCharacter)
+        val connectionNodesCharacter: ConnectionNodesCharacter? get() = anchor.linked(Slots.Query.character_c74a1e)?.let(::ConnectionNodesCharacter)
+        val abstractNode: AbstractNode? get() = anchor.linked(Slots.Query.node_c27cc2)?.let(::AbstractNode)
+        override fun equals(other: Any?): Boolean = other is HostileReach.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class ScalarsCharacter(override val anchor: Anchor) : Lens {
+            val hostileScalars: HostileScalars_character get() = HostileScalars_character(anchor.entering())
+            override fun equals(other: Any?): Boolean = other is HostileReach.Data.ScalarsCharacter && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class LinksCharacter(override val anchor: Anchor) : Lens {
+            val hostileLinks: HostileLinks_character get() = HostileLinks_character(anchor.entering())
+            override fun equals(other: Any?): Boolean = other is HostileReach.Data.LinksCharacter && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class SelectionsCharacter(override val anchor: Anchor) : Lens {
+            val hostileSelections: HostileSelections_character get() = HostileSelections_character(anchor.entering())
+            override fun equals(other: Any?): Boolean = other is HostileReach.Data.SelectionsCharacter && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class SpreadTargetCharacter(override val anchor: Anchor) : Lens {
+            val hostileSpreadTarget: HostileSpreadTarget_character get() = HostileSpreadTarget_character(anchor.entering())
+            override fun equals(other: Any?): Boolean = other is HostileReach.Data.SpreadTargetCharacter && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class SpreadsCharacter(override val anchor: Anchor) : Lens {
+            val hostileSpreads: HostileSpreads_character get() = HostileSpreads_character(anchor.entering())
+            override fun equals(other: Any?): Boolean = other is HostileReach.Data.SpreadsCharacter && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class ConnectionNodesCharacter(override val anchor: Anchor) : Lens {
+            val hostileConnectionNodes: HostileConnectionNodes_character get() = HostileConnectionNodes_character(anchor.entering())
+            override fun equals(other: Any?): Boolean = other is HostileReach.Data.ConnectionNodesCharacter && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class AbstractNode(override val anchor: Anchor) : Lens {
+            val hostileAbstract: HostileAbstract_node get() = HostileAbstract_node(anchor.entering())
+            override fun equals(other: Any?): Boolean = other is HostileReach.Data.AbstractNode && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
 }
 
 /** Operation value for `query HostileRequired`. */
@@ -2806,7 +18080,225 @@ class HostileRequired : QueryOperation<HostileRequired.Data> {
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character get() = Character(anchor.requiredLinked(Slots.Query.character_c74a1e, Types.Character))
+        override fun equals(other: Any?): Boolean = other is HostileRequired.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            /** Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles. */
+            fun satisfied(anchor: Anchor): Boolean {
+                if (anchor.linked(Slots.Query.character_c74a1e)?.let(Character::satisfied) != true) return anchor.requiredMissing("character", log = false)
+                return true
+            }
+            /** The path of the first `@required` field that is missing, which bubbles to the root. */
+            fun missingRequiredField(anchor: Anchor): String? {
+                run {
+                    val child = anchor.linked(Slots.Query.character_c74a1e) ?: run { return "character" }
+                    val missing = Character.missingRequiredField(child)
+                    if (missing != null) { return missing }
+                }
+                return null
+            }
+        }
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val Type: String? get() = anchor.string(Slots.Character.name)
+            val Protocol: String? get() = anchor.string(Slots.Character.name)
+            val Any: String? get() = anchor.string(Slots.Character.name)
+            val self: String? get() = anchor.string(Slots.Character.name)
+            @get:JvmName("getSelf2") val Self: String? get() = anchor.string(Slots.Character.name)
+            val init: String? get() = anchor.string(Slots.Character.name)
+            val deinit: String? get() = anchor.string(Slots.Character.name)
+            val subscript: String? get() = anchor.string(Slots.Character.name)
+            @get:JvmName("getClass2") val `class`: String? get() = anchor.string(Slots.Character.name)
+            val struct: String? get() = anchor.string(Slots.Character.name)
+            val enum: String? get() = anchor.string(Slots.Character.name)
+            val func: String? get() = anchor.string(Slots.Character.name)
+            val `var`: String? get() = anchor.string(Slots.Character.name)
+            val let: String? get() = anchor.string(Slots.Character.name)
+            val import: String? get() = anchor.string(Slots.Character.name)
+            val extension: String? get() = anchor.string(Slots.Character.name)
+            val operator: String? get() = anchor.string(Slots.Character.name)
+            val static: String? get() = anchor.string(Slots.Character.name)
+            val default: String? get() = anchor.string(Slots.Character.name)
+            val case: String? get() = anchor.string(Slots.Character.name)
+            val switch: String? get() = anchor.string(Slots.Character.name)
+            val `if`: String? get() = anchor.string(Slots.Character.name)
+            val `else`: String? get() = anchor.string(Slots.Character.name)
+            val `for`: String? get() = anchor.string(Slots.Character.name)
+            val `in`: String? get() = anchor.string(Slots.Character.name)
+            val `while`: String? get() = anchor.string(Slots.Character.name)
+            val repeat: String? get() = anchor.string(Slots.Character.name)
+            val `return`: String? get() = anchor.string(Slots.Character.name)
+            val `break`: String? get() = anchor.string(Slots.Character.name)
+            val `continue`: String? get() = anchor.string(Slots.Character.name)
+            val where: String? get() = anchor.string(Slots.Character.name)
+            val `is`: String? get() = anchor.string(Slots.Character.name)
+            val `as`: String? get() = anchor.string(Slots.Character.name)
+            val `try`: String? get() = anchor.string(Slots.Character.name)
+            val `throw`: String? get() = anchor.string(Slots.Character.name)
+            val throws: String? get() = anchor.string(Slots.Character.name)
+            val guard: String? get() = anchor.string(Slots.Character.name)
+            val defer: String? get() = anchor.string(Slots.Character.name)
+            val `do`: String? get() = anchor.string(Slots.Character.name)
+            val catch: String? get() = anchor.string(Slots.Character.name)
+            val `true`: String? get() = anchor.string(Slots.Character.name)
+            val `false`: String? get() = anchor.string(Slots.Character.name)
+            val nil: String? get() = anchor.string(Slots.Character.name)
+            val `super`: String? get() = anchor.string(Slots.Character.name)
+            val internal: String? get() = anchor.string(Slots.Character.name)
+            val private: String? get() = anchor.string(Slots.Character.name)
+            val public: String? get() = anchor.string(Slots.Character.name)
+            val fileprivate: String? get() = anchor.string(Slots.Character.name)
+            val open: String? get() = anchor.string(Slots.Character.name)
+            val inout: String? get() = anchor.string(Slots.Character.name)
+            val `typealias`: String? get() = anchor.string(Slots.Character.name)
+            val associatedtype: String? get() = anchor.string(Slots.Character.name)
+            @get:JvmName("getProtocol2") val protocol: String? get() = anchor.string(Slots.Character.name)
+            val some: String? get() = anchor.string(Slots.Character.name)
+            @get:JvmName("getAny2") val any: String? get() = anchor.string(Slots.Character.name)
+            val rethrows: String? get() = anchor.string(Slots.Character.name)
+            val fallthrough: String? get() = anchor.string(Slots.Character.name)
+            val precedencegroup: String? get() = anchor.string(Slots.Character.name)
+            val `_`: String? get() = anchor.string(Slots.Character.name)
+            val async: String? get() = anchor.string(Slots.Character.name)
+            val await: String? get() = anchor.string(Slots.Character.name)
+            val borrowing: String? get() = anchor.string(Slots.Character.name)
+            val consume: String? get() = anchor.string(Slots.Character.name)
+            val consuming: String? get() = anchor.string(Slots.Character.name)
+            val copy: String? get() = anchor.string(Slots.Character.name)
+            val discard: String? get() = anchor.string(Slots.Character.name)
+            val each: String? get() = anchor.string(Slots.Character.name)
+            val isolated: String? get() = anchor.string(Slots.Character.name)
+            val sending: String? get() = anchor.string(Slots.Character.name)
+            val then: String? get() = anchor.string(Slots.Character.name)
+            val unsafe: String? get() = anchor.string(Slots.Character.name)
+            val satisfied: String? get() = anchor.string(Slots.Character.name)
+            val missingRequiredField: String? get() = anchor.string(Slots.Character.name)
+            val fieldErrors: String? get() = anchor.string(Slots.Character.name)
+            val isPresent: String? get() = anchor.string(Slots.Character.name)
+            val throwing: String? get() = anchor.string(Slots.Character.name)
+            val caught: String? get() = anchor.string(Slots.Character.name)
+            val refetchable: String? get() = anchor.string(Slots.Character.name)
+            val refetch: String? get() = anchor.string(Slots.Character.name)
+            val connection: String? get() = anchor.string(Slots.Character.name)
+            val nodes: String? get() = anchor.string(Slots.Character.name)
+            val hasNext: String? get() = anchor.string(Slots.Character.name)
+            val hasPrevious: String? get() = anchor.string(Slots.Character.name)
+            val isLoadingNext: String? get() = anchor.string(Slots.Character.name)
+            val isLoadingPrevious: String? get() = anchor.string(Slots.Character.name)
+            val connectionID: String? get() = anchor.string(Slots.Character.name)
+            val loadNext: String? get() = anchor.string(Slots.Character.name)
+            val loadPrevious: String? get() = anchor.string(Slots.Character.name)
+            val bound: String? get() = anchor.string(Slots.Character.name)
+            val errors: String? get() = anchor.string(Slots.Character.name)
+            val child: String? get() = anchor.string(Slots.Character.name)
+            val missing: String? get() = anchor.string(Slots.Character.name)
+            val count: String? get() = anchor.string(Slots.Character.name)
+            val fields: String? get() = anchor.string(Slots.Character.name)
+            val lhs: String? get() = anchor.string(Slots.Character.name)
+            val rhs: String? get() = anchor.string(Slots.Character.name)
+            val hasher: String? get() = anchor.string(Slots.Character.name)
+            val selection0: String? get() = anchor.string(Slots.Character.name)
+            val selection: String? get() = anchor.string(Slots.Character.name)
+            val optimistic: String? get() = anchor.string(Slots.Character.name)
+            val selfValue: String? get() = anchor.string(Slots.Character.name)
+            val values: String? get() = anchor.string(Slots.Character.name)
+            val Fragment: String? get() = anchor.string(Slots.Character.name)
+            val Spread: String? get() = anchor.string(Slots.Character.name)
+            val Owner: String? get() = anchor.string(Slots.Character.name)
+            val Query: String? get() = anchor.string(Slots.Character.name)
+            val Operation: String? get() = anchor.string(Slots.Character.name)
+            val RefetchQuery: String? get() = anchor.string(Slots.Character.name)
+            val variables: String? get() = anchor.string(Slots.Character.name)
+            val resolution: String? get() = anchor.string(Slots.Character.name)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            val document: String? get() = anchor.string(Slots.Character.name)
+            val text: String? get() = anchor.string(Slots.Character.name)
+            val plan: String? get() = anchor.string(Slots.Character.name)
+            val errorBehavior: String? get() = anchor.string(Slots.Character.name)
+            val throwsOnFieldError: String? get() = anchor.string(Slots.Character.name)
+            val bubbles: String? get() = anchor.string(Slots.Character.name)
+            val hasDeferred: String? get() = anchor.string(Slots.Character.name)
+            val cacheExpiration: String? get() = anchor.string(Slots.Character.name)
+            val Data: String? get() = anchor.string(Slots.Character.name)
+            val Action: String? get() = anchor.string(Slots.Character.name)
+            val OptimisticResponse: String? get() = anchor.string(Slots.Character.name)
+            val hash: String? get() = anchor.string(Slots.Character.name)
+            val commit: String? get() = anchor.string(Slots.Character.name)
+            val callAsFunction: String? get() = anchor.string(Slots.Character.name)
+            val Op: String? get() = anchor.string(Slots.Character.name)
+            val variable: String? get() = anchor.string(Slots.Character.name)
+            val payload: String? get() = anchor.string(Slots.Character.name)
+            val hashValue: String? get() = anchor.string(Slots.Character.name)
+            val phase: String? get() = anchor.string(Slots.Character.name)
+            val isRefreshing: String? get() = anchor.string(Slots.Character.name)
+            val isStale: String? get() = anchor.string(Slots.Character.name)
+            val retry: String? get() = anchor.string(Slots.Character.name)
+            val subscription: String? get() = anchor.string(Slots.Character.name)
+            val Sites: String? get() = anchor.string(Slots.Character.name)
+            val Guards: String? get() = anchor.string(Slots.Character.name)
+            val AbstractSlots: String? get() = anchor.string(Slots.Character.name)
+            val schemaDigest: String? get() = anchor.string(Slots.Character.name)
+            val format: String? get() = anchor.string(Slots.Character.name)
+            val transient: String? get() = anchor.string(Slots.Character.name)
+            val Baton: String? get() = anchor.string(Slots.Character.name)
+            val Swift: String? get() = anchor.string(Slots.Character.name)
+            val Set: String? get() = anchor.string(Slots.Character.name)
+            val Result: String? get() = anchor.string(Slots.Character.name)
+            val Optional: String? get() = anchor.string(Slots.Character.name)
+            val String: String? get() = anchor.string(Slots.Character.name)
+            val Int: String? get() = anchor.string(Slots.Character.name)
+            val Double: String? get() = anchor.string(Slots.Character.name)
+            val Bool: String? get() = anchor.string(Slots.Character.name)
+            val MainActor: String? get() = anchor.string(Slots.Character.name)
+            @get:JvmName("getHasher2") val Hasher: String? get() = anchor.string(Slots.Character.name)
+            val Sendable: String? get() = anchor.string(Slots.Character.name)
+            val origin: Origin get() = Origin(anchor.requiredLinked(Slots.Character.origin, Types.Location))
+            override fun equals(other: Any?): Boolean = other is HostileRequired.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles. */
+                fun satisfied(anchor: Anchor): Boolean {
+                    if (anchor.linked(Slots.Character.origin)?.let(Origin::satisfied) != true) return anchor.requiredMissing("character.origin", log = false)
+                    return true
+                }
+                /** The path of the first `@required` field that is missing, which bubbles to the root. */
+                fun missingRequiredField(anchor: Anchor): String? {
+                    run {
+                        val child = anchor.linked(Slots.Character.origin) ?: run { return "character.origin" }
+                        val missing = Origin.missingRequiredField(child)
+                        if (missing != null) { return missing }
+                    }
+                    return null
+                }
+            }
+
+            @Stable
+            class Origin(override val anchor: Anchor) : Lens {
+                val name: String get() = anchor.requiredString(Slots.Location.name)
+                override fun equals(other: Any?): Boolean = other is HostileRequired.Data.Character.Origin && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                companion object {
+                    /** Whether every `@required` field is present; the lens is otherwise null to its parent, as Relay bubbles. */
+                    fun satisfied(anchor: Anchor): Boolean {
+                        if (!anchor.hasValue(Slots.Location.name, "character.origin.name", log = false)) return false
+                        return true
+                    }
+                    /** The path of the first `@required` field that is missing, which bubbles to the root. */
+                    fun missingRequiredField(anchor: Anchor): String? {
+                        if (!anchor.hasValue(Slots.Location.name, "character.origin.name", log = false)) return "character.origin.name"
+                        return null
+                    }
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `subscription HostileSubscriptionVariables`. */
@@ -2849,7 +18341,85 @@ class HostileSubscriptionVariables(@get:JvmName("getType2") val Type: Boolean, v
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val noteAdded: Result<NoteAdded?> get() = anchor.caught(Slots.Subscription.noteAdded_cab094, NoteAdded::fieldErrors) { it.linked(Slots.Subscription.noteAdded_cab094)?.let(::NoteAdded) }
+        override fun equals(other: Any?): Boolean = other is HostileSubscriptionVariables.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class NoteAdded(override val anchor: Anchor) : Lens {
+            val noteEdge: NoteEdge? get() = anchor.linked(Slots.NoteAddedPayload.noteEdge)?.let(::NoteEdge)
+            override fun equals(other: Any?): Boolean = other is HostileSubscriptionVariables.Data.NoteAdded && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                fun fieldErrors(anchor: Anchor): List<FieldError> {
+                    val errors = mutableListOf<FieldError>()
+                    anchor.collectErrors(Slots.NoteAddedPayload.noteEdge, NoteEdge::fieldErrors, errors)
+                    return errors
+                }
+                /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                fun throwing(anchor: Anchor): HostileSubscriptionVariables.Data.NoteAdded = caught(anchor).getOrThrow()
+                /** The lens, or the field errors in it as a `Result`. */
+                fun caught(anchor: Anchor): Result<HostileSubscriptionVariables.Data.NoteAdded> {
+                    val errors = fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(HostileSubscriptionVariables.Data.NoteAdded(anchor)) else Result.failure(FieldErrors(errors))
+                }
+            }
+
+            @Stable
+            class NoteEdge(override val anchor: Anchor) : Lens {
+                val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+                val cursor: String? get() = if ((anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selection0_true) || anchor.owner.selects(Guards.selection_true) || anchor.owner.selects(Guards.optimistic_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.values_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.Action_true) || anchor.owner.selects(Guards.OptimisticResponse_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.payload_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true))) anchor.requiredString(Slots.NoteEdge.cursor) else null
+                override fun equals(other: Any?): Boolean = other is HostileSubscriptionVariables.Data.NoteAdded.NoteEdge && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                companion object {
+                    /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                    fun fieldErrors(anchor: Anchor): List<FieldError> {
+                        val errors = mutableListOf<FieldError>()
+                        anchor.collectErrors(Slots.NoteEdge.node, Node::fieldErrors, errors)
+                        if ((anchor.owner.selects(Guards.Type_true) || anchor.owner.selects(Guards.Protocol_true) || anchor.owner.selects(Guards.Any_true) || anchor.owner.selects(Guards.self_true) || anchor.owner.selects(Guards.init_true) || anchor.owner.selects(Guards.deinit_true) || anchor.owner.selects(Guards.subscript_true) || anchor.owner.selects(Guards.class_true) || anchor.owner.selects(Guards.struct_true) || anchor.owner.selects(Guards.enum_true) || anchor.owner.selects(Guards.func_true) || anchor.owner.selects(Guards.var_true) || anchor.owner.selects(Guards.let_true) || anchor.owner.selects(Guards.import_true) || anchor.owner.selects(Guards.extension_true) || anchor.owner.selects(Guards.operator_true) || anchor.owner.selects(Guards.static_true) || anchor.owner.selects(Guards.default_true) || anchor.owner.selects(Guards.case_true) || anchor.owner.selects(Guards.switch_true) || anchor.owner.selects(Guards.if_true) || anchor.owner.selects(Guards.else_true) || anchor.owner.selects(Guards.for_true) || anchor.owner.selects(Guards.in_true) || anchor.owner.selects(Guards.while_true) || anchor.owner.selects(Guards.repeat_true) || anchor.owner.selects(Guards.return_true) || anchor.owner.selects(Guards.break_true) || anchor.owner.selects(Guards.continue_true) || anchor.owner.selects(Guards.where_true) || anchor.owner.selects(Guards.is_true) || anchor.owner.selects(Guards.as_true) || anchor.owner.selects(Guards.try_true) || anchor.owner.selects(Guards.throw_true) || anchor.owner.selects(Guards.throws_true) || anchor.owner.selects(Guards.guard_true) || anchor.owner.selects(Guards.defer_true) || anchor.owner.selects(Guards.do_true) || anchor.owner.selects(Guards.catch_true) || anchor.owner.selects(Guards.true_true) || anchor.owner.selects(Guards.false_true) || anchor.owner.selects(Guards.nil_true) || anchor.owner.selects(Guards.super_true) || anchor.owner.selects(Guards.internal_true) || anchor.owner.selects(Guards.private_true) || anchor.owner.selects(Guards.public_true) || anchor.owner.selects(Guards.fileprivate_true) || anchor.owner.selects(Guards.open_true) || anchor.owner.selects(Guards.inout_true) || anchor.owner.selects(Guards.typealias_true) || anchor.owner.selects(Guards.associatedtype_true) || anchor.owner.selects(Guards.protocol_true) || anchor.owner.selects(Guards.some_true) || anchor.owner.selects(Guards.any_true) || anchor.owner.selects(Guards.rethrows_true) || anchor.owner.selects(Guards.fallthrough_true) || anchor.owner.selects(Guards.precedencegroup_true) || anchor.owner.selects(Guards.__true) || anchor.owner.selects(Guards.Self_true) || anchor.owner.selects(Guards.async_true) || anchor.owner.selects(Guards.borrowing_true) || anchor.owner.selects(Guards.consume_true) || anchor.owner.selects(Guards.consuming_true) || anchor.owner.selects(Guards.copy_true) || anchor.owner.selects(Guards.discard_true) || anchor.owner.selects(Guards.each_true) || anchor.owner.selects(Guards.isolated_true) || anchor.owner.selects(Guards.sending_true) || anchor.owner.selects(Guards.then_true) || anchor.owner.selects(Guards.unsafe_true) || anchor.owner.selects(Guards.await_true) || anchor.owner.selects(Guards.anchor_true) || anchor.owner.selects(Guards.recordID_true) || anchor.owner.selects(Guards.satisfied_true) || anchor.owner.selects(Guards.missingRequiredField_true) || anchor.owner.selects(Guards.fieldErrors_true) || anchor.owner.selects(Guards.isPresent_true) || anchor.owner.selects(Guards.throwing_true) || anchor.owner.selects(Guards.caught_true) || anchor.owner.selects(Guards.refetchable_true) || anchor.owner.selects(Guards.refetch_true) || anchor.owner.selects(Guards.connection_true) || anchor.owner.selects(Guards.nodes_true) || anchor.owner.selects(Guards.hasNext_true) || anchor.owner.selects(Guards.hasPrevious_true) || anchor.owner.selects(Guards.isLoadingNext_true) || anchor.owner.selects(Guards.isLoadingPrevious_true) || anchor.owner.selects(Guards.connectionID_true) || anchor.owner.selects(Guards.loadNext_true) || anchor.owner.selects(Guards.loadPrevious_true) || anchor.owner.selects(Guards.bound_true) || anchor.owner.selects(Guards.errors_true) || anchor.owner.selects(Guards.child_true) || anchor.owner.selects(Guards.missing_true) || anchor.owner.selects(Guards.count_true) || anchor.owner.selects(Guards.fields_true) || anchor.owner.selects(Guards.lhs_true) || anchor.owner.selects(Guards.rhs_true) || anchor.owner.selects(Guards.hasher_true) || anchor.owner.selects(Guards.selection0_true) || anchor.owner.selects(Guards.selection_true) || anchor.owner.selects(Guards.optimistic_true) || anchor.owner.selects(Guards.selfValue_true) || anchor.owner.selects(Guards.values_true) || anchor.owner.selects(Guards.Fragment_true) || anchor.owner.selects(Guards.Spread_true) || anchor.owner.selects(Guards.Owner_true) || anchor.owner.selects(Guards.Query_true) || anchor.owner.selects(Guards.Operation_true) || anchor.owner.selects(Guards.RefetchQuery_true) || anchor.owner.selects(Guards.name_true) || anchor.owner.selects(Guards.document_true) || anchor.owner.selects(Guards.text_true) || anchor.owner.selects(Guards.plan_true) || anchor.owner.selects(Guards.errorBehavior_true) || anchor.owner.selects(Guards.throwsOnFieldError_true) || anchor.owner.selects(Guards.bubbles_true) || anchor.owner.selects(Guards.hasDeferred_true) || anchor.owner.selects(Guards.cacheExpiration_true) || anchor.owner.selects(Guards.Action_true) || anchor.owner.selects(Guards.OptimisticResponse_true) || anchor.owner.selects(Guards.hash_true) || anchor.owner.selects(Guards.commit_true) || anchor.owner.selects(Guards.callAsFunction_true) || anchor.owner.selects(Guards.Op_true) || anchor.owner.selects(Guards.variable_true) || anchor.owner.selects(Guards.payload_true) || anchor.owner.selects(Guards.phase_true) || anchor.owner.selects(Guards.isRefreshing_true) || anchor.owner.selects(Guards.isStale_true) || anchor.owner.selects(Guards.retry_true) || anchor.owner.selects(Guards.Sites_true) || anchor.owner.selects(Guards.AbstractSlots_true) || anchor.owner.selects(Guards.schemaDigest_true) || anchor.owner.selects(Guards.format_true) || anchor.owner.selects(Guards.transient_true) || anchor.owner.selects(Guards.Swift_true) || anchor.owner.selects(Guards.Set_true) || anchor.owner.selects(Guards.Result_true) || anchor.owner.selects(Guards.Optional_true) || anchor.owner.selects(Guards.String_true) || anchor.owner.selects(Guards.Int_true) || anchor.owner.selects(Guards.Double_true) || anchor.owner.selects(Guards.Bool_true) || anchor.owner.selects(Guards.MainActor_true) || anchor.owner.selects(Guards.Hasher_true) || anchor.owner.selects(Guards.Sendable_true))) {
+                            anchor.collectError(Slots.NoteEdge.cursor, errors)
+                        }
+                        return errors
+                    }
+                    /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                    fun throwing(anchor: Anchor): HostileSubscriptionVariables.Data.NoteAdded.NoteEdge = caught(anchor).getOrThrow()
+                    /** The lens, or the field errors in it as a `Result`. */
+                    fun caught(anchor: Anchor): Result<HostileSubscriptionVariables.Data.NoteAdded.NoteEdge> {
+                        val errors = fieldErrors(anchor)
+                        return if (errors.isEmpty()) Result.success(HostileSubscriptionVariables.Data.NoteAdded.NoteEdge(anchor)) else Result.failure(FieldErrors(errors))
+                    }
+                }
+
+                @Stable
+                class Node(override val anchor: Anchor) : Lens {
+                    val id: String? get() = anchor.string(Slots.Note.id)
+                    override fun equals(other: Any?): Boolean = other is HostileSubscriptionVariables.Data.NoteAdded.NoteEdge.Node && other.anchor == anchor
+                    override fun hashCode(): Int = anchor.hashCode()
+
+                    companion object {
+                        /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                        fun fieldErrors(anchor: Anchor): List<FieldError> {
+                            val errors = mutableListOf<FieldError>()
+                            anchor.collectError(Slots.Note.id, errors)
+                            return errors
+                        }
+                        /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                        fun throwing(anchor: Anchor): HostileSubscriptionVariables.Data.NoteAdded.NoteEdge.Node = caught(anchor).getOrThrow()
+                        /** The lens, or the field errors in it as a `Result`. */
+                        fun caught(anchor: Anchor): Result<HostileSubscriptionVariables.Data.NoteAdded.NoteEdge.Node> {
+                            val errors = fieldErrors(anchor)
+                            return if (errors.isEmpty()) Result.success(HostileSubscriptionVariables.Data.NoteAdded.NoteEdge.Node(anchor)) else Result.failure(FieldErrors(errors))
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 /** Operation value for `query HostileVariables`. */
@@ -2882,5 +18452,49 @@ class HostileVariables(@get:JvmName("getType2") val Type: String, val Protocol: 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
 
-    class Data(override val anchor: Anchor) : Lens
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val charactersByIds: List<CharactersByIds>? get() = anchor.list(anchor.owner.slot(Slots.Query.charactersByIds_9fc7a2), ::CharactersByIds)
+        override fun equals(other: Any?): Boolean = other is HostileVariables.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        companion object {
+            /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+            fun fieldErrors(anchor: Anchor): List<FieldError> {
+                val errors = mutableListOf<FieldError>()
+                anchor.collectListErrors(anchor.owner.slot(Slots.Query.charactersByIds_9fc7a2), CharactersByIds::fieldErrors, errors)
+                return errors
+            }
+            /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+            fun throwing(anchor: Anchor): HostileVariables.Data = caught(anchor).getOrThrow()
+            /** The lens, or the field errors in it as a `Result`. */
+            fun caught(anchor: Anchor): Result<HostileVariables.Data> {
+                val errors = fieldErrors(anchor)
+                return if (errors.isEmpty()) Result.success(HostileVariables.Data(anchor)) else Result.failure(FieldErrors(errors))
+            }
+        }
+
+        @Stable
+        class CharactersByIds(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            override fun equals(other: Any?): Boolean = other is HostileVariables.Data.CharactersByIds && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            companion object {
+                /** The field errors in this selection, for `@catch` and `@throwOnFieldError`. */
+                fun fieldErrors(anchor: Anchor): List<FieldError> {
+                    val errors = mutableListOf<FieldError>()
+                    anchor.collectError(Slots.Character.id, errors)
+                    return errors
+                }
+                /** The lens, or the field errors in it as a thrown `FieldErrors`. */
+                fun throwing(anchor: Anchor): HostileVariables.Data.CharactersByIds = caught(anchor).getOrThrow()
+                /** The lens, or the field errors in it as a `Result`. */
+                fun caught(anchor: Anchor): Result<HostileVariables.Data.CharactersByIds> {
+                    val errors = fieldErrors(anchor)
+                    return if (errors.isEmpty()) Result.success(HostileVariables.Data.CharactersByIds(anchor)) else Result.failure(FieldErrors(errors))
+                }
+            }
+        }
+    }
 }
