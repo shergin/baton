@@ -54,6 +54,11 @@ the Kotlin emitter or to what generated code names in the runtime;
 operations, which the corpus cannot hold, with `kotlinc` against the
 classpath `:goldens:printCompileClasspath` prints.
 
+The Compose compiler's reports, which say whether a class is stable and a
+composable restartable and skippable, are off by default;
+`gradle -PcomposeReports=true :baton:build :samples:desktop:build` writes
+them under each module's `build/compose-reports`.
+
 ## Where it stands
 
 The plan model generated code constructs (`Plan.kt`, `Registry.kt`), the
@@ -219,6 +224,13 @@ then ready, a write recomposing only the composable that read the slot,
 and the releases. A composition's environment is made on the desktop's
 event thread and commits there through the main dispatcher, which
 `kotlinx-coroutines-swing` provides.
+
+Skipping, as the Compose compiler reports it: every generated lens
+(`stable class baton.sample.CharacterRow_character`), `LensList`, `Phase`,
+`Fetch` and `MutationAction` are stable, and every composable of the
+sample, `CharacterRow` and `PhaseView` among them, is `restartable
+skippable` with every parameter stable; an operation value is not stable,
+since `rememberQuery` sets its resolution, and is passed to no composable.
 
 `samples/desktop` is the first sample: the characters of the Rick and
 Morty API a page at a time, and a character's detail, through
