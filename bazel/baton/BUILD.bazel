@@ -1,0 +1,6 @@
+# The toolchain type a rule needs: the compiler the extension fetched for
+# the execution platform.
+toolchain_type(
+    name = "toolchain_type",
+    visibility = ["//visibility:public"],
+)

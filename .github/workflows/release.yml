@@ -1,7 +1,7 @@
 # Cuts a release from master: builds the compiler bundle for both Mac
 # architectures and both Linux ones, writes the release commit (the version
-# into the compiler's manifest, the bundle's checksum into Package.swift),
-# tags it, and publishes the GitHub release with the
+# into the compiler's manifest, the bundle's checksum into Package.swift
+# and the Bazel module), tags it, and publishes the GitHub release with the
 # bundle and the changelog's section. The version and the name are read
 # from the changelog's first released heading, `## <version> (<name>)`,
 # which is written beforehand, as for every release.
@@ -86,17 +86,22 @@ jobs:
           path: compiler/dist/linux/aarch64
       - name: Build the compiler bundle
         run: scripts/bundle-compiler.sh | tail -1 > checksum
-      - name: Name the bundle in Package.swift
+      - name: Name the bundle in Package.swift and the Bazel module
         run: |
           checksum="$(cat checksum)"
           [[ "$checksum" =~ ^[0-9a-f]{64}$ ]] || { echo "not a checksum: '$checksum'" >&2; exit 1; }
           sed -i '' "s/^let compilerRelease = .*/let compilerRelease = (version: \"$VERSION\", checksum: \"$checksum\")/" Package.swift
           grep -q "version: \"$VERSION\", checksum: \"$checksum\"" Package.swift
+          sed -i '' "s/^    version = \".*\",$/    version = \"$VERSION\",/" bazel/MODULE.bazel
+          grep -q "version = \"$VERSION\"" bazel/MODULE.bazel
+          sed -i '' "s/^VERSION = \".*\"$/VERSION = \"$VERSION\"/; s/^BUNDLE_SHA256 = \".*\"$/BUNDLE_SHA256 = \"$checksum\"/" bazel/baton/release.bzl
+          grep -q "VERSION = \"$VERSION\"" bazel/baton/release.bzl
+          grep -q "BUNDLE_SHA256 = \"$checksum\"" bazel/baton/release.bzl
       - name: Write the release commit and its tag
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
-          git commit -m "Release $VERSION ($NAME)" -- compiler/Cargo.toml compiler/Cargo.lock Package.swift
+          git commit -m "Release $VERSION ($NAME)" -- compiler/Cargo.toml compiler/Cargo.lock Package.swift bazel/MODULE.bazel bazel/baton/release.bzl
           git tag "v$VERSION"
           git push origin HEAD:master "v$VERSION"
       - name: Publish the release

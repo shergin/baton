@@ -1,0 +1,23 @@
+load("@rules_baton//baton:defs.bzl", "baton_check_test", "baton_generate")
+
+# The screens' artifacts, as the SwiftPM plugin writes them for the sample:
+# the files a `swift_library` would list beside the sources.
+baton_generate(
+    name = "screens",
+    srcs = ["@sample//:sources"],
+    config = "@sample//:baton.json",
+    schema = "@schema//:schema.graphql",
+)
+
+# `--check` over a committed `Generated/`, produced from `:screens` first;
+# `scripts/check-bazel.sh` does both and then proves a stale output fails.
+baton_check_test(
+    name = "screens_check",
+    srcs = ["@sample//:sources"],
+    config = "@sample//:baton.json",
+    generated = glob(
+        ["Generated/*"],
+        allow_empty = True,
+    ),
+    schema = "@schema//:schema.graphql",
+)

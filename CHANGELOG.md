@@ -5,6 +5,18 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `rules_baton`, a Bazel module under `bazel/`, versioned with Baton: a
+  toolchain its extension fetches from the release's artifact bundle,
+  selecting the variant for the execution platform, or from the compiler
+  `BATON_COMPILER` names; `baton_generate`, the command with every input
+  and output declared, one output per source named as the SwiftPM plugin
+  names it, whose files a `swift_library` or a `kt_jvm_library` lists in
+  its `srcs`, with the report and the persisted documents file as output
+  groups; and `baton_check_test`, `--check` over committed output.
+  `docs/recipes/bazel.md` is its page, in place of the `genrule` on the
+  command's contract page, and
+  `docs/decisions/a-build-integration-holds-no-logic.md` records why a
+  shell holds no logic and wraps no library rule. Answers issue 40.
 - `batonc generate --persisted <file>` names where the persisted documents
   file is written, as `--shared` and `--report` name theirs, so a build
   system that declares its outputs before it reads `baton.json` can declare

@@ -1,0 +1,12 @@
+# The sample's sources and configuration, as `examples/RickAndMorty` holds
+# them.
+exports_files(
+    ["baton.json"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "sources",
+    srcs = glob(["*.swift"]),
+    visibility = ["//visibility:public"],
+)

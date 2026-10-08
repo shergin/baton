@@ -143,36 +143,10 @@ Commit `Sources/App/Generated`, add it to the target's sources, and gate with
 batonc generate --config Sources/App/baton.json --out Sources/App/Generated --check Sources/App/*.swift
 ```
 
-## Outside SwiftPM: a Bazel `genrule`
+## Outside SwiftPM: Bazel
 
-An example over the contract, not a ruleset this repository versions; the
-binary comes from the release's artifact bundle through an `http_archive`.
-
-```python
-genrule(
-    name = "app_graphql",
-    srcs = glob(["Sources/App/*.swift"]) + ["Sources/App/baton.json", "schema.graphql"],
-    outs = [
-        "Generated/Baton.baton.swift",
-        "Generated/Sources_App_Screen.baton.swift",
-        "Generated/Baton.report.json",
-    ],
-    cmd = """
-        $(location @batonc//:batonc) generate \\
-            --config $(location Sources/App/baton.json) \\
-            --out $(RULEDIR)/Generated \\
-            --report $(RULEDIR)/Generated/Baton.report.json \\
-            $(locations Sources/App/*.swift)
-    """,
-    tools = ["@batonc//:batonc"],
-)
-
-swift_library(
-    name = "App",
-    srcs = glob(["Sources/App/*.swift"]) + [":app_graphql"],
-    deps = ["@baton//:Baton"],
-)
-```
-
-Every input is declared, the schema included, so remote execution and
-caching work; the `outs` list names each source's output by the rule above.
+`rules_baton`, under `bazel/` in this repository, is this command as a
+Bazel rule and the release's bundle as a toolchain: every input declared,
+one output per source, the report and the persisted documents file as
+output groups, and a test over `--check` for committed output.
+[Bazel](bazel.md) is its page.

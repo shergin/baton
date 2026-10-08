@@ -69,6 +69,27 @@ jobs:
           compiler/dist/linux/${{ matrix.arch }}/batonc validate
           --config examples/RickAndMorty/baton.json examples/RickAndMorty/*.swift
 
+  # The Bazel module over the command, run on its example workspace with
+  # the compiler built from this checkout: the generation target builds in
+  # the sandbox, and the check test passes over fresh output and fails
+  # over a stale one. On Linux, since the rule needs no rules_swift.
+  bazel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: compiler
+      - run: cargo build --release
+        working-directory: compiler
+      - uses: bazel-contrib/setup-bazel@0.19.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+      - run: scripts/check-bazel.sh
+
   # The Kotlin runtime: the common module built and tested on the JVM, the
   # development target, and the Kotlin emitter's goldens compiled against it.
   # The tests run the specification through the code the compiler generates

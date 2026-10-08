@@ -19,7 +19,9 @@ What to read when.
 - **How do I…** — [recipes/](recipes/), one page per composition of what
   ships: [the exchange](recipes/exchange.md), a challenge, a retry and a
   deadline over the transport's one verb, [`batonc`](recipes/batonc.md),
-  the compiler's command line for a build outside SwiftPM, and
+  the compiler's command line for a build outside SwiftPM,
+  [Bazel](recipes/bazel.md), the compiler as a toolchain and one rule over
+  its command, and
   [previews and tests](recipes/testing.md), a store without a server,
   [UIKit and AppKit](recipes/uikit.md), a handle held by a controller, and
   [porting from Relay](recipes/porting-from-relay.md), Relay's words beside

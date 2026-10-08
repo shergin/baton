@@ -1,0 +1,24 @@
+# The Rick and Morty sample's screens, generated through rules_baton from
+# this checkout: the sources and the schema are the repository's own, read
+# in place.
+module(name = "rickandmorty")
+
+bazel_dep(name = "rules_baton")
+local_path_override(
+    module_name = "rules_baton",
+    path = "../..",
+)
+
+new_local_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:local.bzl", "new_local_repository")
+
+new_local_repository(
+    name = "sample",
+    build_file = "//:sample.BUILD.bazel",
+    path = "../../../examples/RickAndMorty",
+)
+
+new_local_repository(
+    name = "schema",
+    build_file = "//:schema.BUILD.bazel",
+    path = "../../../spec/rickandmorty",
+)

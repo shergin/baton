@@ -1,0 +1,5 @@
+# The schema, as `spec/rickandmorty` holds it.
+exports_files(
+    ["schema.graphql"],
+    visibility = ["//visibility:public"],
+)

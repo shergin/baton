@@ -1,0 +1,15 @@
+# rules_baton: Baton's compiler as a Bazel toolchain, fetched from the
+# release's artifact bundle, and one rule over its command. Versioned with
+# Baton: the release workflow writes the version here and the bundle's
+# checksum into `baton/release.bzl`.
+module(
+    name = "rules_baton",
+    version = "0.10.0",
+)
+
+bazel_dep(name = "platforms", version = "1.0.0")
+
+baton = use_extension("//baton:extensions.bzl", "baton")
+use_repo(baton, "batonc")
+
+register_toolchains("@batonc//:all")
