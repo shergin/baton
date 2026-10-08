@@ -154,6 +154,26 @@ jobs:
       - run: scripts/build-compiler.sh
       - run: swift test
 
+  # The newest swift-syntax the manifest admits, where the jobs above build
+  # on the committed `Package.resolved`, the floor's release: the macros
+  # build and the tests pass at both ends of the range, and a swift-syntax
+  # major that breaks them fails here rather than in an adopter's resolve.
+  newest-syntax:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: compiler
+          shared-key: batonc
+      - run: scripts/build-compiler.sh
+      - run: swift package update swift-syntax
+      - run: grep -A 4 '"identity" : "swift-syntax"' Package.resolved
+      - run: swift build --build-tests -Xswiftc -warnings-as-errors
+      - run: swift test
+
   # A package that depends on the latest release, resolved from a clean
   # clone of its tag as an app resolves it: nothing built in the checkout, so
   # the build plugin needs the compiler bundle the release published, and the

@@ -43,7 +43,11 @@ let package = Package(
         .plugin(name: "BatonPlugin", targets: ["BatonPlugin"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "602.0.0"),
+        // From the floor's toolchain, Swift 6.2, to the newest release, so
+        // an app resolves the swift-syntax that matches its compiler. When
+        // the range moves is recorded in
+        // `docs/decisions/swift-syntax-spans-the-floor-to-the-newest.md`.
+        .package(url: "https://github.com/swiftlang/swift-syntax.git", "602.0.0"..<"605.0.0"),
     ],
     targets: [
         .target(

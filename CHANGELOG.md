@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The macros accept swift-syntax from 602 to 604, where they accepted 602
+  alone, so an app that pins swift-syntax to its compiler's release, 603
+  for Swift 6.3 or 604 for 6.4, resolves Baton, and gets swift-syntax's
+  prebuilt macro support with it. The range spans the floor's toolchain to
+  the newest release and CI builds both ends; recorded in
+  `docs/decisions/swift-syntax-spans-the-floor-to-the-newest.md`.
 - A list of scalars follows its element type in what it accepts, as the
   contract says and the Kotlin readers do: a list of strings reads a
   number's or a boolean's text, a list of floats reads an int, a list of
