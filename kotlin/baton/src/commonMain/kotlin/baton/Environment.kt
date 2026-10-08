@@ -24,40 +24,39 @@ import kotlinx.coroutines.withContext
  * [ingestDispatcher]; a test passes one test dispatcher for both. See
  * `spec/runtime.md`, section 10.
  */
-class Environment internal constructor(
+class Environment(
     val transport: Transport,
     /** The transport subscriptions go through, when one is given: a socket, or another that streams events. */
-    val subscriptions: Transport?,
-    internal val store: Store,
-    private val mainDispatcher: CoroutineDispatcher,
-    private val ingestDispatcher: CoroutineDispatcher,
-) {
+    val subscriptions: Transport? = null,
     /**
-     * An environment over [transport], with a store of its own: an
-     * operation that states no `@cacheExpiration` takes [cacheExpiration]
-     * (none is forever), and [releaseBufferSize] released roots keep their
-     * records alive. Made on the thread the store will belong to.
+     * The store, made on the thread it will belong to; the environment owns
+     * it from here on. An operation that states no `@cacheExpiration` takes
+     * the store's, and its release buffer keeps released roots alive.
      */
-    constructor(
-        transport: Transport,
-        subscriptions: Transport? = null,
-        cacheExpiration: Duration? = null,
-        releaseBufferSize: Int = 10,
-        mainDispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
-        ingestDispatcher: CoroutineDispatcher = Dispatchers.Default,
-    ) : this(transport, subscriptions, Store(cacheExpiration, releaseBufferSize), mainDispatcher, ingestDispatcher)
-
+    val store: Store = Store(),
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
+    private val ingestDispatcher: CoroutineDispatcher = Dispatchers.Default,
+    /**
+     * Whether the missing-data events are printed until a log is set, as a
+     * debug build of the Swift runtime prints them. Common Kotlin has no
+     * build configuration to read, so the app passes its own; the harness
+     * passes true.
+     */
+    debug: Boolean = false,
+) {
     /** Where the environment's fetches, and the collector's passes, run: on the store's thread, ended with the session. */
     internal val scope = CoroutineScope(SupervisorJob() + mainDispatcher)
 
     init {
         store.scheduler = { pass -> scope.launch { pass() } }
+        if (debug && store.log == null) store.log = { event -> event.debugText?.let(::println) }
     }
 
     /**
      * What the runtime did and what went wrong, one `LogEvent` at a time, for
      * the app's own logging and metrics: names and counts, never a record or
-     * a value.
+     * a value. With `debug`, the missing-data events are printed until it is
+     * set; null silences them.
      */
     var log: ((LogEvent) -> Unit)?
         get() = store.log
@@ -174,21 +173,25 @@ class Environment internal constructor(
      * The request and the commit run where the caller's cancellation does not
      * reach them: a server that received the mutation applied it. The data
      * stays alive until `releaseBufferSize` completions of other operation
-     * values follow it. An optimistic response is written before the request
-     * as a plain batch of its kind; layers that rebase and revert come with
-     * their milestone, so a failure leaves it in place.
+     * values follow it. An optimistic response is read by the mutation's
+     * plan and applied as a layer before the request, in the turn of the
+     * call; the server's payload replaces the layer in one batch, and a
+     * failure reverts it.
      */
     suspend fun <Data : Lens> mutate(operation: MutationOperation<Data>, optimistic: Payload? = null): Data {
         if (ended) throw EnvironmentError.Gone
         val type = operation.type
         val resolved = store.resolve(type.plan, operation.variables)
         val root = store.root(Store.rootKey(type.name, operation.variables), resolved, store.mutationRoot)
-        if (optimistic != null) {
-            store.commit(Ingest.normalize(optimistic.bytes, resolved, Store.MUTATION_ROOT_KEY), Store.BatchKind.OPTIMISTIC)
-        }
-        val committed = withContext(NonCancellable) {
-            val payload = transport.payload(request(type, operation.variables))
-            commit(payload, resolved, root, checkingCancellation = false)
+        val layer = optimistic?.let { store.applyOptimistic(Ingest.normalize(it.bytes, resolved, Store.MUTATION_ROOT_KEY)) }
+        val committed = try {
+            withContext(NonCancellable) {
+                val payload = transport.payload(request(type, operation.variables))
+                commit(payload, resolved, root, checkingCancellation = false, replacing = layer)
+            }
+        } catch (error: Throwable) {
+            if (layer != null && !ended) store.revertOptimistic(layer)
+            throw error
         }
         store.keepCompleted(root)
         if (type.throwsOnFieldError && committed.uncaught.isNotEmpty()) throw FieldErrors(committed.uncaught)
@@ -296,20 +299,28 @@ class Environment internal constructor(
      * payload committed by hand do not. [complete] says whether the payload
      * must answer every field the plan selects, as a server's response does.
      */
-    private suspend fun commit(payload: ByteArray, plan: ResolvedSelection, root: Store.Root, checkingCancellation: Boolean = true, complete: Boolean = true): Committed {
+    private suspend fun commit(
+        payload: ByteArray,
+        plan: ResolvedSelection,
+        root: Store.Root,
+        checkingCancellation: Boolean = true,
+        complete: Boolean = true,
+        replacing: Store.OptimisticLayer? = null,
+    ): Committed {
         val changes = withContext(ingestDispatcher) { Ingest.normalize(payload, plan, root.record.key, complete) }
         if (checkingCancellation) currentCoroutineContext().ensureActive()
-        return commit(changes, root, complete)
+        return commit(changes, root, complete, replacing)
     }
 
     /**
      * The door's lower half: a change set committed as a server batch, and
      * the root dated when the change set completes its operation's response.
-     * A response that lands after the end reaches nothing.
+     * The server's answer to an optimistic mutation replaces its layer in
+     * the same batch. A response that lands after the end reaches nothing.
      */
-    private fun commit(changes: ChangeSet, root: Store.Root? = null, complete: Boolean = true): Committed {
+    private fun commit(changes: ChangeSet, root: Store.Root? = null, complete: Boolean = true, replacing: Store.OptimisticLayer? = null): Committed {
         if (ended) return Committed()
-        store.commit(changes)
+        store.commit(changes, replacing)
         if (root != null) evict(store.date(root, complete))
         return Committed.of(changes)
     }

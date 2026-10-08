@@ -70,3 +70,13 @@ sealed interface LogEvent {
     /** A part of a deferred response named a place the store or the plan does not have, and was dropped; [path] is the response path it named. */
     data class PartDropped(val path: String) : LogEvent
 }
+
+/** The line a debug environment prints for a missing-data event until a log is set; null for every other event. */
+internal val LogEvent.debugText: String?
+    get() = when (this) {
+        is LogEvent.Missing -> "Baton: missing data: $type.$field was read but never fetched; the miss was recorded"
+        is LogEvent.Unexpected -> "Baton: $type.$field holds a value its reader's type cannot hold; it read as a zero value or null"
+        is LogEvent.AmbiguousIdentity -> "Baton: the id $id names records of ${types.joinToString(", ")}; nothing was done for it"
+        is LogEvent.RequiredFieldMissing -> "Baton: the @required field $path of $type is null; its lens reads as null"
+        else -> null
+    }

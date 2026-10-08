@@ -60,6 +60,13 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
     private var renderedCount = 0
     /** Field errors by slot index; made when the first error lands. */
     private var errors: HashMap<Int, FieldError>? = null
+    /**
+     * Values a netted batch wrote and has not yet settled, by slot index:
+     * the store's bookkeeping reads them, while the cells still hold what
+     * readers saw before the batch, and the batch's end writes into a cell
+     * only a value that differs from it. Null outside such a batch.
+     */
+    private var staged: HashMap<Int, Value>? = null
 
     /** Whether the record is an entity, keyed `Type:id`. */
     internal val isEntity: Boolean get() = idOffset >= 0
@@ -74,6 +81,7 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
     /** The slot's value for the store's own bookkeeping, making no cell for a slot never written. */
     internal fun peek(slot: Slot): Value {
         val index = slot.index
+        staged?.get(index)?.let { return it }
         if (index >= 0) {
             if (index >= cells.size) return Value.Missing
             return cells[index]?.value ?: Value.Missing
@@ -115,8 +123,41 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
         return previous
     }
 
-    /** Sets or clears a slot's error, telling the slot's readers. Returns whether it changed. */
-    internal fun setError(slot: Slot, error: FieldError?): Boolean {
+    /**
+     * Writes a slot for a netted batch: the value is staged, so the store
+     * reads it and nobody is told until [settle]. Returns the previous value
+     * when the value changed, null when it was equal.
+     */
+    internal fun stage(slot: Slot, value: Value): Value? {
+        check(slot.type == type) { "a ${slot.type.name} slot written into a ${type.name} record" }
+        val previous = peek(slot)
+        if (previous == value) return null
+        // The cell is made now, so the walks over the record's values find the staged value.
+        cell(slot)
+        val table = staged ?: HashMap<Int, Value>().also { staged = it }
+        table[slot.index] = value
+        return previous
+    }
+
+    /**
+     * Ends a slot's staging: the staged value is written into the slot's
+     * cell when it differs from what the cell holds, which tells the slot's
+     * readers. Returns whether it was written.
+     */
+    internal fun settle(slot: Slot): Boolean {
+        val table = staged ?: return false
+        if (!table.containsKey(slot.index)) return false
+        val value = table.getValue(slot.index)
+        table.remove(slot.index)
+        if (table.isEmpty()) staged = null
+        val cell = cell(slot)
+        if (cell.value == value) return false
+        cell.value = value
+        return true
+    }
+
+    /** Sets or clears a slot's error, telling the slot's readers unless [notifying] is false, as in a netted batch, which tells them at its end. Returns whether it changed. */
+    internal fun setError(slot: Slot, error: FieldError?, notifying: Boolean = true): Boolean {
         if (error != null) {
             val table = errors ?: HashMap<Int, FieldError>().also { errors = it }
             if (table[slot.index] == error) return false
@@ -126,7 +167,7 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
             if (table.remove(slot.index) == null) return false
             if (table.isEmpty()) errors = null
         }
-        notify(slot)
+        if (notifying) notify(slot)
         return true
     }
 
@@ -161,6 +202,7 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
         renderedCells = EMPTY_CELLS
         renderedCount = 0
         errors = null
+        staged = null
         swept = true
     }
 
@@ -219,15 +261,19 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
 
     /** Calls [body] with every slot that holds a value, dense slots first, then the store's keys by number. */
     internal fun forEachValue(body: (Slot, Value) -> Unit) {
+        val staged = staged
         for (index in cells.indices) {
-            val value = cells[index]?.value ?: continue
+            val cell = cells[index] ?: continue
+            val value = staged?.get(index) ?: cell.value
             if (value == Value.Missing) continue
             body(Slot(type, index), value)
         }
         for (position in 0 until renderedCount) {
-            val value = renderedCells[position]?.value ?: continue
+            val cell = renderedCells[position] ?: continue
+            val index = renderedNumbers[position].inv()
+            val value = staged?.get(index) ?: cell.value
             if (value == Value.Missing) continue
-            body(Slot(type, renderedNumbers[position].inv()), value)
+            body(Slot(type, index), value)
         }
     }
 

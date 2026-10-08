@@ -152,6 +152,10 @@ internal fun Store.collect(): Int {
     if (ended) return 0
     val reachable = HashSet<Record>()
     for (root in roots.values) mark(root.resolved, root.record, reachable)
+    // The records an optimistic layer wrote stay while it is applied: its revert writes back into them.
+    for (layer in optimisticLayers) {
+        for (key in layer.changes.recordKeys) existing(key)?.let { reachable.add(it) }
+    }
     collections += 1
     val swept = sweep(reachable)
     freeKeys()
@@ -171,12 +175,13 @@ private fun mark(selection: ResolvedSelection, record: Record, reachable: Mutabl
     }
 }
 
-/** The numbers a live resolution, a scope, a fetch in flight or a twin holds, then frees the rest and drops the records' entries under them. */
+/** The numbers a live resolution, a scope, a fetch in flight, a layer or a twin holds, then frees the rest and drops the records' entries under them. */
 private fun Store.freeKeys() {
     val kept = HashSet<Slot>()
     for (root in roots.values) root.renderedSlots(kept)
     for (scope in looseScopes) scope.renderedSlots(kept)
     for (resolution in inFlight) resolution.renderedSlots(kept)
+    for (layer in optimisticLayers) layer.renderedSlots(kept)
     twinSlots(kept)
     val freed = keys.free(kept)
     if (freed.isEmpty()) return

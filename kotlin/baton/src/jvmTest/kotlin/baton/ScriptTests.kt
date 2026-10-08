@@ -39,9 +39,8 @@ import kotlinx.coroutines.test.runTest
  *
  * A step this runtime cannot run yet stops its script, reported as pending
  * rather than failed: the image's (`relaunch`, a check answered from the
- * image), the subscriptions' (`event`, `active`, a subscription's handle, a
- * stream), and the steps named in [pending], which wait for the optimistic
- * layers and pagination. A step before it that fails fails the test.
+ * image), and the subscriptions' (`event`, `active`, a subscription's
+ * handle, a stream). A step before it that fails fails the test.
  */
 class ScriptTests {
     @Test
@@ -51,7 +50,7 @@ class ScriptTests {
         for (path in Script.paths) {
             val script = Script.load(path)
             if (path != "scripts/${script.name}.json") failures.add("$path: a script is named for its file, not ${script.name}")
-            val run = ScriptRun(script, pending[script.name])
+            val run = ScriptRun(script)
             try {
                 runTest(timeout = 60.seconds) { run.run(this) }
             } catch (error: Throwable) {
@@ -63,18 +62,11 @@ class ScriptTests {
         if (stops.isNotEmpty()) println("Scripts pending:\n" + stops.joinToString("\n"))
         if (failures.isNotEmpty()) fail("${failures.size} expectations differ:\n" + failures.joinToString("\n"))
     }
-
-    private companion object {
-        /** The steps that stop a script until a later milestone, by the script's name: the step's index and why. */
-        val pending: Map<String, Pair<Int, String>> = mapOf(
-            "optimistic" to (2 to "optimistic layers, which rebase under a server's commit, are the next milestone"),
-        )
-    }
 }
 
 /** One run of a script: the environment it runs in, the transport the steps answer through, and what the steps named. */
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class ScriptRun(private val script: Script, private val pending: Pair<Int, String>?) {
+internal class ScriptRun(private val script: Script) {
     /** Holds every query and mutation until a step answers it, and lets the steps drive every deferred response. */
     private val transport = ScriptedTransport()
     private val heard = ArrayList<LogEvent>()
@@ -119,11 +111,11 @@ internal class ScriptRun(private val script: Script, private val pending: Pair<I
         this.scope = scope
         val dispatcher = StandardTestDispatcher(scope.testScheduler)
         val store = Store(script.expiration?.seconds, script.buffer)
-        environment = Environment(transport, transport, store, dispatcher, dispatcher)
+        environment = Environment(transport, transport, store, dispatcher, dispatcher, debug = true)
         environment.log = { heard.add(it) }
         for ((index, step) in script.steps.withIndex()) {
             context = "${script.name}, step $index (${step.action.kind}): "
-            val stop = stop(index, step)
+            val stop = stop(step)
             if (stop != null) {
                 stopped = "${script.name}: pending at step $index (${step.action.kind}): $stop"
                 break
@@ -145,8 +137,7 @@ internal class ScriptRun(private val script: Script, private val pending: Pair<I
     }
 
     /** Why a step cannot run in this runtime yet, or null when it can. */
-    private fun stop(index: Int, step: Script.Step): String? {
-        if (pending != null && pending.first == index) return pending.second
+    private fun stop(step: Script.Step): String? {
         return when {
             step.action is Script.Action.Relaunch -> "the image is a later milestone"
             step.answer == "image" -> "the image is a later milestone"

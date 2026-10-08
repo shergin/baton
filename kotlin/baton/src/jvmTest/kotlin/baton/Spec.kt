@@ -21,6 +21,9 @@ internal object Spec {
         override fun toString(): String = path
     }
 
+    /** The leaves an optimistic response overrides, several when they are aliases of one storage key, and the value they read under it, as JSON read by `Json`. */
+    class Override(val paths: List<String>, val value: Any?)
+
     /** A case of the manifest: the responses an operation's server sent, the dump the store holds after them, and what a lens reads. */
     class Case(
         val name: String,
@@ -30,6 +33,7 @@ internal object Spec {
         val responses: List<String>,
         val records: String,
         val reads: List<Read>,
+        val override: Override?,
     ) {
         /** The generated operation the case runs, from `spec/sources`. */
         val type: OperationType<*>? get() = operation(operation)
@@ -86,6 +90,9 @@ internal object Spec {
                 reads = (entry["reads"] as List<*>?).orEmpty().map { row ->
                     row as Map<*, *>
                     Read(row["path"] as String, row["value"], row["note"] as String?)
+                },
+                override = (entry["override"] as Map<*, *>?)?.let { override ->
+                    Override((override["paths"] as List<*>).map { it as String }, override["value"])
                 },
             )
         }

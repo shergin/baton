@@ -8,9 +8,11 @@ import kotlin.time.TimeSource
  * The normalized records. The store belongs to the thread that made it, the
  * main thread in an app: its entry points check the caller's thread, and a
  * commit, the only writer, runs there. The ingest runs off it and hands the
- * commit a change set. See `spec/runtime.md`, sections 1 and 4.
+ * commit a change set. An app makes one when it makes its environment, and
+ * the environment owns it from then on. See `spec/runtime.md`, sections 1
+ * and 4.
  */
-internal class Store(
+class Store(
     /**
      * How old an operation's data may be before it reads as stale, for an
      * operation whose document states no `@cacheExpiration` of its own; null
@@ -24,21 +26,21 @@ internal class Store(
     private val records = HashMap<String, Record>()
 
     /** Whether the store's session has ended: it holds nothing, commits nothing more and reports nothing. */
-    var ended = false
+    internal var ended = false
         private set
 
     /** Bumped by `invalidate()`; data fetched before it is stale. */
-    var invalidationEpoch = 0
+    internal var invalidationEpoch = 0
         private set
 
     /** Where the store's clock starts. */
     private val origin = TimeSource.Monotonic.markNow()
 
     /** How far ahead of the monotonic clock the store reads; for the tests and the scripts, which advance time rather than wait for it. */
-    var clockOffset: Duration = Duration.ZERO
+    internal var clockOffset: Duration = Duration.ZERO
 
     /** The store's clock, read for every stamp and every staleness: the monotonic clock, run ahead by [clockOffset]. */
-    val now: TimeSource.Monotonic.ValueTimeMark get() = origin + origin.elapsedNow() + clockOffset
+    internal val now: TimeSource.Monotonic.ValueTimeMark get() = origin + origin.elapsedNow() + clockOffset
 
     /** The roots, by the operation's key: retained, waiting in the release buffer, or a completed mutation's. */
     internal val roots = HashMap<String, Root>()
@@ -55,7 +57,7 @@ internal class Store(
      * sets it to its main dispatcher. A store without an environment
      * collects when asked.
      */
-    var scheduler: ((() -> Unit) -> Unit)? = null
+    internal var scheduler: ((() -> Unit) -> Unit)? = null
 
     /** The scopes made by hand over the store, whose rendered keys stay numbered for the session. */
     internal val looseScopes = ArrayList<Owner>()
@@ -74,14 +76,14 @@ internal class Store(
     private var nullsOrErrorsChanged = false
 
     /** The record query root fields hang off, typed `Query` whatever the schema calls its root type. */
-    val root: Record = Record(Registry.type("Query"), ROOT_KEY)
+    internal val root: Record = Record(Registry.type("Query"), ROOT_KEY)
     /** The record mutation payloads hang off. */
-    val mutationRoot: Record = Record(Registry.type("Mutation"), MUTATION_ROOT_KEY)
+    internal val mutationRoot: Record = Record(Registry.type("Mutation"), MUTATION_ROOT_KEY)
     /** The record subscription payloads hang off. */
-    val subscriptionRoot: Record = Record(Registry.type("Subscription"), SUBSCRIPTION_ROOT_KEY)
+    internal val subscriptionRoot: Record = Record(Registry.type("Subscription"), SUBSCRIPTION_ROOT_KEY)
 
     /** The keys the store's session renders from variables. */
-    val keys = Keys()
+    internal val keys = Keys()
 
     /**
      * Slots that hold one key, each the other's twin: the store's number for
@@ -91,7 +93,7 @@ internal class Store(
     private val twins = HashMap<Slot, Slot>()
 
     /** The environment's log. */
-    var log: ((LogEvent) -> Unit)? = null
+    internal var log: ((LogEvent) -> Unit)? = null
 
     /**
      * What an operation's data deserves, by the operation's own policies:
@@ -101,14 +103,14 @@ internal class Store(
      * data, kept on the root and settled by the store; the handle derives
      * its phase from it and stores none.
      */
-    sealed interface Verdict {
+    internal sealed interface Verdict {
         data object Sound : Verdict
         data class FieldErrors(val errors: List<FieldError>) : Verdict
         data class RequiredMissing(val path: String) : Verdict
     }
 
     /** What judges an operation's data: the handle of an operation with a policy, whose generated code walks the operation's own selection. */
-    fun interface Judge {
+    internal fun interface Judge {
         fun judge(): Verdict
     }
 
@@ -122,7 +124,7 @@ internal class Store(
      * composable that reads a handle's phase follows the commit that moves
      * them. See `spec/runtime.md`, sections 7 and 8.
      */
-    class Root internal constructor(val key: String, val resolved: ResolvedSelection, val record: Record) {
+    internal class Root(val key: String, val resolved: ResolvedSelection, val record: Record) {
         internal var holders = 0
         /** How many of the holders attached with a policy that allows the network: a fetch the runtime starts later asks whether any does. */
         internal var networkHolders = 0
@@ -203,29 +205,29 @@ internal class Store(
     }
 
     /** Fails a call from a thread other than the store's. */
-    fun checkThread() {
+    internal fun checkThread() {
         check(currentThreadId() == thread) { "a store is used on the thread that made it" }
     }
 
     /** The root a response of the operation kind is committed under. */
-    fun root(kind: OperationKind): Record = when (kind) {
+    internal fun root(kind: OperationKind): Record = when (kind) {
         OperationKind.QUERY -> root
         OperationKind.MUTATION -> mutationRoot
         OperationKind.SUBSCRIPTION -> subscriptionRoot
     }
 
     /** Binds an operation's variables under the store's keys: the resolution the ingest and the commit read. */
-    fun resolve(plan: Plan, variables: Variables): ResolvedSelection {
+    internal fun resolve(plan: Plan, variables: Variables): ResolvedSelection {
         checkThread()
         return plan.resolve(variables, keys)
     }
 
-    val count: Int get() = records.size
+    internal val count: Int get() = records.size
 
-    fun existing(key: String): Record? = records[key]
+    internal fun existing(key: String): Record? = records[key]
 
     /** Every record the store holds, by key. */
-    fun recordsByKey(): Map<String, Record> {
+    internal fun recordsByKey(): Map<String, Record> {
         checkThread()
         return records
     }
@@ -235,7 +237,7 @@ internal class Store(
      * store holds at two slots, a rendering and the constant adopted for it,
      * is one field: the rendered half yields to the constant's.
      */
-    fun storedFields(record: Record): List<Triple<String, Value, FieldError?>> {
+    internal fun storedFields(record: Record): List<Triple<String, Value, FieldError?>> {
         checkThread()
         val fields = ArrayList<Triple<String, Value, FieldError?>>()
         for ((slot, value, error) in record.storedSlots()) {
@@ -259,75 +261,221 @@ internal class Store(
 
     internal fun recordFor(key: String, type: TypeID, idOffset: Int): Record = record(key, type, idOffset).first
 
-    /** The kinds of batch: the server's, an optimistic response's, and the runtime's own writes (a lookup's link bound). */
+    /** The kinds of batch: the server's, an optimistic response's, and the runtime's own writes (a lookup's link bound, a page's loading flag). */
     internal enum class BatchKind { SERVER, OPTIMISTIC, LOCAL }
 
-    /**
-     * One batch of writes. A plain batch notifies as it writes, since
-     * nothing in it can change back; it counts the slots it changed in
-     * records that existed before it, a twin's write once with its twin.
-     * Optimistic layers, whose batches net their notifications, come with
-     * their milestone; until then an optimistic response is written as a
-     * plain batch of its kind.
-     */
-    internal class Batch(val kind: BatchKind = BatchKind.SERVER) {
-        var changed = 0
-        val flagged = HashMap<Record, Boolean>()
+    /** One step of a batch, as it was before the batch: reversed when a layer lifts. */
+    internal sealed interface Undo {
+        class Write(val record: Record, val slot: Slot, val value: Value) : Undo
+        class Error(val record: Record, val slot: Slot, val error: FieldError?) : Undo
+        class Deletion(val record: Record, val was: Boolean) : Undo
+    }
 
-        fun touched(twin: Boolean) {
-            if (!twin) changed += 1
+    /** A slot of one record, by the record's identity. */
+    private data class SlotKey(val record: Record, val slot: Slot)
+
+    /** What a slot held before a netted batch touched it: its error, and whether it counts among the changed, which a twin's write does not. */
+    private class Original(val error: FieldError?, val counted: Boolean)
+
+    /**
+     * One batch of writes: its kind, the undo log of what it changed, and
+     * how it notifies. A direct batch notifies as it writes, since nothing in
+     * it can change back: a plain server batch under no optimistic layer, or
+     * the runtime's own writes. Any other batch is netted: it stages its
+     * writes, keeps every slot it touched with the error before it, and at
+     * its end tells only the slots whose value or error differs, so a slot
+     * changed and changed back notifies nobody. It counts the slots it
+     * changed in records that existed before it, a twin's write once with
+     * its twin.
+     */
+    internal class Batch(val kind: BatchKind, val direct: Boolean) {
+        private var directCount = 0
+        private val originals = LinkedHashMap<SlotKey, Original>()
+        /** The records whose deleted flag the batch changed, with the flag before it. */
+        val flagged = HashMap<Record, Boolean>()
+        /** The steps taken, each as it was before: a layer's own log. */
+        val undo = ArrayList<Undo>()
+        /** Whether steps are kept: by a netted batch that is not the runtime's own, and not while a layer is lifted, whose steps undo an earlier log. */
+        var keepsUndo = !direct && kind != BatchKind.LOCAL
+
+        fun touched(record: Record, slot: Slot, error: FieldError?, twin: Boolean) {
+            if (direct) {
+                if (!twin) directCount += 1
+                return
+            }
+            originals.getOrPut(SlotKey(record, slot)) { Original(error, counted = !twin) }
         }
+
+        fun record(step: Undo) {
+            if (keepsUndo) undo.add(step)
+        }
+
+        /** The steps taken since [since], for a layer's own log. */
+        fun steps(since: Int): List<Undo> = undo.subList(since, undo.size).toList()
 
         /** The records whose deleted flag differs at the end. */
         fun flipped(): Set<Record> = flagged.filter { (record, was) -> record.deleted != was }.keys
+
+        /** Settles every staged value and tells the slots whose value or error differs from before the batch; returns how many differ. */
+        fun finish(): Int {
+            if (direct) return directCount
+            var changed = 0
+            for ((key, original) in originals) {
+                val written = key.record.settle(key.slot)
+                val errorChanged = key.record.peekError(key.slot) != original.error
+                if (!written && errorChanged) key.record.notify(key.slot)
+                if ((written || errorChanged) && original.counted) changed += 1
+            }
+            return changed
+        }
     }
+
+    /**
+     * A pending optimistic response: its change set, applied again whenever
+     * the layers are lifted and re-applied, and the undo log of what its last
+     * application overwrote.
+     */
+    internal class OptimisticLayer(val changes: ChangeSet) {
+        var undo: List<Undo> = emptyList()
+
+        /** Adds the store's numbers the layer writes and its undo restores to [into]: kept while the layer is applied. */
+        fun renderedSlots(into: MutableSet<Slot>) {
+            for (index in 0 until changes.recordCount) {
+                for (position in changes.starts[index] until changes.starts[index + 1]) {
+                    val slot = changes.entrySlots[position]
+                    if (slot < 0) into.add(Slot(changes.recordTypes[index], slot))
+                }
+            }
+            for (entry in changes.fieldErrors) {
+                if (entry.slotIndex < 0) into.add(Slot(changes.recordTypes[entry.record], entry.slotIndex))
+            }
+            for (step in undo) {
+                when (step) {
+                    is Undo.Write -> if (step.slot.index < 0) into.add(step.slot)
+                    is Undo.Error -> if (step.slot.index < 0) into.add(step.slot)
+                    is Undo.Deletion -> Unit
+                }
+            }
+        }
+    }
+
+    /** The optimistic responses applied, oldest first. */
+    internal val optimisticLayers = ArrayList<OptimisticLayer>()
 
     /**
      * Applies a change set from the server and reports how many slots of
-     * records that existed before it changed: the memberships are learned,
-     * the records found or made, each record's entries written with its
-     * errors cleared where the set answers the slot without one, then the
-     * edits in the set's order, then the field errors.
+     * records that existed before it changed. Under optimistic layers the
+     * layers are lifted, the payload applied and the layers re-applied, and
+     * only the net difference is notified; the server's answer to an
+     * optimistic mutation, [replacing] its layer, removes the layer in that
+     * same batch.
      */
-    fun commit(changes: ChangeSet, kind: BatchKind = BatchKind.SERVER): Int {
+    internal fun commit(changes: ChangeSet, replacing: OptimisticLayer? = null): Int {
         checkThread()
         if (ended) return 0
         adoptConstants()
-        val batch = Batch(kind)
+        if (replacing == null && optimisticLayers.isEmpty()) {
+            val batch = Batch(BatchKind.SERVER, direct = true)
+            apply(changes, batch)
+            return finish(batch).also { settleVerdictsIfNeeded() }
+        }
+        val batch = Batch(BatchKind.SERVER, direct = false)
+        revertLayers(0, batch)
+        if (replacing != null) optimisticLayers.remove(replacing)
         apply(changes, batch)
-        val changed = finish(batch)
+        reapplyLayers(0, batch)
+        return finish(batch).also { settleVerdictsIfNeeded() }
+    }
+
+    /** Applies an optimistic response on top of everything else, as a layer a later commit rebases and a failure reverts. */
+    internal fun applyOptimistic(changes: ChangeSet): OptimisticLayer {
+        checkThread()
+        val layer = OptimisticLayer(changes)
+        if (ended) return layer
+        adoptConstants()
+        val batch = Batch(BatchKind.OPTIMISTIC, direct = false)
+        apply(changes, batch)
+        layer.undo = batch.undo.toList()
+        optimisticLayers.add(layer)
+        finish(batch)
         settleVerdictsIfNeeded()
-        return changed
+        return layer
+    }
+
+    /** Removes an optimistic layer; the layers after it are re-applied over the gap. */
+    internal fun revertOptimistic(layer: OptimisticLayer) {
+        checkThread()
+        val index = optimisticLayers.indexOf(layer)
+        if (index < 0 || ended) return
+        val batch = Batch(BatchKind.OPTIMISTIC, direct = false)
+        revertLayers(index, batch)
+        optimisticLayers.removeAt(index)
+        reapplyLayers(index, batch)
+        finish(batch)
+        settleVerdictsIfNeeded()
+    }
+
+    /** Lifts the layers from [index] on, newest first, writing back what each overwrote. */
+    private fun revertLayers(index: Int, batch: Batch) {
+        batch.keepsUndo = false
+        for (position in optimisticLayers.indices.reversed()) {
+            if (position < index) break
+            for (step in optimisticLayers[position].undo.asReversed()) {
+                when (step) {
+                    is Undo.Write -> {
+                        val error = step.record.peekError(step.slot)
+                        step.record.stage(step.slot, step.value)?.let { previous ->
+                            batch.touched(step.record, step.slot, error, twin = false)
+                            noteNulls(previous, step.value)
+                        }
+                    }
+                    is Undo.Error -> setError(step.record, step.slot, step.error, batch)
+                    is Undo.Deletion -> setDeleted(step.record, step.was, batch)
+                }
+            }
+        }
+        for (position in index until optimisticLayers.size) optimisticLayers[position].undo = emptyList()
+        batch.keepsUndo = true
+    }
+
+    /** Applies the layers from [index] on again, oldest first, each keeping the undo log of this application. */
+    private fun reapplyLayers(index: Int, batch: Batch) {
+        for (position in index until optimisticLayers.size) {
+            val start = batch.undo.size
+            apply(optimisticLayers[position].changes, batch)
+            optimisticLayers[position].undo = batch.steps(since = start)
+        }
     }
 
     /**
-     * Ends a batch: when it changed whether records are deleted, every slot
-     * that links to one of them is notified, since a link to a deleted
-     * record reads as null and a list skips it; a pass is scheduled when a
-     * link moved or dropped; the log hears of what the server and the app
-     * wrote. Returns how many slots changed.
+     * Ends a batch: notifies the slots that changed, and when the batch
+     * changed whether records are deleted, every slot that links to one of
+     * them, since a link to a deleted record reads as null and a list skips
+     * it; a pass is scheduled when a link moved or dropped; the log hears of
+     * what the server and the app wrote. Returns how many slots changed.
      */
     private fun finish(batch: Batch): Int {
         if (linkDropped) {
             linkDropped = false
             scheduleCollection()
         }
+        val changed = batch.finish()
         val flipped = batch.flipped()
         if (flipped.isNotEmpty()) {
             for (record in records.values) record.notifyLinks(flipped)
         }
         when (batch.kind) {
-            BatchKind.SERVER -> log?.invoke(LogEvent.Committed(LogEvent.CommitKind.SERVER, batch.changed))
-            BatchKind.OPTIMISTIC -> log?.invoke(LogEvent.Committed(LogEvent.CommitKind.OPTIMISTIC, batch.changed))
+            BatchKind.SERVER -> log?.invoke(LogEvent.Committed(LogEvent.CommitKind.SERVER, changed))
+            BatchKind.OPTIMISTIC -> log?.invoke(LogEvent.Committed(LogEvent.CommitKind.OPTIMISTIC, changed))
             // A local batch is the runtime's own writing, as frequent as a read walk.
             BatchKind.LOCAL -> Unit
         }
-        return batch.changed
+        return changed
     }
 
-    /** Runs the runtime's own writes as one local batch: a lookup's link bound. */
+    /** Runs the runtime's own writes as one local batch: a lookup's link bound, a page's loading flag. */
     internal fun local(writes: (Batch) -> Unit) {
-        val batch = Batch(BatchKind.LOCAL)
+        val batch = Batch(BatchKind.LOCAL, direct = true)
         writes(batch)
         finish(batch)
     }
@@ -344,7 +492,7 @@ internal class Store(
      * cleared and its readers told, the session's keys are forgotten, and
      * nothing is committed or reported after.
      */
-    fun end() {
+    internal fun end() {
         checkThread()
         if (ended) return
         ended = true
@@ -353,6 +501,7 @@ internal class Store(
         completedMutations.clear()
         looseScopes.clear()
         inFlight.clear()
+        optimisticLayers.clear()
         for (record in records.values) record.clear()
         records.clear()
         records[ROOT_KEY] = root
@@ -365,13 +514,13 @@ internal class Store(
     }
 
     /** Marks everything fetched so far as stale; `Environment.invalidate()` is the public way, which also refetches. */
-    fun invalidate() {
+    internal fun invalidate() {
         if (ended) return
         invalidationEpoch += 1
     }
 
     /** Runs a pass on a later turn of the store's thread; several reasons in one turn run one pass. */
-    fun scheduleCollection() {
+    internal fun scheduleCollection() {
         if (collectionScheduled || ended) return
         val scheduler = scheduler ?: return
         collectionScheduled = true
@@ -431,31 +580,44 @@ internal class Store(
      * reads, every field missing, never among the store's records and never
      * written. See `spec/runtime.md`, section 1.
      */
-    fun placeholder(type: TypeID): Record = placeholders.getOrPut(type) { Record(type, PLACEHOLDER_PREFIX + type.name) }
+    internal fun placeholder(type: TypeID): Record = placeholders.getOrPut(type) { Record(type, PLACEHOLDER_PREFIX + type.name) }
 
-    /** Writes one slot inside a batch, and its twin when it has one. */
+    /** Writes one slot inside a batch, and its twin when it has one, recorded for the batch's notification and its undo log. */
     internal fun set(record: Record, slot: Slot, value: Value, batch: Batch) {
-        record.write(slot, value)?.let { previous ->
-            batch.touched(twin = false)
-            // A local write binds a link; it brings no new null or error into a selection.
-            if (batch.kind != BatchKind.LOCAL) noteNulls(previous, value)
-        }
+        write(record, slot, value, batch, twin = false)
         val twin = twins[slot] ?: return
-        if (record.write(twin, value) != null) batch.touched(twin = true)
+        write(record, twin, value, batch, twin = true)
     }
 
+    private fun write(record: Record, slot: Slot, value: Value, batch: Batch, twin: Boolean) {
+        val error = record.peekError(slot)
+        val previous = (if (batch.direct) record.write(slot, value) else record.stage(slot, value)) ?: return
+        batch.touched(record, slot, error, twin)
+        batch.record(Undo.Write(record, slot, previous))
+        // A local write binds a link or sets a flag; it brings no new null or error into a selection.
+        if (batch.kind != BatchKind.LOCAL) noteNulls(previous, value)
+    }
+
+    /** Sets or clears a slot's error inside a batch, and its twin's when it has one. */
     private fun setError(record: Record, slot: Slot, error: FieldError?, batch: Batch) {
-        if (record.setError(slot, error)) {
-            batch.touched(twin = false)
-            nullsOrErrorsChanged = true
-        }
+        setOwnError(record, slot, error, batch, twin = false)
         val twin = twins[slot] ?: return
-        if (record.setError(twin, error)) batch.touched(twin = true)
+        setOwnError(record, twin, error, batch, twin = true)
     }
 
+    private fun setOwnError(record: Record, slot: Slot, error: FieldError?, batch: Batch, twin: Boolean) {
+        val previous = record.peekError(slot)
+        if (!record.setError(slot, error, notifying = batch.direct)) return
+        batch.touched(record, slot, previous, twin)
+        batch.record(Undo.Error(record, slot, previous))
+        nullsOrErrorsChanged = true
+    }
+
+    /** Marks a record deleted or revives it inside a batch, recorded for the notification of what links to it and for the undo log. */
     private fun setDeleted(record: Record, deleted: Boolean, batch: Batch) {
         if (record.deleted == deleted) return
         if (!batch.flagged.containsKey(record)) batch.flagged[record] = record.deleted
+        batch.record(Undo.Deletion(record, record.deleted))
         record.setDeleted(deleted)
         nullsOrErrorsChanged = true
     }
@@ -535,9 +697,12 @@ internal class Store(
                     else -> Value.List(List(second) { offset -> scalar(changes, first.toInt() + offset) })
                 }
                 if (created[index]) {
-                    // Nobody can have read a record this batch made: its slots count among nothing changed.
-                    record.write(slot, value)
-                    twins[slot]?.let { record.write(it, value) }
+                    // Nobody can have read a record this batch made: its slots, and their twins, count among nothing changed.
+                    record.write(slot, value)?.let { previous ->
+                        batch.record(Undo.Write(record, slot, previous))
+                        noteNulls(previous, value)
+                    }
+                    twins[slot]?.let { twin -> record.write(twin, value)?.let { previous -> batch.record(Undo.Write(record, twin, previous)) } }
                 } else {
                     set(record, slot, value, batch)
                 }
@@ -728,7 +893,7 @@ internal class Store(
      * incremental part's `path`. Null when the path leads through data the
      * store never received.
      */
-    fun walk(path: List<PathSegment>, selection: ResolvedSelection, from: Record = root): Pair<Record, ResolvedSelection>? {
+    internal fun walk(path: List<PathSegment>, selection: ResolvedSelection, from: Record = root): Pair<Record, ResolvedSelection>? {
         checkThread()
         var record = from
         var current = selection
@@ -752,7 +917,7 @@ internal class Store(
         return record to current
     }
 
-    companion object {
+    internal companion object {
         const val ROOT_KEY = "client:root"
         const val MUTATION_ROOT_KEY = "client:root:mutation"
         const val SUBSCRIPTION_ROOT_KEY = "client:root:subscription"
