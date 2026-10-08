@@ -103,12 +103,78 @@ pub const RUNTIME_NAMES: [&str; 44] = [
 /// lens is equal by its anchor, and a read registers what it reads.
 pub const STABLE: &str = "androidx.compose.runtime.Stable";
 
+/// Kotlin's soft keywords that start a type, `suspend () -> Unit`,
+/// `List<out T>`, `dynamic`: a name spelled like one of them is written in
+/// backticks, so a type of the name is read as the name.
+pub const TYPE_KEYWORDS: [&str; 3] = ["dynamic", "out", "suspend"];
+
 /// What the generated code spells from the standard library: the types
-/// variables take and lenses return, and `Any` an `equals` takes. A
-/// fragment or an operation of one of these names, declared in the
+/// variables take and lenses return, `Any` an `equals` takes, `Unit` a
+/// refetch returns, and the annotations every file and some properties
+/// carry. A fragment or an operation of one of these names, declared in the
 /// package, would hide it from every file of the package.
-pub const STANDARD_LIBRARY_NAMES: [&str; 10] = [
-    "Any", "Boolean", "Double", "Int", "List", "Long", "Map", "Pair", "Result", "String",
+pub const STANDARD_LIBRARY_NAMES: [&str; 14] = [
+    "Any", "Boolean", "Double", "Int", "List", "Long", "Map", "Pair", "Result", "String", "Unit",
+    "OptIn", "JvmName", "JvmField",
+];
+
+/// The standard library's functions the generated code calls unqualified:
+/// a class of one of these names in the package would be called in the
+/// function's place.
+pub const STANDARD_LIBRARY_FUNCTIONS: [&str; 7] = [
+    "listOf",
+    "mapOf",
+    "emptyList",
+    "emptyMap",
+    "mutableListOf",
+    "lazy",
+    "run",
+];
+
+/// What a lens, a lens's companion, an operation's companion and a
+/// mutation's action declare or inherit, and the locals of a value's
+/// `fieldErrors`, with what a message calls each. Generated code names a
+/// fragment's or an operation's class in their bodies,
+/// `Fragment.fieldErrors(anchor)`, `Fragment(anchor)`, and a member or a
+/// local of the class's name would be read in its place: a lens nested in
+/// an operation sees the members of the operation's companion, and an
+/// action's body those of the action it extends.
+pub const MEMBER_NAMES: [(&str, &str); 29] = [
+    ("anchor", "the `anchor` every lens has"),
+    ("recordID", "the `recordID` every lens has"),
+    ("equals", "the `equals` every class has"),
+    ("hashCode", "the `hashCode` every class has"),
+    ("toString", "the `toString` every class has"),
+    ("javaClass", "the `javaClass` every class has"),
+    ("Companion", "the companion object `Companion` of a class"),
+    ("satisfied", "a lens's check `satisfied`"),
+    (
+        "missingRequiredField",
+        "a lens's check `missingRequiredField`",
+    ),
+    ("fieldErrors", "a lens's check `fieldErrors`"),
+    ("isPresent", "a lens's check `isPresent`"),
+    ("throwing", "a lens's check `throwing`"),
+    ("caught", "a lens's check `caught`"),
+    ("refetchable", "a lens's refetch descriptor `refetchable`"),
+    ("name", "the operation's `name`"),
+    ("document", "the operation's `document`"),
+    ("text", "the operation's `text`"),
+    ("kind", "the operation's `kind`"),
+    ("plan", "the operation's `plan`"),
+    ("throwsOnFieldError", "the operation's `throwsOnFieldError`"),
+    ("bubbles", "the operation's `bubbles`"),
+    ("hasDeferred", "the operation's `hasDeferred`"),
+    ("errorBehavior", "the operation's `errorBehavior`"),
+    (
+        "cacheExpirationSeconds",
+        "the operation's `cacheExpirationSeconds`",
+    ),
+    ("data", "the operation's `data`"),
+    ("Data", "the operation's root lens `Data`"),
+    ("invoke", "the mutation action's `invoke`"),
+    ("bound", "the local `bound` of a spread's binding"),
+    ("errors", "the local `errors` of a check"),
 ];
 
 /// What a nested lens may not be named: the companion every class may
@@ -219,9 +285,10 @@ fn is_keyword(name: &str) -> bool {
     KEYWORDS.contains(&name) || (!name.is_empty() && name.chars().all(|character| character == '_'))
 }
 
-/// `name` as an identifier: in backticks where Kotlin reads it as a keyword.
+/// `name` as an identifier: in backticks where Kotlin reads it as a keyword
+/// or as the start of a type.
 pub fn escape(name: &str) -> String {
-    if is_keyword(name) {
+    if is_keyword(name) || TYPE_KEYWORDS.contains(&name) {
         format!("`{name}`")
     } else {
         name.to_string()
@@ -283,6 +350,7 @@ fn package_type_name(name: &str, suffix: &str) -> String {
     if kept.contains(&name)
         || RUNTIME_NAMES.contains(&name)
         || STANDARD_LIBRARY_NAMES.contains(&name)
+        || MEMBER_NAMES.iter().any(|(member, _)| *member == name)
     {
         return format!("{name}{suffix}");
     }
@@ -386,13 +454,19 @@ impl Naming for KotlinNaming {
 
     fn module_names(&self) -> Vec<(&'static str, String)> {
         let mut names = Vec::new();
-        for name in STANDARD_LIBRARY_NAMES {
-            names.push((name, format!("the standard library's `{name}`")));
+        for name in STANDARD_LIBRARY_NAMES
+            .iter()
+            .chain(&STANDARD_LIBRARY_FUNCTIONS)
+        {
+            names.push((*name, format!("the standard library's `{name}`")));
         }
         for name in RUNTIME_NAMES {
             names.push((name, format!("the runtime's `{name}`")));
         }
         names.push(("Stable", "Compose's `Stable`".to_string()));
+        for (name, what) in MEMBER_NAMES {
+            names.push((name, what.to_string()));
+        }
         names
     }
 
@@ -498,6 +572,13 @@ impl Naming for KotlinNaming {
             "Companion",
             "the lens's companion object `Companion`".to_string(),
         ));
+        // A spread's binding spells the runtime's `Variable` in a getter, and
+        // an optimistic response's builder, whose fields are a lens's, spells
+        // `Variable` and `Variables`: a property of either name would be read
+        // in the class's place.
+        for name in ["Variable", "Variables"] {
+            members.push((name, format!("the runtime's `{name}`")));
+        }
         members
     }
 }

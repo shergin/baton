@@ -110,7 +110,7 @@ impl<'a> Hidden<'a> {
             return escape(name);
         }
         self.aliases.borrow_mut().insert(name.to_string());
-        format!("Companion.{}", alias(name))
+        format!("Companion.{}", escape(&alias(name)))
     }
 
     /// The companion's references, in order.
@@ -223,7 +223,11 @@ impl Lenses<'_> {
         writer.blank();
         writer.block("companion object", |writer| {
             for name in aliases {
-                writer.line(format!("private val {} = {}", alias(name), escape(name)));
+                writer.line(format!(
+                    "private val {} = {}",
+                    escape(&alias(name)),
+                    escape(name)
+                ));
             }
             if let Some(refetch) = &plan.refetch {
                 refetch_descriptor(writer, refetch);

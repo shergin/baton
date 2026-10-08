@@ -56,6 +56,15 @@ fn a_hard_keyword_is_written_in_backticks_and_a_soft_one_is_not() {
 }
 
 #[test]
+fn a_soft_keyword_that_starts_a_type_is_written_in_backticks() {
+    // `other is suspend` would read `suspend` as the start of a function
+    // type, and `QueryOperation<out.Data>` `out` as a variance.
+    assert_eq!(escape("suspend"), "`suspend`");
+    assert_eq!(escape("out"), "`out`");
+    assert_eq!(escape("dynamic"), "`dynamic`");
+}
+
+#[test]
 fn a_shared_constant_named_like_a_keyword_or_what_its_object_spells_takes_an_underscore() {
     assert_eq!(type_constant("Character"), "Character");
     assert_eq!(type_constant("in"), "in_");
