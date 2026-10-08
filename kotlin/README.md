@@ -184,7 +184,6 @@ after the revert; `PaginationTests` holds loading a page through a lens,
 which the contract leaves unheld, and `SubscriptionTests` the backoff, a
 refusal and a release.
 
-The composables and the HTTP and socket transports follow.
 The wire's transports. The parts of a `multipart/mixed` response and the
 events of a `text/event-stream` one are framed in common code
 (`Framing.kt`). `HttpTransport` (`jvmMain`) posts the encoded body over
@@ -222,4 +221,6 @@ event thread and commits there through the main dispatcher, which
 Morty API a page at a time, and a character's detail, through
 `rememberQuery` and the phase's three cases; see its README.
 
-The image follows.
+Android follows: the system's SQLite through `AndroidSQLiteDriver`, the
+HTTP transport in a source set the JVM and Android share, the sample on a
+device, and the ingest budget measured there.
