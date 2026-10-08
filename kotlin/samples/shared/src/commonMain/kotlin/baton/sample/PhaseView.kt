@@ -52,7 +52,7 @@ fun <Data> PhaseView(phase: Phase<Data>, retry: () -> Unit, content: @Composable
 fun Avatar(url: String?, size: Int) {
     val image by produceState(url?.let(avatars::get), url) {
         if (value != null || url == null) return@produceState
-        val fetched = fetchImage(url)
+        val fetched = fetchImage(Measurement.avatarAddress(url))
         if (fetched != null) avatars[url] = fetched
         value = fetched
     }

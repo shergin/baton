@@ -18,6 +18,13 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
+    // The release build is what `benchmarks/macro` measures: signed with the
+    // debug key, not minified, not debuggable.
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
     buildFeatures {
         compose = true
     }
@@ -26,4 +33,6 @@ android {
 dependencies {
     implementation(project(":samples:shared"))
     implementation(libs.activity.compose)
+    // The fixed server a measured launch fetches from, and the trace sections.
+    implementation(project(":benchmarks:macro:server"))
 }

@@ -28,8 +28,11 @@ import baton.Environment
 import baton.LocalBaton
 import baton.Persistence
 import baton.Store
+import baton.macro.FixedServer
+import baton.macro.Sections
 import baton.sample.CharacterScreen
 import baton.sample.CharactersScreen
+import baton.sample.Measurement
 import baton.sample.SampleTheme
 import baton.sample.Types
 import kotlinx.coroutines.CoroutineScope
@@ -43,12 +46,30 @@ import kotlinx.coroutines.launch
  * model, so it outlives a rotation, and its store keeps its image in the
  * app's cache directory under the schema's digest, so the next launch shows
  * what this one fetched before the network answers.
+ *
+ * A launch whose intent carries `FixedServer.EXTRA` fetches from the fixed
+ * server of `benchmarks/macro` instead, and the screens' first draws end
+ * the trace sections the macrobenchmark reads; the first list drawn reports
+ * the activity fully drawn.
  */
 class MainActivity : ComponentActivity() {
     private val model: SampleModel by viewModels()
+    private var reportedDrawn = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (intent.getBooleanExtra(FixedServer.EXTRA, false)) {
+            val server = FixedServer.start(this, FixedServer.Client.BATON)
+            Measurement.avatarAddress = server::avatar
+        }
+        Measurement.listDrawn = {
+            Sections.listDrawn()
+            if (!reportedDrawn) {
+                reportedDrawn = true
+                reportFullyDrawn()
+            }
+        }
+        Measurement.detailDrawn = { Sections.end(Sections.DETAIL_TAP_TO_FRAME) }
         enableEdgeToEdge()
         setContent {
             SampleTheme {
@@ -69,7 +90,7 @@ class MainActivity : ComponentActivity() {
  */
 class SampleModel(application: Application) : AndroidViewModel(application) {
     val environment = Environment(
-        "https://rickandmortyapi.com/graphql",
+        FixedServer.graphql("https://rickandmortyapi.com/graphql"),
         store = Store(persistence = Persistence.named("RickAndMorty", directory = application.cacheDir.path, version = Types.schemaDigest)),
     )
 
@@ -88,7 +109,18 @@ private fun Characters(modifier: Modifier = Modifier) {
     var selected by rememberSaveable { mutableStateOf<String?>(null) }
     val id = selected
     if (id == null) {
-        CharactersScreen(page = page, onPage = { page = it }, onSelect = { selected = it }, modifier = modifier.fillMaxSize())
+        CharactersScreen(
+            page = page,
+            onPage = {
+                if (it > page) Sections.begin(Sections.PAGE_TURN_TO_FRAME)
+                page = it
+            },
+            onSelect = {
+                Sections.begin(Sections.DETAIL_TAP_TO_FRAME)
+                selected = it
+            },
+            modifier = modifier.fillMaxSize(),
+        )
         return
     }
     BackHandler { selected = null }

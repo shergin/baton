@@ -38,7 +38,11 @@ import baton.retry
 )
 @Composable
 fun CharacterHeader(character: CharacterHeader_character) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(
+        modifier = Modifier.onFirstDraw(Unit) { Measurement.detailDrawn() },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
         Avatar(character.image, size = 160)
         Text(character.name ?: "Unknown", style = MaterialTheme.typography.headlineMedium)
         Text(

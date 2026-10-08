@@ -87,7 +87,7 @@ fun CharactersScreen(page: Int, onPage: (Int) -> Unit, onSelect: (String) -> Uni
         }
         if (characters.isRefreshing) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         PhaseView(characters.phase, retry = { characters.retry() }) { data ->
-            LazyColumn {
+            LazyColumn(modifier = Modifier.onFirstDraw(page) { Measurement.listDrawn(page) }) {
                 items(data.characters?.results.orEmpty(), key = { it.recordID.key }) { character ->
                     CharacterRow(character.characterRow, onClick = { character.id?.let(onSelect) })
                 }
