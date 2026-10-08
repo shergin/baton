@@ -15,10 +15,12 @@ import baton.Generated
 import baton.Guard
 import baton.Lens
 import baton.Lookup
+import baton.MutationAction
 import baton.MutationOperation
 import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
+import baton.Payload
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
@@ -15325,7 +15327,36 @@ class HostileMutationVariables(@get:JvmName("getType2") val Type: Boolean, val P
             }
         }
     }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val setFavorite: SetFavorite? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("setFavorite" to this.setFavorite?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class SetFavorite(val character: Character? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("character" to this.character?.variable).values)
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Character(val id: String? = null, val name: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }, "name" to this.name?.let { Variable.of(it) }).values)
+            }
+        }
+    }
 }
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<HostileMutationVariables, HostileMutationVariables.Data>.invoke(Type: Boolean, Protocol: Boolean, Any: Boolean, self: Boolean, init: Boolean, deinit: Boolean, subscript: Boolean, `class`: Boolean, struct: Boolean, enum: Boolean, func: Boolean, import: Boolean, extension: Boolean, operator: Boolean, static: Boolean, default: Boolean, case: Boolean, switch: Boolean, `if`: Boolean, `else`: Boolean, `for`: Boolean, `in`: Boolean, `while`: Boolean, repeat: Boolean, `return`: Boolean, `break`: Boolean, `continue`: Boolean, where: Boolean, `is`: Boolean, `as`: Boolean, `try`: Boolean, `throw`: Boolean, throws: Boolean, guard: Boolean, defer: Boolean, `do`: Boolean, catch: Boolean, `true`: Boolean, `false`: Boolean, nil: Boolean, `super`: Boolean, internal: Boolean, private: Boolean, public: Boolean, fileprivate: Boolean, open: Boolean, inout: Boolean, `typealias`: Boolean, associatedtype: Boolean, protocol: Boolean, some: Boolean, any: Boolean, rethrows: Boolean, fallthrough: Boolean, precedencegroup: Boolean, `_`: Boolean, `var`: Boolean, let: Boolean, Self: Boolean, async: Boolean, borrowing: Boolean, consume: Boolean, consuming: Boolean, copy: Boolean, discard: Boolean, each: Boolean, isolated: Boolean, sending: Boolean, then: Boolean, unsafe: Boolean, await: Boolean, anchor: Boolean, recordID: Boolean, satisfied: Boolean, missingRequiredField: Boolean, fieldErrors: Boolean, isPresent: Boolean, throwing: Boolean, caught: Boolean, refetchable: Boolean, refetch: Boolean, connection: Boolean, nodes: Boolean, hasNext: Boolean, hasPrevious: Boolean, isLoadingNext: Boolean, isLoadingPrevious: Boolean, connectionID: Boolean, loadNext: Boolean, loadPrevious: Boolean, bound: Boolean, errors: Boolean, child: Boolean, missing: Boolean, count: Boolean, fields: Boolean, lhs: Boolean, rhs: Boolean, hasher: Boolean, selection0: Boolean, selection: Boolean, selfValue: Boolean, values: Boolean, Fragment: Boolean, Spread: Boolean, Owner: Boolean, Query: Boolean, Operation: Boolean, RefetchQuery: Boolean, resolution: Boolean, name: Boolean, document: Boolean, text: Boolean, plan: Boolean, errorBehavior: Boolean, throwsOnFieldError: Boolean, bubbles: Boolean, hasDeferred: Boolean, cacheExpiration: Boolean, hash: Boolean, commit: Boolean, callAsFunction: Boolean, Op: Boolean, variable: Boolean, payload: Boolean, phase: Boolean, isRefreshing: Boolean, isStale: Boolean, retry: Boolean, subscription: Boolean, Sites: Boolean, AbstractSlots: Boolean, schemaDigest: Boolean, format: Boolean, transient: Boolean, Swift: Boolean, Set: Boolean, Result: Boolean, Optional: Boolean, String: Boolean, Int: Boolean, Double: Boolean, Bool: Boolean, MainActor: Boolean, Hasher: Boolean, Sendable: Boolean, optimistic: HostileMutationVariables.OptimisticResponse? = null): HostileMutationVariables.Data = this.commit(HostileMutationVariables(Type, Protocol, Any, self, init, deinit, subscript, `class`, struct, enum, func, import, extension, operator, static, default, case, switch, `if`, `else`, `for`, `in`, `while`, repeat, `return`, `break`, `continue`, where, `is`, `as`, `try`, `throw`, throws, guard, defer, `do`, catch, `true`, `false`, nil, `super`, internal, private, public, fileprivate, open, inout, `typealias`, associatedtype, protocol, some, any, rethrows, fallthrough, precedencegroup, `_`, `var`, let, Self, async, borrowing, consume, consuming, copy, discard, each, isolated, sending, then, unsafe, await, anchor, recordID, satisfied, missingRequiredField, fieldErrors, isPresent, throwing, caught, refetchable, refetch, connection, nodes, hasNext, hasPrevious, isLoadingNext, isLoadingPrevious, connectionID, loadNext, loadPrevious, bound, errors, child, missing, count, fields, lhs, rhs, hasher, selection0, selection, selfValue, values, Fragment, Spread, Owner, Query, Operation, RefetchQuery, resolution, name, document, text, plan, errorBehavior, throwsOnFieldError, bubbles, hasDeferred, cacheExpiration, hash, commit, callAsFunction, Op, variable, payload, phase, isRefreshing, isStale, retry, subscription, Sites, AbstractSlots, schemaDigest, format, transient, Swift, Set, Result, Optional, String, Int, Double, Bool, MainActor, Hasher, Sendable), optimistic?.payload)
 
 /** Operation value for `mutation HostileNamesake`. */
 class HostileNamesake(val HostileNamesake: String) : MutationOperation<HostileNamesake.Data> {
@@ -15380,7 +15411,36 @@ class HostileNamesake(val HostileNamesake: String) : MutationOperation<HostileNa
             }
         }
     }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val setFavorite: SetFavorite? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("setFavorite" to this.setFavorite?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class SetFavorite(val character: Character? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("character" to this.character?.variable).values)
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Character(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+        }
+    }
 }
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<HostileNamesake, HostileNamesake.Data>.invoke(HostileNamesake: String, optimistic: HostileNamesake.OptimisticResponse? = null): HostileNamesake.Data = this.commit(HostileNamesake(HostileNamesake), optimistic?.payload)
 
 /** Operation value for `mutation HostilePayload`. */
 class HostilePayload : MutationOperation<HostilePayload.Data> {
@@ -17123,7 +17183,1260 @@ class HostilePayload : MutationOperation<HostilePayload.Data> {
             }
         }
     }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val setFavorite: SetFavorite? = null, val addNote: AddNote? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("setFavorite" to this.setFavorite?.variable, "addNote" to this.addNote?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class SetFavorite(val character: Character? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("character" to this.character?.variable).values)
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Character(val Type: String? = null, val Protocol: String? = null, val Any: String? = null, val self: String? = null, @get:JvmName("getSelf2") val Self: String? = null, val init: String? = null, val deinit: String? = null, val subscript: String? = null, @get:JvmName("getClass2") val `class`: String? = null, val struct: String? = null, val enum: String? = null, val func: String? = null, val `var`: String? = null, val let: String? = null, val import: String? = null, val extension: String? = null, val operator: String? = null, val static: String? = null, val default: String? = null, val case: String? = null, val switch: String? = null, val `if`: String? = null, val `else`: String? = null, val `for`: String? = null, val `in`: String? = null, val `while`: String? = null, val repeat: String? = null, val `return`: String? = null, val `break`: String? = null, val `continue`: String? = null, val where: String? = null, val `is`: String? = null, val `as`: String? = null, val `try`: String? = null, val `throw`: String? = null, val throws: String? = null, val guard: String? = null, val defer: String? = null, val `do`: String? = null, val catch: String? = null, val `true`: String? = null, val `false`: String? = null, val nil: String? = null, val `super`: String? = null, val internal: String? = null, val private: String? = null, val public: String? = null, val fileprivate: String? = null, val open: String? = null, val inout: String? = null, val `typealias`: String? = null, val associatedtype: String? = null, @get:JvmName("getProtocol2") val protocol: String? = null, val some: String? = null, @get:JvmName("getAny2") val any: String? = null, val rethrows: String? = null, val fallthrough: String? = null, val precedencegroup: String? = null, val `_`: String? = null, val async: String? = null, val borrowing: String? = null, val consume: String? = null, val consuming: String? = null, val copy: String? = null, val discard: String? = null, val each: String? = null, val isolated: String? = null, val sending: String? = null, val then: String? = null, val unsafe: String? = null, val await: String? = null, val satisfied: String? = null, val missingRequiredField: String? = null, val fieldErrors: String? = null, val isPresent: String? = null, val throwing: String? = null, val caught: String? = null, val refetchable: String? = null, val refetch: String? = null, val connection: String? = null, val nodes: String? = null, val hasNext: String? = null, val hasPrevious: String? = null, val isLoadingNext: String? = null, val isLoadingPrevious: String? = null, val connectionID: String? = null, val loadNext: String? = null, val loadPrevious: String? = null, val bound: String? = null, val errors: String? = null, val child: String? = null, val missing: String? = null, val count: String? = null, val lhs: String? = null, val rhs: String? = null, val hasher: String? = null, val selection0: String? = null, val selection: String? = null, val optimistic: String? = null, val selfValue: String? = null, val values: String? = null, val Fragment: String? = null, val Spread: String? = null, val Owner: String? = null, val Query: String? = null, val Operation: String? = null, val RefetchQuery: String? = null, val fields: String? = null, val variables: String? = null, val resolution: String? = null, val name: String? = null, val document: String? = null, val text: String? = null, val plan: String? = null, val errorBehavior: String? = null, val throwsOnFieldError: String? = null, val bubbles: String? = null, val hasDeferred: String? = null, val cacheExpiration: String? = null, val Data: String? = null, val Action: String? = null, val OptimisticResponse: String? = null, val hash: String? = null, val commit: String? = null, val callAsFunction: String? = null, val Op: String? = null, @get:JvmName("getPayload2") val payload: String? = null, val hashValue: String? = null, val phase: String? = null, val isRefreshing: String? = null, val isStale: String? = null, val retry: String? = null, val subscription: String? = null, val Types: String? = null, val Sites: String? = null, val Guards: String? = null, val AbstractSlots: String? = null, val schemaDigest: String? = null, val format: String? = null, val transient: String? = null, val Baton: String? = null, val Swift: String? = null, val Set: String? = null, val Result: String? = null, val Optional: String? = null, val String: String? = null, val Int: String? = null, val Double: String? = null, val Bool: String? = null, val MainActor: String? = null, @get:JvmName("getHasher2") val Hasher: String? = null, val Sendable: String? = null, val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("Type" to this.Type?.let { Variable.of(it) }, "Protocol" to this.Protocol?.let { Variable.of(it) }, "Any" to this.Any?.let { Variable.of(it) }, "self" to this.self?.let { Variable.of(it) }, "Self" to this.Self?.let { Variable.of(it) }, "init" to this.init?.let { Variable.of(it) }, "deinit" to this.deinit?.let { Variable.of(it) }, "subscript" to this.subscript?.let { Variable.of(it) }, "class" to this.`class`?.let { Variable.of(it) }, "struct" to this.struct?.let { Variable.of(it) }, "enum" to this.enum?.let { Variable.of(it) }, "func" to this.func?.let { Variable.of(it) }, "var" to this.`var`?.let { Variable.of(it) }, "let" to this.let?.let { Variable.of(it) }, "import" to this.import?.let { Variable.of(it) }, "extension" to this.extension?.let { Variable.of(it) }, "operator" to this.operator?.let { Variable.of(it) }, "static" to this.static?.let { Variable.of(it) }, "default" to this.default?.let { Variable.of(it) }, "case" to this.case?.let { Variable.of(it) }, "switch" to this.switch?.let { Variable.of(it) }, "if" to this.`if`?.let { Variable.of(it) }, "else" to this.`else`?.let { Variable.of(it) }, "for" to this.`for`?.let { Variable.of(it) }, "in" to this.`in`?.let { Variable.of(it) }, "while" to this.`while`?.let { Variable.of(it) }, "repeat" to this.repeat?.let { Variable.of(it) }, "return" to this.`return`?.let { Variable.of(it) }, "break" to this.`break`?.let { Variable.of(it) }, "continue" to this.`continue`?.let { Variable.of(it) }, "where" to this.where?.let { Variable.of(it) }, "is" to this.`is`?.let { Variable.of(it) }, "as" to this.`as`?.let { Variable.of(it) }, "try" to this.`try`?.let { Variable.of(it) }, "throw" to this.`throw`?.let { Variable.of(it) }, "throws" to this.throws?.let { Variable.of(it) }, "guard" to this.guard?.let { Variable.of(it) }, "defer" to this.defer?.let { Variable.of(it) }, "do" to this.`do`?.let { Variable.of(it) }, "catch" to this.catch?.let { Variable.of(it) }, "true" to this.`true`?.let { Variable.of(it) }, "false" to this.`false`?.let { Variable.of(it) }, "nil" to this.nil?.let { Variable.of(it) }, "super" to this.`super`?.let { Variable.of(it) }, "internal" to this.internal?.let { Variable.of(it) }, "private" to this.private?.let { Variable.of(it) }, "public" to this.public?.let { Variable.of(it) }, "fileprivate" to this.fileprivate?.let { Variable.of(it) }, "open" to this.open?.let { Variable.of(it) }, "inout" to this.inout?.let { Variable.of(it) }, "typealias" to this.`typealias`?.let { Variable.of(it) }, "associatedtype" to this.associatedtype?.let { Variable.of(it) }, "protocol" to this.protocol?.let { Variable.of(it) }, "some" to this.some?.let { Variable.of(it) }, "any" to this.any?.let { Variable.of(it) }, "rethrows" to this.rethrows?.let { Variable.of(it) }, "fallthrough" to this.fallthrough?.let { Variable.of(it) }, "precedencegroup" to this.precedencegroup?.let { Variable.of(it) }, "_" to this.`_`?.let { Variable.of(it) }, "async" to this.async?.let { Variable.of(it) }, "borrowing" to this.borrowing?.let { Variable.of(it) }, "consume" to this.consume?.let { Variable.of(it) }, "consuming" to this.consuming?.let { Variable.of(it) }, "copy" to this.copy?.let { Variable.of(it) }, "discard" to this.discard?.let { Variable.of(it) }, "each" to this.each?.let { Variable.of(it) }, "isolated" to this.isolated?.let { Variable.of(it) }, "sending" to this.sending?.let { Variable.of(it) }, "then" to this.then?.let { Variable.of(it) }, "unsafe" to this.unsafe?.let { Variable.of(it) }, "await" to this.await?.let { Variable.of(it) }, "satisfied" to this.satisfied?.let { Variable.of(it) }, "missingRequiredField" to this.missingRequiredField?.let { Variable.of(it) }, "fieldErrors" to this.fieldErrors?.let { Variable.of(it) }, "isPresent" to this.isPresent?.let { Variable.of(it) }, "throwing" to this.throwing?.let { Variable.of(it) }, "caught" to this.caught?.let { Variable.of(it) }, "refetchable" to this.refetchable?.let { Variable.of(it) }, "refetch" to this.refetch?.let { Variable.of(it) }, "connection" to this.connection?.let { Variable.of(it) }, "nodes" to this.nodes?.let { Variable.of(it) }, "hasNext" to this.hasNext?.let { Variable.of(it) }, "hasPrevious" to this.hasPrevious?.let { Variable.of(it) }, "isLoadingNext" to this.isLoadingNext?.let { Variable.of(it) }, "isLoadingPrevious" to this.isLoadingPrevious?.let { Variable.of(it) }, "connectionID" to this.connectionID?.let { Variable.of(it) }, "loadNext" to this.loadNext?.let { Variable.of(it) }, "loadPrevious" to this.loadPrevious?.let { Variable.of(it) }, "bound" to this.bound?.let { Variable.of(it) }, "errors" to this.errors?.let { Variable.of(it) }, "child" to this.child?.let { Variable.of(it) }, "missing" to this.missing?.let { Variable.of(it) }, "count" to this.count?.let { Variable.of(it) }, "lhs" to this.lhs?.let { Variable.of(it) }, "rhs" to this.rhs?.let { Variable.of(it) }, "hasher" to this.hasher?.let { Variable.of(it) }, "selection0" to this.selection0?.let { Variable.of(it) }, "selection" to this.selection?.let { Variable.of(it) }, "optimistic" to this.optimistic?.let { Variable.of(it) }, "selfValue" to this.selfValue?.let { Variable.of(it) }, "values" to this.values?.let { Variable.of(it) }, "Fragment" to this.Fragment?.let { Variable.of(it) }, "Spread" to this.Spread?.let { Variable.of(it) }, "Owner" to this.Owner?.let { Variable.of(it) }, "Query" to this.Query?.let { Variable.of(it) }, "Operation" to this.Operation?.let { Variable.of(it) }, "RefetchQuery" to this.RefetchQuery?.let { Variable.of(it) }, "fields" to this.fields?.let { Variable.of(it) }, "variables" to this.variables?.let { Variable.of(it) }, "resolution" to this.resolution?.let { Variable.of(it) }, "name" to this.name?.let { Variable.of(it) }, "document" to this.document?.let { Variable.of(it) }, "text" to this.text?.let { Variable.of(it) }, "plan" to this.plan?.let { Variable.of(it) }, "errorBehavior" to this.errorBehavior?.let { Variable.of(it) }, "throwsOnFieldError" to this.throwsOnFieldError?.let { Variable.of(it) }, "bubbles" to this.bubbles?.let { Variable.of(it) }, "hasDeferred" to this.hasDeferred?.let { Variable.of(it) }, "cacheExpiration" to this.cacheExpiration?.let { Variable.of(it) }, "Data" to this.Data?.let { Variable.of(it) }, "Action" to this.Action?.let { Variable.of(it) }, "OptimisticResponse" to this.OptimisticResponse?.let { Variable.of(it) }, "hash" to this.hash?.let { Variable.of(it) }, "commit" to this.commit?.let { Variable.of(it) }, "callAsFunction" to this.callAsFunction?.let { Variable.of(it) }, "Op" to this.Op?.let { Variable.of(it) }, "payload" to this.payload?.let { Variable.of(it) }, "hashValue" to this.hashValue?.let { Variable.of(it) }, "phase" to this.phase?.let { Variable.of(it) }, "isRefreshing" to this.isRefreshing?.let { Variable.of(it) }, "isStale" to this.isStale?.let { Variable.of(it) }, "retry" to this.retry?.let { Variable.of(it) }, "subscription" to this.subscription?.let { Variable.of(it) }, "Types" to this.Types?.let { Variable.of(it) }, "Sites" to this.Sites?.let { Variable.of(it) }, "Guards" to this.Guards?.let { Variable.of(it) }, "AbstractSlots" to this.AbstractSlots?.let { Variable.of(it) }, "schemaDigest" to this.schemaDigest?.let { Variable.of(it) }, "format" to this.format?.let { Variable.of(it) }, "transient" to this.transient?.let { Variable.of(it) }, "Baton" to this.Baton?.let { Variable.of(it) }, "Swift" to this.Swift?.let { Variable.of(it) }, "Set" to this.Set?.let { Variable.of(it) }, "Result" to this.Result?.let { Variable.of(it) }, "Optional" to this.Optional?.let { Variable.of(it) }, "String" to this.String?.let { Variable.of(it) }, "Int" to this.Int?.let { Variable.of(it) }, "Double" to this.Double?.let { Variable.of(it) }, "Bool" to this.Bool?.let { Variable.of(it) }, "MainActor" to this.MainActor?.let { Variable.of(it) }, "Hasher" to this.Hasher?.let { Variable.of(it) }, "Sendable" to this.Sendable?.let { Variable.of(it) }, "id" to this.id?.let { Variable.of(it) }).values)
+            }
+        }
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class AddNote(val Type: Type2? = null, val Protocol: Protocol2? = null, val Any: AnyResponse? = null, val self: Self2? = null, @get:JvmName("getSelf2") val Self: Self3? = null, val init: Init? = null, val deinit: Deinit? = null, val subscript: Subscript? = null, @get:JvmName("getClass2") val `class`: Class? = null, val struct: Struct? = null, val enum: Enum? = null, val func: Func? = null, val `var`: Var? = null, val let: Let? = null, val import: Import? = null, val extension: Extension? = null, val operator: Operator? = null, val static: Static? = null, val default: Default? = null, val case: Case? = null, val switch: Switch? = null, val `if`: If? = null, val `else`: Else? = null, val `for`: For? = null, val `in`: In? = null, val `while`: While? = null, val repeat: Repeat? = null, val `return`: Return? = null, val `break`: Break? = null, val `continue`: Continue? = null, val where: Where? = null, val `is`: Is? = null, val `as`: As? = null, val `try`: Try? = null, val `throw`: Throw? = null, val throws: Throws? = null, val guard: Guard? = null, val defer: Defer? = null, val `do`: Do? = null, val catch: Catch? = null, val `true`: True? = null, val `false`: False? = null, val nil: Nil? = null, val `super`: Super? = null, val internal: Internal? = null, val private: Private? = null, val public: Public? = null, val fileprivate: Fileprivate? = null, val open: Open? = null, val inout: Inout? = null, val `typealias`: Typealias? = null, val associatedtype: Associatedtype? = null, @get:JvmName("getProtocol2") val protocol: Protocol3? = null, val some: Some? = null, @get:JvmName("getAny2") val any: AnyResponse2? = null, val rethrows: Rethrows? = null, val fallthrough: Fallthrough? = null, val precedencegroup: Precedencegroup? = null, val `_`: _2? = null, val async: Async? = null, val borrowing: Borrowing? = null, val consume: Consume? = null, val consuming: Consuming? = null, val copy: Copy? = null, val discard: Discard? = null, val each: Each? = null, val isolated: Isolated? = null, val sending: Sending? = null, val then: Then? = null, val unsafe: Unsafe? = null, val await: Await? = null, val satisfied: Satisfied? = null, val missingRequiredField: MissingRequiredField? = null, val fieldErrors: FieldErrors? = null, val isPresent: IsPresent? = null, val throwing: Throwing? = null, val caught: Caught? = null, val refetchable: Refetchable? = null, val refetch: Refetch? = null, val connection: Connection? = null, val nodes: Nodes? = null, val hasNext: HasNext? = null, val hasPrevious: HasPrevious? = null, val isLoadingNext: IsLoadingNext? = null, val isLoadingPrevious: IsLoadingPrevious? = null, val connectionID: ConnectionID? = null, val loadNext: LoadNext? = null, val loadPrevious: LoadPrevious? = null, val bound: Bound? = null, val errors: Errors? = null, val child: Child? = null, val missing: Missing? = null, val count: Count? = null, val lhs: Lhs? = null, val rhs: Rhs? = null, val hasher: Hasher2? = null, val selection0: Selection0? = null, val selection: Selection? = null, val optimistic: Optimistic? = null, val selfValue: SelfValue? = null, val values: Values? = null, val Fragment: Fragment2? = null, val Spread: Spread2? = null, val Owner: Owner2? = null, val Query: Query2? = null, val Operation: Operation2? = null, val RefetchQuery: RefetchQuery2? = null, val fields: Fields? = null, val variables: VariablesResponse? = null, val resolution: Resolution? = null, val name: Name? = null, val document: Document? = null, val text: Text? = null, val plan: Plan? = null, val errorBehavior: ErrorBehavior? = null, val throwsOnFieldError: ThrowsOnFieldError? = null, val bubbles: Bubbles? = null, val hasDeferred: HasDeferred? = null, val cacheExpiration: CacheExpiration? = null, val Data: Data2? = null, val Action: Action2? = null, val OptimisticResponse: OptimisticResponse2? = null, val hash: Hash? = null, val commit: Commit? = null, val callAsFunction: CallAsFunction? = null, val Op: Op2? = null, @get:JvmName("getPayload2") val payload: PayloadResponse? = null, val hashValue: HashValue? = null, val phase: Phase? = null, val isRefreshing: IsRefreshing? = null, val isStale: IsStale? = null, val retry: Retry? = null, val subscription: Subscription? = null, val Types: Types2? = null, val Sites: Sites2? = null, val Guards: Guards2? = null, val AbstractSlots: AbstractSlots2? = null, val schemaDigest: SchemaDigest? = null, val format: Format? = null, val transient: Transient? = null, val Baton: Baton2? = null, val Swift: Swift2? = null, val Set: Set2? = null, val Result: Result2? = null, val Optional: Optional2? = null, val String: StringResponse? = null, val Int: IntResponse? = null, val Double: DoubleResponse? = null, val Bool: Bool2? = null, val MainActor: MainActor2? = null, @get:JvmName("getHasher2") val Hasher: Hasher3? = null, val Sendable: Sendable2? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("Type" to this.Type?.variable, "Protocol" to this.Protocol?.variable, "Any" to this.Any?.variable, "self" to this.self?.variable, "Self" to this.Self?.variable, "init" to this.init?.variable, "deinit" to this.deinit?.variable, "subscript" to this.subscript?.variable, "class" to this.`class`?.variable, "struct" to this.struct?.variable, "enum" to this.enum?.variable, "func" to this.func?.variable, "var" to this.`var`?.variable, "let" to this.let?.variable, "import" to this.import?.variable, "extension" to this.extension?.variable, "operator" to this.operator?.variable, "static" to this.static?.variable, "default" to this.default?.variable, "case" to this.case?.variable, "switch" to this.switch?.variable, "if" to this.`if`?.variable, "else" to this.`else`?.variable, "for" to this.`for`?.variable, "in" to this.`in`?.variable, "while" to this.`while`?.variable, "repeat" to this.repeat?.variable, "return" to this.`return`?.variable, "break" to this.`break`?.variable, "continue" to this.`continue`?.variable, "where" to this.where?.variable, "is" to this.`is`?.variable, "as" to this.`as`?.variable, "try" to this.`try`?.variable, "throw" to this.`throw`?.variable, "throws" to this.throws?.variable, "guard" to this.guard?.variable, "defer" to this.defer?.variable, "do" to this.`do`?.variable, "catch" to this.catch?.variable, "true" to this.`true`?.variable, "false" to this.`false`?.variable, "nil" to this.nil?.variable, "super" to this.`super`?.variable, "internal" to this.internal?.variable, "private" to this.private?.variable, "public" to this.public?.variable, "fileprivate" to this.fileprivate?.variable, "open" to this.open?.variable, "inout" to this.inout?.variable, "typealias" to this.`typealias`?.variable, "associatedtype" to this.associatedtype?.variable, "protocol" to this.protocol?.variable, "some" to this.some?.variable, "any" to this.any?.variable, "rethrows" to this.rethrows?.variable, "fallthrough" to this.fallthrough?.variable, "precedencegroup" to this.precedencegroup?.variable, "_" to this.`_`?.variable, "async" to this.async?.variable, "borrowing" to this.borrowing?.variable, "consume" to this.consume?.variable, "consuming" to this.consuming?.variable, "copy" to this.copy?.variable, "discard" to this.discard?.variable, "each" to this.each?.variable, "isolated" to this.isolated?.variable, "sending" to this.sending?.variable, "then" to this.then?.variable, "unsafe" to this.unsafe?.variable, "await" to this.await?.variable, "satisfied" to this.satisfied?.variable, "missingRequiredField" to this.missingRequiredField?.variable, "fieldErrors" to this.fieldErrors?.variable, "isPresent" to this.isPresent?.variable, "throwing" to this.throwing?.variable, "caught" to this.caught?.variable, "refetchable" to this.refetchable?.variable, "refetch" to this.refetch?.variable, "connection" to this.connection?.variable, "nodes" to this.nodes?.variable, "hasNext" to this.hasNext?.variable, "hasPrevious" to this.hasPrevious?.variable, "isLoadingNext" to this.isLoadingNext?.variable, "isLoadingPrevious" to this.isLoadingPrevious?.variable, "connectionID" to this.connectionID?.variable, "loadNext" to this.loadNext?.variable, "loadPrevious" to this.loadPrevious?.variable, "bound" to this.bound?.variable, "errors" to this.errors?.variable, "child" to this.child?.variable, "missing" to this.missing?.variable, "count" to this.count?.variable, "lhs" to this.lhs?.variable, "rhs" to this.rhs?.variable, "hasher" to this.hasher?.variable, "selection0" to this.selection0?.variable, "selection" to this.selection?.variable, "optimistic" to this.optimistic?.variable, "selfValue" to this.selfValue?.variable, "values" to this.values?.variable, "Fragment" to this.Fragment?.variable, "Spread" to this.Spread?.variable, "Owner" to this.Owner?.variable, "Query" to this.Query?.variable, "Operation" to this.Operation?.variable, "RefetchQuery" to this.RefetchQuery?.variable, "fields" to this.fields?.variable, "variables" to this.variables?.variable, "resolution" to this.resolution?.variable, "name" to this.name?.variable, "document" to this.document?.variable, "text" to this.text?.variable, "plan" to this.plan?.variable, "errorBehavior" to this.errorBehavior?.variable, "throwsOnFieldError" to this.throwsOnFieldError?.variable, "bubbles" to this.bubbles?.variable, "hasDeferred" to this.hasDeferred?.variable, "cacheExpiration" to this.cacheExpiration?.variable, "Data" to this.Data?.variable, "Action" to this.Action?.variable, "OptimisticResponse" to this.OptimisticResponse?.variable, "hash" to this.hash?.variable, "commit" to this.commit?.variable, "callAsFunction" to this.callAsFunction?.variable, "Op" to this.Op?.variable, "payload" to this.payload?.variable, "hashValue" to this.hashValue?.variable, "phase" to this.phase?.variable, "isRefreshing" to this.isRefreshing?.variable, "isStale" to this.isStale?.variable, "retry" to this.retry?.variable, "subscription" to this.subscription?.variable, "Types" to this.Types?.variable, "Sites" to this.Sites?.variable, "Guards" to this.Guards?.variable, "AbstractSlots" to this.AbstractSlots?.variable, "schemaDigest" to this.schemaDigest?.variable, "format" to this.format?.variable, "transient" to this.transient?.variable, "Baton" to this.Baton?.variable, "Swift" to this.Swift?.variable, "Set" to this.Set?.variable, "Result" to this.Result?.variable, "Optional" to this.Optional?.variable, "String" to this.String?.variable, "Int" to this.Int?.variable, "Double" to this.Double?.variable, "Bool" to this.Bool?.variable, "MainActor" to this.MainActor?.variable, "Hasher" to this.Hasher?.variable, "Sendable" to this.Sendable?.variable).values)
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Type2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Protocol2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class AnyResponse(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Self2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Self3(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Init(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Deinit(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Subscript(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Class(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Struct(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Enum(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Func(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Var(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Let(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Import(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Extension(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Operator(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Static(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Default(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Case(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Switch(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class If(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Else(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class For(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class In(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class While(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Repeat(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Return(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Break(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Continue(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Where(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Is(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class As(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Try(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Throw(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Throws(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Guard(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Defer(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Do(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Catch(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class True(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class False(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Nil(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Super(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Internal(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Private(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Public(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Fileprivate(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Open(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Inout(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Typealias(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Associatedtype(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Protocol3(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Some(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class AnyResponse2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Rethrows(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Fallthrough(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Precedencegroup(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class _2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Async(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Borrowing(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Consume(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Consuming(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Copy(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Discard(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Each(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Isolated(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Sending(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Then(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Unsafe(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Await(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Satisfied(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class MissingRequiredField(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class FieldErrors(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class IsPresent(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Throwing(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Caught(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Refetchable(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Refetch(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Connection(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Nodes(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class HasNext(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class HasPrevious(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class IsLoadingNext(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class IsLoadingPrevious(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class ConnectionID(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class LoadNext(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class LoadPrevious(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Bound(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Errors(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Child(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Missing(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Count(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Lhs(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Rhs(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Hasher2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Selection0(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Selection(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Optimistic(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class SelfValue(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Values(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Fragment2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Spread2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Owner2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Query2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Operation2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class RefetchQuery2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Fields(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class VariablesResponse(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Resolution(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Name(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Document(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Text(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Plan(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class ErrorBehavior(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class ThrowsOnFieldError(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Bubbles(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class HasDeferred(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class CacheExpiration(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Data2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Action2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class OptimisticResponse2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Hash(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Commit(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class CallAsFunction(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Op2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class PayloadResponse(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class HashValue(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Phase(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class IsRefreshing(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class IsStale(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Retry(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Subscription(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Types2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Sites2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Guards2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class AbstractSlots2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class SchemaDigest(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Format(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Transient(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Baton2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Swift2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Set2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Result2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Optional2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class StringResponse(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class IntResponse(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class DoubleResponse(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Bool2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class MainActor2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Hasher3(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Sendable2(val id: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }).values)
+            }
+        }
+    }
 }
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<HostilePayload, HostilePayload.Data>.invoke(optimistic: HostilePayload.OptimisticResponse? = null): HostilePayload.Data = this.commit(HostilePayload(), optimistic?.payload)
 
 /** Operation value for `query HostileReach`. */
 class HostileReach : QueryOperation<HostileReach.Data> {

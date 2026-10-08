@@ -1,8 +1,10 @@
 //! Operation values in Kotlin: a class of the variables, equal by them,
 //! whose companion holds what the build knows about the operation, its plan
-//! among it, and whose `Data` is the root lens.
+//! among it, and whose `Data` is the root lens; a mutation's nests its
+//! `OptimisticResponse` and is called through an `invoke` on its action.
 
 use super::super::writer::Writer;
+use super::builder::builder;
 use super::lens::Lenses;
 use super::literal::{
     Base, Converters, ValueShape, jvm_getters, optional_value_expression, property_read,
@@ -12,9 +14,10 @@ use super::plan::PlanSelections;
 use crate::config::OnError;
 use crate::decide::{OperationValue, Shared, VariableBase, VariableValue};
 use crate::kotlin_names::escape;
+use crate::naming::numbered;
 use crate::pipeline::OperationKind;
 
-/// The operation's class.
+/// The operation's class, and a mutation's action.
 pub(super) fn operation_text(operation: &OperationValue, lenses: &Lenses) -> String {
     let shared = lenses.shared;
     let converters = lenses.converters;
@@ -78,8 +81,57 @@ pub(super) fn operation_text(operation: &OperationValue, lenses: &Lenses) -> Str
             &operation.data,
             &format!("{class}.{}", escape(&operation.data.name)),
         );
+        if let Some(optimistic) = &operation.optimistic {
+            writer.blank();
+            builder(writer, optimistic, converters);
+        }
     });
+    if operation.kind == OperationKind::Mutation {
+        writer.blank();
+        action(&mut writer, operation, converters);
+    }
     writer.finish()
+}
+
+/// A mutation's action as a function: an `invoke` on the runtime's
+/// `MutationAction` of this mutation, one parameter per variable and the
+/// optimistic response, which commits the value they make.
+fn action(writer: &mut Writer, operation: &OperationValue, converters: &Converters) {
+    let class = escape(&operation.name);
+    let locals: Vec<&str> = operation
+        .variables
+        .iter()
+        .map(|variable| variable.name.as_str())
+        .collect();
+    let optimistic = numbered("optimistic", &locals);
+    let mut parameters: Vec<String> = operation
+        .variables
+        .iter()
+        .map(|variable| {
+            let default = if variable.non_null { "" } else { " = null" };
+            format!(
+                "{}: {}{default}",
+                variable.local,
+                converters.value_type(&shape(variable))
+            )
+        })
+        .collect();
+    parameters.push(format!("{optimistic}: {class}.OptimisticResponse? = null"));
+    let arguments: Vec<&str> = operation
+        .variables
+        .iter()
+        .map(|variable| variable.local.as_str())
+        .collect();
+    writer.line(
+        "/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */",
+    );
+    // The action calls its `commit` through `this`, as a parameter for a
+    // variable named `commit` would take its place.
+    writer.line(format!(
+        "suspend operator fun MutationAction<{class}, {class}.Data>.invoke({}): {class}.Data = this.commit({class}({}), {optimistic}?.payload)",
+        parameters.join(", "),
+        arguments.join(", ")
+    ));
 }
 
 /// What a variable holds.

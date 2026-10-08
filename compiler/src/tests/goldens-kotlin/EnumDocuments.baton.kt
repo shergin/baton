@@ -6,11 +6,14 @@ package baton.goldens
 import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
+import baton.Generated
 import baton.Lens
+import baton.MutationAction
 import baton.MutationOperation
 import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
+import baton.Payload
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
@@ -107,4 +110,25 @@ class TestSetStatuses : MutationOperation<TestSetStatuses.Data> {
             override fun hashCode(): Int = anchor.hashCode()
         }
     }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val setLists: SetLists? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("setLists" to this.setLists?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class SetLists(val statuses: List<Status?>? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("statuses" to this.statuses?.let { Variable.List(it.map { Variable.of(it) }) }).values)
+        }
+    }
 }
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<TestSetStatuses, TestSetStatuses.Data>.invoke(optimistic: TestSetStatuses.OptimisticResponse? = null): TestSetStatuses.Data = this.commit(TestSetStatuses(), optimistic?.payload)

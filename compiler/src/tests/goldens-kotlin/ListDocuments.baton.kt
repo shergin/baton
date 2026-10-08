@@ -12,10 +12,12 @@ import baton.Edit
 import baton.Generated
 import baton.Lens
 import baton.Lookup
+import baton.MutationAction
 import baton.MutationOperation
 import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
+import baton.Payload
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
@@ -501,7 +503,44 @@ class TestAddNote(val characterId: String, val text: String, val connections: Li
             }
         }
     }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val addNote: AddNote? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("addNote" to this.addNote?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class AddNote(val noteEdge: NoteEdge? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("noteEdge" to this.noteEdge?.variable).values)
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class NoteEdge(val cursor: String? = null, val node: Node? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("cursor" to this.cursor?.let { Variable.of(it) }, "node" to this.node?.variable).values)
+
+                /** A partial response to show before the server answers; absent fields leave the store untouched. */
+                class Node(val id: String? = null, val text: String? = null) {
+                    /** The response's data as a variable, an absent field left out. */
+                    @Generated
+                    val variable: Variable
+                        get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }, "text" to this.text?.let { Variable.of(it) }).values)
+                }
+            }
+        }
+    }
 }
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<TestAddNote, TestAddNote.Data>.invoke(characterId: String, text: String, connections: List<String>, optimistic: TestAddNote.OptimisticResponse? = null): TestAddNote.Data = this.commit(TestAddNote(characterId, text, connections), optimistic?.payload)
 
 /** Operation value for `mutation TestAddNoteFirst`. */
 class TestAddNoteFirst(val characterId: String, val text: String, val connections: List<String>) : MutationOperation<TestAddNoteFirst.Data> {
@@ -572,7 +611,44 @@ class TestAddNoteFirst(val characterId: String, val text: String, val connection
             }
         }
     }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val addNote: AddNote? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("addNote" to this.addNote?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class AddNote(val noteEdge: NoteEdge? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("noteEdge" to this.noteEdge?.variable).values)
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class NoteEdge(val cursor: String? = null, val node: Node? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("cursor" to this.cursor?.let { Variable.of(it) }, "node" to this.node?.variable).values)
+
+                /** A partial response to show before the server answers; absent fields leave the store untouched. */
+                class Node(val id: String? = null, val text: String? = null) {
+                    /** The response's data as a variable, an absent field left out. */
+                    @Generated
+                    val variable: Variable
+                        get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }, "text" to this.text?.let { Variable.of(it) }).values)
+                }
+            }
+        }
+    }
 }
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<TestAddNoteFirst, TestAddNoteFirst.Data>.invoke(characterId: String, text: String, connections: List<String>, optimistic: TestAddNoteFirst.OptimisticResponse? = null): TestAddNoteFirst.Data = this.commit(TestAddNoteFirst(characterId, text, connections), optimistic?.payload)
 
 /** Operation value for `mutation TestAddNoteNode`. */
 class TestAddNoteNode(val characterId: String, val text: String, val connections: List<String>) : MutationOperation<TestAddNoteNode.Data> {
@@ -629,7 +705,36 @@ class TestAddNoteNode(val characterId: String, val text: String, val connections
             }
         }
     }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val addNote: AddNote? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("addNote" to this.addNote?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class AddNote(val note: Note? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("note" to this.note?.variable).values)
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Note(val id: String? = null, val text: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }, "text" to this.text?.let { Variable.of(it) }).values)
+            }
+        }
+    }
 }
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<TestAddNoteNode, TestAddNoteNode.Data>.invoke(characterId: String, text: String, connections: List<String>, optimistic: TestAddNoteNode.OptimisticResponse? = null): TestAddNoteNode.Data = this.commit(TestAddNoteNode(characterId, text, connections), optimistic?.payload)
 
 /** Operation value for `mutation TestAddNoteNodeFirst`. */
 class TestAddNoteNodeFirst(val characterId: String, val text: String, val connections: List<String>) : MutationOperation<TestAddNoteNodeFirst.Data> {
@@ -686,7 +791,36 @@ class TestAddNoteNodeFirst(val characterId: String, val text: String, val connec
             }
         }
     }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val addNote: AddNote? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("addNote" to this.addNote?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class AddNote(val note: Note? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("note" to this.note?.variable).values)
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Note(val id: String? = null, val text: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }, "text" to this.text?.let { Variable.of(it) }).values)
+            }
+        }
+    }
 }
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<TestAddNoteNodeFirst, TestAddNoteNodeFirst.Data>.invoke(characterId: String, text: String, connections: List<String>, optimistic: TestAddNoteNodeFirst.OptimisticResponse? = null): TestAddNoteNodeFirst.Data = this.commit(TestAddNoteNodeFirst(characterId, text, connections), optimistic?.payload)
 
 /** Operation value for `mutation TestAddNoteNodeOfAnotherType`. */
 class TestAddNoteNodeOfAnotherType(val characterId: String, val text: String, val connections: List<String>) : MutationOperation<TestAddNoteNodeOfAnotherType.Data> {
@@ -743,7 +877,36 @@ class TestAddNoteNodeOfAnotherType(val characterId: String, val text: String, va
             }
         }
     }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val addNote: AddNote? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("addNote" to this.addNote?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class AddNote(val note: Note? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("note" to this.note?.variable).values)
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Note(val id: String? = null, val text: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }, "text" to this.text?.let { Variable.of(it) }).values)
+            }
+        }
+    }
 }
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<TestAddNoteNodeOfAnotherType, TestAddNoteNodeOfAnotherType.Data>.invoke(characterId: String, text: String, connections: List<String>, optimistic: TestAddNoteNodeOfAnotherType.OptimisticResponse? = null): TestAddNoteNodeOfAnotherType.Data = this.commit(TestAddNoteNodeOfAnotherType(characterId, text, connections), optimistic?.payload)
 
 /** Operation value for `query TestAliasQuery`. */
 class TestAliasQuery(val id: String) : QueryOperation<TestAliasQuery.Data> {
@@ -1094,7 +1257,28 @@ class TestDeleteNote(val id: String) : MutationOperation<TestDeleteNote.Data> {
             override fun hashCode(): Int = anchor.hashCode()
         }
     }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val removeNote: RemoveNote? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("removeNote" to this.removeNote?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class RemoveNote(val removedNoteId: String? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("removedNoteId" to this.removedNoteId?.let { Variable.of(it) }).values)
+        }
+    }
 }
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<TestDeleteNote, TestDeleteNote.Data>.invoke(id: String, optimistic: TestDeleteNote.OptimisticResponse? = null): TestDeleteNote.Data = this.commit(TestDeleteNote(id), optimistic?.payload)
 
 /** Operation value for `query TestHiddenNotesPaginationQuery`. */
 class TestHiddenNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestHiddenNotesPaginationQuery.Data> {
@@ -1855,7 +2039,28 @@ class TestRemoveNote(val id: String, val connections: List<String>) : MutationOp
             override fun hashCode(): Int = anchor.hashCode()
         }
     }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val removeNote: RemoveNote? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("removeNote" to this.removeNote?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class RemoveNote(val removedNoteId: String? = null, val deleted: String? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("removedNoteId" to this.removedNoteId?.let { Variable.of(it) }, "deleted" to this.deleted?.let { Variable.of(it) }).values)
+        }
+    }
 }
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<TestRemoveNote, TestRemoveNote.Data>.invoke(id: String, connections: List<String>, optimistic: TestRemoveNote.OptimisticResponse? = null): TestRemoveNote.Data = this.commit(TestRemoveNote(id, connections), optimistic?.payload)
 
 /** Operation value for `query TestTwoPagesQuery`. */
 class TestTwoPagesQuery(val id: String) : QueryOperation<TestTwoPagesQuery.Data> {

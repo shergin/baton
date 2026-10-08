@@ -342,6 +342,10 @@ in flight: `@Mutation("…") var star: StarMutation.Action`. The builder's
 own members, `payload` and `variable`, are names a mutation's root field
 cannot carry or be aliased to; the compiler refuses the alias at its name,
 as it refuses every name generated code reserves.
+Kotlin: the action is the runtime's `MutationAction<Op, Data>`, and the call
+a generated `suspend operator fun` extension `invoke` on it, one parameter
+per variable and `optimistic`, the mutation's `OptimisticResponse`, last
+and null by default.
 
 ## Store
 
@@ -570,6 +574,10 @@ the payload, re-applies them, and notifies only slots whose value differs
 in the end. The server's answer replaces the layer; a failure reverts it.
 See [the contract](../spec/runtime.md#4-the-commit).
 Swift: the typed response is `OptimisticResponse`.
+Kotlin: the typed response is `OptimisticResponse`, a class nested per
+selection set whose constructor parameters all default to null, an absent
+field leaving the store untouched; its `payload` is what the action
+commits.
 
 **Mutation root.** *Concept: record.*
 Here: the record mutation payloads hang off, `client:root:mutation`, beside

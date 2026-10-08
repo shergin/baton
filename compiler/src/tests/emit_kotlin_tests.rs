@@ -305,6 +305,37 @@ fn an_enum_reads_through_the_generated_of() {
 }
 
 #[test]
+fn a_mutation_is_called_through_an_invoke_on_its_action() {
+    let output = emitted(
+        "Screen.kt",
+        Some("app.generated"),
+        "mutation Probe($id: ID!, $name: String!) { rename(id: $id, name: $name) { character { id name } } }",
+    );
+    let text = file(&output);
+    assert!(text.contains(
+        "suspend operator fun MutationAction<Probe, Probe.Data>.invoke(id: String, name: String, optimistic: Probe.OptimisticResponse? = null): Probe.Data = this.commit(Probe(id, name), optimistic?.payload)"
+    ));
+    assert!(text.contains("class OptimisticResponse(val rename: Rename? = null) {"));
+    assert!(text.contains("class Character(val id: String? = null, val name: String? = null) {"));
+    assert!(text.contains(
+        "get() = Variable.Object(Variables.of(\"id\" to this.id?.let { Variable.of(it) }, \"name\" to this.name?.let { Variable.of(it) }).values)"
+    ));
+    assert!(text.contains("val payload: Payload get() = Payload(data = variable)"));
+}
+
+#[test]
+fn a_variable_named_optimistic_moves_the_optimistic_parameter_aside() {
+    let output = emitted(
+        "Screen.kt",
+        Some("app.generated"),
+        "mutation Probe($optimistic: ID!) { setFavorite(id: $optimistic, favorite: true) { character { id } } }",
+    );
+    assert!(file(&output).contains(
+        ".invoke(optimistic: String, optimistic2: Probe.OptimisticResponse? = null): Probe.Data = this.commit(Probe(optimistic), optimistic2?.payload)"
+    ));
+}
+
+#[test]
 fn an_enum_value_spelled_like_the_undeclared_case_takes_an_underscore() {
     let shared = crate::decide::Shared {
         enums: BTreeMap::from([(

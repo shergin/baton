@@ -6,13 +6,16 @@ package baton.goldens
 import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
+import baton.Generated
 import baton.Guard
 import baton.Lens
 import baton.Lookup
+import baton.MutationAction
 import baton.MutationOperation
 import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
+import baton.Payload
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
@@ -227,7 +230,36 @@ class TestRename(val id: String, val name: String) : MutationOperation<TestRenam
             }
         }
     }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val rename: Rename? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("rename" to this.rename?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class Rename(val character: Character? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("character" to this.character?.variable).values)
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Character(val id: String? = null, val name: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }, "name" to this.name?.let { Variable.of(it) }).values)
+            }
+        }
+    }
 }
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<TestRename, TestRename.Data>.invoke(id: String, name: String, optimistic: TestRename.OptimisticResponse? = null): TestRename.Data = this.commit(TestRename(id, name), optimistic?.payload)
 
 /** Operation value for `mutation TestRenameThroughFragment`. */
 class TestRenameThroughFragment(val id: String, val name: String) : MutationOperation<TestRenameThroughFragment.Data> {
@@ -269,7 +301,36 @@ class TestRenameThroughFragment(val id: String, val name: String) : MutationOper
         override fun equals(other: Any?): Boolean = other is TestRenameThroughFragment.Data && other.anchor == anchor
         override fun hashCode(): Int = anchor.hashCode()
     }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val rename: Rename? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("rename" to this.rename?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class Rename(val character: Character? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("character" to this.character?.variable).values)
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Character(val id: String? = null, val name: String? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }, "name" to this.name?.let { Variable.of(it) }).values)
+            }
+        }
+    }
 }
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<TestRenameThroughFragment, TestRenameThroughFragment.Data>.invoke(id: String, name: String, optimistic: TestRenameThroughFragment.OptimisticResponse? = null): TestRenameThroughFragment.Data = this.commit(TestRenameThroughFragment(id, name), optimistic?.payload)
 
 /** Operation value for `mutation TestRenameWithOrigin`. */
 class TestRenameWithOrigin(val id: String, val name: String, val withOrigin: Boolean) : MutationOperation<TestRenameWithOrigin.Data> {
@@ -342,7 +403,44 @@ class TestRenameWithOrigin(val id: String, val name: String, val withOrigin: Boo
             }
         }
     }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val rename: Rename? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("rename" to this.rename?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class Rename(val character: Character? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("character" to this.character?.variable).values)
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Character(val id: String? = null, val name: String? = null, val origin: Origin? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }, "name" to this.name?.let { Variable.of(it) }, "origin" to this.origin?.variable).values)
+
+                /** A partial response to show before the server answers; absent fields leave the store untouched. */
+                class Origin(val id: String? = null, val name: String? = null) {
+                    /** The response's data as a variable, an absent field left out. */
+                    @Generated
+                    val variable: Variable
+                        get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }, "name" to this.name?.let { Variable.of(it) }).values)
+                }
+            }
+        }
+    }
 }
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<TestRenameWithOrigin, TestRenameWithOrigin.Data>.invoke(id: String, name: String, withOrigin: Boolean, optimistic: TestRenameWithOrigin.OptimisticResponse? = null): TestRenameWithOrigin.Data = this.commit(TestRenameWithOrigin(id, name, withOrigin), optimistic?.payload)
 
 /** Operation value for `query TestSearch`. */
 class TestSearch(val name: String) : QueryOperation<TestSearch.Data> {
@@ -563,4 +661,33 @@ class TestSetFavorite(val id: String, val favorite: Boolean) : MutationOperation
             }
         }
     }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val setFavorite: SetFavorite? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("setFavorite" to this.setFavorite?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class SetFavorite(val character: Character? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("character" to this.character?.variable).values)
+
+            /** A partial response to show before the server answers; absent fields leave the store untouched. */
+            class Character(val id: String? = null, val name: String? = null, val favorite: Boolean? = null) {
+                /** The response's data as a variable, an absent field left out. */
+                @Generated
+                val variable: Variable
+                    get() = Variable.Object(Variables.of("id" to this.id?.let { Variable.of(it) }, "name" to this.name?.let { Variable.of(it) }, "favorite" to this.favorite?.let { Variable.of(it) }).values)
+            }
+        }
+    }
 }
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<TestSetFavorite, TestSetFavorite.Data>.invoke(id: String, favorite: Boolean, optimistic: TestSetFavorite.OptimisticResponse? = null): TestSetFavorite.Data = this.commit(TestSetFavorite(id, favorite), optimistic?.payload)

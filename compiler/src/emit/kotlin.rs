@@ -1,16 +1,17 @@
 //! The Kotlin emitter: fragments' lenses and `@inline` fragments' values,
-//! operation values with their plans and root lenses, and the shared file of
-//! interned types and slots, the conditions and argument sites, the
-//! schema's enums and its input objects. A mutation's optimistic response
-//! and action come next.
+//! operation values with their plans, root lenses and a mutation's
+//! optimistic response and action, and the shared file of interned types
+//! and slots, the conditions and argument sites, the schema's enums and its
+//! input objects.
 //!
 //! Output per host file `X.kt` is `X.baton.kt`, in the host's package; the
 //! code of a `.graphql` source and the shared `Baton.baton.kt` take the
 //! package `baton.json` names under `kotlin`. One printer per output:
 //! `shared` writes the shared file, `lens` the lenses and values,
-//! `operation` the operation values and `plan` their plans; `literal`
-//! holds what they share.
+//! `operation` the operation values, `plan` their plans and `builder` the
+//! optimistic responses; `literal` holds what they share.
 
+mod builder;
 mod lens;
 mod literal;
 mod operation;

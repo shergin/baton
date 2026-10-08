@@ -52,7 +52,7 @@ pub const KEYWORDS: [&str; 28] = [
 /// unqualified. A fragment or an operation of one of these names would
 /// conflict with the import in its own file; one the generated code comes to
 /// spell joins the list in the same change.
-pub const RUNTIME_NAMES: [&str; 42] = [
+pub const RUNTIME_NAMES: [&str; 44] = [
     "AbstractSlot",
     "Anchor",
     "ArgumentSite",
@@ -74,10 +74,12 @@ pub const RUNTIME_NAMES: [&str; 42] = [
     "Lens",
     "Lookup",
     "Members",
+    "MutationAction",
     "MutationOperation",
     "OperationHandle",
     "OperationKind",
     "OperationType",
+    "Payload",
     "Plan",
     "PlanField",
     "QueryOperation",
@@ -140,16 +142,21 @@ pub const LENS_RESERVED_NAMES: [&str; 24] = [
     "Variables",
 ];
 
-/// What a nested optimistic-response builder may not be named.
-pub const BUILDER_RESERVED_NAMES: [&str; 8] = [
+/// What a nested optimistic-response builder may not be named: what a
+/// builder spells.
+pub const BUILDER_RESERVED_NAMES: [&str; 12] = [
     "Companion",
     "Payload",
     "String",
     "Int",
+    "Long",
     "Double",
     "Boolean",
     "Any",
     "List",
+    "Generated",
+    "Variable",
+    "Variables",
 ];
 
 /// What `object Types` declares or spells beside the schema's types: a type
