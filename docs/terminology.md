@@ -37,6 +37,8 @@ Swift: the markers are macros, `@Query("…")`, `@Fragment("…")`,
 Kotlin: the markers are annotations of the same names on the composable,
 or the class, that renders, holds or acts, a document with a variable
 written in a `$$"""…"""` raw string; nothing of them reaches a class file.
+Each repeats, so a host may carry several documents, as a button that stars
+and unstars carries two `@Mutation`s.
 
 **Fragment.** *Concept: document.* GraphQL: a named selection on a type.
 Relay: the unit of a component's data needs.
@@ -66,7 +68,10 @@ Kotlin: `QueryOperation`, `MutationOperation` and `SubscriptionOperation`,
 declared with `@Query`, `@Mutation` and `@Subscription`; a composable
 resolves a query value with `rememberQuery(operation, fetchPolicy)`, a
 subscription value with `rememberSubscription(operation)`, and takes a
-mutation's action with `rememberMutation(Companion)`.
+mutation's action with `rememberMutation(Companion)`. The companions'
+types, `OperationType` and its kinds' `QueryType`, `MutationType` and
+`SubscriptionType`, are application API, outside the opt-in; what generated
+code alone calls on them is inside it.
 
 **Spread.** *Composition: document, lens.* GraphQL: `...Name` inside a
 selection.
