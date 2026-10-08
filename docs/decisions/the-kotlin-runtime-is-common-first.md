@@ -6,7 +6,7 @@ SQLite reached through the AndroidX SQLite driver API; the Android actual
 built, 2026-10-07. Serves
 [Two runtimes, one compiler](../principles/two-runtimes-one-compiler.md).
 Answers [#24](https://github.com/shergin/baton/issues/24) and shapes
-[#6](https://github.com/shergin/baton/issues/6). Not built yet. Reopen when
+[#6](https://github.com/shergin/baton/issues/6). Reopen when
 a target's actual cannot meet the ingest budget
 [Native runtimes, not a shared core](native-runtimes.md) names, or when
 common code needs a platform API the standard library lacks.
