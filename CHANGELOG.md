@@ -31,6 +31,17 @@ are expected and listed without apology.
   steps that wait for the image, the subscriptions and the optimistic
   layers. A Kotlin operation's companion forwards its `Data`'s
   `fieldErrors` and `missingRequiredField`, so the handle judges its data.
+- The Kotlin target refuses, with an error at the name, a field named
+  `Variable` or `Variables`, and a fragment or an operation named like
+  what the generated Kotlin calls or declares where it names the class
+  (`Unit`, `OptIn`, `JvmName`, `listOf`, `anchor`, `equals`, `fieldErrors`,
+  `name`, `text`, `data`, `Data`, `invoke` among them), for which it wrote
+  Kotlin that did not compile; it writes `suspend`, `out` and `dynamic` in
+  backticks. A corpus of Kotlin's hostile names,
+  `compiler/src/tests/hosts/HostileKotlinDocuments.kt`, holds every
+  keyword and every name the generated Kotlin declares in every position
+  inside a document, and `scripts/hostile-name-sweep-kotlin.py` compiles
+  the names of fragments and operations with `kotlinc`.
 
 ## 0.10.0 (Vatrushka) — 2026-10-07
 

@@ -71,6 +71,20 @@ fn swift_tests_config() -> Config {
 /// The plan of the Swift test target, its sources named from the
 /// repository's root as `batonc plan` run there names them.
 fn compile_swift_tests() -> Plan {
+    compile_sources(&[]).0
+}
+
+/// The plan of the Swift test target's sources and the Kotlin hostile-name
+/// corpus, which the Kotlin target writes into the package the corpus
+/// declares; with the package each Kotlin host declares, by its source.
+fn compile_kotlin_tests() -> (Plan, BTreeMap<String, Option<String>>) {
+    compile_sources(&[repository().join(kotlin_hostile_names::CORPUS)])
+}
+
+/// The plan of the Swift test target's sources and of `hosts` beside them,
+/// named from the repository's root, with the package each Kotlin host
+/// declares, by its source.
+fn compile_sources(hosts: &[PathBuf]) -> (Plan, BTreeMap<String, Option<String>>) {
     let target = repository().join("swift/Tests/BatonTests");
     let config_path = target.join("baton.json");
     let config = swift_tests_config();
@@ -85,6 +99,7 @@ fn compile_swift_tests() -> Plan {
         })
         .collect();
     sources.sort();
+    sources.extend(hosts.iter().cloned());
 
     let (documents, errors) = documents::collect(&sources);
     assert!(errors.is_empty(), "{errors:?}");
@@ -119,7 +134,22 @@ fn compile_swift_tests() -> Plan {
     for operation in &mut plan.operations {
         relative(&mut operation.source);
     }
-    plan
+    let packages = documents
+        .iter()
+        .filter(|document| {
+            document
+                .path
+                .extension()
+                .is_some_and(|extension| extension == "kt")
+        })
+        .filter_map(|document| {
+            let package = document.embedded.as_ref()?.package.clone();
+            let mut source = document.path.to_string_lossy().into_owned();
+            relative(&mut source);
+            Some((source, package))
+        })
+        .collect();
+    (plan, packages)
 }
 
 /// The output name for `source` with `extension` after its stem.
@@ -375,19 +405,20 @@ fn kotlin_tests_config() -> Config {
     config
 }
 
-/// Compiles the Swift test target's documents and returns the Kotlin the
-/// Kotlin target writes for them by output name, the shared file among
-/// them.
+/// Compiles the Swift test target's documents and the Kotlin hostile-name
+/// corpus and returns the Kotlin the Kotlin target writes for them by
+/// output name, the shared file among them.
 fn emit_kotlin_tests() -> BTreeMap<String, String> {
-    let plan = compile_swift_tests();
-    let output =
-        super::kotlin::kotlin(&plan, &kotlin_tests_config()).unwrap_or_else(|duplicates| {
+    let (plan, packages) = compile_kotlin_tests();
+    let output = super::kotlin::kotlin(&plan, &kotlin_tests_config(), packages).unwrap_or_else(
+        |duplicates| {
             let messages: Vec<String> = duplicates.iter().map(ToString::to_string).collect();
             panic!(
                 "the test documents emit names twice in Kotlin:\n{}",
                 messages.join("\n")
             )
-        });
+        },
+    );
     let mut files: BTreeMap<String, String> = output
         .files
         .into_iter()
@@ -714,6 +745,9 @@ fn a_fragment_spread_enters_its_fragment_and_an_inline_fragment_does_not() {
 
 #[path = "hostile_name_tests.rs"]
 mod hostile_names;
+
+#[path = "kotlin_hostile_tests.rs"]
+mod kotlin_hostile_names;
 
 #[path = "spec_sources_tests.rs"]
 mod spec_sources;

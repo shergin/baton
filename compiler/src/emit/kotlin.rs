@@ -289,14 +289,16 @@ fn collect_connections(
 }
 
 /// The Kotlin of `plan` as the driver writes it for the target `config`
-/// configures, its sources in the shared package, or the names some scope
-/// would declare twice.
+/// configures, each Kotlin host's code in the package `packages` names for
+/// it and every other source's in the shared package, or the names some
+/// scope would declare twice.
 #[cfg(test)]
 pub fn kotlin(
     plan: &crate::pipeline::Plan,
     config: &Config,
+    packages: BTreeMap<String, Option<String>>,
 ) -> Result<Output, Vec<crate::naming::NameError>> {
-    let target = Kotlin::new(config, BTreeMap::new());
+    let target = Kotlin::new(config, packages);
     let program = crate::decide::program(plan, target.naming())?;
     Ok(target.emit(&program))
 }

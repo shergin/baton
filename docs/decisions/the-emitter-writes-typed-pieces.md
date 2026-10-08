@@ -95,6 +95,25 @@ than fifty lines.
   underscore. Each is a known defect in its tests, which fails once it is
   fixed. Beside the names, a spread that binds sixteen arguments or more
   writes an expression Swift cannot type-check in reasonable time.
+- The Kotlin corpus of hostile names, 2026-10-07: 226 names, Kotlin's
+  hard, soft and modifier keywords and what the generated Kotlin declares,
+  binds or spells, in 35 places, held by `HostileKotlinDocuments.kt` and
+  its golden, which the goldens module compiles, and for the names of
+  fragments and operations by `scripts/hostile-name-sweep-kotlin.py`.
+  Inside documents it found one defect: a field named `Variable` or
+  `Variables` hid the runtime's types from a spread's binding and an
+  optimistic response's builder; every lens now refuses both. The sweep
+  found the rest: `suspend`, `out` and `dynamic` read as the start of a
+  type until `escape` wrote them in backticks; `_` unescaped in a lens's
+  reference to a class a property hides; and fragments and operations
+  named like what the generated code calls unqualified, or like what a
+  lens, an operation's companion or a mutation's action declares where
+  the code names their class (`Unit`, `OptIn`, `JvmField`, `listOf`,
+  `anchor`, `equals`, `fieldErrors`, `name`, `text`, `data`, `Data`,
+  `invoke`, `bound`, `errors` among them), which the package now refuses.
+  A fragment named like an operation's numbered selection, `selection0`,
+  is a known defect. Beside the names, a value's reading constructor with
+  some two hundred linked fields passes the size the JVM allows a method.
 - Relay's own compiler: its type generator has an `AST` of types that no
   language owns and a `Writer` per language, for Flow, TypeScript and
   JavaScript.
