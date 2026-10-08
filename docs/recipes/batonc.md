@@ -1,9 +1,13 @@
 # `batonc`: the command's contract
 
-`batonc` is the compiler the SwiftPM plugin runs. It is one binary, in the
-artifact bundle each release publishes and `scripts/build-compiler.sh` builds
-from `compiler/` in a checkout, and its command line is the contract a build
-outside SwiftPM uses: Bazel, a committed-output step, an editor's check. What
+`batonc` is the compiler the SwiftPM plugin runs. It is one binary per
+platform, in the artifact bundle each release publishes: a universal macOS
+binary and a static Linux binary for each of `x86_64` and `aarch64`, each
+listed in the bundle's `info.json` under the triples a host reports, so
+SwiftPM on either platform and a Bazel toolchain select theirs from the one
+file. `scripts/build-compiler.sh` builds the host's from `compiler/` in a
+checkout. Its command line is the contract a build outside SwiftPM uses:
+Bazel, a committed-output step, an editor's check. What
 follows is that contract. Its output is deterministic: the same schema,
 configuration and sources produce the same bytes, which the goldens under
 `compiler/src/tests` fix.

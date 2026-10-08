@@ -5,6 +5,14 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The compiler's artifact bundle carries a static Linux binary for `x86_64`
+  and one for `aarch64` beside the universal macOS one, listed under the
+  gnu triples a Linux host reports and built with the musl target, so one
+  binary runs on any distribution. SwiftPM on a Linux host and a Linux CI
+  runner take the compiler from the same bundle a Mac downloads; the
+  release workflow builds each on a host of its architecture, and CI builds
+  and runs them so a release is never their first build. The Linux half of
+  issue 40.
 - A subscription's stream that fails on its environment, as one with no
   subscription transport does, ends with that failure as a request error
   ends it, in both runtimes, instead of retrying on the backoff forever;

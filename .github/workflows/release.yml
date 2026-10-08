@@ -1,9 +1,10 @@
 # Cuts a release from master: builds the compiler bundle for both Mac
-# architectures, writes the release commit (the version into the compiler's
-# manifest, the bundle's checksum into Package.swift), tags it, and publishes
-# the GitHub release with the bundle and the changelog's section. The
-# version and the name are read from the changelog's first released heading,
-# `## <version> (<name>)`, which is written beforehand, as for every release.
+# architectures and both Linux ones, writes the release commit (the version
+# into the compiler's manifest, the bundle's checksum into Package.swift),
+# tags it, and publishes the GitHub release with the
+# bundle and the changelog's section. The version and the name are read
+# from the changelog's first released heading, `## <version> (<name>)`,
+# which is written beforehand, as for every release.
 name: release
 
 on:
@@ -19,7 +20,32 @@ defaults:
     shell: bash
 
 jobs:
+  # The static Linux binaries, one per architecture, each built on a host of
+  # that architecture. The binary embeds no version, so these jobs build
+  # master as it is and the release job stamps the bundle.
+  linux:
+    strategy:
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            arch: x86_64
+          - runner: ubuntu-24.04-arm
+            arch: aarch64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: master
+      - uses: dtolnay/rust-toolchain@stable
+      - run: scripts/build-compiler-linux.sh
+      - uses: actions/upload-artifact@v7
+        with:
+          name: batonc-linux-${{ matrix.arch }}
+          path: compiler/dist/linux/${{ matrix.arch }}/batonc
+          if-no-files-found: error
+
   release:
+    needs: linux
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v7
@@ -48,6 +74,16 @@ jobs:
         run: |
           sed -i '' "1,/^version = /s/^version = \".*\"/version = \"$VERSION\"/" compiler/Cargo.toml
           (cd compiler && cargo update --workspace --offline || cargo update --workspace)
+      # The artifacts arrive without their mode bits; the bundle script sets
+      # them again.
+      - uses: actions/download-artifact@v8
+        with:
+          name: batonc-linux-x86_64
+          path: compiler/dist/linux/x86_64
+      - uses: actions/download-artifact@v8
+        with:
+          name: batonc-linux-aarch64
+          path: compiler/dist/linux/aarch64
       - name: Build the compiler bundle
         run: scripts/bundle-compiler.sh | tail -1 > checksum
       - name: Name the bundle in Package.swift

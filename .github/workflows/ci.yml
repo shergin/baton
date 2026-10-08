@@ -46,6 +46,29 @@ jobs:
       - run: cargo clippy --all-targets -- -D warnings
       - run: cargo test
 
+  # The static Linux binaries the release bundles, built and run on a host
+  # of each architecture, so a release is never the first build of one.
+  linux-compiler:
+    strategy:
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            arch: x86_64
+          - runner: ubuntu-24.04-arm
+            arch: aarch64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: compiler
+          key: musl
+      - run: scripts/build-compiler-linux.sh
+      - run: >
+          compiler/dist/linux/${{ matrix.arch }}/batonc validate
+          --config examples/RickAndMorty/baton.json examples/RickAndMorty/*.swift
+
   # The Kotlin runtime: the common module built and tested on the JVM, the
   # development target, and the Kotlin emitter's goldens compiled against it.
   # The tests run the specification through the code the compiler generates
