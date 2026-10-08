@@ -14,8 +14,9 @@ API is designed in the private notes before it is built.
 ## Layout
 
 ```
-baton/     the runtime: commonMain, jvmMain (androidMain later); jvmTest runs the spec
-goldens/   compiles the Kotlin emitter's goldens, compiler/src/tests/goldens-kotlin, against the runtime
+baton/          the runtime: commonMain, jvmMain (androidMain later); jvmTest runs the spec
+baton-testing/  the transports an app's tests run over: scripted, recorded, silent
+goldens/        compiles the Kotlin emitter's goldens, compiler/src/tests/goldens-kotlin, against the runtime
 ```
 
 `scripts/check-kotlin-goldens.sh` runs `:goldens:compileKotlinJvm`.
@@ -76,7 +77,37 @@ The generated code is whole: a fragment's lens and an operation's `Data`
 over the readers, an `@inline` fragment's value, a connection's state and
 its `loadNext`, a `@refetchable` fragment's `refetch()`, a mutation's
 `OptimisticResponse` and the `invoke` its `MutationAction` is called
-through. What those fetch and commit through is the environment's.
+through.
 
-The availability check, optimistic layers, retention and collection, the
-image and the environment, with pagination and refetch, follow.
+The environment (`Environment.kt`) and what hangs off it. A request and
+its standard encoding, and a transport with one verb, a `Flow` of payloads
+(`Transport.kt`); the value-free log (`Log.kt`). The environment commits on
+its main dispatcher, the store's thread, and reads responses on its ingest
+dispatcher; a query's fetch checks for cancellation before its commit, a
+mutation's request and commit run where no cancellation reaches them, and
+`end()` cancels, clears and forgets the session. A handle (`Handle.kt`)
+applies its fetch policy and derives its phase from its root and its
+fetch, both read through Compose snapshot state; `refetch()`, `retry()`
+and `retain()`, whose `Retention` is released by hand. The store keeps the
+roots (`Roots.kt`): retention and the release buffer, ages and staleness,
+the verdict settled after a batch that changed a null, a link, an error
+or a deletion, and the collector, which frees the records no root reaches
+and the numbers no root, scope or fetch holds. The availability check binds
+lookups in memory (`Availability.kt`), and a read that finds data missing
+heals its root once per fetch. `baton-testing` holds `ScriptedTransport`,
+`RecordedTransport`, `SilentTransport` and `wait`.
+
+`jvmTest` runs every script of `spec/manifest.json` through one
+environment and one store over a `ScriptedTransport`, on a test
+dispatcher, comparing after each step what the Swift harness compares:
+the dump, the reads, the slots notified (through Compose's apply
+observer), the phases and fetches, the log, the bodies sent and what the
+step threw. `notifications`, `phase`, `lifetime`, `events`, `end`,
+`transport`, `heal` and `connections` pass whole; `ages` and `check` to
+their `relaunch`, which needs the image; `subscriptions` waits from its
+first step and `optimistic` from its first commit under a layer, since an
+optimistic response is written for now as a plain batch of its kind.
+
+The optimistic layers, subscriptions, pagination's `loadNext` and a
+fragment's `refetch()`, the composables, the image and the HTTP and socket
+transports follow.

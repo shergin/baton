@@ -302,6 +302,10 @@ its events, its last error. See
 [the verdict's](decisions/the-verdict-is-the-roots.md).
 Swift: `OperationHandle`, with `isRefreshing` and `fetchTime`;
 `SubscriptionHandle`, whose stream is `stream`.
+Kotlin: `OperationHandle<Data>`, whose `phase` and `fetch` are read through
+Compose snapshot state, with `isRefreshing`, `isStale`, `fetchTime`, the
+suspending `refetch()` and `retry()`; a query value reads the same through
+its `resolution`.
 
 **Phase.** *Concept: phase.* Named after `AsyncImagePhase`, the platform's
 own word for the same shape.
@@ -328,6 +332,9 @@ restored [the first decision](decisions/a-handle-derives-its-phase.md) by
 another route.
 Swift: the handle says it with `isRefreshing`; the retry is `retry()`; the
 root's facts are `Store.Root.present` and `verdict`.
+Kotlin: the sealed interface `Phase`, `Loading`, `Ready(data)` or
+`Failed(error)`, beside the sealed interface `Fetch`; the root's facts are
+`Store.Root.present` and `verdict`, snapshot state.
 
 **Action.** *Composition: lens, operation value, environment.* The word
 follows SwiftUI's `dismiss` and `openURL`.
@@ -495,6 +502,9 @@ Swift: `retain()` on a handle returns a `Retention`: `@Query`'s storage
 holds one for the view's life, a model or a view controller holds one in a
 property and lets it go with itself. The buffer's size is
 `Store(releaseBufferSize:)`. The main thread's turn is the main actor's.
+Kotlin: `retain()` returns a `Retention` whose `release()` ends it, since
+Kotlin has no deinit to end it; the buffer's size is the environment's
+`releaseBufferSize`, and the turn is the main dispatcher's.
 
 **Invalidation, TTL.** *Composition: store, operation value, environment.*
 Relay's and Apollo's shared words.
@@ -843,6 +853,8 @@ is set; a test sets none. See
 [the decision](decisions/the-environment-logs-value-free-events.md).
 Swift: `Environment.log`, a closure of `LogEvent`, a value-free enum; a
 test sets `log = nil`.
+Kotlin: `Environment.log`, a function of `LogEvent`, a sealed interface of
+data classes; nothing is printed until it is set.
 
 **Environment.** *Concept: environment.* Relay's word for store plus network
 plus configuration. Chosen over "client" (Apollo's word) by
@@ -856,6 +868,10 @@ as failed, and a mutation action in it throws the same error. See
 [the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch).
 Swift: injected through SwiftUI's environment as `\.baton`; the error is
 `EnvironmentError`, and the view's case is `notInjected`.
+Kotlin: `Environment`, which commits on a main dispatcher, the store's
+thread, and reads responses on an ingest dispatcher, a test passing one
+test dispatcher for both; the error is `EnvironmentError`, and the
+composable's case is `NotInjected`.
 
 **Session, end.** *Concept: environment.* The web's word for one identity's
 stretch of use; Relay has no word for an environment's end, because
@@ -924,6 +940,10 @@ reads the one payload; the request is a `Request`, the encoding an
 `MultipartParser` splits the parts and `EventStreamParser` the events. The
 environment's subscription transport is `subscriptions`. The transport
 error is `TransportError`, and the platform's URL error `URLError`.
+Kotlin: the `Transport` interface, whose `send` returns a `Flow<ByteArray>`
+and whose `payload` reads its one element; `Request`, `Encoding` and
+`TransportError` as in Swift, and the test transports `ScriptedTransport`,
+`RecordedTransport` and `SilentTransport` in the module `baton-testing`.
 
 **Inspector.** *Composition: store, record.* Baton's word.
 Here: the view a debug build presents over an environment's store: its

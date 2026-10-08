@@ -21,6 +21,16 @@ are expected and listed without apology.
   case. The Kotlin runtime's tests now run every case of the manifest,
   its records and its reads, through the code `batonc` generates from
   `spec/sources`.
+- The Kotlin runtime has its environment: the wire's `Request` and
+  standard encoding, a `Transport` whose one verb returns a `Flow`, the
+  handle with its fetch policies, its derived `Phase` and its `Fetch`,
+  roots with retention, ages, the verdict and collection, the
+  availability check, the heal, `mutate`, `commitPayload`, `end()` and
+  the value-free log; `baton-testing` holds the scripted, recorded and
+  silent transports. Every script of the manifest runs through it, to the
+  steps that wait for the image, the subscriptions and the optimistic
+  layers. A Kotlin operation's companion forwards its `Data`'s
+  `fieldErrors` and `missingRequiredField`, so the handle judges its data.
 
 ## 0.10.0 (Vatrushka) — 2026-10-07
 
