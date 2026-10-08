@@ -1,10 +1,13 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose.compiler)
 }
 
 // The Kotlin emitter's goldens, compiled against the runtime: a golden that
 // does not compile is a fault of the emitter. The sources are the compiler's
-// goldens themselves, beside the converters the goldens' configuration names.
+// goldens themselves, beside the converters the goldens' configuration names
+// and `baton.application`, what an application writes against them with no
+// opt-in, through the Compose compiler as an application's build has it.
 kotlin {
     jvm()
     sourceSets {

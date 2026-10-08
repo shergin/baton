@@ -37,13 +37,16 @@ enum class FetchPolicy {
 /**
  * What the build knows about an operation, held by the generated class's
  * companion: its name, document, kind and plan, and the flags its directives
- * set. One per operation, shared by every value of it.
+ * set. One per operation, shared by every value of it. An application
+ * passes a companion, as `rememberMutation(RenameMutation)` does, so the
+ * interface is application API; what generated code alone calls is marked.
  */
-@Generated
 interface OperationType<Data : Lens> {
     val name: String
     val document: Document
     val kind: OperationKind
+
+    @Generated
     val plan: Plan
     val throwsOnFieldError: Boolean get() = false
     val bubbles: Boolean get() = false
@@ -71,21 +74,18 @@ interface OperationType<Data : Lens> {
  * A query's type, naming the operation's class beside its data, so a call
  * that takes the companion infers both.
  */
-@Generated
 interface QueryType<Op : QueryOperation<Data>, Data : Lens> : OperationType<Data>
 
 /**
  * A mutation's type, naming the operation's class beside its data, so
  * `rememberMutation(RenameMutation)` infers its action's type.
  */
-@Generated
 interface MutationType<Op : MutationOperation<Data>, Data : Lens> : OperationType<Data>
 
 /**
  * A subscription's type, naming the operation's class beside its data, so a
  * call that takes the companion infers both.
  */
-@Generated
 interface SubscriptionType<Op : SubscriptionOperation<Data>, Data : Lens> : OperationType<Data>
 
 /**
