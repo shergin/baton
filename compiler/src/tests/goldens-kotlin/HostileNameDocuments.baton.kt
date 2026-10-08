@@ -19391,6 +19391,7 @@ class HostileRequired : QueryOperation<HostileRequired.Data> {
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun missingRequiredField(anchor: Anchor): String? = Data.missingRequiredField(anchor)
     }
 
     @Stable
@@ -19763,6 +19764,7 @@ class HostileVariables(@get:JvmName("getType2") val Type: String, val Protocol: 
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun fieldErrors(anchor: Anchor): List<FieldError> = Data.fieldErrors(anchor)
     }
 
     @Stable

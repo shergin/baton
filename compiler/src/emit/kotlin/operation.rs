@@ -289,5 +289,18 @@ fn companion(writer: &mut Writer, operation: &OperationValue, shared: &Shared) {
         }
         writer.blank();
         writer.line("override fun data(anchor: Anchor): Data = Data(anchor)");
+        // The handle judges the operation's data through the companion: the
+        // root lens's own walks, by the policies the directives set.
+        let data = escape(&operation.data.name);
+        if operation.throws_on_field_error && operation.data.field_errors.is_some() {
+            writer.line(format!(
+                "override fun fieldErrors(anchor: Anchor): List<FieldError> = {data}.fieldErrors(anchor)"
+            ));
+        }
+        if operation.bubbles && operation.data.satisfied.is_some() && operation.data.reports_missing {
+            writer.line(format!(
+                "override fun missingRequiredField(anchor: Anchor): String? = {data}.missingRequiredField(anchor)"
+            ));
+        }
     });
 }

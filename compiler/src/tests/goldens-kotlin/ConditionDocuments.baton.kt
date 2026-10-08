@@ -395,6 +395,7 @@ class TestStrictConditions(val id: String, val withStatus: Boolean) : QueryOpera
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun fieldErrors(anchor: Anchor): List<FieldError> = Data.fieldErrors(anchor)
     }
 
     @Stable

@@ -291,6 +291,7 @@ class TestCaughtPartQuery(val id: String) : QueryOperation<TestCaughtPartQuery.D
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun fieldErrors(anchor: Anchor): List<FieldError> = Data.fieldErrors(anchor)
     }
 
     @Stable
@@ -382,6 +383,7 @@ class TestCollidingErrors(val id: String) : QueryOperation<TestCollidingErrors.D
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun fieldErrors(anchor: Anchor): List<FieldError> = Data.fieldErrors(anchor)
     }
 
     @Stable
@@ -493,6 +495,7 @@ class TestCollidingRequired(val id: String) : QueryOperation<TestCollidingRequir
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun missingRequiredField(anchor: Anchor): String? = Data.missingRequiredField(anchor)
     }
 
     @Stable
@@ -697,6 +700,7 @@ class TestLoggedOrigin(val id: String) : QueryOperation<TestLoggedOrigin.Data> {
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun missingRequiredField(anchor: Anchor): String? = Data.missingRequiredField(anchor)
     }
 
     @Stable
@@ -788,6 +792,7 @@ class TestRequiredOrigin(val id: String) : QueryOperation<TestRequiredOrigin.Dat
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun missingRequiredField(anchor: Anchor): String? = Data.missingRequiredField(anchor)
     }
 
     @Stable
@@ -1056,6 +1061,7 @@ class TestStrictEpisodes(val id: String) : QueryOperation<TestStrictEpisodes.Dat
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun fieldErrors(anchor: Anchor): List<FieldError> = Data.fieldErrors(anchor)
     }
 
     @Stable
@@ -1167,6 +1173,7 @@ class TestStrictOrigin(val id: String) : QueryOperation<TestStrictOrigin.Data> {
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun fieldErrors(anchor: Anchor): List<FieldError> = Data.fieldErrors(anchor)
     }
 
     @Stable
@@ -1504,6 +1511,7 @@ class TestThrowingNode(val id: String) : QueryOperation<TestThrowingNode.Data> {
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun fieldErrors(anchor: Anchor): List<FieldError> = Data.fieldErrors(anchor)
     }
 
     @Stable
@@ -1782,6 +1790,7 @@ class TestUncaughtPartQuery(val id: String) : QueryOperation<TestUncaughtPartQue
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun fieldErrors(anchor: Anchor): List<FieldError> = Data.fieldErrors(anchor)
     }
 
     @Stable

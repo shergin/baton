@@ -516,6 +516,7 @@ class TestStrictDeferred(val id: String) : QueryOperation<TestStrictDeferred.Dat
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun fieldErrors(anchor: Anchor): List<FieldError> = Data.fieldErrors(anchor)
     }
 
     @Stable
@@ -602,6 +603,7 @@ class TestStrictQuery(val id: String) : QueryOperation<TestStrictQuery.Data> {
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun fieldErrors(anchor: Anchor): List<FieldError> = Data.fieldErrors(anchor)
     }
 
     @Stable
@@ -683,6 +685,7 @@ class TestThrowingSpread(val id: String) : QueryOperation<TestThrowingSpread.Dat
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun fieldErrors(anchor: Anchor): List<FieldError> = Data.fieldErrors(anchor)
     }
 
     @Stable

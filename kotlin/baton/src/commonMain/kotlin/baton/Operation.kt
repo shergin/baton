@@ -51,6 +51,14 @@ interface OperationType<Data : Lens> {
     /** The root's lens over [anchor]. */
     @Generated
     fun data(anchor: Anchor): Data
+
+    /** The uncaught field errors in the operation's own selection, which `@throwOnFieldError` fails on; none without it. */
+    @Generated
+    fun fieldErrors(anchor: Anchor): List<FieldError> = emptyList()
+
+    /** The path of the first `@required` field that is null and bubbles to the root; none when every one is present. */
+    @Generated
+    fun missingRequiredField(anchor: Anchor): String? = null
 }
 
 /**
