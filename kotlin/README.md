@@ -35,6 +35,13 @@ names, as a Gradle property or in the environment, else
 JAVA_HOME=$(/usr/libexec/java_home -v 21) gradle :baton:build
 ```
 
+`scripts/check-kotlin-goldens.sh` compiles the emitter's goldens against
+the runtime, the Kotlin hostile-name corpus among them, after a change to
+the Kotlin emitter or to what generated code names in the runtime;
+`scripts/hostile-name-sweep-kotlin.py` compiles the names of fragments and
+operations, which the corpus cannot hold, with `kotlinc` against the
+classpath `:goldens:printCompileClasspath` prints.
+
 ## Where it stands
 
 The plan model generated code constructs (`Plan.kt`, `Registry.kt`), the
