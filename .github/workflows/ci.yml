@@ -170,7 +170,7 @@ jobs:
           shared-key: batonc
       - run: scripts/build-compiler.sh
       - run: swift package update swift-syntax
-      - run: grep -A 4 '"identity" : "swift-syntax"' Package.resolved
+      - run: grep -A 4 swift-syntax.git Package.resolved
       - run: swift build --build-tests -Xswiftc -warnings-as-errors
       - run: swift test
 
