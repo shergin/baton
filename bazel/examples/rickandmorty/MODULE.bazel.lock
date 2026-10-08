@@ -190,15 +190,15 @@
   "moduleExtensions": {
     "@@rules_baton+//baton:extensions.bzl%baton": {
       "general": {
-        "bzlTransitiveDigest": "zXDCJfnk7ktcCuw4PU8VOZDPi8//SxBozbxD23W6NUI=",
-        "usagesDigest": "l103n3McoyLoees8vDJKp98TMyIsp1p5K739TDP6two=",
+        "bzlTransitiveDigest": "tJlOuYf76ESgCmDXvA5S8w72/VY/AnDq5agbbUXXUug=",
+        "usagesDigest": "imDAbOF7g2rUaKUTOWORj7DKfKCGuQ9cd/Lusp4El+c=",
         "recordedInputs": [],
         "generatedRepoSpecs": {
           "batonc": {
             "repoRuleId": "@@rules_baton+//baton:extensions.bzl%_batonc",
             "attributes": {
-              "version": "0.10.0",
-              "sha256": "12c1a0a625d2d838ec9c3df8b072d426ddda93eb94fb4c07e8cd559d95500d95"
+              "version": "0.11.0",
+              "sha256": "cffb81691ceb43cf17fac9d86e519785e8ef50aa43bc42927e697931950584af"
             }
           }
         }
