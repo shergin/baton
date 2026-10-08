@@ -84,6 +84,8 @@ kotlin {
                 // The harness walks a `reads` row over a generated lens by its
                 // properties' Kotlin names.
                 implementation(kotlin("reflect"))
+                // The scripts run through the scripted transport an app's tests use.
+                implementation(project(":baton-testing"))
             }
         }
     }
