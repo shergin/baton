@@ -4,7 +4,7 @@
 # checksum into `baton/release.bzl`.
 module(
     name = "rules_baton",
-    version = "0.11.0",
+    version = "0.12.0",
 )
 
 bazel_dep(name = "platforms", version = "1.0.0")
