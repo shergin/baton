@@ -5,6 +5,13 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The desktop sample keeps its page bar through a failure, so a page the
+  public API refused (HTTP 429, Cloudflare's 1015 under a burst) can be
+  left or retried; caches avatars for the process; keys its rows by
+  `recordID`; keeps the store's image under the schema's digest, so a
+  relaunch shows the characters before the network answers; and draws its
+  screens to PNG files without a window through
+  `gradle :samples:desktop:screenshot`.
 - A second Kotlin sample, `kotlin/samples/github`, the Compose for Desktop
   twin of `examples/GitHubTriage`: sign-in with a token kept in memory, a
   repository with a star toggle whose optimistic response flips the star and
