@@ -5,6 +5,14 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `batonc generate --persisted <file>` names where the persisted documents
+  file is written, as `--shared` and `--report` name theirs, so a build
+  system that declares its outputs before it reads `baton.json` can declare
+  this one; without it the file goes under `--out`, else beside the
+  configuration, as before. The contract page now also says that `--schema`
+  beside `--config` overrides the configuration's schema, and that any
+  source an `--emit` names gets a header-only output when it holds no
+  GraphQL, both of which the compiler already did.
 - The compiler's artifact bundle carries a static Linux binary for `x86_64`
   and one for `aarch64` beside the universal macOS one, listed under the
   gnu triples a Linux host reports and built with the musl target, so one

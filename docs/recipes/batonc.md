@@ -15,15 +15,16 @@ configuration and sources produce the same bytes, which the goldens under
 ## Commands
 
 ```
-batonc generate --config <baton.json> [--language swift|kotlin] (--out <dir> | --emit <source>=<output>...) [--shared <file>] [--report <file>] [--check] <files...>
+batonc generate --config <baton.json> [--language swift|kotlin] (--out <dir> | --emit <source>=<output>...) [--shared <file>] [--report <file>] [--persisted <file>] [--check] <files...>
 batonc validate --config <baton.json> [--language swift|kotlin] <files...>
 batonc print <OperationName> --config <baton.json> [--language swift|kotlin] <files...>
 ```
 
-`--schema <sdl>` may replace `--config` when there is no configuration; the
-configuration's `schema` is otherwise the schema, relative to the
-configuration's directory, as are its `schemaExtensions` and the persisted
-documents file.
+`--schema <sdl>` may replace `--config` when there is no configuration, and
+beside it overrides the configuration's `schema`, for a schema that is a
+build's own output; the configuration's `schema` is otherwise the schema,
+relative to the configuration's directory, as are its `schemaExtensions`
+and, unless `--persisted` names it, the persisted documents file.
 
 `<files...>` are the target's host sources, Swift or Kotlin, and its
 `.graphql` or `.gql` documents. The compiler reads the GraphQL out of the
@@ -75,16 +76,19 @@ Writes, and writes nothing when a document has an error:
   an underscore and `.baton.swift` in place of `.swift`
   (`Sources/App/Screen.swift` writes `Sources_App_Screen.baton.swift`), or
   `.baton.kt` in place of `.kt` in a Kotlin run, or exactly where
-  `--emit <source>=<output>` says. A source that names a
-  marker but holds no document gets a header only, so a build system never
-  sees a missing output. Under `--out`, an output of the run's language in
+  `--emit <source>=<output>` says. A source an `--emit` names that holds no
+  document gets a header only, whether or not it names a marker, so a build
+  system declares one output per source without reading the source. Under `--out`, an output of the run's language in
   the directory that this run did not write is removed, so a renamed source
   leaves nothing behind.
 - **The shared file**, `Baton.baton.swift`, or `Baton.baton.kt` in a Kotlin
   run, under `--out` or `--shared <file>`: the types every output names, the
   schema's digest, the format marker.
-- **The persisted documents file**, under `persistConfig`: beside the
-  configuration, or under `--out` when given.
+- **The persisted documents file**, under `persistConfig`: where
+  `--persisted <file>` says, since a build system declares its outputs
+  before it reads the configuration; else under `--out` when given; else
+  beside the configuration. `--persisted` without `persistConfig` is an
+  error.
 - **The report**, `--report <file>`: what the target compiled, as JSON. See
   [Report](../terminology.md#compiler).
 

@@ -791,8 +791,9 @@ Here: under Relay's `persistConfig` in `baton.json`, `file` and `algorithm`
 (`MD5`, `SHA256` or `SHA1`), an artifact carries the id, the text's hash in
 lowercase hexadecimal, and no text, and `batonc generate` writes the file,
 Relay's map from id to text with the ids in order, beside the configuration
-when run by hand and into the build's output directory under the build
-plugin; without `persistConfig` the artifact carries the text and no id. So
+when run by hand, into the build's output directory under the build
+plugin, or where a build names it with `--persisted`; without
+`persistConfig` the artifact carries the text and no id. So
 the build decides what a request carries, the operation's document says
 which, text or id and never both, and no transport has a mode or a
 fallback. The standard encoding writes an id as `documentId`, after the

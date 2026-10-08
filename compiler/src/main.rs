@@ -7,8 +7,9 @@
 //! - `generate --schema <sdl> (--out <dir> | --emit <src>=<out>…) <files…>`
 //!   writes the Swift of each host file and the shared file, or nothing when a
 //!   document has an error, and prints diagnostics in `path:line:col:` form;
-//!   `--report <file>` writes what the target compiled as JSON; `--check`
-//!   writes nothing and names every output that is stale.
+//!   `--report <file>` writes what the target compiled as JSON;
+//!   `--persisted <file>` names where the persisted documents file goes;
+//!   `--check` writes nothing and names every output that is stale.
 //! - `validate --schema <sdl> <files…>` is the same compilation with no output.
 //! - `print <Name> --schema <sdl> <files…>` prints one operation's text and id.
 //! - `bench --schema <sdl> --fragments <n>` compiles a synthetic corpus twice
@@ -541,7 +542,15 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
         "generate",
         arguments,
         &[
-            "schema", "config", "out", "shared", "emit", "report", "check", "language",
+            "schema",
+            "config",
+            "out",
+            "shared",
+            "emit",
+            "report",
+            "persisted",
+            "check",
+            "language",
         ],
     )?;
     let out_dir = options.values.get("out").map(PathBuf::from);
@@ -585,22 +594,34 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
         planned.push((shared_path.clone(), output.shared.clone()));
     }
     // Under `persistConfig`, Relay's map from id to text, which a
-    // registration step consumes: beside the configuration when run by
-    // hand, or in the output directory under the build, whose sandbox keeps
-    // the source tree.
-    if let Some(persist) = &compilation.sources.config.persist_config {
-        let persist_path = match &out_dir {
-            Some(out_dir) => out_dir.join(Path::new(&persist.file).file_name().unwrap_or_default()),
-            None => options
-                .values
-                .get("config")
-                .map(Path::new)
-                .and_then(Path::parent)
-                .map(Path::to_path_buf)
-                .unwrap_or_default()
-                .join(&persist.file),
-        };
-        planned.push((persist_path, persisted_documents(plan)));
+    // registration step consumes: where `--persisted` says, since a build
+    // system declares its outputs before it reads the configuration; else
+    // in the output directory under the build, whose sandbox keeps the
+    // source tree; else beside the configuration, when run by hand.
+    let persisted_path = options.values.get("persisted").map(PathBuf::from);
+    match (&compilation.sources.config.persist_config, persisted_path) {
+        (Some(persist), persisted_path) => {
+            let persist_path = persisted_path.unwrap_or_else(|| match &out_dir {
+                Some(out_dir) => {
+                    out_dir.join(Path::new(&persist.file).file_name().unwrap_or_default())
+                }
+                None => options
+                    .values
+                    .get("config")
+                    .map(Path::new)
+                    .and_then(Path::parent)
+                    .map(Path::to_path_buf)
+                    .unwrap_or_default()
+                    .join(&persist.file),
+            });
+            planned.push((persist_path, persisted_documents(plan)));
+        }
+        (None, Some(_)) => {
+            return Err(DriverError::Usage(
+                "`--persisted` names where the persisted documents file is written, and the configuration has no `persistConfig`".to_string(),
+            ));
+        }
+        (None, None) => {}
     }
     // The report: what this target compiled, for the people who register
     // operations and review contract changes.
