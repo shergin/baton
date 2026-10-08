@@ -1,7 +1,6 @@
 package baton.sample
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
@@ -38,7 +37,7 @@ fun main(arguments: Array<String>) {
         val inspected = mutableStateOf<Environment?>(null)
         ImageComposeScene(width = 1280, height = 720, density = Density(1f), coroutineContext = coroutineContext).use { scene ->
             scene.setContent {
-                MaterialTheme {
+                SampleTheme {
                     Surface(modifier = Modifier.fillMaxSize()) {
                         CompositionLocalProvider(LocalBaton provides environment) {
                             Characters(initialSelection = selection.value, inspected = inspected.value)

@@ -229,7 +229,10 @@ opts into `.equatable()`.
 Kotlin: a `@Stable` class equal by its anchor; a plural link reads as a
 `LensList`, a `kotlin.collections.List` that builds each element's lens
 from its anchor on access, a nullable one as `LensList?`, and the empty one
-`LensList.empty()`.
+`LensList.empty()`. A lazy list keys its items by the record's key, which
+every lens carries as `recordID`:
+`items(characters, key = { it.recordID.key }) { … }`, so a row keeps its
+state while a refetch reorders the list.
 
 **Membership, type condition.** *Composition: plan, record.* Relay: an
 inline fragment or spread on an interface or union applies to the records

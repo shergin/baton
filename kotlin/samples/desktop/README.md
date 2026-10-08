@@ -23,6 +23,8 @@ detail fetches.
 - The View menu's Store Inspector, or Command-I (Control-I off a Mac),
   shows `baton-inspector`'s `StoreInspector` in a third pane: the
   store's records by type, searchable, each opening onto its fields, live.
+- The window follows the system's appearance with Material 3's light and
+  dark color schemes; the list keys its rows by `recordID.key`.
 - `Screenshot.kt` draws both screens to PNG files without a window, through
   `ImageComposeScene`, for the README and for a machine with no screen:
   `gradle :samples:desktop:screenshot` writes `build/screenshots/`, the

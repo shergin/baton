@@ -1,11 +1,14 @@
 package baton.sample
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -61,7 +64,7 @@ fun main() = application {
                 )
             }
         }
-        MaterialTheme {
+        SampleTheme {
             Surface(modifier = Modifier.fillMaxSize()) {
                 CompositionLocalProvider(LocalBaton provides environment) {
                     Characters(inspected = environment.takeIf { showsInspector })
@@ -69,6 +72,12 @@ fun main() = application {
             }
         }
     }
+}
+
+/** Material 3's light or dark colors, as the system's appearance is. */
+@Composable
+internal fun SampleTheme(content: @Composable () -> Unit) {
+    MaterialTheme(colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme(), content = content)
 }
 
 /** Command-I on a Mac, Control-I elsewhere. */
