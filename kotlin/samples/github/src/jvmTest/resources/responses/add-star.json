@@ -1,0 +1,7 @@
+{
+  "data": {
+    "addStar": {
+      "starrable": { "__typename": "Repository", "id": "R_1", "viewerHasStarred": true, "stargazerCount": 2601 }
+    }
+  }
+}

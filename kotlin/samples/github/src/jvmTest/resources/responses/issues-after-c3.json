@@ -1,0 +1,16 @@
+{
+  "data": {
+    "node": {
+      "__typename": "Repository",
+      "issues": {
+        "totalCount": 6,
+        "edges": [
+          { "node": { "id": "I_2", "number": 2, "title": "Second issue", "state": "OPEN", "author": { "__typename": "User", "login": "octocat", "__isNode": "User", "id": "U_1" }, "__typename": "Issue" }, "cursor": "c2" },
+          { "node": { "id": "I_1", "number": 1, "title": "First issue", "state": "OPEN", "author": { "__typename": "User", "login": "hubot", "__isNode": "User", "id": "U_3" }, "__typename": "Issue" }, "cursor": "c1" }
+        ],
+        "pageInfo": { "endCursor": "c1", "hasNextPage": false }
+      },
+      "id": "R_1"
+    }
+  }
+}

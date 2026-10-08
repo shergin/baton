@@ -1,0 +1,23 @@
+{
+  "data": {
+    "node": {
+      "__typename": "Issue",
+      "id": "I_6",
+      "number": 6,
+      "title": "Sixth issue",
+      "bodyText": "The greeting is missing its comma.",
+      "createdAt": "2026-10-01T12:00:00Z",
+      "state": "OPEN",
+      "repository": { "nameWithOwner": "octocat/Hello-World", "id": "R_1" },
+      "author": { "__typename": "User", "login": "octocat", "__isNode": "User", "id": "U_1" },
+      "comments": {
+        "totalCount": 2,
+        "edges": [
+          { "node": { "id": "IC_1", "bodyText": "Seen here too.", "createdAt": "2026-10-02T09:00:00Z", "author": { "__typename": "User", "login": "hubot", "__isNode": "User", "id": "U_3" }, "__typename": "IssueComment" }, "cursor": "k1" },
+          { "node": { "id": "IC_2", "bodyText": "Which build?", "createdAt": "2026-10-03T09:00:00Z", "author": { "__typename": "User", "login": "octocat", "__isNode": "User", "id": "U_1" }, "__typename": "IssueComment" }, "cursor": "k2" }
+        ],
+        "pageInfo": { "endCursor": "k2", "hasNextPage": false }
+      }
+    }
+  }
+}

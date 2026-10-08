@@ -1,0 +1,14 @@
+{
+  "data": {
+    "addComment": {
+      "commentEdge": {
+        "node": {
+          "id": "IC_3",
+          "bodyText": "Looking into it.",
+          "createdAt": "2026-10-07T18:30:00Z",
+          "author": { "__typename": "User", "login": "triager", "__isNode": "User", "id": "U_2" }
+        }
+      }
+    }
+  }
+}

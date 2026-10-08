@@ -1,0 +1,22 @@
+{
+  "data": {
+    "repository": {
+      "nameWithOwner": "octocat/Hello-World",
+      "description": "My first repository on GitHub!",
+      "forkCount": 4,
+      "id": "R_1",
+      "viewerHasStarred": false,
+      "stargazerCount": 2600,
+      "issues": {
+        "totalCount": 6,
+        "edges": [
+          { "node": { "id": "I_6", "number": 6, "title": "Sixth issue", "state": "OPEN", "author": { "__typename": "User", "login": "octocat", "__isNode": "User", "id": "U_1" }, "__typename": "Issue" }, "cursor": "c6" },
+          { "node": { "id": "I_5", "number": 5, "title": "Fifth issue", "state": "OPEN", "author": { "__typename": "User", "login": "hubot", "__isNode": "User", "id": "U_3" }, "__typename": "Issue" }, "cursor": "c5" },
+          { "node": { "id": "I_4", "number": 4, "title": "Fourth issue", "state": "OPEN", "author": { "__typename": "User", "login": "octocat", "__isNode": "User", "id": "U_1" }, "__typename": "Issue" }, "cursor": "c4" },
+          { "node": { "id": "I_3", "number": 3, "title": "Third issue", "state": "OPEN", "author": { "__typename": "User", "login": "hubot", "__isNode": "User", "id": "U_3" }, "__typename": "Issue" }, "cursor": "c3" }
+        ],
+        "pageInfo": { "endCursor": "c3", "hasNextPage": true }
+      }
+    }
+  }
+}
