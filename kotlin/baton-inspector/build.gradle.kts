@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.android.multiplatform.library)
 }
 
 // A view over an environment's store for a debug pane, and its export in the
@@ -11,6 +12,13 @@ plugins {
 // `@_spi(Generated)`, and never writes.
 kotlin {
     jvm()
+    android {
+        namespace = "baton.inspector"
+        // Compose UI 1.12 is compiled against Android 17's API and asks the
+        // same of what depends on it.
+        compileSdk = 37
+        minSdk = 23
+    }
     sourceSets {
         all { languageSettings.optIn("baton.Generated") }
         commonMain.dependencies {
