@@ -80,9 +80,13 @@ fn an_input_field_named_like_what_its_data_class_declares_takes_an_underscore() 
 }
 
 #[test]
-fn an_enum_value_named_like_its_interface_or_its_unknown_case_takes_an_underscore() {
+fn an_enum_value_named_like_its_interface_or_its_undeclared_case_in_any_case_takes_an_underscore() {
     assert_eq!(enum_value_name("ALIVE", "Status"), "ALIVE");
-    assert_eq!(enum_value_name("Unknown", "Status"), "Unknown_");
+    assert_eq!(enum_value_name("UNKNOWN", "Status"), "UNKNOWN");
+    assert_eq!(enum_value_name("Unknown", "Status"), "Unknown");
+    assert_eq!(enum_value_name("Undeclared", "Status"), "Undeclared_");
+    assert_eq!(enum_value_name("UNDECLARED", "Status"), "UNDECLARED_");
+    assert_eq!(enum_value_name("undeclared_", "Status"), "undeclared__");
     assert_eq!(enum_value_name("Status", "Status"), "Status_");
     assert_eq!(enum_value_name("String", "Status"), "String_");
     assert_eq!(enum_value_name("in", "Status"), "`in`");

@@ -316,20 +316,20 @@ object Slots {
     }
 }
 
-/** The schema's enum `Status`. A value this build does not know reads as `Unknown`, with its text. */
+/** The schema's enum `Status`. A value this build does not know reads as `Undeclared`, with its text. */
 sealed interface Status : GeneratedEnum {
     data object ALIVE : Status { override val scalarText: String get() = "ALIVE" }
     data object DEAD : Status { override val scalarText: String get() = "DEAD" }
     data object UNKNOWN : Status { override val scalarText: String get() = "UNKNOWN" }
-    data class Unknown(override val scalarText: String) : Status
+    data class Undeclared(override val scalarText: String) : Status
 
     companion object {
-        /** The value `text` names, or `Unknown` with it. */
+        /** The value `text` names, or `Undeclared` with it. */
         fun of(text: String): Status = when (text) {
             "ALIVE" -> ALIVE
             "DEAD" -> DEAD
             "UNKNOWN" -> UNKNOWN
-            else -> Unknown(text)
+            else -> Undeclared(text)
         }
     }
 }

@@ -124,7 +124,7 @@ interface MappedScalar {
     val scalarText: String
 }
 
-/** A generated enum: the schema's values as objects, and an `Unknown` carrying a value the schema did not declare. */
+/** A generated enum: the schema's values as objects, and an `Undeclared` carrying a value the schema did not declare. */
 interface GeneratedEnum : MappedScalar
 
 /**

@@ -13,7 +13,8 @@ use super::literal::{
 use super::{FORMAT, header};
 use crate::decide::{InputField, ListShape, Shared, SlotRef};
 use crate::kotlin_names::{
-    enum_type_name, enum_value_name, input_field_name, input_type_name, slot_name, type_constant,
+    UNDECLARED, enum_type_name, enum_value_name, input_field_name, input_type_name, slot_name,
+    type_constant,
 };
 use crate::names::{keyed_types, possible_types};
 use crate::pipeline::TypeKind;
@@ -242,11 +243,11 @@ fn slot_declaration(slot: &SlotRef, shared: &Shared) -> String {
 }
 
 /// A schema enum as a sealed interface: an object per value, keeping the
-/// schema's spelling, and `Unknown` for a value this build does not know.
+/// schema's spelling, and `Undeclared` for a value this build does not know.
 fn enum_text(writer: &mut Writer, name: &str, values: &[String]) {
     let type_name = enum_type_name(name);
     writer.line(format!(
-        "/** The schema's enum `{name}`. A value this build does not know reads as `Unknown`, with its text. */"
+        "/** The schema's enum `{name}`. A value this build does not know reads as `Undeclared`, with its text. */"
     ));
     writer.block(
         format!("sealed interface {type_name} : GeneratedEnum"),
@@ -259,11 +260,11 @@ fn enum_text(writer: &mut Writer, name: &str, values: &[String]) {
                 ));
             }
             writer.line(format!(
-                "data class Unknown(override val scalarText: String) : {type_name}"
+                "data class {UNDECLARED}(override val scalarText: String) : {type_name}"
             ));
             writer.blank();
             writer.block("companion object", |writer| {
-                writer.line("/** The value `text` names, or `Unknown` with it. */");
+                writer.line("/** The value `text` names, or `Undeclared` with it. */");
                 writer.block(
                     format!("fun of(text: String): {type_name} = when (text)"),
                     |writer| {
@@ -274,7 +275,7 @@ fn enum_text(writer: &mut Writer, name: &str, values: &[String]) {
                                 enum_value_name(value, &type_name)
                             ));
                         }
-                        writer.line("else -> Unknown(text)");
+                        writer.line(format!("else -> {UNDECLARED}(text)"));
                     },
                 );
             });

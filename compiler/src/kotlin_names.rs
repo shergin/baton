@@ -162,15 +162,15 @@ const SLOTS_SPELLED: [&str; 8] = [
 /// body names. A `componentN` is kept as well, by `input_field_name`.
 const INPUT_SPELLED: [&str; 3] = ["variable", "copy", "Variable"];
 
-/// What a generated enum declares or spells: the case for a value the build
-/// does not know, the companion, and the types its members name.
-const ENUM_SPELLED: [&str; 5] = [
-    "Unknown",
-    "Companion",
-    "String",
-    "GeneratedEnum",
-    "MappedScalar",
-];
+/// What a generated enum declares or spells: the companion and the types
+/// its members name.
+const ENUM_SPELLED: [&str; 4] = ["Companion", "String", "GeneratedEnum", "MappedScalar"];
+
+/// The case of a generated enum for a value the build does not know. A
+/// value spelled like it, ignoring case, takes an underscore: an object of
+/// such a value and the case would be one class file on a file system that
+/// ignores case, as `Status$UNKNOWN` and `Status$Unknown` are.
+pub const UNDECLARED: &str = "Undeclared";
 
 /// What goes after a nested lens's name a lens keeps.
 const LENS_SUFFIX: &str = "Lens";
@@ -234,11 +234,14 @@ pub fn input_field_name(name: &str) -> String {
 }
 
 /// A schema enum's value as an object of its sealed interface: the value's
-/// own spelling, escaped; a name the interface declares or spells, and its
-/// own, take an underscore.
+/// own spelling, escaped; a name the interface declares or spells, its
+/// own, and its undeclared case's in any case, take an underscore.
 pub fn enum_value_name(value: &str, enum_type: &str) -> String {
     let bare = value.trim_end_matches('_');
-    if ENUM_SPELLED.contains(&bare) || bare == enum_type.trim_matches('`') {
+    if ENUM_SPELLED.contains(&bare)
+        || bare.eq_ignore_ascii_case(UNDECLARED)
+        || bare == enum_type.trim_matches('`')
+    {
         return format!("{value}_");
     }
     escape(value)

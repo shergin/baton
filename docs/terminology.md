@@ -702,6 +702,11 @@ named like a fragment or an operation is a name error at the document. See
 Swift: a Swift enum, whose unknown case is `unknown(String)`, a null
 reading `unknown("")`; a schema enum named like a shared enum or the
 standard library's types takes `Enum` after its name.
+Kotlin: a sealed interface with a `data object` per value, keeping the
+schema's spelling, and the unknown case `data class Undeclared(scalarText)`,
+a null reading `Undeclared("")`; not `Unknown`, which a value `UNKNOWN`
+would share a class file with on a file system that ignores case, so a
+value spelled `Undeclared` in any case takes an underscore.
 
 **Transient.** *Composition: schema, image.* Not a Relay word, since
 Relay's store is not persisted; borrowed from the ordinary sense of what

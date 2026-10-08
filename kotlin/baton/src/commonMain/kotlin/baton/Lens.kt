@@ -221,8 +221,8 @@ class Anchor @Generated constructor(val record: Record, val owner: Owner) {
 
     /**
      * A schema enum, as the type generated for it; a value this build does
-     * not know is its `Unknown`. A null on a non-null enum reads as the
-     * unknown value with an empty text and is reported.
+     * not know is its `Undeclared`. A null on a non-null enum reads as the
+     * undeclared value with an empty text and is reported.
      */
     @Generated fun <T : GeneratedEnum> enumValue(slot: Slot, of: (String) -> T): T? = string(slot)?.let(of)
     @Generated fun <T : GeneratedEnum> requiredEnumValue(slot: Slot, of: (String) -> T): T = of(requiredString(slot))

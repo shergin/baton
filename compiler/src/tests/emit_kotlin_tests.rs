@@ -222,3 +222,34 @@ fn two_variables_the_jvm_names_alike_get_getters_of_their_own() {
             .contains("class Probe(val Any: String, @get:JvmName(\"getAny2\") val any: String)")
     );
 }
+
+#[test]
+fn an_enum_value_spelled_like_the_undeclared_case_takes_an_underscore() {
+    let shared = crate::decide::Shared {
+        enums: BTreeMap::from([(
+            "Status".to_string(),
+            vec![
+                "ALIVE".to_string(),
+                "UNDECLARED".to_string(),
+                "undeclared".to_string(),
+            ],
+        )]),
+        ..crate::decide::Shared::default()
+    };
+    let types = BTreeMap::new();
+    let text = shared::shared_text(
+        &shared,
+        &BTreeMap::new(),
+        &literal::Converters { types: &types },
+        Some("app.generated"),
+    );
+    assert!(text.contains(
+        "data object UNDECLARED_ : Status { override val scalarText: String get() = \"UNDECLARED\" }"
+    ));
+    assert!(text.contains(
+        "data object undeclared_ : Status { override val scalarText: String get() = \"undeclared\" }"
+    ));
+    assert!(text.contains("data class Undeclared(override val scalarText: String) : Status"));
+    assert!(text.contains("\"UNDECLARED\" -> UNDECLARED_\n"));
+    assert!(text.contains("else -> Undeclared(text)\n"));
+}
