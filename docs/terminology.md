@@ -595,6 +595,9 @@ Kotlin: `Persistence(path)` or `Persistence.named(name)`, handed to
 Kotlin: the image is the same tables and rows written through the AndroidX
 SQLite driver API, on the platform's SQLite, or on the JVM the engine that
 target bundles.
+Kotlin: on Android the runtime holds no `Context`, so an image named is
+placed by the app: `Persistence.named(name, directory = cacheDir.path)`;
+without a directory the call throws.
 
 **Hydration.** *Composition: store, plan.* The web's word for filling a
 client's state from stored data.

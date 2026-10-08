@@ -119,7 +119,15 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "9.8.0"
-      - run: gradle --no-daemon :baton:build :baton-testing:build :goldens:compileKotlinJvm :samples:desktop:build
+      # The runner's Android SDK, under ANDROID_HOME, with its licences
+      # accepted: the Android Gradle plugin installs a platform the build
+      # compiles against and the image lacks (Android 17's, for Compose UI).
+      # The device tests and the ingest benchmark need a device and do not
+      # run here.
+      - run: >
+          gradle --no-daemon :baton:build :baton-testing:build :baton-inspector:build
+          :goldens:compileKotlinJvm :samples:shared:build :samples:desktop:build
+          :samples:github:build :samples:android:assembleDebug
         working-directory: kotlin
 
   # The package on the current Xcode. Every target builds with warnings as

@@ -7,14 +7,18 @@ detail of the one selected: its header, which the list fetched and the
 `character` lookup finds in the store, and its episodes, which only the
 detail fetches.
 
-- `baton.json` names the schema under `spec/rickandmorty/`, the lookups,
-  and the package of the shared file.
-- The hosts are the `.kt` files: `@Fragment` on the composable that renders
-  a lens, `@Query` on the one that resolves an operation value with
-  `rememberQuery`, documents with a variable in `$$"""…"""` strings.
-- The `generateBaton` task runs `batonc generate --language kotlin` over
-  the hosts into `build/generated/baton`, which the sample compiles beside
-  its sources, as an app's build would.
+- The screens are `../shared`, Compose Multiplatform in common code, which
+  the Android app (`../android`) shows too; this module is the window, the
+  menu and the screenshots.
+- `../shared/baton.json` names the schema under `spec/rickandmorty/`, the
+  lookups, and the package of the shared file.
+- The hosts are the shared module's `.kt` files: `@Fragment` on the
+  composable that renders a lens, `@Query` on the one that resolves an
+  operation value with `rememberQuery`, documents with a variable in
+  `$$"""…"""` strings.
+- The shared module's `generateBaton` task runs `batonc generate --language
+  kotlin` over the hosts into its `build/generated/baton`, which it
+  compiles beside its sources, as an app's build would.
 - `Main.kt` makes the environment in the composition, over a store whose
   image lives in the user's cache directory under the schema's digest
   (`Persistence.named("RickAndMorty", version = Types.schemaDigest)`), and

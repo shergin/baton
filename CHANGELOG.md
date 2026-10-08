@@ -42,6 +42,15 @@ are expected and listed without apology.
   fields, values and field errors, and `StoreExport.text(store)`, the dump.
   The desktop sample shows it in a third pane from its View menu
   (Command-I), and follows the system's light or dark appearance.
+- The Kotlin runtime builds for Android (API 23 and up): the image on the
+  system's SQLite through `AndroidSQLiteDriver`, `HttpTransport` and
+  `Environment(url)` shared with the JVM, and
+  `Persistence.named(name, directory = cacheDir.path)`, since the runtime
+  holds no `Context`. `baton-inspector` builds for Android too; the
+  desktop sample's screens moved to `kotlin/samples/shared`, which
+  `kotlin/samples/android`, a phone app, shows as well; and
+  `IngestBenchmark`, a device test, logs the Fixture's ingest and commit
+  medians with the device's model for the ingest budget.
 
 ## 0.11.0 (Karavai) — 2026-10-07
 

@@ -2,7 +2,8 @@
 
 Status: accepted, 2026-10-07; amended 2026-10-07, the first actual, and
 the primitives a target supplies; amended 2026-10-07, the platform's
-SQLite reached through the AndroidX SQLite driver API. Serves
+SQLite reached through the AndroidX SQLite driver API; the Android actual
+built, 2026-10-07. Serves
 [Two runtimes, one compiler](../principles/two-runtimes-one-compiler.md).
 Answers [#24](https://github.com/shergin/baton/issues/24) and shapes
 [#6](https://github.com/shergin/baton/issues/6). Not built yet. Reopen when
@@ -94,6 +95,25 @@ Kotlin runtime on the platform's equivalents.
   is the database's pages (`page_count` times `page_size`), since common
   Kotlin has no file system. A protection class has no counterpart on
   these platforms and the Kotlin image takes none.
+
+- The Android actual, 2026-10-07: `jvmSharedMain`, a source set the JVM
+  and Android share, holds the HTTP transport, the thread's identity and
+  the image's file operations, writer and lock; `androidMain` holds
+  `AndroidSQLiteDriver` and a double's shortest text; the socket transport
+  stays the JVM's. Three differences the device showed, each held by a
+  device test: the framework adds `android_metadata` to every database it
+  opens, so a new image is told by its tables but that one; Android's
+  driver fails a step past the one row `PRAGMA journal_mode=WAL` answers,
+  so the mode is set in one step; and Android's `Double.toString` is not
+  the shortest round trip (`8.409999999999999E21` for `8.41e21`), so the
+  digits are searched for there. A corrupt file is deleted by the
+  framework when it opens it. The runtime holds no `Context`:
+  `Persistence.named` takes the app's cache directory on Android. The
+  lowest Android is 6 (API 23), the Compose runtime's and AndroidX
+  SQLite's. On an emulator (Pixel 6 profile, Android 16, on an M1 Pro)
+  the Fixture response ingests in about 12 ms and commits in 4 to 6 ms,
+  the medians `IngestBenchmark` logs; an emulator's number is not the
+  budget, which waits for a named device.
 
 ## Not chosen
 
