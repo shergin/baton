@@ -1488,6 +1488,17 @@ struct PersistenceTests {
         return attributes?[.protectionKey] as? FileProtectionType == .complete
     }()
 
+    /// Whether the volume the images are made on accepts a protection class
+    /// at all: a file can be written under `.complete`, whatever class it
+    /// reports back. It tells a volume that refuses the class from one that
+    /// accepts it, whether it keeps it (`volumeKeepsProtection`) or ignores
+    /// it, as a virtual machine's does.
+    nonisolated static let volumeAcceptsProtection: Bool = {
+        let probe = FileManager.default.temporaryDirectory.appendingPathComponent("baton-\(UUID().uuidString).probe")
+        defer { try? FileManager.default.removeItem(at: probe) }
+        return (try? Data().write(to: probe, options: .completeFileProtection)) != nil
+    }()
+
     @Test("an image made with a protection class carries it on its file and its write-ahead log", .enabled(if: volumeKeepsProtection, "the volume keeps no protection class"))
     func protectionIsTheFiles() async throws {
         let environment = launch(protection: .complete)
@@ -1502,7 +1513,7 @@ struct PersistenceTests {
         #expect(data.characters?.results?.first?.name == "Rick Sanchez", "the same class reads its rows")
     }
 
-    @Test("an image made under another protection class is a miss and starts again under the new one, in either direction")
+    @Test("an image made under another protection class is a miss and starts again under the new one, in either direction", .enabled(if: volumeAcceptsProtection, "the volume refuses a protection class"))
     func anotherProtectionStartsAgain() async throws {
         try await seed(launch())
         let protected = launch(protection: .complete)
