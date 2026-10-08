@@ -21,6 +21,34 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the Kotlin ingest on a device — 2026-10-07
+
+Revision: `436da2b`. The Kotlin runtime's `IngestBenchmark`
+(`kotlin/baton/src/androidDeviceTest`), run with
+`adb shell am instrument -w -e class baton.IngestBenchmark
+baton.test/androidx.test.runner.AndroidJUnitRunner` and read from
+`adb logcat -d -s BatonIngest:I`: the Fixture response (686,254 bytes,
+899 records) tokenized by the generated plan into a change set, then
+committed into an empty store; the medians of 300 runs after 200 warm-up
+runs, twice. The device test APK is a debuggable build, which is how the
+Android Gradle plugin builds a device test; a number from a build that is
+not debuggable is owed. The JVM row is `IngestTiming` in `jvmTest`, not a
+benchmark, for scale.
+
+| Where | Ingest, off the main thread | Commit, on the main thread |
+|---|---|---|
+| Google Pixel 9, Tensor G4, Android 17 (API 37), 120 Hz display | 19.03 ms, 19.18 ms | 6.82 ms, 6.68 ms |
+| The `baton` emulator, arm64 Android 16 image on an M1 Pro | 12.16 ms, 12.57 ms | 4.36 ms, 5.61 ms |
+| The JVM, JDK 21 on an M1 Pro | 1.71 ms | 0.32 ms |
+
+The commit, which is the main thread's share, fits a frame at 60 Hz
+(16.7 ms) and at 120 Hz (8.3 ms); the ingest does not fit one and does not
+run on one. The device is eleven times the JVM on the ingest and twenty on
+the commit, where the JVM's escape analysis hides allocations ART charges
+for; the tokenizer's and the change set's allocations are the first thing
+to look at, before any remedy outside Kotlin is weighed
+(`docs/decisions/native-runtimes.md`).
+
 ## Unreleased, the verdict on the root — 2026-10-07
 
 Revision: the working tree of the verdict change on top of `039aa2d`,

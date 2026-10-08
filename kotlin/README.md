@@ -94,6 +94,9 @@ adb shell am instrument -w -e class baton.IngestBenchmark \
 
 A number from an emulator is not the budget; the budget is a number on a
 named device, recorded in `BENCHMARKS.md` with the device, OS and date.
+The first one, 2026-10-07: a Google Pixel 9 on Android 17 ingests the
+fixture in 19.0 ms and commits it in 6.7 ms, from a debuggable device-test
+build.
 Without `class`, `connectedAndroidDeviceTest` also runs the image's tests
 on the system's SQLite and the double's shortest text on Android's
 runtime.

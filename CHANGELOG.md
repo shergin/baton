@@ -5,6 +5,11 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The Kotlin runtime's first numbers on a device, in `BENCHMARKS.md`: on a
+  Google Pixel 9 running Android 17, the 899-record fixture tokenizes in
+  19.0 ms off the main thread and commits in 6.7 ms on it, a debuggable
+  device-test build, the medians of 300 runs; the native-runtimes record
+  carries the number as the ingest budget's first evidence.
 - The desktop sample keeps its page bar through a failure, so a page the
   public API refused (HTTP 429, Cloudflare's 1015 under a burst) can be
   left or retried; caches avatars for the process; keys its rows by

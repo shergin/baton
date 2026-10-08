@@ -1,6 +1,7 @@
 # Native runtimes, not a shared core
 
-Status: accepted, 2026-10-02. Serves
+Status: accepted, 2026-10-02; the ingest budget's first device number,
+2026-10-07. Serves
 [Two runtimes, one compiler](../principles/two-runtimes-one-compiler.md).
 Reopen when the Kotlin tokenizer cannot meet the ingest budget on the JVM;
 the contained remedy is a Rust ingest library for Android only, producing a
@@ -20,6 +21,17 @@ comes from the compiler's plans and the shared fixtures, not from shared
 code.
 
 ## Evidence
+
+- The first number on a named device, 2026-10-07 (`BENCHMARKS.md`, "the
+  Kotlin ingest on a device"): on the owner's Google Pixel 9 (Tensor G4,
+  Android 17), a debuggable device-test build, the 899-record fixture
+  tokenizes in 19.0 ms off the main thread and commits in 6.7 ms on it,
+  the medians of 300 runs after 200. The commit fits a 60 Hz and a 120 Hz
+  frame; the ingest runs off the frame. The JVM does the same in 1.7 ms
+  and 0.3 ms, so ART's allocation cost is what the Kotlin tokenizer and
+  change set pay, and that is the first thing to measure and trim before
+  the remedy this record names is weighed. A number from a build that is
+  not debuggable is owed.
 
 - A native lens read measured 6.5 ns on an M1 Pro (spike, 2026-10-02). A read
   across a foreign-function boundary returns a string that must be copied
