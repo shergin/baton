@@ -24,6 +24,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.AndroidViewModel
+import androidx.tracing.trace
 import baton.Environment
 import baton.LocalBaton
 import baton.Persistence
@@ -89,10 +90,12 @@ class MainActivity : ComponentActivity() {
  * directory is the app's cache directory, passed by path.
  */
 class SampleModel(application: Application) : AndroidViewModel(application) {
-    val environment = Environment(
-        FixedServer.graphql("https://rickandmortyapi.com/graphql"),
-        store = Store(persistence = Persistence.named("RickAndMorty", directory = application.cacheDir.path, version = Types.schemaDigest)),
-    )
+    val environment = trace(Sections.CLIENT_SETUP) {
+        Environment(
+            FixedServer.graphql("https://rickandmortyapi.com/graphql"),
+            store = Store(persistence = Persistence.named("RickAndMorty", directory = application.cacheDir.path, version = Types.schemaDigest)),
+        )
+    }
 
     override fun onCleared() {
         // The view model's own scope is cancelled by now. The end writes what

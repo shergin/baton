@@ -24,6 +24,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.AndroidViewModel
+import androidx.tracing.trace
 import baton.macro.FixedServer
 import baton.macro.Sections
 import baton.sample.apollo.graphql.cache.Cache.cache
@@ -84,10 +85,12 @@ class MainActivity : ComponentActivity() {
  * extension the cache's compiler plugin generates.
  */
 class SampleModel(application: Application) : AndroidViewModel(application) {
-    val client: ApolloClient = ApolloClient.Builder()
-        .serverUrl(FixedServer.graphql("https://rickandmortyapi.com/graphql"))
-        .cache(MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024).chain(SqlNormalizedCacheFactory(application, "rickandmorty.db")))
-        .build()
+    val client: ApolloClient = trace(Sections.CLIENT_SETUP) {
+        ApolloClient.Builder()
+            .serverUrl(FixedServer.graphql("https://rickandmortyapi.com/graphql"))
+            .cache(MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024).chain(SqlNormalizedCacheFactory(application, "rickandmorty.db")))
+            .build()
+    }
 
     override fun onCleared() {
         client.close()

@@ -37,7 +37,7 @@ class EndToEndBenchmark(private val app: String) {
     @Test
     fun cold_start_to_the_list_with_an_empty_store() = rule.measureRepeated(
         packageName = app,
-        metrics = listOf(StartupTimingMetric(), TraceSectionMetric(Sections.LIST_RESPONSE_TO_FRAME, TraceSectionMetric.Mode.First)),
+        metrics = startMetrics,
         compilationMode = CompilationMode.Full(),
         startupMode = StartupMode.COLD,
         iterations = ITERATIONS,
@@ -56,7 +56,7 @@ class EndToEndBenchmark(private val app: String) {
         var primed = false
         rule.measureRepeated(
             packageName = app,
-            metrics = listOf(StartupTimingMetric(), TraceSectionMetric(Sections.LIST_RESPONSE_TO_FRAME, TraceSectionMetric.Mode.First)),
+            metrics = startMetrics,
             compilationMode = CompilationMode.Full(),
             startupMode = StartupMode.COLD,
             iterations = ITERATIONS,
@@ -159,6 +159,14 @@ class EndToEndBenchmark(private val app: String) {
         Thread.sleep(2_000)
         killProcess()
     }
+
+    /** A start's metrics: the startup's, the list's two sections from the response, and the client's construction. */
+    private val startMetrics = listOf(
+        StartupTimingMetric(),
+        TraceSectionMetric(Sections.LIST_RESPONSE_TO_FRAME, TraceSectionMetric.Mode.First),
+        TraceSectionMetric(Sections.LIST_LAST_BYTE_TO_FRAME, TraceSectionMetric.Mode.First),
+        TraceSectionMetric(Sections.CLIENT_SETUP, TraceSectionMetric.Mode.First),
+    )
 
     companion object {
         const val ITERATIONS = 15

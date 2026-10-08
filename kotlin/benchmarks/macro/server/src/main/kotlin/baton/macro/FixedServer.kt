@@ -89,10 +89,12 @@ class FixedServer private constructor(private val assets: AssetManager, private 
             respond(output, 404, "text/plain", "no recorded answer".encodeToByteArray())
             return
         }
+        // A page's sections begin as its first byte is written and as its
+        // last is; both end at the frame that draws the list.
+        val list = operation == "CharactersScreenQuery"
+        if (list) Sections.begin(Sections.LIST_RESPONSE_TO_FRAME)
         respond(output, 200, "application/json", answer)
-        // The response's last byte is written: from here to the frame that
-        // draws the list is what the app does with it.
-        if (operation == "CharactersScreenQuery") Sections.begin(Sections.LIST_RESPONSE_TO_FRAME)
+        if (list) Sections.begin(Sections.LIST_LAST_BYTE_TO_FRAME)
         Log.i(TAG, "answered $operation with $name, ${answer.size} bytes")
     }
 
