@@ -388,24 +388,7 @@ class TestAssetValuesQuery : QueryOperation<TestAssetValuesQuery.Data> {
         override val name = "TestAssetValuesQuery"
         override val document: Document = Document.Text("query TestAssetValuesQuery{assets{...TestAssetValue_asset,id,uuid}}fragment TestAssetValue_asset on Asset{uuid,name,price,listedAt,page,prices,caughtSize:size}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("assets", key = StorageKey.Fixed(Slots.Query.assets), plural = true, selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Asset, key = listOf("uuid"), isAbstract = false, fields = listOf(
-                PlanField.scalar("uuid", key = StorageKey.Fixed(Slots.Asset.uuid), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Asset.name), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("price", key = StorageKey.Fixed(Slots.Asset.price), kind = ScalarKind.CUSTOM, list = false),
-                PlanField.scalar("listedAt", key = StorageKey.Fixed(Slots.Asset.listedAt), kind = ScalarKind.CUSTOM, list = false),
-                PlanField.scalar("page", key = StorageKey.Fixed(Slots.Asset.page), kind = ScalarKind.CUSTOM, list = false),
-                PlanField.scalar("prices", key = StorageKey.Fixed(Slots.Asset.prices), kind = ScalarKind.CUSTOM, list = true),
-                PlanField.scalar("caughtSize", key = StorageKey.Fixed(Slots.Asset.size), kind = ScalarKind.INT, list = false, caught = true),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Asset.id), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestAssetValuesQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -425,6 +408,26 @@ class TestAssetValuesQuery : QueryOperation<TestAssetValuesQuery.Data> {
     }
 }
 
+private object `TestAssetValuesQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("assets", key = StorageKey.Fixed(Slots.Query.assets), plural = true, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Asset, key = listOf("uuid"), isAbstract = false, fields = listOf(
+            PlanField.scalar("uuid", key = StorageKey.Fixed(Slots.Asset.uuid), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Asset.name), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("price", key = StorageKey.Fixed(Slots.Asset.price), kind = ScalarKind.CUSTOM, list = false),
+            PlanField.scalar("listedAt", key = StorageKey.Fixed(Slots.Asset.listedAt), kind = ScalarKind.CUSTOM, list = false),
+            PlanField.scalar("page", key = StorageKey.Fixed(Slots.Asset.page), kind = ScalarKind.CUSTOM, list = false),
+            PlanField.scalar("prices", key = StorageKey.Fixed(Slots.Asset.prices), kind = ScalarKind.CUSTOM, list = true),
+            PlanField.scalar("caughtSize", key = StorageKey.Fixed(Slots.Asset.size), kind = ScalarKind.INT, list = false, caught = true),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Asset.id), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestCaughtValueQuery`. */
 class TestCaughtValueQuery(val id: String) : QueryOperation<TestCaughtValueQuery.Data> {
     override val variables: Variables
@@ -439,34 +442,7 @@ class TestCaughtValueQuery(val id: String) : QueryOperation<TestCaughtValueQuery
         override val name = "TestCaughtValueQuery"
         override val document: Document = Document.Text("query TestCaughtValueQuery(\$id:ID!){character(id:\$id){id,...TestCharacterValue_character}}fragment TestCharacterValue_character on Character{id,name,status,origin{...TestOriginValue_location,id},episode{id,name}}fragment TestOriginValue_location on Location{id,name,dimension}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("status", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false),
-                PlanField.linked("origin", key = StorageKey.Fixed(Slots.Character.origin), plural = false, selection = selection3),
-                PlanField.linked("episode", key = StorageKey.Fixed(Slots.Character.episode), plural = true, selection = selection2),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.Episode, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Episode.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Episode.name), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.Location, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Location.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Location.name), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("dimension", key = StorageKey.Fixed(Slots.Location.dimension), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestCaughtValueQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -491,6 +467,36 @@ class TestCaughtValueQuery(val id: String) : QueryOperation<TestCaughtValueQuery
     }
 }
 
+private object `TestCaughtValueQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("status", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false),
+            PlanField.linked("origin", key = StorageKey.Fixed(Slots.Character.origin), plural = false, selection = selection3),
+            PlanField.linked("episode", key = StorageKey.Fixed(Slots.Character.episode), plural = true, selection = selection2),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.Episode, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Episode.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Episode.name), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.Location, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Location.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Location.name), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("dimension", key = StorageKey.Fixed(Slots.Location.dimension), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestDeferredValueQuery`. */
 class TestDeferredValueQuery(val id: String) : QueryOperation<TestDeferredValueQuery.Data> {
     override val variables: Variables
@@ -506,35 +512,7 @@ class TestDeferredValueQuery(val id: String) : QueryOperation<TestDeferredValueQ
         override val document: Document = Document.Text("query TestDeferredValueQuery(\$id:ID!){character(id:\$id){id,...TestCharacterValue_character@defer(label:\"TestDeferredValueQuery\$defer\$TestCharacterValue_character\")}}fragment TestCharacterValue_character on Character{id,name,status,origin{...TestOriginValue_location,id},episode{id,name}}fragment TestOriginValue_location on Location{id,name,dimension}")
         override val kind = OperationKind.QUERY
         override val hasDeferred = true
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false, deferred = "TestDeferredValueQuery\$defer\$TestCharacterValue_character"),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false, deferred = "TestDeferredValueQuery\$defer\$TestCharacterValue_character"),
-                PlanField.scalar("status", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false, deferred = "TestDeferredValueQuery\$defer\$TestCharacterValue_character"),
-                PlanField.linked("origin", key = StorageKey.Fixed(Slots.Character.origin), plural = false, deferred = "TestDeferredValueQuery\$defer\$TestCharacterValue_character", selection = selection3),
-                PlanField.linked("episode", key = StorageKey.Fixed(Slots.Character.episode), plural = true, deferred = "TestDeferredValueQuery\$defer\$TestCharacterValue_character", selection = selection2),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.Episode, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Episode.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Episode.name), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.Location, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Location.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Location.name), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("dimension", key = StorageKey.Fixed(Slots.Location.dimension), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestDeferredValueQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -559,6 +537,37 @@ class TestDeferredValueQuery(val id: String) : QueryOperation<TestDeferredValueQ
     }
 }
 
+private object `TestDeferredValueQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false, deferred = "TestDeferredValueQuery\$defer\$TestCharacterValue_character"),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false, deferred = "TestDeferredValueQuery\$defer\$TestCharacterValue_character"),
+            PlanField.scalar("status", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false, deferred = "TestDeferredValueQuery\$defer\$TestCharacterValue_character"),
+            PlanField.linked("origin", key = StorageKey.Fixed(Slots.Character.origin), plural = false, deferred = "TestDeferredValueQuery\$defer\$TestCharacterValue_character", selection = selection3),
+            PlanField.linked("episode", key = StorageKey.Fixed(Slots.Character.episode), plural = true, deferred = "TestDeferredValueQuery\$defer\$TestCharacterValue_character", selection = selection2),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.Episode, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Episode.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Episode.name), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.Location, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Location.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Location.name), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("dimension", key = StorageKey.Fixed(Slots.Location.dimension), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestInlineQuery`. */
 class TestInlineQuery(val id: String, val withNotes: Boolean) : QueryOperation<TestInlineQuery.Data> {
     override val variables: Variables
@@ -573,40 +582,7 @@ class TestInlineQuery(val id: String, val withNotes: Boolean) : QueryOperation<T
         override val name = "TestInlineQuery"
         override val document: Document = Document.Text("query TestInlineQuery(\$id:ID!,\$withNotes:Boolean!){character(id:\$id){...TestCard_character,...TestNotesValue_character_35kO5h@include(if:\$withNotes),id}}fragment TestCard_character on Character{name,...TestCharacterValue_character}fragment TestCharacterValue_character on Character{id,name,status,origin{...TestOriginValue_location,id},episode{id,name}}fragment TestNotesValue_character_35kO5h on Character{notes(first:1){totalCount}}fragment TestOriginValue_location on Location{id,name,dimension}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("status", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false),
-                PlanField.linked("origin", key = StorageKey.Fixed(Slots.Character.origin), plural = false, selection = selection4),
-                PlanField.linked("episode", key = StorageKey.Fixed(Slots.Character.episode), plural = true, selection = selection3),
-                PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_f89852), plural = false, guards = listOf(listOf(Guard("withNotes", passing = true))), selection = selection2),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("totalCount", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.Episode, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Episode.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Episode.name), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection4: Selection by lazy {
-            Selection(type = Types.Location, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Location.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Location.name), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("dimension", key = StorageKey.Fixed(Slots.Location.dimension), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestInlineQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -632,6 +608,42 @@ class TestInlineQuery(val id: String, val withNotes: Boolean) : QueryOperation<T
     }
 }
 
+private object `TestInlineQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("status", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false),
+            PlanField.linked("origin", key = StorageKey.Fixed(Slots.Character.origin), plural = false, selection = selection4),
+            PlanField.linked("episode", key = StorageKey.Fixed(Slots.Character.episode), plural = true, selection = selection3),
+            PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_f89852), plural = false, guards = listOf(listOf(Guard("withNotes", passing = true))), selection = selection2),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("totalCount", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.Episode, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Episode.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Episode.name), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.Location, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Location.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Location.name), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("dimension", key = StorageKey.Fixed(Slots.Location.dimension), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestResultValuesQuery`. */
 class TestResultValuesQuery(val name: String) : QueryOperation<TestResultValuesQuery.Data> {
     override val variables: Variables
@@ -646,39 +658,7 @@ class TestResultValuesQuery(val name: String) : QueryOperation<TestResultValuesQ
         override val name = "TestResultValuesQuery"
         override val document: Document = Document.Text("query TestResultValuesQuery(\$name:String!){search(name:\$name){__typename,...TestResultValue_searchResult,...on Node{__isNode:__typename,id}}}fragment TestResultValue_searchResult on SearchResult{__isSearchResult:__typename,...on Character{name,status},...on Location{name,dimension}}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("search", key = StorageKey.Dynamic(Slots.Query.search_954c44), plural = true, selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.SearchResult, key = listOf("id"), isAbstract = true, memberships = listOf(Selection.MembershipAnswer("__isNode", Types.Node)), variants = listOf(
-                Selection.Variant(types = listOf(Types.Character), key = listOf("id"), fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Character.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("status", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                )),
-                Selection.Variant(types = listOf(Types.Episode), key = listOf("id"), fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Episode.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Episode.id), kind = ScalarKind.STRING, list = false),
-                )),
-                Selection.Variant(types = listOf(Types.Location), key = listOf("id"), fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Location.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("name", key = StorageKey.Fixed(Slots.Location.name), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("dimension", key = StorageKey.Fixed(Slots.Location.dimension), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Location.id), kind = ScalarKind.STRING, list = false),
-                )),
-                Selection.Variant(types = null, condition = Types.Node, fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.SearchResult.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.SearchResult.id), kind = ScalarKind.STRING, list = false),
-                )),
-                Selection.Variant(types = null, fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.SearchResult.__typename), kind = ScalarKind.STRING, list = false),
-                )),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestResultValuesQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -698,6 +678,41 @@ class TestResultValuesQuery(val name: String) : QueryOperation<TestResultValuesQ
     }
 }
 
+private object `TestResultValuesQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("search", key = StorageKey.Dynamic(Slots.Query.search_954c44), plural = true, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.SearchResult, key = listOf("id"), isAbstract = true, memberships = listOf(Selection.MembershipAnswer("__isNode", Types.Node)), variants = listOf(
+            Selection.Variant(types = listOf(Types.Character), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Character.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("status", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+            )),
+            Selection.Variant(types = listOf(Types.Episode), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Episode.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Episode.id), kind = ScalarKind.STRING, list = false),
+            )),
+            Selection.Variant(types = listOf(Types.Location), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Location.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Location.name), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("dimension", key = StorageKey.Fixed(Slots.Location.dimension), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Location.id), kind = ScalarKind.STRING, list = false),
+            )),
+            Selection.Variant(types = null, condition = Types.Node, fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.SearchResult.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.SearchResult.id), kind = ScalarKind.STRING, list = false),
+            )),
+            Selection.Variant(types = null, fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.SearchResult.__typename), kind = ScalarKind.STRING, list = false),
+            )),
+        ))
+    }
+}
+
 /** Operation value for `query TestScanningValueQuery`. */
 class TestScanningValueQuery(val id: String, val withName: Boolean) : QueryOperation<TestScanningValueQuery.Data> {
     override val variables: Variables
@@ -712,40 +727,7 @@ class TestScanningValueQuery(val id: String, val withName: Boolean) : QueryOpera
         override val name = "TestScanningValueQuery"
         override val document: Document = Document.Text("query TestScanningValueQuery(\$id:ID!,\$withName:Boolean!){character(id:\$id){...TestScanningValue_character_3ODEFE,id}}fragment TestCharacterValue_character on Character{id,name,status,origin{...TestOriginValue_location,id},episode{id,name}}fragment TestNamedValue_character on Character{name}fragment TestNotesValue_character_35kO5h on Character{notes(first:1){totalCount}}fragment TestOriginValue_location on Location{id,name,dimension}fragment TestScanningValue_character_3ODEFE on Character{id,...TestNotesValue_character_35kO5h,...TestNamedValue_character@include(if:\$withName),...TestCharacterValue_character}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_f89852), plural = false, selection = selection4),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("status", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false),
-                PlanField.linked("origin", key = StorageKey.Fixed(Slots.Character.origin), plural = false, selection = selection3),
-                PlanField.linked("episode", key = StorageKey.Fixed(Slots.Character.episode), plural = true, selection = selection2),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.Episode, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Episode.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Episode.name), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.Location, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Location.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Location.name), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("dimension", key = StorageKey.Fixed(Slots.Location.dimension), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection4: Selection by lazy {
-            Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("totalCount", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestScanningValueQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -766,5 +748,41 @@ class TestScanningValueQuery(val id: String, val withName: Boolean) : QueryOpera
             override fun equals(other: Any?): Boolean = other is TestScanningValueQuery.Data.Character && other.anchor == anchor
             override fun hashCode(): Int = anchor.hashCode()
         }
+    }
+}
+
+private object `TestScanningValueQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+            PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_f89852), plural = false, selection = selection4),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("status", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false),
+            PlanField.linked("origin", key = StorageKey.Fixed(Slots.Character.origin), plural = false, selection = selection3),
+            PlanField.linked("episode", key = StorageKey.Fixed(Slots.Character.episode), plural = true, selection = selection2),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.Episode, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Episode.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Episode.name), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.Location, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Location.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Location.name), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("dimension", key = StorageKey.Fixed(Slots.Location.dimension), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("totalCount", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
+        ))
     }
 }

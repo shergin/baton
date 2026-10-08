@@ -89,22 +89,7 @@ class TestAssetPricesQuery : QueryOperation<TestAssetPricesQuery.Data> {
         override val name = "TestAssetPricesQuery"
         override val document: Document = Document.Text("query TestAssetPricesQuery{assets{uuid,price,listedAt,page,prices,id}}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("assets", key = StorageKey.Fixed(Slots.Query.assets), plural = true, selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Asset, key = listOf("uuid"), isAbstract = false, fields = listOf(
-                PlanField.scalar("uuid", key = StorageKey.Fixed(Slots.Asset.uuid), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("price", key = StorageKey.Fixed(Slots.Asset.price), kind = ScalarKind.CUSTOM, list = false),
-                PlanField.scalar("listedAt", key = StorageKey.Fixed(Slots.Asset.listedAt), kind = ScalarKind.CUSTOM, list = false),
-                PlanField.scalar("page", key = StorageKey.Fixed(Slots.Asset.page), kind = ScalarKind.CUSTOM, list = false),
-                PlanField.scalar("prices", key = StorageKey.Fixed(Slots.Asset.prices), kind = ScalarKind.CUSTOM, list = true),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Asset.id), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestAssetPricesQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -128,6 +113,24 @@ class TestAssetPricesQuery : QueryOperation<TestAssetPricesQuery.Data> {
     }
 }
 
+private object `TestAssetPricesQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("assets", key = StorageKey.Fixed(Slots.Query.assets), plural = true, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Asset, key = listOf("uuid"), isAbstract = false, fields = listOf(
+            PlanField.scalar("uuid", key = StorageKey.Fixed(Slots.Asset.uuid), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("price", key = StorageKey.Fixed(Slots.Asset.price), kind = ScalarKind.CUSTOM, list = false),
+            PlanField.scalar("listedAt", key = StorageKey.Fixed(Slots.Asset.listedAt), kind = ScalarKind.CUSTOM, list = false),
+            PlanField.scalar("page", key = StorageKey.Fixed(Slots.Asset.page), kind = ScalarKind.CUSTOM, list = false),
+            PlanField.scalar("prices", key = StorageKey.Fixed(Slots.Asset.prices), kind = ScalarKind.CUSTOM, list = true),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Asset.id), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestPricedAssetsQuery`. */
 class TestPricedAssetsQuery(val price: java.math.BigDecimal, val among: List<java.math.BigDecimal>? = null) : QueryOperation<TestPricedAssetsQuery.Data> {
     override val variables: Variables
@@ -142,22 +145,7 @@ class TestPricedAssetsQuery(val price: java.math.BigDecimal, val among: List<jav
         override val name = "TestPricedAssetsQuery"
         override val document: Document = Document.Text("query TestPricedAssetsQuery(\$price:Decimal!,\$among:[Decimal!]){assetsPricedAbove(price:\$price,among:\$among){uuid,...TestCaughtPrices_asset,...TestThrowingPrices_asset,...TestRequiredPrice_asset,id}}fragment TestCaughtPrices_asset on Asset{price,listedAt,page}fragment TestRequiredPrice_asset on Asset{price}fragment TestThrowingPrices_asset on Asset{price,prices}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("assetsPricedAbove", key = StorageKey.Dynamic(Slots.Query.assetsPricedAbove_914469), plural = true, selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Asset, key = listOf("uuid"), isAbstract = false, fields = listOf(
-                PlanField.scalar("uuid", key = StorageKey.Fixed(Slots.Asset.uuid), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("price", key = StorageKey.Fixed(Slots.Asset.price), kind = ScalarKind.CUSTOM, list = false, caught = true),
-                PlanField.scalar("listedAt", key = StorageKey.Fixed(Slots.Asset.listedAt), kind = ScalarKind.CUSTOM, list = false, caught = true),
-                PlanField.scalar("page", key = StorageKey.Fixed(Slots.Asset.page), kind = ScalarKind.CUSTOM, list = false, caught = true),
-                PlanField.scalar("prices", key = StorageKey.Fixed(Slots.Asset.prices), kind = ScalarKind.CUSTOM, list = true),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Asset.id), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestPricedAssetsQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -181,5 +169,23 @@ class TestPricedAssetsQuery(val price: java.math.BigDecimal, val among: List<jav
             override fun equals(other: Any?): Boolean = other is TestPricedAssetsQuery.Data.AssetsPricedAbove && other.anchor == anchor
             override fun hashCode(): Int = anchor.hashCode()
         }
+    }
+}
+
+private object `TestPricedAssetsQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("assetsPricedAbove", key = StorageKey.Dynamic(Slots.Query.assetsPricedAbove_914469), plural = true, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Asset, key = listOf("uuid"), isAbstract = false, fields = listOf(
+            PlanField.scalar("uuid", key = StorageKey.Fixed(Slots.Asset.uuid), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("price", key = StorageKey.Fixed(Slots.Asset.price), kind = ScalarKind.CUSTOM, list = false, caught = true),
+            PlanField.scalar("listedAt", key = StorageKey.Fixed(Slots.Asset.listedAt), kind = ScalarKind.CUSTOM, list = false, caught = true),
+            PlanField.scalar("page", key = StorageKey.Fixed(Slots.Asset.page), kind = ScalarKind.CUSTOM, list = false, caught = true),
+            PlanField.scalar("prices", key = StorageKey.Fixed(Slots.Asset.prices), kind = ScalarKind.CUSTOM, list = true),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Asset.id), kind = ScalarKind.STRING, list = false),
+        ))
     }
 }

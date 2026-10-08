@@ -1,5 +1,5 @@
 //! The normalization plan as Kotlin: each selection a `Selection` of its
-//! own, built lazily in the operation's companion, so that no initializer
+//! own, built lazily in the operation's plan object, so that no initializer
 //! grows past the size the JVM allows a method and a recurring selection is
 //! built once.
 
@@ -59,7 +59,7 @@ impl<'a> PlanSelections<'a> {
     }
 
     /// The name of the root selection, the plan's.
-    pub(super) fn root(&self) -> String {
+    pub(super) fn root() -> String {
         PlanSelections::name(0)
     }
 
@@ -85,7 +85,8 @@ impl<'a> PlanSelections<'a> {
     }
 
     /// The name of the declaration numbered `number` from the root, a
-    /// private member of the companion, where no variable reaches.
+    /// member of the operation's plan object, where no variable and no lens
+    /// reaches.
     fn name(number: usize) -> String {
         format!("selection{number}")
     }

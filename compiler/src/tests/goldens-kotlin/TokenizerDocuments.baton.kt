@@ -33,27 +33,7 @@ class TestTokenizerQuery : QueryOperation<TestTokenizerQuery.Data> {
         override val name = "TestTokenizerQuery"
         override val document: Document = Document.Text("query TestTokenizerQuery{tokenizer{id,text,strings,count,counts,ratio,ratios,flag,flags,json,jsons}}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("tokenizer", key = StorageKey.Fixed(Slots.Query.tokenizer), plural = false, selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Tokenizer, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Tokenizer.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Tokenizer.text), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("strings", key = StorageKey.Fixed(Slots.Tokenizer.strings), kind = ScalarKind.STRING, list = true),
-                PlanField.scalar("count", key = StorageKey.Fixed(Slots.Tokenizer.count), kind = ScalarKind.INT, list = false),
-                PlanField.scalar("counts", key = StorageKey.Fixed(Slots.Tokenizer.counts), kind = ScalarKind.INT, list = true),
-                PlanField.scalar("ratio", key = StorageKey.Fixed(Slots.Tokenizer.ratio), kind = ScalarKind.DOUBLE, list = false),
-                PlanField.scalar("ratios", key = StorageKey.Fixed(Slots.Tokenizer.ratios), kind = ScalarKind.DOUBLE, list = true),
-                PlanField.scalar("flag", key = StorageKey.Fixed(Slots.Tokenizer.flag), kind = ScalarKind.BOOL, list = false),
-                PlanField.scalar("flags", key = StorageKey.Fixed(Slots.Tokenizer.flags), kind = ScalarKind.BOOL, list = true),
-                PlanField.scalar("json", key = StorageKey.Fixed(Slots.Tokenizer.json), kind = ScalarKind.CUSTOM, list = false),
-                PlanField.scalar("jsons", key = StorageKey.Fixed(Slots.Tokenizer.jsons), kind = ScalarKind.CUSTOM, list = true),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestTokenizerQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -80,5 +60,28 @@ class TestTokenizerQuery : QueryOperation<TestTokenizerQuery.Data> {
             override fun equals(other: Any?): Boolean = other is TestTokenizerQuery.Data.Tokenizer && other.anchor == anchor
             override fun hashCode(): Int = anchor.hashCode()
         }
+    }
+}
+
+private object `TestTokenizerQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("tokenizer", key = StorageKey.Fixed(Slots.Query.tokenizer), plural = false, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Tokenizer, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Tokenizer.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Tokenizer.text), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("strings", key = StorageKey.Fixed(Slots.Tokenizer.strings), kind = ScalarKind.STRING, list = true),
+            PlanField.scalar("count", key = StorageKey.Fixed(Slots.Tokenizer.count), kind = ScalarKind.INT, list = false),
+            PlanField.scalar("counts", key = StorageKey.Fixed(Slots.Tokenizer.counts), kind = ScalarKind.INT, list = true),
+            PlanField.scalar("ratio", key = StorageKey.Fixed(Slots.Tokenizer.ratio), kind = ScalarKind.DOUBLE, list = false),
+            PlanField.scalar("ratios", key = StorageKey.Fixed(Slots.Tokenizer.ratios), kind = ScalarKind.DOUBLE, list = true),
+            PlanField.scalar("flag", key = StorageKey.Fixed(Slots.Tokenizer.flag), kind = ScalarKind.BOOL, list = false),
+            PlanField.scalar("flags", key = StorageKey.Fixed(Slots.Tokenizer.flags), kind = ScalarKind.BOOL, list = true),
+            PlanField.scalar("json", key = StorageKey.Fixed(Slots.Tokenizer.json), kind = ScalarKind.CUSTOM, list = false),
+            PlanField.scalar("jsons", key = StorageKey.Fixed(Slots.Tokenizer.jsons), kind = ScalarKind.CUSTOM, list = true),
+        ))
     }
 }

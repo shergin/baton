@@ -63,6 +63,7 @@ pub(super) fn operation_text(operation: &OperationValue, lenses: &Lenses) -> Str
         format!("({})", parameters.join(", "))
     };
     let head = format!("class {class}{parameters} : {interface}<{class}.Data>");
+    let plan = plan_object_name(operation);
     writer.block(head, |writer| {
         variables(writer, operation, converters);
         if let Some(handle) = handle {
@@ -74,7 +75,7 @@ pub(super) fn operation_text(operation: &OperationValue, lenses: &Lenses) -> Str
         writer.blank();
         equality(writer, operation, &class);
         writer.blank();
-        companion(writer, operation, shared);
+        companion(writer, operation, shared, &plan);
         writer.blank();
         lenses.lens(
             writer,
@@ -86,11 +87,39 @@ pub(super) fn operation_text(operation: &OperationValue, lenses: &Lenses) -> Str
             builder(writer, optimistic, converters);
         }
     });
+    writer.blank();
+    plan_object(&mut writer, operation, shared, &plan);
     if operation.kind == OperationKind::Mutation {
         writer.blank();
         action(&mut writer, operation, converters);
     }
     writer.finish()
+}
+
+/// The name of the object that holds an operation's plan selections: the
+/// operation's name and `-plan`, in backticks. A GraphQL name holds no
+/// hyphen, so no document's declaration takes it, and the JVM and Android's
+/// dex both allow one in a class name, where a `$` would read as a nested
+/// class's.
+fn plan_object_name(operation: &OperationValue) -> String {
+    format!("`{}-plan`", operation.name)
+}
+
+/// The plan's selections, each a lazy property of a private top-level
+/// object beside the operation's class. A lens nested in the class sees the
+/// members of its companion, even the private ones, so a selection held
+/// there would hide a fragment or a field of its name; no lens sees into
+/// this object. Each selection is built in an initializer of its own, so no
+/// method grows past the size the JVM allows.
+fn plan_object(writer: &mut Writer, operation: &OperationValue, shared: &Shared, plan: &str) {
+    writer.block(format!("private object {plan}"), |writer| {
+        let selections = PlanSelections::new(&operation.normalization, writer.depth() + 1, shared);
+        for (name, initializer) in selections.declarations() {
+            writer.block(format!("val {name}: Selection by lazy"), |writer| {
+                writer.line(initializer);
+            });
+        }
+    });
 }
 
 /// A mutation's action as a function: an `invoke` on the runtime's
@@ -229,8 +258,8 @@ fn error_behavior_case(behavior: OnError) -> &'static str {
 }
 
 /// The companion: the operation's name, document, kind and the flags its
-/// directives set, its plan and each selection of it, and the root lens.
-fn companion(writer: &mut Writer, operation: &OperationValue, shared: &Shared) {
+/// directives set, its plan, read from the plan object, and the root lens.
+fn companion(writer: &mut Writer, operation: &OperationValue, shared: &Shared, plan: &str) {
     let kind = match operation.kind {
         OperationKind::Query => "QUERY",
         OperationKind::Mutation => "MUTATION",
@@ -277,16 +306,10 @@ fn companion(writer: &mut Writer, operation: &OperationValue, shared: &Shared) {
         } else {
             ", transient = Types.transient"
         };
-        let selections = PlanSelections::new(&operation.normalization, writer.depth() + 1, shared);
         writer.line(format!(
-            "override val plan: Plan by lazy {{ Plan(root = {}{transient}) }}",
-            selections.root()
+            "override val plan: Plan by lazy {{ Plan(root = {plan}.{}{transient}) }}",
+            PlanSelections::root()
         ));
-        for (name, initializer) in selections.declarations() {
-            writer.block(format!("private val {name}: Selection by lazy"), |writer| {
-                writer.line(initializer);
-            });
-        }
         writer.blank();
         writer.line("override fun data(anchor: Anchor): Data = Data(anchor)");
         // The handle judges the operation's data through the companion: the

@@ -2688,3 +2688,54 @@ fun KotlinInlineSpreads3Reach() {}
     }
     """)
 fun KotlinNamesakeField() {}
+
+// A fragment and an inline fragment named like the declarations that hold an
+// operation's plan selections, spread in every form by a lens and by queries
+// whose plans hold as many selections: no lens sees the selections, so each
+// spread reads the fragment's class.
+@Fragment($$"""
+    fragment selection0 on Character
+      @argumentDefinitions(flag: {type: "Boolean!", defaultValue: true}) @throwOnFieldError {
+      name @include(if: $flag)
+    }
+    """)
+fun KotlinSelectionNamedFragment() {}
+
+@Fragment($$"""
+    fragment KotlinSelectionSpreader_character on Character {
+      ... @alias(as: "boundSpread") { ...selection0 @arguments(flag: false) }
+      ...selection0
+      ... @alias(as: "caughtSpread") @catch { ...selection0 }
+    }
+    """)
+fun KotlinSelectionSpreader() {}
+
+@Query($$"""
+    query KotlinSelectionDeferring { character(id: 1) { ...selection0 @defer } }
+    """)
+fun KotlinSelectionDeferring() {}
+
+@Fragment($$"""
+    fragment selection1 on Character @inline
+      @argumentDefinitions(flag: {type: "Boolean!", defaultValue: true}) @throwOnFieldError {
+      name @include(if: $flag)
+    }
+    """)
+fun KotlinSelectionNamedValue() {}
+
+@Query($$"""
+    query KotlinSelectionValues($flag: Boolean!) {
+      character(id: 1) {
+        ...selection1
+        ...selection1 @arguments(flag: false) @alias(as: "boundValue")
+        ...selection1 @include(if: $flag) @alias(as: "conditionalValue")
+        ... @alias(as: "caughtValue") @catch { ...selection1 }
+      }
+    }
+    """)
+fun KotlinSelectionValues() {}
+
+@Query($$"""
+    query KotlinSelectionValueDeferring { character(id: 1) { ...selection1 @defer } }
+    """)
+fun KotlinSelectionValueDeferring() {}

@@ -195,17 +195,20 @@ fn a_graphql_source_takes_the_shared_package() {
 }
 
 #[test]
-fn every_selection_is_its_own_lazy_declaration() {
+fn every_selection_is_its_own_lazy_declaration_in_an_object_no_lens_sees() {
     let output = emitted(
         "Screen.kt",
         Some("app.generated"),
         "query Probe { characters { info { count } } }",
     );
     let text = file(&output);
-    assert!(text.contains("override val plan: Plan by lazy { Plan(root = selection0) }"));
+    assert!(
+        text.contains("override val plan: Plan by lazy { Plan(root = `Probe-plan`.selection0) }")
+    );
+    assert!(text.contains("\nprivate object `Probe-plan` {\n"));
     for number in 0..3 {
         assert!(text.contains(&format!(
-            "private val selection{number}: Selection by lazy {{"
+            "\n    val selection{number}: Selection by lazy {{"
         )));
     }
     assert!(!text.contains("selection3"));

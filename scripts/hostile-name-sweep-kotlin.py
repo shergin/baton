@@ -84,10 +84,7 @@ query Probe { character(id: 1) { ...Probe_character } }""",
 
 # The defects `defects()` in `compiler/src/tests/kotlin_hostile_tests.rs`
 # records, by position: reported, and not counted until they are fixed.
-KNOWN_DEFECTS = {
-    "spread-forms": ["selection0"],
-    "value-spread-forms": ["selection0"],
-}
+KNOWN_DEFECTS = {}
 
 # The names the corpus's aliased scalar fields cannot hold, which the
 # position refuses: what every lens has, and what its code spells.

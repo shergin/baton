@@ -447,29 +447,7 @@ class TestAddNote(val characterId: String, val text: String, val connections: Li
         override val name = "TestAddNote"
         override val document: Document = Document.Text("mutation TestAddNote(\$characterId:ID!,\$text:String!){addNote(characterId:\$characterId,text:\$text){noteEdge{cursor,node{id,text}}}}")
         override val kind = OperationKind.MUTATION
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("addNote", key = StorageKey.Fixed(Slots.Mutation.addNote), plural = false, selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.AddNotePayload, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("noteEdge", key = StorageKey.Fixed(Slots.AddNotePayload.noteEdge), plural = false, edit = Edit(kind = Edit.Kind.APPEND_EDGE, connections = Edit.Connections.Variable("connections")), selection = selection2),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
-                PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection3),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestAddNote-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -539,6 +517,31 @@ class TestAddNote(val characterId: String, val text: String, val connections: Li
     }
 }
 
+private object `TestAddNote-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("addNote", key = StorageKey.Fixed(Slots.Mutation.addNote), plural = false, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.AddNotePayload, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("noteEdge", key = StorageKey.Fixed(Slots.AddNotePayload.noteEdge), plural = false, edit = Edit(kind = Edit.Kind.APPEND_EDGE, connections = Edit.Connections.Variable("connections")), selection = selection2),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
 suspend operator fun MutationAction<TestAddNote, TestAddNote.Data>.invoke(characterId: String, text: String, connections: List<String>, optimistic: TestAddNote.OptimisticResponse? = null): TestAddNote.Data = this.commit(TestAddNote(characterId, text, connections), optimistic?.payload)
 
@@ -555,29 +558,7 @@ class TestAddNoteFirst(val characterId: String, val text: String, val connection
         override val name = "TestAddNoteFirst"
         override val document: Document = Document.Text("mutation TestAddNoteFirst(\$characterId:ID!,\$text:String!){addNote(characterId:\$characterId,text:\$text){noteEdge{cursor,node{id,text}}}}")
         override val kind = OperationKind.MUTATION
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("addNote", key = StorageKey.Fixed(Slots.Mutation.addNote), plural = false, selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.AddNotePayload, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("noteEdge", key = StorageKey.Fixed(Slots.AddNotePayload.noteEdge), plural = false, edit = Edit(kind = Edit.Kind.PREPEND_EDGE, connections = Edit.Connections.Variable("connections")), selection = selection2),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
-                PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection3),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestAddNoteFirst-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -647,6 +628,31 @@ class TestAddNoteFirst(val characterId: String, val text: String, val connection
     }
 }
 
+private object `TestAddNoteFirst-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("addNote", key = StorageKey.Fixed(Slots.Mutation.addNote), plural = false, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.AddNotePayload, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("noteEdge", key = StorageKey.Fixed(Slots.AddNotePayload.noteEdge), plural = false, edit = Edit(kind = Edit.Kind.PREPEND_EDGE, connections = Edit.Connections.Variable("connections")), selection = selection2),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
 suspend operator fun MutationAction<TestAddNoteFirst, TestAddNoteFirst.Data>.invoke(characterId: String, text: String, connections: List<String>, optimistic: TestAddNoteFirst.OptimisticResponse? = null): TestAddNoteFirst.Data = this.commit(TestAddNoteFirst(characterId, text, connections), optimistic?.payload)
 
@@ -663,23 +669,7 @@ class TestAddNoteNode(val characterId: String, val text: String, val connections
         override val name = "TestAddNoteNode"
         override val document: Document = Document.Text("mutation TestAddNoteNode(\$characterId:ID!,\$text:String!){addNote(characterId:\$characterId,text:\$text){note{id,text}}}")
         override val kind = OperationKind.MUTATION
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("addNote", key = StorageKey.Fixed(Slots.Mutation.addNote), plural = false, selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.AddNotePayload, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("note", key = StorageKey.Fixed(Slots.AddNotePayload.note), plural = false, edit = Edit(kind = Edit.Kind.APPEND_NODE, connections = Edit.Connections.Variable("connections"), edgeType = Types.NoteEdge), selection = selection2),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestAddNoteNode-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -733,6 +723,25 @@ class TestAddNoteNode(val characterId: String, val text: String, val connections
     }
 }
 
+private object `TestAddNoteNode-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("addNote", key = StorageKey.Fixed(Slots.Mutation.addNote), plural = false, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.AddNotePayload, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("note", key = StorageKey.Fixed(Slots.AddNotePayload.note), plural = false, edit = Edit(kind = Edit.Kind.APPEND_NODE, connections = Edit.Connections.Variable("connections"), edgeType = Types.NoteEdge), selection = selection2),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
 suspend operator fun MutationAction<TestAddNoteNode, TestAddNoteNode.Data>.invoke(characterId: String, text: String, connections: List<String>, optimistic: TestAddNoteNode.OptimisticResponse? = null): TestAddNoteNode.Data = this.commit(TestAddNoteNode(characterId, text, connections), optimistic?.payload)
 
@@ -749,23 +758,7 @@ class TestAddNoteNodeFirst(val characterId: String, val text: String, val connec
         override val name = "TestAddNoteNodeFirst"
         override val document: Document = Document.Text("mutation TestAddNoteNodeFirst(\$characterId:ID!,\$text:String!){addNote(characterId:\$characterId,text:\$text){note{id,text}}}")
         override val kind = OperationKind.MUTATION
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("addNote", key = StorageKey.Fixed(Slots.Mutation.addNote), plural = false, selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.AddNotePayload, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("note", key = StorageKey.Fixed(Slots.AddNotePayload.note), plural = false, edit = Edit(kind = Edit.Kind.PREPEND_NODE, connections = Edit.Connections.Variable("connections"), edgeType = Types.NoteEdge), selection = selection2),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestAddNoteNodeFirst-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -819,6 +812,25 @@ class TestAddNoteNodeFirst(val characterId: String, val text: String, val connec
     }
 }
 
+private object `TestAddNoteNodeFirst-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("addNote", key = StorageKey.Fixed(Slots.Mutation.addNote), plural = false, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.AddNotePayload, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("note", key = StorageKey.Fixed(Slots.AddNotePayload.note), plural = false, edit = Edit(kind = Edit.Kind.PREPEND_NODE, connections = Edit.Connections.Variable("connections"), edgeType = Types.NoteEdge), selection = selection2),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
 suspend operator fun MutationAction<TestAddNoteNodeFirst, TestAddNoteNodeFirst.Data>.invoke(characterId: String, text: String, connections: List<String>, optimistic: TestAddNoteNodeFirst.OptimisticResponse? = null): TestAddNoteNodeFirst.Data = this.commit(TestAddNoteNodeFirst(characterId, text, connections), optimistic?.payload)
 
@@ -835,23 +847,7 @@ class TestAddNoteNodeOfAnotherType(val characterId: String, val text: String, va
         override val name = "TestAddNoteNodeOfAnotherType"
         override val document: Document = Document.Text("mutation TestAddNoteNodeOfAnotherType(\$characterId:ID!,\$text:String!){addNote(characterId:\$characterId,text:\$text){note{id,text}}}")
         override val kind = OperationKind.MUTATION
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("addNote", key = StorageKey.Fixed(Slots.Mutation.addNote), plural = false, selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.AddNotePayload, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("note", key = StorageKey.Fixed(Slots.AddNotePayload.note), plural = false, edit = Edit(kind = Edit.Kind.APPEND_NODE, connections = Edit.Connections.Variable("connections"), edgeType = Types.PageInfo), selection = selection2),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestAddNoteNodeOfAnotherType-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -905,6 +901,25 @@ class TestAddNoteNodeOfAnotherType(val characterId: String, val text: String, va
     }
 }
 
+private object `TestAddNoteNodeOfAnotherType-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("addNote", key = StorageKey.Fixed(Slots.Mutation.addNote), plural = false, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.AddNotePayload, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("note", key = StorageKey.Fixed(Slots.AddNotePayload.note), plural = false, edit = Edit(kind = Edit.Kind.APPEND_NODE, connections = Edit.Connections.Variable("connections"), edgeType = Types.PageInfo), selection = selection2),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
 suspend operator fun MutationAction<TestAddNoteNodeOfAnotherType, TestAddNoteNodeOfAnotherType.Data>.invoke(characterId: String, text: String, connections: List<String>, optimistic: TestAddNoteNodeOfAnotherType.OptimisticResponse? = null): TestAddNoteNodeOfAnotherType.Data = this.commit(TestAddNoteNodeOfAnotherType(characterId, text, connections), optimistic?.payload)
 
@@ -922,20 +937,7 @@ class TestAliasQuery(val id: String) : QueryOperation<TestAliasQuery.Data> {
         override val name = "TestAliasQuery"
         override val document: Document = Document.Text("query TestAliasQuery(\$id:ID!){character(id:\$id){...TestRow_character,id}}fragment TestRow_character on Character{name,status,image}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("status", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("image", key = StorageKey.Fixed(Slots.Character.image), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestAliasQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -955,6 +957,22 @@ class TestAliasQuery(val id: String) : QueryOperation<TestAliasQuery.Data> {
     }
 }
 
+private object `TestAliasQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("status", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("image", key = StorageKey.Fixed(Slots.Character.image), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestAuthorNotesPaginationQuery`. */
 class TestAuthorNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestAuthorNotesPaginationQuery.Data> {
     override val variables: Variables
@@ -969,57 +987,7 @@ class TestAuthorNotesPaginationQuery(val count: Int? = null, val cursor: String?
         override val name = "TestAuthorNotesPaginationQuery"
         override val document: Document = Document.Text("query TestAuthorNotesPaginationQuery(\$count:Int=2,\$cursor:String,\$id:ID!){node(id:\$id){__typename,...TestAuthorNotes_note_1G22uz,id}}fragment TestAuthorNotes_note_1G22uz on Note{id,author{id,name,notes(first:\$count,after:\$cursor){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
-                Selection.Variant(types = listOf(Types.Note), key = listOf("id"), fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                    PlanField.linked("author", key = StorageKey.Fixed(Slots.Note.author), plural = false, selection = selection2),
-                )),
-                Selection.Variant(types = null, fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
-                )),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
-                PlanField.linked("notes", key = StorageKey.Dynamic(Slots.Character.notes_a9400e), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestAuthorNotes_notes_connection), slots = Slots.NoteConnection.connection, after = ConnectionCursor.Variable("cursor")), selection = selection3),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection5),
-                PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection4),
-            ))
-        }
-        private val selection4: Selection by lazy {
-            Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
-            ))
-        }
-        private val selection5: Selection by lazy {
-            Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection6),
-                PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection6: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestAuthorNotesPaginationQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -1044,6 +1012,59 @@ class TestAuthorNotesPaginationQuery(val count: Int? = null, val cursor: String?
     }
 }
 
+private object `TestAuthorNotesPaginationQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
+            Selection.Variant(types = listOf(Types.Note), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+                PlanField.linked("author", key = StorageKey.Fixed(Slots.Note.author), plural = false, selection = selection2),
+            )),
+            Selection.Variant(types = null, fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
+            )),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+            PlanField.linked("notes", key = StorageKey.Dynamic(Slots.Character.notes_a9400e), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestAuthorNotes_notes_connection), slots = Slots.NoteConnection.connection, after = ConnectionCursor.Variable("cursor")), selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection5),
+            PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection4),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
+        ))
+    }
+    val selection5: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection6),
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection6: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestAuthorNotesQuery`. */
 class TestAuthorNotesQuery(val id: String) : QueryOperation<TestAuthorNotesQuery.Data> {
     override val variables: Variables
@@ -1058,57 +1079,7 @@ class TestAuthorNotesQuery(val id: String) : QueryOperation<TestAuthorNotesQuery
         override val name = "TestAuthorNotesQuery"
         override val document: Document = Document.Text("query TestAuthorNotesQuery(\$id:ID!){node(id:\$id){__typename,...TestAuthorNotes_note,id}}fragment TestAuthorNotes_note on Note{id,author{id,name,notes(first:2){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
-                Selection.Variant(types = listOf(Types.Note), key = listOf("id"), fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                    PlanField.linked("author", key = StorageKey.Fixed(Slots.Note.author), plural = false, selection = selection2),
-                )),
-                Selection.Variant(types = null, fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
-                )),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
-                PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_29a6d8), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestAuthorNotes_notes_connection), slots = Slots.NoteConnection.connection), selection = selection3),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection5),
-                PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection4),
-            ))
-        }
-        private val selection4: Selection by lazy {
-            Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
-            ))
-        }
-        private val selection5: Selection by lazy {
-            Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection6),
-                PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection6: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestAuthorNotesQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -1133,6 +1104,59 @@ class TestAuthorNotesQuery(val id: String) : QueryOperation<TestAuthorNotesQuery
     }
 }
 
+private object `TestAuthorNotesQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
+            Selection.Variant(types = listOf(Types.Note), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+                PlanField.linked("author", key = StorageKey.Fixed(Slots.Note.author), plural = false, selection = selection2),
+            )),
+            Selection.Variant(types = null, fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
+            )),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+            PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_29a6d8), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestAuthorNotes_notes_connection), slots = Slots.NoteConnection.connection), selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection5),
+            PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection4),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
+        ))
+    }
+    val selection5: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection6),
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection6: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestDeferredNotesPaginationQuery`. */
 class TestDeferredNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestDeferredNotesPaginationQuery.Data> {
     override val variables: Variables
@@ -1148,50 +1172,7 @@ class TestDeferredNotesPaginationQuery(val count: Int? = null, val cursor: Strin
         override val document: Document = Document.Text("query TestDeferredNotesPaginationQuery(\$count:Int=2,\$cursor:String,\$id:ID!){node(id:\$id){__typename,...TestDeferredNotes_character_1G22uz,id}}fragment TestDeferredNotes_character_1G22uz on Character{notes(first:\$count,after:\$cursor){edges{node{id,...TestNoteText_note@defer(label:\"TestDeferredNotes_character\$defer\$noteText\"),__typename},cursor},pageInfo{endCursor,hasNextPage}},id}fragment TestNoteText_note on Note{text}")
         override val kind = OperationKind.QUERY
         override val hasDeferred = true
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
-                Selection.Variant(types = listOf(Types.Character), key = listOf("id"), fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Character.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                    PlanField.linked("notes", key = StorageKey.Dynamic(Slots.Character.notes_a9400e), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestDeferredNotes_notes_connection), slots = Slots.NoteConnection.connection, after = ConnectionCursor.Variable("cursor")), selection = selection2),
-                )),
-                Selection.Variant(types = null, fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
-                )),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
-                PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
-            ))
-        }
-        private val selection4: Selection by lazy {
-            Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
-                PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection5: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false, deferred = "TestDeferredNotes_character\$defer\$noteText"),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestDeferredNotesPaginationQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -1216,6 +1197,52 @@ class TestDeferredNotesPaginationQuery(val count: Int? = null, val cursor: Strin
     }
 }
 
+private object `TestDeferredNotesPaginationQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
+            Selection.Variant(types = listOf(Types.Character), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Character.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+                PlanField.linked("notes", key = StorageKey.Dynamic(Slots.Character.notes_a9400e), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestDeferredNotes_notes_connection), slots = Slots.NoteConnection.connection, after = ConnectionCursor.Variable("cursor")), selection = selection2),
+            )),
+            Selection.Variant(types = null, fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
+            )),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
+            PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection5: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false, deferred = "TestDeferredNotes_character\$defer\$noteText"),
+        ))
+    }
+}
+
 /** Operation value for `mutation TestDeleteNote`. */
 class TestDeleteNote(val id: String) : MutationOperation<TestDeleteNote.Data> {
     override val variables: Variables
@@ -1229,17 +1256,7 @@ class TestDeleteNote(val id: String) : MutationOperation<TestDeleteNote.Data> {
         override val name = "TestDeleteNote"
         override val document: Document = Document.Text("mutation TestDeleteNote(\$id:ID!){removeNote(id:\$id){removedNoteId}}")
         override val kind = OperationKind.MUTATION
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("removeNote", key = StorageKey.Fixed(Slots.Mutation.removeNote), plural = false, selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.RemoveNotePayload, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("removedNoteId", key = StorageKey.Fixed(Slots.RemoveNotePayload.removedNoteId), kind = ScalarKind.STRING, list = false, edit = Edit(kind = Edit.Kind.DELETE_RECORD)),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestDeleteNote-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -1277,6 +1294,19 @@ class TestDeleteNote(val id: String) : MutationOperation<TestDeleteNote.Data> {
     }
 }
 
+private object `TestDeleteNote-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("removeNote", key = StorageKey.Fixed(Slots.Mutation.removeNote), plural = false, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.RemoveNotePayload, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("removedNoteId", key = StorageKey.Fixed(Slots.RemoveNotePayload.removedNoteId), kind = ScalarKind.STRING, list = false, edit = Edit(kind = Edit.Kind.DELETE_RECORD)),
+        ))
+    }
+}
+
 /** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
 suspend operator fun MutationAction<TestDeleteNote, TestDeleteNote.Data>.invoke(id: String, optimistic: TestDeleteNote.OptimisticResponse? = null): TestDeleteNote.Data = this.commit(TestDeleteNote(id), optimistic?.payload)
 
@@ -1294,54 +1324,7 @@ class TestHiddenNotesPaginationQuery(val count: Int? = null, val cursor: String?
         override val name = "TestHiddenNotesPaginationQuery"
         override val document: Document = Document.Text("query TestHiddenNotesPaginationQuery(\$count:Int=2,\$cursor:String,\$id:ID!){node(id:\$id){__typename,...TestHiddenNotes_character_1G22uz,id}}fragment TestHiddenNotes_character_1G22uz on Character{TestHiddenNotes_character:name,TestHiddenNotesPaginationQuery:status,notes(first:\$count,after:\$cursor){TestHiddenNotes_character:totalCount,TestHiddenNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
-                Selection.Variant(types = listOf(Types.Character), key = listOf("id"), fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Character.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("TestHiddenNotes_character", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("TestHiddenNotesPaginationQuery", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false),
-                    PlanField.linked("notes", key = StorageKey.Dynamic(Slots.Character.notes_a9400e), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestHiddenNotes_notes_connection), slots = Slots.NoteConnection.connection, after = ConnectionCursor.Variable("cursor")), selection = selection2),
-                )),
-                Selection.Variant(types = null, fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
-                )),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("TestHiddenNotes_character", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
-                PlanField.scalar("TestHiddenNotesPaginationQuery", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
-                PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
-                PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
-            ))
-        }
-        private val selection4: Selection by lazy {
-            Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
-                PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection5: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestHiddenNotesPaginationQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -1366,6 +1349,56 @@ class TestHiddenNotesPaginationQuery(val count: Int? = null, val cursor: String?
     }
 }
 
+private object `TestHiddenNotesPaginationQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
+            Selection.Variant(types = listOf(Types.Character), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Character.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("TestHiddenNotes_character", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("TestHiddenNotesPaginationQuery", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false),
+                PlanField.linked("notes", key = StorageKey.Dynamic(Slots.Character.notes_a9400e), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestHiddenNotes_notes_connection), slots = Slots.NoteConnection.connection, after = ConnectionCursor.Variable("cursor")), selection = selection2),
+            )),
+            Selection.Variant(types = null, fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
+            )),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("TestHiddenNotes_character", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
+            PlanField.scalar("TestHiddenNotesPaginationQuery", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
+            PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
+            PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection5: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestHiddenNotesQuery`. */
 class TestHiddenNotesQuery(val id: String) : QueryOperation<TestHiddenNotesQuery.Data> {
     override val variables: Variables
@@ -1380,47 +1413,7 @@ class TestHiddenNotesQuery(val id: String) : QueryOperation<TestHiddenNotesQuery
         override val name = "TestHiddenNotesQuery"
         override val document: Document = Document.Text("query TestHiddenNotesQuery(\$id:ID!){character(id:\$id){...TestHiddenNotes_character,id}}fragment TestHiddenNotes_character on Character{TestHiddenNotes_character:name,TestHiddenNotesPaginationQuery:status,notes(first:2){TestHiddenNotes_character:totalCount,TestHiddenNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("TestHiddenNotes_character", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("TestHiddenNotesPaginationQuery", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false),
-                PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_29a6d8), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestHiddenNotes_notes_connection), slots = Slots.NoteConnection.connection), selection = selection2),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("TestHiddenNotes_character", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
-                PlanField.scalar("TestHiddenNotesPaginationQuery", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
-                PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
-                PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
-            ))
-        }
-        private val selection4: Selection by lazy {
-            Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
-                PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection5: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestHiddenNotesQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -1444,6 +1437,49 @@ class TestHiddenNotesQuery(val id: String) : QueryOperation<TestHiddenNotesQuery
     }
 }
 
+private object `TestHiddenNotesQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("TestHiddenNotes_character", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("TestHiddenNotesPaginationQuery", key = StorageKey.Fixed(Slots.Character.status), kind = ScalarKind.STRING, list = false),
+            PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_29a6d8), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestHiddenNotes_notes_connection), slots = Slots.NoteConnection.connection), selection = selection2),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("TestHiddenNotes_character", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
+            PlanField.scalar("TestHiddenNotesPaginationQuery", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
+            PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
+            PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection5: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestHiddenRecentNotesPaginationQuery`. */
 class TestHiddenRecentNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestHiddenRecentNotesPaginationQuery.Data> {
     override val variables: Variables
@@ -1458,52 +1494,7 @@ class TestHiddenRecentNotesPaginationQuery(val count: Int? = null, val cursor: S
         override val name = "TestHiddenRecentNotesPaginationQuery"
         override val document: Document = Document.Text("query TestHiddenRecentNotesPaginationQuery(\$count:Int=2,\$cursor:String,\$id:ID!){node(id:\$id){__typename,...TestHiddenRecentNotes_character_1G22uz,id}}fragment TestHiddenRecentNotes_character_1G22uz on Character{notes(last:\$count,before:\$cursor){TestHiddenRecentNotes_character:totalCount,TestHiddenRecentNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
-                Selection.Variant(types = listOf(Types.Character), key = listOf("id"), fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Character.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                    PlanField.linked("notes", key = StorageKey.Dynamic(Slots.Character.notes_d859b7), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestHiddenRecentNotes_notes_connection), slots = Slots.NoteConnection.connection, before = ConnectionCursor.Variable("cursor")), selection = selection2),
-                )),
-                Selection.Variant(types = null, fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
-                )),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("TestHiddenRecentNotes_character", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
-                PlanField.scalar("TestHiddenRecentNotesPaginationQuery", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
-                PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
-                PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("hasPreviousPage", key = StorageKey.Fixed(Slots.PageInfo.hasPreviousPage), kind = ScalarKind.BOOL, list = false),
-                PlanField.scalar("startCursor", key = StorageKey.Fixed(Slots.PageInfo.startCursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection4: Selection by lazy {
-            Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
-                PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection5: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestHiddenRecentNotesPaginationQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -1528,6 +1519,54 @@ class TestHiddenRecentNotesPaginationQuery(val count: Int? = null, val cursor: S
     }
 }
 
+private object `TestHiddenRecentNotesPaginationQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
+            Selection.Variant(types = listOf(Types.Character), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Character.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+                PlanField.linked("notes", key = StorageKey.Dynamic(Slots.Character.notes_d859b7), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestHiddenRecentNotes_notes_connection), slots = Slots.NoteConnection.connection, before = ConnectionCursor.Variable("cursor")), selection = selection2),
+            )),
+            Selection.Variant(types = null, fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
+            )),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("TestHiddenRecentNotes_character", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
+            PlanField.scalar("TestHiddenRecentNotesPaginationQuery", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
+            PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
+            PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("hasPreviousPage", key = StorageKey.Fixed(Slots.PageInfo.hasPreviousPage), kind = ScalarKind.BOOL, list = false),
+            PlanField.scalar("startCursor", key = StorageKey.Fixed(Slots.PageInfo.startCursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection5: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestHiddenRecentNotesQuery`. */
 class TestHiddenRecentNotesQuery(val id: String) : QueryOperation<TestHiddenRecentNotesQuery.Data> {
     override val variables: Variables
@@ -1542,45 +1581,7 @@ class TestHiddenRecentNotesQuery(val id: String) : QueryOperation<TestHiddenRece
         override val name = "TestHiddenRecentNotesQuery"
         override val document: Document = Document.Text("query TestHiddenRecentNotesQuery(\$id:ID!){character(id:\$id){...TestHiddenRecentNotes_character,id}}fragment TestHiddenRecentNotes_character on Character{notes(last:2){TestHiddenRecentNotes_character:totalCount,TestHiddenRecentNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_01e6d2), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestHiddenRecentNotes_notes_connection), slots = Slots.NoteConnection.connection), selection = selection2),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("TestHiddenRecentNotes_character", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
-                PlanField.scalar("TestHiddenRecentNotesPaginationQuery", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
-                PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
-                PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("hasPreviousPage", key = StorageKey.Fixed(Slots.PageInfo.hasPreviousPage), kind = ScalarKind.BOOL, list = false),
-                PlanField.scalar("startCursor", key = StorageKey.Fixed(Slots.PageInfo.startCursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection4: Selection by lazy {
-            Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
-                PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection5: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestHiddenRecentNotesQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -1604,6 +1605,47 @@ class TestHiddenRecentNotesQuery(val id: String) : QueryOperation<TestHiddenRece
     }
 }
 
+private object `TestHiddenRecentNotesQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_01e6d2), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestHiddenRecentNotes_notes_connection), slots = Slots.NoteConnection.connection), selection = selection2),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("TestHiddenRecentNotes_character", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
+            PlanField.scalar("TestHiddenRecentNotesPaginationQuery", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
+            PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
+            PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("hasPreviousPage", key = StorageKey.Fixed(Slots.PageInfo.hasPreviousPage), kind = ScalarKind.BOOL, list = false),
+            PlanField.scalar("startCursor", key = StorageKey.Fixed(Slots.PageInfo.startCursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection5: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestNotesPaginationQuery`. */
 class TestNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestNotesPaginationQuery.Data> {
     override val variables: Variables
@@ -1618,52 +1660,7 @@ class TestNotesPaginationQuery(val count: Int? = null, val cursor: String? = nul
         override val name = "TestNotesPaginationQuery"
         override val document: Document = Document.Text("query TestNotesPaginationQuery(\$count:Int=2,\$cursor:String,\$id:ID!){node(id:\$id){__typename,...TestNotes_character_1G22uz,id}}fragment TestNotes_character_1G22uz on Character{name,notes(first:\$count,after:\$cursor){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
-                Selection.Variant(types = listOf(Types.Character), key = listOf("id"), fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Character.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
-                    PlanField.linked("notes", key = StorageKey.Dynamic(Slots.Character.notes_a9400e), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestNotes_notes_connection), slots = Slots.NoteConnection.connection, after = ConnectionCursor.Variable("cursor")), selection = selection2),
-                )),
-                Selection.Variant(types = null, fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
-                )),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("totalCount", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
-                PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
-                PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
-            ))
-        }
-        private val selection4: Selection by lazy {
-            Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
-                PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection5: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestNotesPaginationQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -1688,6 +1685,54 @@ class TestNotesPaginationQuery(val count: Int? = null, val cursor: String? = nul
     }
 }
 
+private object `TestNotesPaginationQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
+            Selection.Variant(types = listOf(Types.Character), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Character.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+                PlanField.linked("notes", key = StorageKey.Dynamic(Slots.Character.notes_a9400e), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestNotes_notes_connection), slots = Slots.NoteConnection.connection, after = ConnectionCursor.Variable("cursor")), selection = selection2),
+            )),
+            Selection.Variant(types = null, fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
+            )),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("totalCount", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
+            PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
+            PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection5: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestNotesQuery`. */
 class TestNotesQuery(val id: String) : QueryOperation<TestNotesQuery.Data> {
     override val variables: Variables
@@ -1702,45 +1747,7 @@ class TestNotesQuery(val id: String) : QueryOperation<TestNotesQuery.Data> {
         override val name = "TestNotesQuery"
         override val document: Document = Document.Text("query TestNotesQuery(\$id:ID!){character(id:\$id){...TestNotes_character,id}}fragment TestNotes_character on Character{name,notes(first:2){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
-                PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_29a6d8), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestNotes_notes_connection), slots = Slots.NoteConnection.connection), selection = selection2),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("totalCount", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
-                PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
-                PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
-            ))
-        }
-        private val selection4: Selection by lazy {
-            Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
-                PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection5: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestNotesQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -1764,6 +1771,47 @@ class TestNotesQuery(val id: String) : QueryOperation<TestNotesQuery.Data> {
     }
 }
 
+private object `TestNotesQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+            PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_29a6d8), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestNotes_notes_connection), slots = Slots.NoteConnection.connection), selection = selection2),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("totalCount", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
+            PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
+            PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection5: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestNotesSizedQuery`. */
 class TestNotesSizedQuery(val id: String, val size: Int? = null) : QueryOperation<TestNotesSizedQuery.Data> {
     override val variables: Variables
@@ -1778,45 +1826,7 @@ class TestNotesSizedQuery(val id: String, val size: Int? = null) : QueryOperatio
         override val name = "TestNotesSizedQuery"
         override val document: Document = Document.Text("query TestNotesSizedQuery(\$id:ID!,\$size:Int){character(id:\$id){...TestNotes_character_2H9PL,id}}fragment TestNotes_character_2H9PL on Character{name,notes(first:\$size){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
-                PlanField.linked("notes", key = StorageKey.Dynamic(Slots.Character.notes_73b9e5), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestNotes_notes_connection), slots = Slots.NoteConnection.connection), selection = selection2),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("totalCount", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
-                PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
-                PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
-            ))
-        }
-        private val selection4: Selection by lazy {
-            Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
-                PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection5: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestNotesSizedQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -1840,6 +1850,47 @@ class TestNotesSizedQuery(val id: String, val size: Int? = null) : QueryOperatio
     }
 }
 
+private object `TestNotesSizedQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+            PlanField.linked("notes", key = StorageKey.Dynamic(Slots.Character.notes_73b9e5), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestNotes_notes_connection), slots = Slots.NoteConnection.connection), selection = selection2),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("totalCount", key = StorageKey.Fixed(Slots.NoteConnection.totalCount), kind = ScalarKind.INT, list = false),
+            PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
+            PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection5: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestRecentNotesPaginationQuery`. */
 class TestRecentNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestRecentNotesPaginationQuery.Data> {
     override val variables: Variables
@@ -1854,50 +1905,7 @@ class TestRecentNotesPaginationQuery(val count: Int? = null, val cursor: String?
         override val name = "TestRecentNotesPaginationQuery"
         override val document: Document = Document.Text("query TestRecentNotesPaginationQuery(\$count:Int=2,\$cursor:String,\$id:ID!){node(id:\$id){__typename,...TestRecentNotes_character_1G22uz,id}}fragment TestRecentNotes_character_1G22uz on Character{notes(last:\$count,before:\$cursor){edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
-                Selection.Variant(types = listOf(Types.Character), key = listOf("id"), fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Character.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                    PlanField.linked("notes", key = StorageKey.Dynamic(Slots.Character.notes_d859b7), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestRecentNotes_notes_connection), slots = Slots.NoteConnection.connection, before = ConnectionCursor.Variable("cursor")), selection = selection2),
-                )),
-                Selection.Variant(types = null, fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
-                )),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
-                PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("hasPreviousPage", key = StorageKey.Fixed(Slots.PageInfo.hasPreviousPage), kind = ScalarKind.BOOL, list = false),
-                PlanField.scalar("startCursor", key = StorageKey.Fixed(Slots.PageInfo.startCursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection4: Selection by lazy {
-            Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
-                PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection5: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestRecentNotesPaginationQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -1922,6 +1930,52 @@ class TestRecentNotesPaginationQuery(val count: Int? = null, val cursor: String?
     }
 }
 
+private object `TestRecentNotesPaginationQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
+            Selection.Variant(types = listOf(Types.Character), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Character.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+                PlanField.linked("notes", key = StorageKey.Dynamic(Slots.Character.notes_d859b7), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestRecentNotes_notes_connection), slots = Slots.NoteConnection.connection, before = ConnectionCursor.Variable("cursor")), selection = selection2),
+            )),
+            Selection.Variant(types = null, fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
+            )),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
+            PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("hasPreviousPage", key = StorageKey.Fixed(Slots.PageInfo.hasPreviousPage), kind = ScalarKind.BOOL, list = false),
+            PlanField.scalar("startCursor", key = StorageKey.Fixed(Slots.PageInfo.startCursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection5: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestRecentNotesQuery`. */
 class TestRecentNotesQuery(val id: String) : QueryOperation<TestRecentNotesQuery.Data> {
     override val variables: Variables
@@ -1936,43 +1990,7 @@ class TestRecentNotesQuery(val id: String) : QueryOperation<TestRecentNotesQuery
         override val name = "TestRecentNotesQuery"
         override val document: Document = Document.Text("query TestRecentNotesQuery(\$id:ID!){character(id:\$id){...TestRecentNotes_character,id}}fragment TestRecentNotes_character on Character{notes(last:2){edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_01e6d2), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestRecentNotes_notes_connection), slots = Slots.NoteConnection.connection), selection = selection2),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
-                PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("hasPreviousPage", key = StorageKey.Fixed(Slots.PageInfo.hasPreviousPage), kind = ScalarKind.BOOL, list = false),
-                PlanField.scalar("startCursor", key = StorageKey.Fixed(Slots.PageInfo.startCursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection4: Selection by lazy {
-            Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
-                PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection5: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestRecentNotesQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -1996,6 +2014,45 @@ class TestRecentNotesQuery(val id: String) : QueryOperation<TestRecentNotesQuery
     }
 }
 
+private object `TestRecentNotesQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_01e6d2), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestRecentNotes_notes_connection), slots = Slots.NoteConnection.connection), selection = selection2),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection4),
+            PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("hasPreviousPage", key = StorageKey.Fixed(Slots.PageInfo.hasPreviousPage), kind = ScalarKind.BOOL, list = false),
+            PlanField.scalar("startCursor", key = StorageKey.Fixed(Slots.PageInfo.startCursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection5: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `mutation TestRemoveNote`. */
 class TestRemoveNote(val id: String, val connections: List<String>) : MutationOperation<TestRemoveNote.Data> {
     override val variables: Variables
@@ -2009,18 +2066,7 @@ class TestRemoveNote(val id: String, val connections: List<String>) : MutationOp
         override val name = "TestRemoveNote"
         override val document: Document = Document.Text("mutation TestRemoveNote(\$id:ID!){removeNote(id:\$id){removedNoteId,deleted:removedNoteId}}")
         override val kind = OperationKind.MUTATION
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("removeNote", key = StorageKey.Fixed(Slots.Mutation.removeNote), plural = false, selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.RemoveNotePayload, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("removedNoteId", key = StorageKey.Fixed(Slots.RemoveNotePayload.removedNoteId), kind = ScalarKind.STRING, list = false, edit = Edit(kind = Edit.Kind.DELETE_EDGE, connections = Edit.Connections.Variable("connections"))),
-                PlanField.scalar("deleted", key = StorageKey.Fixed(Slots.RemoveNotePayload.removedNoteId), kind = ScalarKind.STRING, list = false, edit = Edit(kind = Edit.Kind.DELETE_RECORD)),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestRemoveNote-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -2059,6 +2105,20 @@ class TestRemoveNote(val id: String, val connections: List<String>) : MutationOp
     }
 }
 
+private object `TestRemoveNote-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("removeNote", key = StorageKey.Fixed(Slots.Mutation.removeNote), plural = false, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.RemoveNotePayload, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("removedNoteId", key = StorageKey.Fixed(Slots.RemoveNotePayload.removedNoteId), kind = ScalarKind.STRING, list = false, edit = Edit(kind = Edit.Kind.DELETE_EDGE, connections = Edit.Connections.Variable("connections"))),
+            PlanField.scalar("deleted", key = StorageKey.Fixed(Slots.RemoveNotePayload.removedNoteId), kind = ScalarKind.STRING, list = false, edit = Edit(kind = Edit.Kind.DELETE_RECORD)),
+        ))
+    }
+}
+
 /** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
 suspend operator fun MutationAction<TestRemoveNote, TestRemoveNote.Data>.invoke(id: String, connections: List<String>, optimistic: TestRemoveNote.OptimisticResponse? = null): TestRemoveNote.Data = this.commit(TestRemoveNote(id, connections), optimistic?.payload)
 
@@ -2076,57 +2136,7 @@ class TestTwoPagesQuery(val id: String) : QueryOperation<TestTwoPagesQuery.Data>
         override val name = "TestTwoPagesQuery"
         override val document: Document = Document.Text("query TestTwoPagesQuery(\$id:ID!){character(id:\$id){id,notes(first:2){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}},node(id:\$id){__typename,...on Character{notes(first:2,after:\"c2\"){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}},id}}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection2),
-                PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
-                Selection.Variant(types = listOf(Types.Character), key = listOf("id"), fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Character.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_8d6d15), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestTwoPages_notes_connection), slots = Slots.NoteConnection.connection, after = ConnectionCursor.Literal), selection = selection3),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                )),
-                Selection.Variant(types = null, fields = listOf(
-                    PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
-                    PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
-                )),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_29a6d8), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestTwoPages_notes_connection), slots = Slots.NoteConnection.connection), selection = selection3),
-            ))
-        }
-        private val selection3: Selection by lazy {
-            Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection5),
-                PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection4),
-            ))
-        }
-        private val selection4: Selection by lazy {
-            Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
-            ))
-        }
-        private val selection5: Selection by lazy {
-            Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection6),
-                PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection6: Selection by lazy {
-            Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestTwoPagesQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -2241,5 +2251,58 @@ class TestTwoPagesQuery(val id: String) : QueryOperation<TestTwoPagesQuery.Data>
                 }
             }
         }
+    }
+}
+
+private object `TestTwoPagesQuery-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection2),
+            PlanField.linked("node", key = StorageKey.Dynamic(Slots.Query.node_8f7d08), plural = false, lookup = Lookup(type = null, possibleTypes = Types.Node_keyed, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Node, key = listOf("id"), isAbstract = true, variants = listOf(
+            Selection.Variant(types = listOf(Types.Character), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Character.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_8d6d15), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestTwoPages_notes_connection), slots = Slots.NoteConnection.connection, after = ConnectionCursor.Literal), selection = selection3),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+            )),
+            Selection.Variant(types = null, fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Node.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Node.id), kind = ScalarKind.STRING, list = false),
+            )),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+            PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_29a6d8), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestTwoPages_notes_connection), slots = Slots.NoteConnection.connection), selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, selection = selection5),
+            PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, selection = selection4),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
+        ))
+    }
+    val selection5: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection6),
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection6: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
     }
 }

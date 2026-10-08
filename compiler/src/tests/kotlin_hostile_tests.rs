@@ -99,7 +99,8 @@ const GENERATED_NAMES: [&str; 28] = [
     "it",
     "element",
     "count",
-    // What an operation's companion and a mutation's action declare or call.
+    // What an operation's companion, its plan object and a mutation's action
+    // declare or call.
     "optimistic",
     "selection",
     "selection0",
@@ -595,22 +596,7 @@ fn positions() -> Vec<Position> {
 }
 
 fn defects() -> Vec<Defect> {
-    vec![
-        // A lens nested in an operation sees the members of the operation's
-        // companion, the plan's selections among them, so a fragment named
-        // like one is read as the selection where the lens names the
-        // fragment's class. The selections are numbered, so no list of
-        // names refuses them; holding them in a scope no lens sees fixes it.
-        Defect {
-            positions: &[LENS_SPREADS, QUERY_VALUE_SPREADS],
-            names: &["selection0"],
-            writes: &[
-                "private val HOSTILE_ = HOSTILE",
-                "private val HOSTILE: Selection by lazy {",
-            ],
-            kotlin: "unresolved reference 'isPresent' on receiver of type 'Selection'.",
-        },
-    ]
+    Vec::new()
 }
 
 // The names the corpus gives each position, from its plan.

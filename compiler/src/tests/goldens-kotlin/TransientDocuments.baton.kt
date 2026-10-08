@@ -35,25 +35,7 @@ class TestCharacterSecret : QueryOperation<TestCharacterSecret.Data> {
         override val name = "TestCharacterSecret"
         override val document: Document = Document.Text("query TestCharacterSecret{character(id:\"1\"){id,name,secret{id,body}}}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("character", key = StorageKey.Fixed(Slots.Query.character_9e6829), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Literal("1"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
-                PlanField.linked("secret", key = StorageKey.Fixed(Slots.Character.secret), plural = false, selection = selection2),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.Secret, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Secret.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("body", key = StorageKey.Fixed(Slots.Secret.body), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestCharacterSecret-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -83,6 +65,27 @@ class TestCharacterSecret : QueryOperation<TestCharacterSecret.Data> {
     }
 }
 
+private object `TestCharacterSecret-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("character", key = StorageKey.Fixed(Slots.Query.character_9e6829), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Literal("1"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+            PlanField.linked("secret", key = StorageKey.Fixed(Slots.Character.secret), plural = false, selection = selection2),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.Secret, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Secret.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("body", key = StorageKey.Fixed(Slots.Secret.body), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestSecrets`. */
 class TestSecrets(val code: String) : QueryOperation<TestSecrets.Data> {
     override val variables: Variables
@@ -97,25 +100,7 @@ class TestSecrets(val code: String) : QueryOperation<TestSecrets.Data> {
         override val name = "TestSecrets"
         override val document: Document = Document.Text("query TestSecrets(\$code:String!){secrets(code:\$code){id,body},character(id:\"1\"){id,name}}")
         override val kind = OperationKind.QUERY
-        override val plan: Plan by lazy { Plan(root = selection0, transient = Types.transient) }
-        private val selection0: Selection by lazy {
-            Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
-                PlanField.linked("secrets", key = StorageKey.Dynamic(Slots.Query.secrets_df579e), plural = true, transient = true, selection = selection2),
-                PlanField.linked("character", key = StorageKey.Fixed(Slots.Query.character_9e6829), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Literal("1"))), selection = selection1),
-            ))
-        }
-        private val selection1: Selection by lazy {
-            Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
-            ))
-        }
-        private val selection2: Selection by lazy {
-            Selection(type = Types.Secret, key = listOf("id"), isAbstract = false, fields = listOf(
-                PlanField.scalar("id", key = StorageKey.Fixed(Slots.Secret.id), kind = ScalarKind.STRING, list = false),
-                PlanField.scalar("body", key = StorageKey.Fixed(Slots.Secret.body), kind = ScalarKind.STRING, list = false),
-            ))
-        }
+        override val plan: Plan by lazy { Plan(root = `TestSecrets-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
     }
@@ -142,5 +127,26 @@ class TestSecrets(val code: String) : QueryOperation<TestSecrets.Data> {
             override fun equals(other: Any?): Boolean = other is TestSecrets.Data.Character && other.anchor == anchor
             override fun hashCode(): Int = anchor.hashCode()
         }
+    }
+}
+
+private object `TestSecrets-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("secrets", key = StorageKey.Dynamic(Slots.Query.secrets_df579e), plural = true, transient = true, selection = selection2),
+            PlanField.linked("character", key = StorageKey.Fixed(Slots.Query.character_9e6829), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Literal("1"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.Secret, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Secret.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("body", key = StorageKey.Fixed(Slots.Secret.body), kind = ScalarKind.STRING, list = false),
+        ))
     }
 }
