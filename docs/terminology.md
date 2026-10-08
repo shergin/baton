@@ -587,7 +587,9 @@ Swift: the typed response is `OptimisticResponse`.
 Kotlin: the typed response is `OptimisticResponse`, a class nested per
 selection set whose constructor parameters all default to null, an absent
 field leaving the store untouched; its `payload` is what the action
-commits.
+commits. The store stages a netted batch's writes and writes into a cell
+only the value that differs at the batch's end, since a Compose state
+written and written back still tells its readers.
 
 **Mutation root.** *Concept: record.*
 Here: the record mutation payloads hang off, `client:root:mutation`, beside
@@ -1004,6 +1006,11 @@ connecting or open; `retry()` opens the stream. The environment's
 `isActive` is set from the app's scene phase; its `subscriptions`
 transport carries the events, and `GraphQLTransportWebSocket` speaks
 `graphql-transport-ws`.
+Kotlin: `Environment.subscriptionHandle(operation)` returns a
+`SubscriptionHandle<Data>` whose `events`, `latest`, `error`,
+`resumptions` and `stream` are snapshot state, the stream a sealed
+interface `Stream` (`Idle`, `Connecting`, `Open`, `Waiting(until)`,
+`Ended(failure)`), and whose `retain()` opens it.
 
 **Error behavior.** *Composition: schema, lens, transport.* The GraphQL
 spec's `onError` request parameter (`PROPAGATE`, `NULL`, `ABORT`).
@@ -1122,6 +1129,9 @@ connection id. See
 [the decision](decisions/connections-own-their-edges.md).
 Swift: `nodes`, `hasNext`, `hasPrevious`, `isLoadingNext`,
 `isLoadingPrevious` and `connectionID`.
+Kotlin: the same properties, with `loadNext` and `loadPrevious` as
+`suspend` functions that page through the environment of the handle the
+lens was read from.
 
 **Connection id.** *Concept: connection.* Relay's
 `ConnectionHandler.getConnectionID`.

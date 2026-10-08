@@ -42,6 +42,16 @@ are expected and listed without apology.
   keyword and every name the generated Kotlin declares in every position
   inside a document, and `scripts/hostile-name-sweep-kotlin.py` compiles
   the names of fragments and operations with `kotlinc`.
+- The Kotlin runtime applies an optimistic response as a layer that a
+  commit rebases under, the server's answer replaces and a failure
+  reverts, notifying only what differs at the batch's end; holds a
+  subscription's stream in a `SubscriptionHandle` that reconnects by the
+  fixed backoff and parks while the environment is inactive; and loads a
+  connection's pages and refetches a fragment. `Store` is public, and
+  `Environment(transport, subscriptions, store)` takes it, with a `debug`
+  flag that prints missing data until a log is set. Every script but the
+  image's `relaunch` runs whole, and every case's `override` reads under
+  its layer.
 
 ## 0.10.0 (Vatrushka) — 2026-10-07
 

@@ -104,17 +104,47 @@ lookups in memory (`Availability.kt`), and a read that finds data missing
 heals its root once per fetch. `baton-testing` holds `ScriptedTransport`,
 `RecordedTransport`, `SilentTransport` and `wait`.
 
+Optimistic layers (`Store.kt`). An optimistic response is applied as a
+layer with an undo log; a server commit under live layers lifts them,
+applies the payload and re-applies them; the server's answer replaces its
+layer in that batch, and a failure reverts it. Such a batch is netted: it
+stages its writes on the records and, at its end, writes into a cell only
+the value that differs, so a slot changed and changed back tells nobody;
+a plain server batch under no layer writes its cells as it goes. The
+collector keeps what a layer wrote and the numbers it carries.
+
+Subscriptions (`Subscription.kt`). `Environment.subscriptionHandle`
+returns a `SubscriptionHandle` whose first retention opens the stream
+through the `subscriptions` transport, `EnvironmentError.NoSubscriptionTransport`
+without one; each event commits at the subscription root until the
+stream's job ends; a failure while retained waits out the fixed backoff
+and reopens, counted as a resumption; a request error or the server's
+completion ends it; `Environment.isActive` parks and resumes the retained
+streams; the last release closes the stream and drops the root.
+
+Pagination and refetch (`Lens.kt`). A connection's `loadNext` and
+`loadPrevious` fetch the fragment's refetch query with the lens's
+variables, the cursor and the fragment's record's id, the loading flag set
+on the connection record for the duration; a fragment's `refetch()`
+fetches it again in place. A lens made by hand has no environment and
+throws `EnvironmentError.OutsideEnvironment`.
+
+`Store(cacheExpiration, releaseBufferSize)` is public, and
+`Environment(transport, subscriptions, store, mainDispatcher,
+ingestDispatcher, debug)` takes it; with `debug` it prints the
+missing-data events until a log is set, since common Kotlin has no build
+configuration of its own.
+
 `jvmTest` runs every script of `spec/manifest.json` through one
 environment and one store over a `ScriptedTransport`, on a test
 dispatcher, comparing after each step what the Swift harness compares:
 the dump, the reads, the slots notified (through Compose's apply
-observer), the phases and fetches, the log, the bodies sent and what the
-step threw. `notifications`, `phase`, `lifetime`, `events`, `end`,
-`transport`, `heal` and `connections` pass whole; `ages` and `check` to
-their `relaunch`, which needs the image; `subscriptions` waits from its
-first step and `optimistic` from its first commit under a layer, since an
-optimistic response is written for now as a plain batch of its kind.
+observer), the phases, fetches and streams, the log, the bodies sent and
+what the step threw. Every script passes whole but `ages` and `check`,
+which pass to their `relaunch`, which needs the image. Every case with an
+`override` reads the overriding value under its layer and its own records
+after the revert; `PaginationTests` holds loading a page through a lens,
+which the contract leaves unheld, and `SubscriptionTests` the backoff, a
+refusal and a release.
 
-The optimistic layers, subscriptions, pagination's `loadNext` and a
-fragment's `refetch()`, the composables, the image and the HTTP and socket
-transports follow.
+The composables, the image and the HTTP and socket transports follow.
