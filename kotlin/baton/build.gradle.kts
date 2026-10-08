@@ -96,6 +96,10 @@ kotlin {
                 implementation(kotlin("reflect"))
                 // The scripts run through the scripted transport an app's tests use.
                 implementation(project(":baton-testing"))
+                // The composables are tested in a composition, on the desktop's renderer, its main dispatcher the event thread.
+                implementation(compose.desktop.uiTestJUnit4)
+                implementation(compose.desktop.currentOs)
+                implementation(libs.coroutines.swing)
             }
         }
     }
