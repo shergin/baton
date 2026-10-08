@@ -538,6 +538,8 @@ public actor GraphQLTransportWebSocket: Transport {
     private var starting = 0
     private var receiving: Task<Void, Never>?
     private var subscribers: [String: AsyncThrowingStream<Data, any Error>.Continuation] = [:]
+    /// Awaited when a socket's read fails, before the failure is weighed.
+    private var readFailed: (@Sendable () async -> Void)?
 
     public init(url: URL, headers: [String: String] = [:], credentials: @escaping @Sendable () async throws -> [String: String] = { [:] }, encoding: Encoding = .standard, connectionParams: Variable? = nil, session: URLSession = .shared) {
         self.url = url
@@ -674,11 +676,18 @@ public actor GraphQLTransportWebSocket: Transport {
                 }
                 try handle(data)
             } catch {
+                await readFailed?()
                 guard self.socket === socket else { return }
                 fail(error)
                 return
             }
         }
+    }
+
+    /// Sets what each failed read awaits before it is weighed, so a test can
+    /// hold a closed socket's end until another socket has opened.
+    package func awaitOnReadFailure(_ hold: @escaping @Sendable () async -> Void) {
+        readFailed = hold
     }
 
     /// Reads a `graphql-transport-ws` frame: its type, id and payload bytes,

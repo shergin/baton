@@ -992,7 +992,7 @@ struct DeliveryTests {
         await until { server.closed == 2 }
     }
 
-    @Test("a subscription that starts as the last one's socket closes keeps the socket it opens")
+    @Test("a closed socket whose read fails after the next subscription has opened a socket leaves that subscription on it")
     func subscriptionAfterTheSocketCloses() async throws {
         /// What a reader saw: its payloads, and whether its stream ended.
         final class Reader: @unchecked Sendable {
@@ -1005,39 +1005,77 @@ struct DeliveryTests {
             var received: Int { lock.withLock { payloads } }
             var finished: Bool { lock.withLock { ended } }
         }
+        /// Holds each failed read until the test opens it, so the closed
+        /// socket's end is weighed only once the next socket is live.
+        final class Gate: @unchecked Sendable {
+            private let lock = NSLock()
+            private var opened = false
+            private var held: [CheckedContinuation<Void, Never>] = []
+            private var arrivals = 0
+            private var departures = 0
+
+            func pass() async {
+                await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                    let through = lock.withLock {
+                        arrivals += 1
+                        if !opened { held.append(continuation) }
+                        return opened
+                    }
+                    if through { continuation.resume() }
+                }
+                lock.withLock { departures += 1 }
+            }
+
+            func open() {
+                let released = lock.withLock {
+                    opened = true
+                    defer { held = [] }
+                    return held
+                }
+                for continuation in released { continuation.resume() }
+            }
+
+            var arrived: Int { lock.withLock { arrivals } }
+            var departed: Int { lock.withLock { departures } }
+        }
         let value = TestNoteAdded(characterId: "1", connections: [])
         let request = Request(operationName: TestNoteAdded.name, kind: TestNoteAdded.kind, document: TestNoteAdded.document, variables: value.variables)
-        // The closed socket's read fails a few milliseconds after the close,
-        // and a subscription that opens a socket within them is the case, so
-        // the sequence runs until one has met it or long enough that one
-        // would have.
-        for _ in 0..<40 {
-            let server = try SocketServer()
-            let socket = GraphQLTransportWebSocket(url: try await server.start())
-            defer { server.stop() }
-            let first = Task { for try await _ in socket.send(request) {} }
-            await until { server.count(of: "subscribe") == 1 }
-            first.cancel()
-            await until { server.count(of: "complete") == 1 }
+        let server = try SocketServer()
+        let socket = GraphQLTransportWebSocket(url: try await server.start())
+        defer { server.stop() }
+        let gate = Gate()
+        await socket.awaitOnReadFailure { await gate.pass() }
 
-            let reader = Reader()
-            let second = Task {
-                do {
-                    for try await _ in socket.send(request) { reader.receive() }
-                } catch {}
-                reader.end()
-            }
-            await until { server.count(of: "subscribe") == 2 || reader.finished }
-            if let id = server.ids(of: "subscribe").dropFirst().first {
-                server.send(#"{"id":"\#(id)","type":"next","payload":{"data":{"noteAdded":null}}}"#)
-            }
-            await until { reader.received == 1 || reader.finished }
-            second.cancel()
-            guard reader.received == 1, !reader.finished else {
-                Issue.record("the second subscription ended before its event")
-                break
-            }
+        let first = Task { for try await _ in socket.send(request) {} }
+        await until { server.count(of: "subscribe") == 1 }
+        first.cancel()
+        await until { server.count(of: "complete") == 1 }
+
+        let reader = Reader()
+        let second = Task {
+            do {
+                for try await _ in socket.send(request) { reader.receive() }
+            } catch {}
+            reader.end()
         }
+        defer { second.cancel() }
+        await until { server.count(of: "subscribe") == 2 || reader.finished }
+        // The first socket's read has failed and waits at the gate while the
+        // second socket is live; opening the gate has it weighed now.
+        await until { gate.arrived == 1 }
+        #expect(server.count(of: "connection_init") == 2, "the second subscription opened a socket of its own")
+        gate.open()
+        await until { gate.departed == 1 }
+
+        let id = try #require(server.ids(of: "subscribe").dropFirst().first)
+        server.send(#"{"id":"\#(id)","type":"next","payload":{"data":{"noteAdded":null}}}"#)
+        await until { reader.received == 1 || reader.finished }
+        // A ping answered on the second socket is handled after the first
+        // socket's end, so a stream that end had ended would show by then.
+        server.send(#"{"type":"ping"}"#)
+        await until { server.count(of: "pong") == 1 || reader.finished }
+        #expect(reader.received == 1, "the second subscription receives its event")
+        #expect(!reader.finished, "the first socket's end does not end the second subscription")
     }
 
     @Test("two subscriptions sent at once on a fresh socket whose credentials take a while share one connection, each under its own id, and each receives its events")
