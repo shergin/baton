@@ -3,6 +3,20 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
+## Unreleased
+
+- `batonc` writes Kotlin lenses: a `@Stable` class per fragment and per
+  operation's `Data`, equal by its anchor, with a property per field over
+  the anchor's readers and a companion of its checks; an `@inline`
+  fragment as a data class read once; a connection's state, `loadNext`
+  and `refetch`. A mutation gets its `OptimisticResponse` and a
+  `suspend operator fun invoke` on its `MutationAction`. A generated enum's
+  case for an undeclared value is `Undeclared`, since `Unknown` and a
+  schema value `UNKNOWN` are one class file on a file system that ignores
+  case. The Kotlin runtime's tests now run every case of the manifest,
+  its records and its reads, through the code `batonc` generates from
+  `spec/sources`.
+
 ## 0.10.0 (Vatrushka) — 2026-10-07
 
 - The macros accept swift-syntax from 602 to 604, where they accepted 602
@@ -42,17 +56,6 @@ are expected and listed without apology.
   Relay's rules, `@catch` as a `kotlin.Result`. Lenses written by hand
   after the Swift goldens read the `reads` rows of ten operations' cases
   as the cases say. Pagination and refetch come with the environment.
-- `batonc` writes Kotlin lenses: a `@Stable` class per fragment and per
-  operation's `Data`, equal by its anchor, with a property per field over
-  the anchor's readers and a companion of its checks; an `@inline`
-  fragment as a data class read once; a connection's state, `loadNext`
-  and `refetch`. A mutation gets its `OptimisticResponse` and a
-  `suspend operator fun invoke` on its `MutationAction`. A generated enum's
-  case for an undeclared value is `Undeclared`, since `Unknown` and a
-  schema value `UNKNOWN` are one class file on a file system that ignores
-  case. The Kotlin runtime's tests now run every case of the manifest,
-  its records and its reads, through the code `batonc` generates from
-  `spec/sources`.
 - `URLSessionTransport` reads a request error answered with a 4xx or 5xx
   status as `application/graphql-response+json`, as GraphQL Yoga, Hive
   Gateway and Apollo Router do for a document that fails to parse or
