@@ -234,16 +234,16 @@ class SubscriptionHandle<Data : Lens> internal constructor(
 
     /**
      * Keeps the stream open and the latest event's records alive until the
-     * retention is released; the first retention opens the stream.
+     * hold is released; the first hold opens the stream.
      */
-    fun retain(): Retention {
+    fun retain(): Hold {
         store.retain(root, allowingNetwork = true)
         environment.didRetain(this)
         start()
-        return Retention { release() }
+        return Hold { release() }
     }
 
-    /** A retention ended. At no holder the stream closes and the root leaves at once; nothing is buffered. */
+    /** A hold ended. At no holder the stream closes and the root leaves at once; nothing is buffered. */
     private fun release() {
         store.release(root, allowingNetwork = true, buffering = false)
         if (root.holders > 0) return

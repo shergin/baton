@@ -141,13 +141,13 @@ class HttpTransportTests {
         val server = serve { answer(it, 200, "text/event-stream", events, chunk = 5) }
         val environment = environment(HttpTransport("http://127.0.0.1:1/unused"), subscriptions = HttpTransport(server.url))
         val handle = environment.subscriptionHandle(TestNoteAdded(characterId = "1", connections = emptyList()))
-        val retention = handle.retain()
+        val hold = handle.retain()
         assertTrue(wait({ handle.stream is Stream.Ended }), "the stream ended: ${handle.stream}")
         assertEquals(Stream.Ended(null), handle.stream)
         assertEquals(1, handle.events)
         assertEquals("text/event-stream, application/graphql-response+json, application/json", server.received.single().headers["accept"])
         assertEquals(1, server.received.size, "a completed stream is not opened again")
-        retention.release()
+        hold.release()
         environment.end()
     }
 
@@ -166,13 +166,13 @@ class HttpTransportTests {
         val server = serve { answer(it, 400, "application/graphql-response+json; charset=utf-8", refusal.encodeToByteArray()) }
         val environment = environment(HttpTransport(server.url))
         val handle = environment.handle(TestHeaderQuery(id = "5"))
-        val retention = handle.retain()
+        val hold = handle.retain()
         handle.settle()
         val errors = assertIs<GraphQLErrors>(assertIs<Phase.Failed>(handle.phase).error)
         assertEquals(listOf("Cannot query field \"nope\" on type \"Query\"."), errors.messages)
         assertEquals(Variable.Object(mapOf("code" to Variable.String("GRAPHQL_VALIDATION_FAILED"))), errors.errors.single().extensions)
         assertIs<Failure.Request>(handle.fetch.failure)
-        retention.release()
+        hold.release()
         environment.end()
     }
 

@@ -515,8 +515,10 @@ Swift: `retain()` on a handle returns a `Retention`: `@Query`'s storage
 holds one for the view's life, a model or a view controller holds one in a
 property and lets it go with itself. The buffer's size is
 `Store(releaseBufferSize:)`. The main thread's turn is the main actor's.
-Kotlin: `retain()` returns a `Retention` whose `release()` ends it, since
-Kotlin has no deinit to end it; the buffer's size is the environment's
+Kotlin: `retain()` returns a `Hold` whose `release()` ends it, since
+Kotlin has no deinit to end it. The class is not named `Retention`, since
+`baton.Retention` would hide `kotlin.annotation.Retention` from every file
+that writes `import baton.*`. The buffer's size is the environment's
 `releaseBufferSize`, and the turn is the main dispatcher's.
 `rememberQuery` holds one while its composable stays and releases it when
 the composable leaves or its composition is abandoned.

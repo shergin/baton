@@ -286,18 +286,18 @@ class OperationHandle<Data : Lens> internal constructor(
     }
 
     /**
-     * Keeps the operation's records alive until the retention is released.
+     * Keeps the operation's records alive until the hold is released.
      * A composable holds one for its life; a class holds one in a property
      * and releases it when it is done.
      */
-    fun retain(): Retention {
+    fun retain(): Hold {
         val allowsNetwork = lastPolicy != FetchPolicy.STORE_ONLY
         store.retain(root, allowsNetwork)
         environment.didRetain(this)
-        return Retention { release(allowsNetwork) }
+        return Hold { release(allowsNetwork) }
     }
 
-    /** A retention ended. At no holder the root enters the release buffer, and the handles of the roots it pushes out go with their fetches. */
+    /** A hold ended. At no holder the root enters the release buffer, and the handles of the roots it pushes out go with their fetches. */
     private fun release(allowingNetwork: Boolean) {
         environment.evict(store.release(root, allowingNetwork))
     }
@@ -339,9 +339,11 @@ class OperationHandle<Data : Lens> internal constructor(
  * What keeps an operation's records alive: the token `retain()` returns,
  * whose release ends the hold. Kotlin has no deinit to end it, so the holder
  * releases it: a composable when it leaves, a class when it is done.
- * Releasing twice is releasing once. Used on the store's thread.
+ * Releasing twice is releasing once. Used on the store's thread. Swift's
+ * `Retention`; the Kotlin name is `Hold` so that `import baton.*` does not
+ * hide `kotlin.annotation.Retention`.
  */
-class Retention internal constructor(private val onRelease: () -> Unit) {
+class Hold internal constructor(private val onRelease: () -> Unit) {
     private var released = false
 
     /** Ends the hold: at no holder the root waits in the release buffer. */

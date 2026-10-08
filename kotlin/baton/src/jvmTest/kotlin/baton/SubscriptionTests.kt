@@ -31,7 +31,7 @@ class SubscriptionTests {
         val transport = ScriptedTransport()
         val environment = environment(transport)
         val handle = environment.subscriptionHandle(operation)
-        val retention = handle.retain()
+        val hold = handle.retain()
         runCurrent()
         transport.driven.single().fail(TransportError(503, "down"))
         runCurrent()
@@ -47,7 +47,7 @@ class SubscriptionTests {
         assertEquals(Stream.Open, handle.stream)
         assertEquals(1, handle.events)
         assertNull(handle.error)
-        retention.release()
+        hold.release()
         environment.end()
     }
 
@@ -56,7 +56,7 @@ class SubscriptionTests {
         val transport = ScriptedTransport()
         val environment = environment(transport)
         val handle = environment.subscriptionHandle(operation)
-        val retention = handle.retain()
+        val hold = handle.retain()
         runCurrent()
         transport.driven.single().fail(GraphQLErrors(listOf("refused")))
         runCurrent()
@@ -68,7 +68,7 @@ class SubscriptionTests {
         runCurrent()
         assertEquals(Stream.Connecting, handle.stream)
         assertEquals(2, transport.requestCount)
-        retention.release()
+        hold.release()
         environment.end()
     }
 
@@ -77,10 +77,10 @@ class SubscriptionTests {
         val transport = ScriptedTransport()
         val environment = environment(transport)
         val handle = environment.subscriptionHandle(operation)
-        val retention = handle.retain()
+        val hold = handle.retain()
         runCurrent()
         assertTrue(environment.store.roots.containsKey(handle.key))
-        retention.release()
+        hold.release()
         runCurrent()
         assertEquals(Stream.Idle, handle.stream)
         assertTrue(transport.driven.isEmpty(), "the stream's flow ended")
@@ -92,7 +92,7 @@ class SubscriptionTests {
     fun `a stream with no subscription transport ends with that environment failure and is not opened again, and a retry fails the same way`() = runTest {
         val environment = environment(subscriptions = null)
         val handle = environment.subscriptionHandle(operation)
-        val retention = handle.retain()
+        val hold = handle.retain()
         runCurrent()
         assertSame(EnvironmentError.NoSubscriptionTransport, handle.error)
         val failure = assertIs<Failure.Environment>(assertIs<Stream.Ended>(handle.stream).failure)
@@ -106,7 +106,7 @@ class SubscriptionTests {
         runCurrent()
         assertSame(EnvironmentError.NoSubscriptionTransport, handle.error)
         assertIs<Failure.Environment>(assertIs<Stream.Ended>(handle.stream).failure)
-        retention.release()
+        hold.release()
         environment.end()
     }
 

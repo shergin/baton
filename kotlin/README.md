@@ -106,7 +106,7 @@ mutation's request and commit run where no cancellation reaches them, and
 `end()` cancels, clears and forgets the session. A handle (`Handle.kt`)
 applies its fetch policy and derives its phase from its root and its
 fetch, both read through Compose snapshot state; `refetch()`, `retry()`
-and `retain()`, whose `Retention` is released by hand. The store keeps the
+and `retain()`, whose `Hold` is released by hand. The store keeps the
 roots (`Roots.kt`): retention and the release buffer, ages and staleness,
 the verdict settled after a batch that changed a null, a link, an error
 or a deletion, and the collector, which frees the records no root reaches

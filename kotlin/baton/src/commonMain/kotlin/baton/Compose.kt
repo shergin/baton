@@ -19,19 +19,19 @@ import androidx.compose.runtime.staticCompositionLocalOf
 val LocalBaton = staticCompositionLocalOf<Environment?> { null }
 
 /**
- * A handle and the retention that keeps its records alive while the
+ * A handle and the hold that keeps its records alive while the
  * composable that remembered it stays in the composition; released when it
  * leaves, or when a composition that made it is abandoned.
  */
-private class Remembered<Handle : Any>(val handle: Handle, private val retention: Retention) : RememberObserver {
+private class Remembered<Handle : Any>(val handle: Handle, private val hold: Hold) : RememberObserver {
     override fun onRemembered() {}
 
     override fun onForgotten() {
-        retention.release()
+        hold.release()
     }
 
     override fun onAbandoned() {
-        retention.release()
+        hold.release()
     }
 }
 

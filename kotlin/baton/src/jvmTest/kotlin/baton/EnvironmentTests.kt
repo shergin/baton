@@ -81,12 +81,12 @@ class EnvironmentTests {
         val transport = ScriptedTransport(mapOf("TestHeaderQuery" to Spec.bytes("tests/character-header-5.json")))
         val environment = environment(transport)
         val handle = environment.handle(TestHeaderQuery(id = "5"))
-        val retention = handle.retain()
+        val hold = handle.retain()
         runCurrent()
         environment.store.collect()
         val data = assertIs<Phase.Ready<TestHeaderQuery.Data>>(handle.phase).data
         assertEquals("Jerry Smith", walk(data, "character.name"))
-        retention.release()
+        hold.release()
         environment.end()
     }
 

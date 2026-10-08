@@ -221,7 +221,7 @@ class WebSocketTransportTests {
         val server = server()
         val environment = environment(GraphQLTransportWebSocket(server.url))
         val handle = environment.subscriptionHandle(noteAdded)
-        val retention = handle.retain()
+        val hold = handle.retain()
         until("the subscription was sent") { server.count("subscribe") == 1 }
         val id = server.ids("subscribe").single()
         server.send("{\"id\":\"$id\",\"type\":\"next\",\"payload\":${Spec.text("tests/note-added-1.json").trim()}}")
@@ -233,7 +233,7 @@ class WebSocketTransportTests {
         assertEquals(listOf("bad subscription"), failure.errors.messages)
         assertEquals(0, handle.resumptions)
         assertEquals(1, server.count("subscribe"))
-        retention.release()
+        hold.release()
         environment.end()
     }
 }

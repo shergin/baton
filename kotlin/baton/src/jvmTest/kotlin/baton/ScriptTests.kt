@@ -89,10 +89,10 @@ internal class ScriptRun(private val script: Script) {
 
     private val store: Store get() = environment.store
 
-    /** A handle a step named, of a query or of a subscription, and the retention its attach made. */
-    private class Live(val operation: Bound, private val query: OperationHandle<*>?, val subscription: SubscriptionHandle<*>?, var retention: Retention?) {
-        constructor(operation: Bound, handle: OperationHandle<*>, retention: Retention) : this(operation, handle, null, retention)
-        constructor(operation: Bound, handle: SubscriptionHandle<*>, retention: Retention) : this(operation, null, handle, retention)
+    /** A handle a step named, of a query or of a subscription, and the hold its attach made. */
+    private class Live(val operation: Bound, private val query: OperationHandle<*>?, val subscription: SubscriptionHandle<*>?, var hold: Hold?) {
+        constructor(operation: Bound, handle: OperationHandle<*>, hold: Hold) : this(operation, handle, null, hold)
+        constructor(operation: Bound, handle: SubscriptionHandle<*>, hold: Hold) : this(operation, null, handle, hold)
 
         /** The query's handle, for the steps and the expectations only a query has. */
         val handle: OperationHandle<*> get() = query ?: error("${operation.name} is a subscription, whose handle has no phase or fetch")
@@ -233,8 +233,8 @@ internal class ScriptRun(private val script: Script) {
             }
             is Script.Action.Release -> {
                 val live = handle(action.handle) ?: return null
-                live.retention?.release()
-                live.retention = null
+                live.hold?.release()
+                live.hold = null
                 return null
             }
             Script.Action.Collect -> {

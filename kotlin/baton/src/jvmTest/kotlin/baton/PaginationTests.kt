@@ -47,19 +47,19 @@ class PaginationTests {
     }
 
     /** The notes query fetched and held as a composable on screen holds it, and the fragment's lens over its character. */
-    private fun TestScope.seeded(environment: Environment): Pair<TestNotes_character, Retention> {
+    private fun TestScope.seeded(environment: Environment): Pair<TestNotes_character, Hold> {
         val handle = environment.handle(TestNotesQuery(id = "1"))
-        val retention = handle.retain()
+        val hold = handle.retain()
         runCurrent()
         val data = assertIs<Phase.Ready<TestNotesQuery.Data>>(handle.phase).data
-        return assertNotNull(data.character?.testNotes) to retention
+        return assertNotNull(data.character?.testNotes) to hold
     }
 
     @Test
     fun `loadNext fetches after the end cursor, appends, and is a no-op at the end`() = runTest {
         val transport = notesTransport()
         val environment = environment(transport)
-        val (character, retention) = seeded(environment)
+        val (character, hold) = seeded(environment)
         assertEquals(1, transport.requestCount)
 
         character.notes.loadNext()
@@ -87,7 +87,7 @@ class PaginationTests {
         environment.store.collect()
         assertEquals(5, character.notes.nodes.size)
         assertNotNull(environment.store.existing("Note:n5"))
-        retention.release()
+        hold.release()
         environment.end()
     }
 
@@ -96,7 +96,7 @@ class PaginationTests {
         val transport = ScriptedTransport(mapOf("TestNotesQuery" to notesPage(1)))
         transport.hold("TestNotesPaginationQuery")
         val environment = environment(transport)
-        val (character, retention) = seeded(environment)
+        val (character, hold) = seeded(environment)
         assertFalse(character.notes.isLoadingNext)
 
         val loading = async { character.notes.loadNext() }
@@ -110,7 +110,7 @@ class PaginationTests {
         assertFalse(character.notes.isLoadingNext)
         assertEquals(4, character.notes.nodes.size)
         assertEquals(2, environment.store.roots.size, "the notes query's root and the page's, dated and waiting in the buffer")
-        retention.release()
+        hold.release()
         environment.end()
     }
 
@@ -119,7 +119,7 @@ class PaginationTests {
         val transport = ScriptedTransport(mapOf("TestNotesQuery" to notesPage(1)))
         transport.hold("TestNotesPaginationQuery")
         val environment = environment(transport)
-        val (character, retention) = seeded(environment)
+        val (character, hold) = seeded(environment)
 
         val loading = async { runCatching { character.notes.loadNext() }.exceptionOrNull() }
         runCurrent()
@@ -127,7 +127,7 @@ class PaginationTests {
         assertIs<TransportError>(loading.await())
         assertFalse(character.notes.isLoadingNext)
         assertEquals(2, character.notes.nodes.size)
-        retention.release()
+        hold.release()
         environment.end()
     }
 
@@ -137,7 +137,7 @@ class PaginationTests {
             if (request.operationName == "TestNotesQuery") notesPage(1) else Spec.bytes("tests/notes-refetch.json")
         }
         val environment = environment(transport)
-        val (character, retention) = seeded(environment)
+        val (character, hold) = seeded(environment)
         val first = character.notes.nodes.first()
         assertEquals("Wubba lubba dub dub", first.text)
 
@@ -149,7 +149,7 @@ class PaginationTests {
         assertEquals("Wubba lubba dub dub!", first.text, "the lens over the same record reads the new value")
         assertEquals(2, character.notes.nodes.size)
         assertEquals(2, environment.store.roots.size, "the notes query's root and the refetch query's, dated and waiting in the buffer")
-        retention.release()
+        hold.release()
         environment.end()
     }
 
@@ -164,7 +164,7 @@ class PaginationTests {
         }
         val environment = environment(transport)
         val handle = environment.handle(TestAuthorNotesQuery(id = "n1"))
-        val retention = handle.retain()
+        val hold = handle.retain()
         runCurrent()
         val note: TestAuthorNotes_note = assertNotNull(assertIs<Phase.Ready<TestAuthorNotesQuery.Data>>(handle.phase).data.node?.note)
         val author = assertNotNull(note.author)
@@ -184,7 +184,7 @@ class PaginationTests {
         assertEquals(Variable.String("n1"), refetch.variables["id"])
         assertTrue(refetch.variables["cursor"] == null || refetch.variables["cursor"] == Variable.Null)
         assertEquals(3, transport.requestCount)
-        retention.release()
+        hold.release()
         environment.end()
     }
 
@@ -199,7 +199,7 @@ class PaginationTests {
         }
         val environment = environment(transport)
         val handle = environment.handle(TestHiddenRecentNotesQuery(id = "1"))
-        val retention = handle.retain()
+        val hold = handle.retain()
         runCurrent()
         val data = assertIs<Phase.Ready<TestHiddenRecentNotesQuery.Data>>(handle.phase).data
         val notes = assertNotNull(data.character).testHiddenRecentNotes.notes
@@ -210,7 +210,7 @@ class PaginationTests {
         assertEquals(Variable.String("c4"), transport.requests.last().variables["cursor"])
         assertEquals(listOf("n2", "n3", "n4", "n5"), notes.nodes.map { it.id })
         assertFalse(notes.isLoadingPrevious)
-        retention.release()
+        hold.release()
         environment.end()
     }
 
