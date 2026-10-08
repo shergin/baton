@@ -5,6 +5,11 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The Kotlin host's marker is recorded in
+  `docs/decisions/the-kotlin-host-marks-a-document-on-the-composable.md`:
+  a document is an annotation on the composable that renders, holds or
+  acts, written in a `$$` raw string since `$` is a template in Kotlin and
+  a variable in GraphQL; answers issue 6.
 - `batonc` writes Kotlin lenses: a `@Stable` class per fragment and per
   operation's `Data`, equal by its anchor, with a property per field over
   the anchor's readers and a companion of its checks; an `@inline`

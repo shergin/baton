@@ -62,4 +62,5 @@ principle, the proof belongs here.
 - [A mapped scalar's host type is named per language](a-mapped-scalars-host-type-is-named-per-language.md)
 - [The Kotlin runtime is common first, and a platform is an actual](the-kotlin-runtime-is-common-first.md)
 - [A format is per emitter](a-format-is-per-emitter.md)
+- [The Kotlin host marks a document on the composable](the-kotlin-host-marks-a-document-on-the-composable.md)
 - [swift-syntax spans the floor to the newest release](swift-syntax-spans-the-floor-to-the-newest.md)
