@@ -82,6 +82,19 @@ are expected and listed without apology.
   their rows and what never reaches the file are the Swift runtime's; the
   file is reached through the AndroidX SQLite driver API, with the bundled
   engine on the JVM alone. All twelve scripts run whole.
+- The Kotlin runtime speaks to a server and to Compose. `HttpTransport`
+  posts over `HttpURLConnection`, reading a deferred response's
+  `multipart/mixed` parts and a subscription's `graphql-sse` events
+  through the common `MultipartParser` and `EventStreamParser`, credentials
+  per attempt, a request error answered as
+  `application/graphql-response+json` as its `GraphQLErrors`;
+  `GraphQLTransportWebSocket` speaks `graphql-transport-ws` over the JVM's
+  `java.net.http.WebSocket`, one connection per transport; and
+  `Environment(url)` makes an environment over HTTP. `LocalBaton`,
+  `rememberQuery`, `rememberMutation` and `rememberSubscription` resolve
+  operation values in a composition, retained while the composable stays.
+  `kotlin/samples/desktop` is a Compose for Desktop app over the Rick and
+  Morty API.
 
 ## 0.10.0 (Vatrushka) — 2026-10-07
 

@@ -34,12 +34,17 @@ schema, which GraphQL also writes as a document and which is a concept of
 its own here.
 Swift: the markers are macros, `@Query("…")`, `@Fragment("…")`,
 `@Mutation("…")` and `@Subscription("…")`, in Swift source.
+Kotlin: the markers are annotations of the same names on the composable,
+or the class, that renders, holds or acts, a document with a variable
+written in a `$$"""…"""` raw string; nothing of them reaches a class file.
 
 **Fragment.** *Concept: document.* GraphQL: a named selection on a type.
 Relay: the unit of a component's data needs.
 Here: declared beside the view that reads it, in source code or a
 `.graphql` file; compiles to a [lens](#generated) type.
 Swift: declared in Swift source with `@Fragment("…")`.
+Kotlin: declared with `@Fragment("…")` on the composable that renders it,
+which takes the lens as a parameter.
 
 **Operation.** *Concept: document.* GraphQL: a query, mutation or
 subscription.
@@ -57,6 +62,11 @@ mutation, called as an [action](#generated); a subscription, a stream of
 events into the store. Each API takes only its kind.
 Swift: the three kinds are three protocols refining `Operation`: `Query`,
 `Mutation` and `Subscription`.
+Kotlin: `QueryOperation`, `MutationOperation` and `SubscriptionOperation`,
+declared with `@Query`, `@Mutation` and `@Subscription`; a composable
+resolves a query value with `rememberQuery(operation, fetchPolicy)`, a
+subscription value with `rememberSubscription(operation)`, and takes a
+mutation's action with `rememberMutation(Companion)`.
 
 **Spread.** *Composition: document, lens.* GraphQL: `...Name` inside a
 selection.
@@ -505,6 +515,8 @@ property and lets it go with itself. The buffer's size is
 Kotlin: `retain()` returns a `Retention` whose `release()` ends it, since
 Kotlin has no deinit to end it; the buffer's size is the environment's
 `releaseBufferSize`, and the turn is the main dispatcher's.
+`rememberQuery` holds one while its composable stays and releases it when
+the composable leaves or its composition is abandoned.
 
 **Invalidation, TTL.** *Composition: store, operation value, environment.*
 Relay's and Apollo's shared words.
@@ -880,7 +892,10 @@ Swift: injected through SwiftUI's environment as `\.baton`; the error is
 Kotlin: `Environment`, which commits on a main dispatcher, the store's
 thread, and reads responses on an ingest dispatcher, a test passing one
 test dispatcher for both; the error is `EnvironmentError`, and the
-composable's case is `NotInjected`.
+composable's case is `NotInjected`. A composition reads it from
+`LocalBaton`, provided with `CompositionLocalProvider`; on the JVM,
+`Environment(url, headers, subscriptions, store)` makes one over an
+`HttpTransport`, on the thread its main dispatcher runs.
 
 **Session, end.** *Concept: environment.* The web's word for one identity's
 stretch of use; Relay has no word for an environment's end, because
@@ -953,6 +968,11 @@ Kotlin: the `Transport` interface, whose `send` returns a `Flow<ByteArray>`
 and whose `payload` reads its one element; `Request`, `Encoding` and
 `TransportError` as in Swift, and the test transports `ScriptedTransport`,
 `RecordedTransport` and `SilentTransport` in the module `baton-testing`.
+`MultipartParser` and `EventStreamParser` are common; `HttpTransport`
+speaks HTTP over `java.net.HttpURLConnection`, which Android shares; and
+`GraphQLTransportWebSocket` speaks `graphql-transport-ws` over the JVM's
+`java.net.http.WebSocket`, which Android's platform lacks, so there the
+socket is the app's own transport.
 
 **Inspector.** *Composition: store, record.* Baton's word.
 Here: the view a debug build presents over an environment's store: its
@@ -1017,7 +1037,8 @@ Kotlin: `Environment.subscriptionHandle(operation)` returns a
 `SubscriptionHandle<Data>` whose `events`, `latest`, `error`,
 `resumptions` and `stream` are snapshot state, the stream a sealed
 interface `Stream` (`Idle`, `Connecting`, `Open`, `Waiting(until)`,
-`Ended(failure)`), and whose `retain()` opens it.
+`Ended(failure)`), and whose `retain()` opens it; a composable holds it
+with `rememberSubscription(operation)`, whose `subscription` is the handle.
 
 **Error behavior.** *Composition: schema, lens, transport.* The GraphQL
 spec's `onError` request parameter (`PROPAGATE`, `NULL`, `ABORT`).
@@ -1105,6 +1126,8 @@ is fetched for by none of them. See
 [the decision](decisions/revalidation-is-the-apps-call.md).
 Swift: given as `@Query("…", fetchPolicy:)`; the default is
 `FetchPolicy.default`.
+Kotlin: given as `rememberQuery(operation, fetchPolicy)`; the default is
+`FetchPolicy.Default`.
 
 **Lookup.** *Composition: schema, store, plan.* Baton's word.
 Here: a root field configured in `baton.json` as returning an entity by its
