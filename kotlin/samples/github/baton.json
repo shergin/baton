@@ -1,0 +1,7 @@
+{
+  "schema": "../../../examples/GitHubTriage/schema.docs.graphql",
+  "lookups": [
+    { "field": "Query.node", "argument": "id" }
+  ],
+  "kotlin": { "package": "baton.github" }
+}
