@@ -3,7 +3,7 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
-## Unreleased
+## 0.11.0 (Karavai) — 2026-10-07
 
 - `rules_baton`, a Bazel module under `bazel/`, versioned with Baton: a
   toolchain its extension fetches from the release's artifact bundle,
