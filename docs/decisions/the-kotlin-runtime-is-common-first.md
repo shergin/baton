@@ -110,10 +110,12 @@ Kotlin runtime on the platform's equivalents.
   framework when it opens it. The runtime holds no `Context`:
   `Persistence.named` takes the app's cache directory on Android. The
   lowest Android is 6 (API 23), the Compose runtime's and AndroidX
-  SQLite's. On an emulator (Pixel 6 profile, Android 16, on an M1 Pro)
-  the Fixture response ingests in about 12 ms and commits in 4 to 6 ms,
-  the medians `IngestBenchmark` logs; an emulator's number is not the
-  budget, which waits for a named device.
+  SQLite's. `IngestBenchmark` from a release build on the owner's Google
+  Pixel 9 (Android 17) ingests the Fixture response in about 5.1 ms and
+  commits it in about 1.3 ms, the medians of 300 runs; the debuggable
+  device-test build took 19 ms and 6.7 ms, and the emulator's release
+  numbers are 4.3 ms and 1.1 ms (`BENCHMARKS.md`, 2026-10-07). The
+  native-runtimes record carries the number as the budget's evidence.
 
 ## Not chosen
 

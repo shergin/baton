@@ -41,13 +41,13 @@ is not debuggable is the second table. The JVM row is `IngestTiming` in
 | The `baton` emulator, arm64 Android 16 image on an M1 Pro | 12.16 ms, 12.57 ms | 4.36 ms, 5.61 ms |
 | The JVM, JDK 21 on an M1 Pro | 1.71 ms | 0.32 ms |
 
-The commit, which is the main thread's share, fits a frame at 60 Hz
-(16.7 ms) and at 120 Hz (8.3 ms); the ingest does not fit one and does not
-run on one. The device is eleven times the JVM on the ingest and twenty on
-the commit, where the JVM's escape analysis hides allocations ART charges
-for; the tokenizer's and the change set's allocations are the first thing
-to look at, before any remedy outside Kotlin is weighed
-(`docs/decisions/native-runtimes.md`).
+From the debuggable build, the commit, which is the main thread's share,
+fits a frame at 60 Hz (16.7 ms) and at 120 Hz (8.3 ms), and the ingest
+does not fit one and does not run on one; that reading is superseded by
+the release build's table below, where both fit a frame. The debuggable
+device was eleven times the JVM on the ingest and twenty on the commit; the
+release build shows how much of that was the build and how much is ART's
+allocation cost (`docs/decisions/native-runtimes.md`).
 
 The same benchmark from a build that is not debuggable, revision
 `5a2a0af`: `kotlin/benchmarks/android`, an application built with the

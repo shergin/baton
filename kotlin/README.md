@@ -354,7 +354,9 @@ on the system's SQLite through `AndroidSQLiteDriver`; the HTTP transport,
 the thread's identity and the image's file operations, writer and lock
 are `jvmSharedMain`; a double's shortest text is searched for, since
 Android's `Double.toString` is not the shortest round trip. The sample
-runs on an emulator. The ingest budget waits for `IngestBenchmark` on a
-named device: on an emulator (Pixel 6 profile, Android 16, on an M1 Pro)
-the medians are about 12 ms to ingest and 4 to 6 ms to commit, which is not
-the budget. On Android the socket transport is the app's.
+runs on an emulator and on a phone. `IngestBenchmark` from a release
+build on a Google Pixel 9 (Android 17) ingests the Fixture in about 5.1 ms
+and commits it in about 1.3 ms, the medians of 300 runs; the debuggable
+device-test build of the same code took 19 ms and 6.7 ms, and the
+emulator's release numbers are 4.3 ms and 1.1 ms (`BENCHMARKS.md`). On
+Android the socket transport is the app's.
