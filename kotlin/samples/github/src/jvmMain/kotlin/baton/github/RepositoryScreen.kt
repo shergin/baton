@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import baton.Fragment
-import baton.Generated
 import baton.Mutation
 import baton.MutationAction
 import baton.Query
@@ -185,15 +184,30 @@ fun IssueList(repository: IssueList_repository, onSelect: (String) -> Unit, head
     }
     """,
 )
+@Mutation(
+    $$"""
+    mutation StarButtonAddStar($input: AddStarInput!) {
+      addStar(input: $input) {
+        starrable { id viewerHasStarred ... on Repository { stargazerCount } }
+      }
+    }
+    """,
+)
+@Mutation(
+    $$"""
+    mutation StarButtonRemoveStar($input: RemoveStarInput!) {
+      removeStar(input: $input) {
+        starrable { id viewerHasStarred ... on Repository { stargazerCount } }
+      }
+    }
+    """,
+)
 @Composable
 fun StarButton(repository: StarButton_repository) {
-    // As in the comment composer: the opt-in and the action's type stand in
-    // for what `rememberMutation` cannot take or infer today.
-    @OptIn(Generated::class)
-    val addStar: MutationAction<StarButtonAddStar, StarButtonAddStar.Data> = rememberMutation(StarButtonAddStar)
-
-    @OptIn(Generated::class)
-    val removeStar: MutationAction<StarButtonRemoveStar, StarButtonRemoveStar.Data> = rememberMutation(StarButtonRemoveStar)
+    // One composable hosts the fragment it renders and the two mutations it
+    // calls; the markers repeat.
+    val addStar = rememberMutation(StarButtonAddStar)
+    val removeStar = rememberMutation(StarButtonRemoveStar)
     val scope = rememberCoroutineScope()
     val starred = repository.viewerHasStarred
     OutlinedButton(
@@ -220,15 +234,6 @@ fun StarButton(repository: StarButton_repository) {
  * the count before the server answers. `starrable` is an interface, so the
  * optimistic response names the concrete type.
  */
-@Mutation(
-    $$"""
-    mutation StarButtonAddStar($input: AddStarInput!) {
-      addStar(input: $input) {
-        starrable { id viewerHasStarred ... on Repository { stargazerCount } }
-      }
-    }
-    """,
-)
 private suspend fun star(addStar: MutationAction<StarButtonAddStar, StarButtonAddStar.Data>, id: String, count: Int) {
     addStar(
         input = AddStarInput(starrableId = id),
@@ -243,15 +248,6 @@ private suspend fun star(addStar: MutationAction<StarButtonAddStar, StarButtonAd
 }
 
 /** Unstars the repository [id], as [star] stars it. */
-@Mutation(
-    $$"""
-    mutation StarButtonRemoveStar($input: RemoveStarInput!) {
-      removeStar(input: $input) {
-        starrable { id viewerHasStarred ... on Repository { stargazerCount } }
-      }
-    }
-    """,
-)
 private suspend fun unstar(removeStar: MutationAction<StarButtonRemoveStar, StarButtonRemoveStar.Data>, id: String, count: Int) {
     removeStar(
         input = RemoveStarInput(starrableId = id),

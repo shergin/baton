@@ -82,21 +82,9 @@ network.
   at the end of the comments at once, still there, once, when the server's
   answer lands.
 
-## Where the runtime is short
+## What this sample asked of the runtime
 
-Two things the sample works around, for the runtime to answer:
-
-- `rememberMutation(type)` takes the generated companion as an
-  `OperationType`, an interface behind the `baton.Generated` opt-in, so an
-  app cannot call it without opting in; and it cannot infer the operation's
-  class from the companion, so the action's type is written out. The
-  sample opts in at each call, on the local variable, and names the type:
-  `@OptIn(Generated::class) val addStar: MutationAction<StarButtonAddStar,
-  StarButtonAddStar.Data> = rememberMutation(StarButtonAddStar)`.
-- The `@Mutation` marker is not repeatable, so a composable cannot host
-  two mutations; the star's two mutations sit on the two small functions
-  that call them.
-
-The tests do not reach the live API, and the sample has not yet been run
-against it with a token: the documents compile against GitHub's published
-schema, and the responses the tests answer with are written to match them.
+Two things it needed and did not find at first, both the runtime's now: an
+operation's companion is a `MutationType` an app passes to
+`rememberMutation` with no opt-in and no type spelled, and the four
+markers repeat, so the star button hosts its fragment and both mutations.

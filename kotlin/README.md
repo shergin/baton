@@ -258,10 +258,10 @@ the list reaches its end, an issue whose composer appends an optimistic
 comment through `@appendEdge`, and sign-out, which ends the environment and
 removes the image. Its tests run the screens over `ScriptedTransport` with
 responses written for its documents; the live API needs a token and is not
-part of the build. It works around two gaps its README names:
-`rememberMutation` takes an `OperationType`, which is behind the
-`Generated` opt-in, and cannot infer the operation's class; and
-`@Mutation` is not repeatable.
+part of the build. Two things it asked of the runtime are the runtime's
+now: a companion an app passes to `rememberMutation` with no opt-in and no
+type spelled, and markers that repeat, so its star button hosts its
+fragment and both mutations.
 
 Android follows: the system's SQLite through `AndroidSQLiteDriver`, the
 HTTP transport in a source set the JVM and Android share, the sample on a

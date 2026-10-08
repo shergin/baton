@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import baton.Fragment
-import baton.Generated
 import baton.Mutation
 import baton.MutationAction
 import baton.Phase
@@ -159,12 +158,7 @@ private fun rememberViewer(): ViewerQuery.Data.Viewer? {
 )
 @Composable
 fun CommentComposer(subjectID: String, connectionID: String) {
-    // `rememberMutation` takes the generated companion as an `OperationType`,
-    // which is behind the `Generated` opt-in, and cannot infer the operation
-    // from it; the sample opts in here and names the action's type. See the
-    // README.
-    @OptIn(Generated::class)
-    val addComment: MutationAction<CommentComposerAddComment, CommentComposerAddComment.Data> = rememberMutation(CommentComposerAddComment)
+    val addComment = rememberMutation(CommentComposerAddComment)
     val viewer = rememberViewer()
     val scope = rememberCoroutineScope()
     var text by remember { mutableStateOf("") }
