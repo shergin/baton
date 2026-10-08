@@ -36,6 +36,46 @@ in an [issue](https://github.com/shergin/baton/issues). It is your chance to
 make the app faster and its GraphQL much more pleasant to work with, and to
 shape Baton while it is young.
 
+## By the numbers
+
+Two head-to-heads against the maintained native clients, on the same
+data: the Rick and Morty page, 686 KB and 899 records. Same machine, same
+day, Apollo configured as its documentation says, both harnesses in this
+repository. Every number is in [`BENCHMARKS.md`](BENCHMARKS.md) with the
+device, the OS and the date.
+
+**Swift against Apollo iOS 2.4**, Apple M1 Pro, 2 October 2026:
+
+| | Baton | Apollo iOS | Faster |
+|---|---|---|---|
+| The response into the store | 3.4 ms | 318 ms | **94×** |
+| The same payload again | 165 µs | 3.99 ms | **24×** |
+| The store into something a view can read | the first body has it, after a 115 µs check | 228 ms to rebuild the query | |
+| One field | 26 ns | 296 ns | **11×** |
+
+**Kotlin against Apollo Kotlin 5.2**, a Google Pixel 9 on Android 17,
+release builds, 7 October 2026:
+
+| | Baton | Apollo Kotlin | Faster |
+|---|---|---|---|
+| The response into the store | 6.4 ms | 44.6 ms | **6.9×** |
+| The same payload again | 0.36 ms | 1.1 ms | **3.1×** |
+| The store into something a view can read | a 1.2 ms check | 25 ms to rebuild the query | |
+| One field | 43 ns | 2 ns | Apollo, **20×** |
+
+The last row is Apollo's: once it has rebuilt the tree, a field is a
+property load. Every row before it is the price of that tree, paid once
+from the bytes and again on every read. Baton materializes nothing a view
+did not read: on the phone the whole response is in the store in less than
+a 120 Hz frame, 1.3 ms of it on the main thread, and a screen that reads
+every field of twenty rows pays about 7 µs after the check.
+
+Also measured: an optimistic write shows at once and the whole cycle costs
+0.4 ms; forty-two pages of scrolling plateau near five megabytes, since
+the store releases what no view holds; a launch with the image already
+open reads the page back in 1.78 ms before any request; on the JVM, the
+Kotlin runtime ingests the same page in 1.7 ms.
+
 ## What it is, and will be
 
 - **A fragment per view.** GraphQL lives in the Swift file, next to the view
@@ -65,7 +105,7 @@ shape Baton while it is young.
 - **Small everything.** Generated code is one line per field plus data
   tables. The runtime depends on Foundation, Observation and the SQLite the
   system ships. The compiler is one prebuilt binary, shared by the Swift and
-  (later) Kotlin runtimes.
+  Kotlin runtimes.
 - **Declarative, down to the writes.** What a view needs, how a list pages,
   what an optimistic response shows and how a mutation edits a list are all
   directives and values in the GraphQL text beside the view; nothing is
@@ -90,10 +130,9 @@ shape Baton while it is young.
 
 ## The feel
 
-SwiftUI on the left, from the sample. Compose on the right, as the Kotlin
-runtime is designed: the same documents, the same lenses and the same phase,
-in Kotlin's words. The Kotlin runtime is being built, and both APIs will
-still move before 1.0.
+SwiftUI on the left, from the sample. Compose on the right, from the Kotlin
+sample: the same documents, the same lenses and the same phase, in
+Kotlin's words. Both APIs will still move before 1.0.
 
 A fragment beside the view that renders it, and one query for the screen:
 
@@ -327,9 +366,12 @@ data in the first body, one changed field re-rendering one row, optimistic
 responses that show at once and revert on failure, connections that merge
 their pages in the store, field errors read through Relay's directives,
 deferred fragments, subscriptions, and a store that outlives the process.
-The Kotlin runtime has begun, held to the same compiler and the same
-fixtures under `spec/`. The API will break freely until 1.0; each release is
-in [`CHANGELOG.md`](CHANGELOG.md).
+The Kotlin runtime runs on the JVM and on Android, held to the same
+compiler and the same fixtures under `spec/`: every case and every script
+of the specification passes through code the compiler generates, with a
+Compose for Desktop sample, an Android sample and a head-to-head against
+Apollo Kotlin behind it. The API will break freely until 1.0; each release
+is in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Works with your server
 
@@ -362,23 +404,13 @@ symbol is 🥖 and the logo is a loaf.
 
 ## Compared with the other native clients
 
-Baton is faster than Apollo iOS.
-
-| | Baton | Apollo iOS 2.4 | Faster |
-|---|---|---|---|
-| Into the store | 3.4 ms | 318 ms | **94×** |
-| Same payload again | 165 µs | 3.99 ms | **24×** |
-| One field | 26 ns | 296 ns | **11×** |
-
-The head-to-head is the Rick and Morty page, 686 KB and 899 records, on an
-Apple M1 Pro, 2 October 2026. Before that field read, Apollo spends 228 ms
-rebuilding the query into models. The run is in
-[`BENCHMARKS.md`](BENCHMARKS.md). Baton 0.6.0, remeasured on the same
-machine without re-running Apollo, is 4.1 ms into the store, under 200 µs
-for the unchanged payload, and 28 ns a field. The shape is the same.
-Apollo's response for the same data is 849 KB, because its normalizer asks
-for `__typename` on every object. A launch with the file already open reads
-the fixture back in 1.78 ms.
+The two head-to-heads are under [By the numbers](#by-the-numbers): Swift
+against Apollo iOS on an M1 Pro, Kotlin against Apollo Kotlin on a Pixel 9,
+the same Rick and Morty page of 686 KB and 899 records each time. Baton
+0.6.0, remeasured on the same Mac without re-running Apollo, is 4.1 ms into
+the store, under 200 µs for the unchanged payload, and 28 ns a field; the
+shape did not move. Apollo's response for the same data is 849 KB, because
+its normalizer asks for `__typename` on every object.
 
 Apollo spends the difference building a model of the operation, once from
 the response and again from the store. The write into the store itself is
@@ -386,12 +418,15 @@ the same speed, 1.2 ms and 1.4 ms in that head-to-head. Baton keeps the
 record, the UI framework observes it, and the first body already has the
 cached data. A changed field re-renders the view that read it.
 
-The Kotlin runtime is not built yet, so the race above is Swift. Apollo
-Kotlin uses the same model-and-store design and publishes its own cache
-bench, a different query on a 2017 Galaxy S8 with JSON parsing excluded:
-about 800 ms to write and 530 ms to read 6,000 records from memory. That
-is the model-tree cost on their machine. A head-to-head waits on the
-Kotlin runtime.
+Apollo Kotlin is far quicker than Apollo iOS on the same data, and its
+cache merge is within twice Baton's commit: the store is not where its
+time goes. The time goes to building the model tree from the bytes and
+normalizing it, 30 of its 44.6 ms on the Pixel 9, and to rebuilding that
+tree on every read, 25 ms there. Once the tree exists, a field is a
+property load, 2 ns against Baton's 43 ns lens read; a screen that reads
+every field of twenty rows pays Baton about 7 µs after a 1.2 ms check.
+Apollo Kotlin also keys the eleven locations whose `id` is null as one
+record, so it holds 889 records where Baton holds 899.
 
 Apollo iOS and Apollo Kotlin are the two maintained native clients, and
 they share that design. Each generates a model shaped like the operation,
@@ -400,18 +435,18 @@ query when any field that query read changes. A view cannot read that
 store on the frame it appears: Apollo iOS's read is `async`, and Apollo
 Kotlin's is documented to stay off the main thread.
 
-| | Baton 0.6 | Apollo iOS 2.4 | Apollo Kotlin 5.2 |
+| | Baton | Apollo iOS 2.4 | Apollo Kotlin 5.2 |
 |---|---|---|---|
 | The GraphQL | In the view, beside the body | A `.graphql` file, and you write the screen query | A `.graphql` file, merged across the module |
 | A child view receives | A lens: the fields it declared | A snapshot of the parent's dictionary | A nested model the parent can also read |
 | Warm cache, first frame | The data | Loading. The read is `async` | Loading. The read stays off the main thread |
 | One field changes | The view that read it | The whole query, rebuilt into a new tree | The whole query, rebuilt into a new tree |
-| Bytes into the store | 4.1 ms | 318 ms | Rebuilds models into records. About 800 ms on their bench |
-| Read it back | 28 ns a field, 0.54 µs a field in a view body | 228 ms to rebuild, then 296 ns a field | Rebuilds the operation into models. About 530 ms on their bench |
+| Bytes into the store | 4.1 ms on an M1 Pro (Swift); 6.4 ms on a Pixel 9 (Kotlin) | 318 ms | 44.6 ms on the same Pixel 9; 8.9 ms on the JVM |
+| Read it back | 28 ns a field, 0.54 µs a field in a view body (Swift); 43 ns a field (Kotlin, Pixel 9) | 228 ms to rebuild, then 296 ns a field | 25 ms to rebuild on the Pixel 9, then 2 ns a field |
 | Memory while scrolling | Plateaus. 42 pages stay near +5 MB | Keeps every record. No eviction | You call GC. TTL and trimming exist |
 | A list | Pages merged in the store, one update per page | One watcher per page, concatenated in the pager | Pages merged in the store |
 | An optimistic write | A typed response, rebased, 0.4 ms for the cycle | A separate mutable model you write into the cache | Opt-in. Watchers then re-run the query |
-| The UI binding | `@Fragment` and `@Query` | None. The tutorial copies into a view model | Experimental Compose helpers, last released 2024 |
+| The UI binding | `@Fragment` and `@Query`, in SwiftUI and in Compose | None. The tutorial copies into a view model | Experimental Compose helpers, last released 2024 |
 | On disk | System SQLite, one binary row a record | SQLite, one JSON string per record | Binary SQLite, with memory in front |
 
 The longer comparison, with the approaches, the smaller Swift clients, the
