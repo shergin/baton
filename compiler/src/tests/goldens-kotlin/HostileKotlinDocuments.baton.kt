@@ -31012,6 +31012,7 @@ class KotlinRequired : QueryOperation<KotlinRequired.Data> {
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun missingRequiredField(anchor: Anchor): String? = Data.missingRequiredField(anchor)
     }
 
     @Stable
@@ -31449,6 +31450,7 @@ class KotlinVariables(val `as`: String, val `break`: String, val `class`: String
         }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
+        override fun fieldErrors(anchor: Anchor): List<FieldError> = Data.fieldErrors(anchor)
     }
 
     @Stable
