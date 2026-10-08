@@ -1,58 +1,23 @@
+import baton.gradle.BatonGenerate
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
-}
-
-/** The repository's root, which holds `examples/` and `compiler/`. */
-val repository: File = rootDir.parentFile
-
-/** Where the compiler writes the code it generates for the sample's hosts. */
-val generated: Provider<Directory> = layout.buildDirectory.dir("generated/baton")
-
-/** The hosts: every Kotlin file of the sample, which the compiler scans for `@Query`, `@Fragment` and `@Mutation`. */
-val hosts: ConfigurableFileTree = fileTree("src/jvmMain/kotlin") { include("**/*.kt") }
-
-/**
- * The compiler: the path the `BATON_COMPILER` Gradle property or environment
- * variable names, else the checkout's release build, else its debug build,
- * as the runtime's build finds it.
- */
-fun batonCompiler(): File {
-    val named = providers.gradleProperty("BATON_COMPILER").orNull
-        ?: providers.environmentVariable("BATON_COMPILER").orNull
-    if (named != null && named !in setOf("local", "release")) {
-        val file = File(named)
-        if (!file.isFile) throw GradleException("BATON_COMPILER names $named, which is not a file; point it at a built batonc")
-        return file
-    }
-    return listOf("release", "debug")
-        .map { repository.resolve("compiler/target/$it/batonc") }
-        .firstOrNull { it.isFile }
-        ?: throw GradleException("no batonc to generate the sample's code with: build it with `cargo build` in compiler/, or set BATON_COMPILER to its path")
+    id("com.shergin.baton")
 }
 
 // What an app's build does: the compiler reads the hosts' documents and
 // writes their lenses and operations beside the sources it compiles.
-val generateBaton = tasks.register<Exec>("generateBaton") {
-    description = "Generates the Kotlin of the sample's documents with batonc."
-    inputs.files(hosts)
-    inputs.file("baton.json")
-    inputs.file(repository.resolve("examples/GitHubTriage/schema.docs.graphql"))
-    inputs.file(providers.provider { batonCompiler() })
-    outputs.dir(generated)
-    workingDir = projectDir
-    doFirst {
-        val sources = hosts.files.map { it.relativeTo(projectDir).path }.sorted()
-        commandLine(listOf(batonCompiler().path, "generate", "--language", "kotlin", "--config", "baton.json", "--out", generated.get().asFile.path) + sources)
-    }
+val generateBaton = tasks.named<BatonGenerate>("generateBaton") {
+    hosts.from(fileTree("src/jvmMain/kotlin") { include("**/*.kt") })
 }
 
 kotlin {
     jvm()
     sourceSets {
         jvmMain {
-            kotlin.srcDir(generated)
+            kotlin.srcDir(generateBaton.flatMap { it.outputDirectory })
             dependencies {
                 implementation(project(":baton"))
                 implementation(compose.desktop.currentOs)
@@ -72,8 +37,6 @@ kotlin {
         }
     }
 }
-
-tasks.named("compileKotlinJvm") { dependsOn(generateBaton) }
 
 compose.desktop {
     application {

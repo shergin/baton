@@ -1,12 +1,14 @@
+import baton.gradle.BatonGenerate
 import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.multiplatform.library)
     alias(libs.plugins.apollo)
+    id("com.shergin.baton")
 }
 
-/** The repository's root, which holds `spec/`, `compiler/` and the Swift comparison. */
+/** The repository's root, which holds `spec/` and the Swift comparison. */
 val repository: File = rootDir.parentFile
 
 /** The Fixture response Baton reads: the operation's own text, 686,254 bytes. */
@@ -15,48 +17,14 @@ val batonFixture: File = repository.resolve("spec/rickandmorty/characters-page-1
 /** The same data recorded for Apollo's query text, `__typename` on every object, 849,101 bytes. */
 val apolloFixture: File = repository.resolve("benchmarks/apollo-comparison/fixture-apollo.json")
 
-/**
- * The compiler: the path the `BATON_COMPILER` Gradle property or environment
- * variable names, else the checkout's release build, else its debug build,
- * as the runtime's build finds it.
- */
-fun batonCompiler(): File {
-    val named = providers.gradleProperty("BATON_COMPILER").orNull
-        ?: providers.environmentVariable("BATON_COMPILER").orNull
-    if (named != null && named !in setOf("local", "release")) {
-        val file = File(named)
-        if (!file.isFile) throw GradleException("BATON_COMPILER names $named, which is not a file; point it at a built batonc")
-        return file
-    }
-    return listOf("release", "debug")
-        .map { repository.resolve("compiler/target/$it/batonc") }
-        .firstOrNull { it.isFile }
-        ?: throw GradleException("no batonc to generate the comparison's code with: build it with `cargo build` in compiler/, or set BATON_COMPILER to its path")
-}
-
-/** Where batonc writes Baton's side: the plan and lenses of `spec/sources/Fixture.graphql`. */
-val generatedBaton: Provider<Directory> = layout.buildDirectory.dir("generated/baton")
-
 // Baton's side of the operation, generated as an app's build generates it,
-// with the configuration the runtime's ingest benchmark uses.
-val generateBaton = tasks.register<Exec>("generateBaton") {
+// with the configuration the runtime's ingest benchmark uses, from the
+// repository's root so the output is named as the runtime's is.
+val generateBaton = tasks.named<BatonGenerate>("generateBaton") {
     description = "Generates the Kotlin of spec/sources/Fixture.graphql with batonc."
-    val source = repository.resolve("spec/sources/Fixture.graphql")
-    inputs.file(source)
-    inputs.files(
-        repository.resolve("spec/tests/baton.json"),
-        repository.resolve("spec/tests/schema.graphql"),
-        repository.resolve("spec/tests/extensions.graphql"),
-    )
-    inputs.file(providers.provider { batonCompiler() })
-    outputs.dir(generatedBaton)
-    workingDir = repository
-    doFirst {
-        commandLine(
-            batonCompiler().path, "generate", "--language", "kotlin", "--config", "spec/tests/baton.json",
-            "--out", generatedBaton.get().asFile.path, source.relativeTo(repository).path,
-        )
-    }
+    workingDirectory.set(repository)
+    configuration.set(repository.resolve("spec/tests/baton.json"))
+    hosts.from(repository.resolve("spec/sources/Fixture.graphql"))
 }
 
 // Apollo's side, configured as its documentation says: the Gradle plugin
@@ -86,7 +54,7 @@ kotlin {
     sourceSets {
         all { languageSettings.optIn("baton.Generated") }
         commonMain {
-            kotlin.srcDir(generateBaton)
+            kotlin.srcDir(generateBaton.flatMap { it.outputDirectory })
             dependencies {
                 implementation(project(":baton"))
                 implementation(libs.apollo.runtime)

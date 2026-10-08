@@ -69,8 +69,9 @@ network.
   action; documents with a variable in `$$"""…"""` strings. The documents
   are the Swift sample's, but for the triage searches, which this sample
   leaves out, and the viewer query, which it adds.
-- The `generateBaton` task runs `batonc generate --language kotlin` over
-  the hosts into `build/generated/baton`, as the desktop sample's does.
+- The `generateBaton` task, the Gradle plugin's, runs `batonc generate
+  --language kotlin` over the hosts into `build/generated/baton`, as the
+  desktop sample's does.
 - `PhaseView.kt` is copied from the desktop sample; a module the samples
   share is a later step.
 - `src/jvmTest` holds `ScreenTests`, which run the screens in a

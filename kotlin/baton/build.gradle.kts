@@ -1,3 +1,4 @@
+import baton.gradle.BatonGenerate
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
@@ -6,88 +7,32 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.multiplatform.library)
+    id("com.shergin.baton")
 }
 
-/** The repository's root, which holds `spec/` and `compiler/`. */
+/** The repository's root, which holds `spec/`. */
 val repository: File = rootDir.parentFile
-
-/** Where the compiler writes the code it generates for the specification's sources. */
-val generatedSpec: Provider<Directory> = layout.buildDirectory.dir("generated/baton/spec")
-
-/**
- * The compiler that generates the specification's code: the path the
- * `BATON_COMPILER` Gradle property or environment variable names, else the
- * checkout's release build, else its debug build. The Swift package reads
- * `BATON_COMPILER=local` and `=release` as a choice of its own, which names
- * no file here, so either falls through to the checkout's builds.
- */
-fun batonCompiler(): File {
-    val named = providers.gradleProperty("BATON_COMPILER").orNull
-        ?: providers.environmentVariable("BATON_COMPILER").orNull
-    if (named != null && named !in setOf("local", "release")) {
-        val file = File(named)
-        if (!file.isFile) throw GradleException("BATON_COMPILER names $named, which is not a file; point it at a built batonc")
-        return file
-    }
-    return listOf("release", "debug")
-        .map { repository.resolve("compiler/target/$it/batonc") }
-        .firstOrNull { it.isFile }
-        ?: throw GradleException(
-            "no batonc to generate the specification's code with: build it with `cargo build` in compiler/, " +
-                "or set BATON_COMPILER to its path",
-        )
-}
 
 // The specification's sources, generated as the Kotlin target writes them,
 // are the test source set's lenses and plans: the harness runs the
-// manifest's cases through the code an app would compile.
-val generateSpecKotlin = tasks.register<Exec>("generateSpecKotlin") {
+// manifest's cases through the code an app would compile. The compiler runs
+// from the repository's root, so an output is named `spec_sources_<Name>.baton.kt`.
+val generateSpecKotlin = tasks.register<BatonGenerate>("generateSpecKotlin") {
     description = "Generates the Kotlin of spec/sources with batonc."
-    val sources = repository.resolve("spec/sources")
-    inputs.dir(sources)
-    inputs.files(
-        repository.resolve("spec/tests/baton.json"),
-        repository.resolve("spec/tests/schema.graphql"),
-        repository.resolve("spec/tests/extensions.graphql"),
-    )
-    // The compiler is an input too, found when the task runs, so a rebuilt
-    // compiler generates again.
-    inputs.file(providers.provider { batonCompiler() })
-    outputs.dir(generatedSpec)
-    workingDir = repository
-    doFirst {
-        val files = sources.listFiles { file -> file.extension == "graphql" }.orEmpty().map { it.relativeTo(repository).path }.sorted()
-        commandLine(
-            listOf(batonCompiler().path, "generate", "--language", "kotlin", "--config", "spec/tests/baton.json", "--out", generatedSpec.get().asFile.path) + files,
-        )
-    }
+    workingDirectory.set(repository)
+    configuration.set(repository.resolve("spec/tests/baton.json"))
+    hosts.from(fileTree(repository.resolve("spec/sources")) { include("*.graphql") })
 }
-
-/** Where the compiler writes the benchmark's plan, the Fixture query's alone. */
-val generatedBenchmark: Provider<Directory> = layout.buildDirectory.dir("generated/baton/benchmark")
 
 // The device tests' one operation, `spec/sources/Fixture.graphql`, generated
 // as the specification's sources are: the ingest benchmark and the image's
 // tests on Android run through the plan an app would compile, and need none
 // of the converters the other sources name.
-val generateBenchmarkKotlin = tasks.register<Exec>("generateBenchmarkKotlin") {
+val generateBenchmarkKotlin = tasks.register<BatonGenerate>("generateBenchmarkKotlin") {
     description = "Generates the Kotlin of spec/sources/Fixture.graphql with batonc."
-    val source = repository.resolve("spec/sources/Fixture.graphql")
-    inputs.file(source)
-    inputs.files(
-        repository.resolve("spec/tests/baton.json"),
-        repository.resolve("spec/tests/schema.graphql"),
-        repository.resolve("spec/tests/extensions.graphql"),
-    )
-    inputs.file(providers.provider { batonCompiler() })
-    outputs.dir(generatedBenchmark)
-    workingDir = repository
-    doFirst {
-        commandLine(
-            batonCompiler().path, "generate", "--language", "kotlin", "--config", "spec/tests/baton.json",
-            "--out", generatedBenchmark.get().asFile.path, source.relativeTo(repository).path,
-        )
-    }
+    workingDirectory.set(repository)
+    configuration.set(repository.resolve("spec/tests/baton.json"))
+    hosts.from(repository.resolve("spec/sources/Fixture.graphql"))
 }
 
 kotlin {
@@ -148,7 +93,7 @@ kotlin {
             implementation(libs.coroutines.test)
         }
         getByName("androidDeviceTest") {
-            kotlin.srcDir(generatedBenchmark)
+            kotlin.srcDir(generateBenchmarkKotlin.flatMap { it.outputDirectory })
             // The ingest benchmark, which `benchmarks/android` runs in a
             // process that is not debuggable; here it runs in the device
             // test's, which is.
@@ -164,7 +109,7 @@ kotlin {
             }
         }
         jvmTest {
-            kotlin.srcDir(generatedSpec)
+            kotlin.srcDir(generateSpecKotlin.flatMap { it.outputDirectory })
             dependencies {
                 // The harness walks a `reads` row over a generated lens by its
                 // properties' Kotlin names.
@@ -181,9 +126,6 @@ kotlin {
         }
     }
 }
-
-tasks.named("compileTestKotlinJvm") { dependsOn(generateSpecKotlin) }
-tasks.named("compileAndroidDeviceTest") { dependsOn(generateBenchmarkKotlin) }
 
 // The runtime has no Compose resources. The Compose plugin, applied for the
 // desktop renderer the JVM tests compose on, would copy the device tests'

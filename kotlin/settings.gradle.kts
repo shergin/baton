@@ -1,4 +1,7 @@
 pluginManagement {
+    // The Gradle plugin, built from the checkout and applied to the modules
+    // that generate code, as an adopter applies it from Maven Central.
+    includeBuild("baton-gradle")
     repositories {
         gradlePluginPortal()
         mavenCentral()

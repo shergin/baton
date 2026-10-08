@@ -14,6 +14,11 @@ API is designed in the private notes before it is built.
 ## Layout
 
 ```
+baton-gradle/     the Gradle plugin, com.shergin.baton: BatonGenerate, the command with its inputs and outputs
+                  declared, and the compiler from BATON_COMPILER or the release's bundle; an included build
+release.properties
+                  the release the artifacts and the plugin are versioned with and its bundle's checksum,
+                  stamped by the release workflow
 baton/            the runtime: commonMain; jvmSharedMain, what the JVM and Android share; jvmMain and
                   androidMain; jvmTest runs the spec, androidDeviceTest the image and the ingest benchmark
 baton-testing/    the transports an app's tests run over: scripted, recorded, silent (JVM)
@@ -74,6 +79,10 @@ names, as a Gradle property or in the environment, else
 (cd ../compiler && cargo build --release)
 JAVA_HOME=$(/usr/libexec/java_home -v 21) gradle :baton:build
 ```
+
+The modules generate through the Gradle plugin, built from `baton-gradle`
+as an included build; the root build points it at the checkout's compiler,
+where an adopter's build would fetch the release's bundle.
 
 The Android targets need the Android SDK: `ANDROID_HOME`, or
 `sdk.dir=<path>` in `kotlin/local.properties`, which git ignores. The

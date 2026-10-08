@@ -1,36 +1,13 @@
+import baton.gradle.BatonGenerate
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.android.application)
+    id("com.shergin.baton")
 }
 
-/** The repository's root, which holds `spec/` and `compiler/`. */
+/** The repository's root, which holds `spec/`. */
 val repository: File = rootDir.parentFile
-
-/**
- * The compiler: the path the `BATON_COMPILER` Gradle property or environment
- * variable names, else the checkout's release build, else its debug build,
- * as the runtime's build finds it.
- */
-fun batonCompiler(): File {
-    val named = providers.gradleProperty("BATON_COMPILER").orNull
-        ?: providers.environmentVariable("BATON_COMPILER").orNull
-    if (named != null && named !in setOf("local", "release")) {
-        val file = File(named)
-        if (!file.isFile) throw GradleException("BATON_COMPILER names $named, which is not a file; point it at a built batonc")
-        return file
-    }
-    return listOf("release", "debug")
-        .map { repository.resolve("compiler/target/$it/batonc") }
-        .firstOrNull { it.isFile }
-        ?: throw GradleException("no batonc to generate the benchmark's code with: build it with `cargo build` in compiler/, or set BATON_COMPILER to its path")
-}
-
-/** A `batonc generate` run, with the directory it writes as a property the Android Gradle plugin can wire. */
-abstract class GenerateKotlin : Exec() {
-    @get:OutputDirectory
-    abstract val outputDirectory: DirectoryProperty
-}
 
 /** A copy of one file into a directory of its own, for a source set that takes directories. */
 abstract class CopyResource : DefaultTask() {
@@ -48,24 +25,13 @@ abstract class CopyResource : DefaultTask() {
 }
 
 // The benchmark's one operation, `spec/sources/Fixture.graphql`, generated as
-// the runtime's device tests generate it.
-val generateBenchmarkKotlin = tasks.register<GenerateKotlin>("generateBenchmarkKotlin") {
+// the runtime's device tests generate it: from the repository's root, so the
+// output is named as theirs is.
+val generateBenchmarkKotlin = tasks.register<BatonGenerate>("generateBenchmarkKotlin") {
     description = "Generates the Kotlin of spec/sources/Fixture.graphql with batonc."
-    val source = repository.resolve("spec/sources/Fixture.graphql")
-    inputs.file(source)
-    inputs.files(
-        repository.resolve("spec/tests/baton.json"),
-        repository.resolve("spec/tests/schema.graphql"),
-        repository.resolve("spec/tests/extensions.graphql"),
-    )
-    inputs.file(providers.provider { batonCompiler() })
-    workingDir = repository
-    doFirst {
-        commandLine(
-            batonCompiler().path, "generate", "--language", "kotlin", "--config", "spec/tests/baton.json",
-            "--out", outputDirectory.get().asFile.path, source.relativeTo(repository).path,
-        )
-    }
+    workingDirectory.set(repository)
+    configuration.set(repository.resolve("spec/tests/baton.json"))
+    hosts.from(repository.resolve("spec/sources/Fixture.graphql"))
 }
 
 // The Fixture response, which the benchmark reads as a resource.
@@ -102,7 +68,7 @@ android {
 androidComponents {
     onVariants { variant ->
         val sources = variant.androidTest?.sources ?: return@onVariants
-        sources.kotlin?.addGeneratedSourceDirectory(generateBenchmarkKotlin, GenerateKotlin::outputDirectory)
+        sources.kotlin?.addGeneratedSourceDirectory(generateBenchmarkKotlin, BatonGenerate::outputDirectory)
         sources.resources?.addGeneratedSourceDirectory(copyFixture, CopyResource::outputDirectory)
     }
 }

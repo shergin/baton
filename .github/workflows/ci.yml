@@ -96,10 +96,11 @@ jobs:
         working-directory: bazel/examples/rickandmorty
 
   # The Kotlin runtime: the common module built and tested on the JVM, the
-  # development target, and the Kotlin emitter's goldens compiled against it.
-  # The tests run the specification through the code the compiler generates
-  # from it, so the compiler is built from the same checkout first. On
-  # Linux, since nothing in it is Apple's.
+  # development target, the Kotlin emitter's goldens compiled against it,
+  # and the Gradle plugin built and tested. The tests run the specification
+  # through the code the compiler generates from it, so the compiler is
+  # built from the same checkout first. On Linux, since nothing in it is
+  # Apple's.
   kotlin:
     runs-on: ubuntu-latest
     steps:
@@ -125,7 +126,7 @@ jobs:
       # The device tests and the ingest benchmark need a device and do not
       # run here; the benchmark's APKs build.
       - run: >
-          gradle --no-daemon :baton:build :baton-testing:build :baton-inspector:build
+          gradle --no-daemon :baton-gradle:build :baton:build :baton-testing:build :baton-inspector:build
           :goldens:compileKotlinJvm :samples:shared:build :samples:desktop:build
           :samples:github:build :samples:android:assembleDebug
           :benchmarks:android:build :benchmarks:android:assembleReleaseAndroidTest

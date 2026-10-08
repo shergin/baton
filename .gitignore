@@ -23,7 +23,7 @@ DerivedData/
 /compiler/dist/
 
 # Kotlin
-/kotlin/.gradle/
-/kotlin/.kotlin/
+/kotlin/**/.gradle/
+/kotlin/**/.kotlin/
 /kotlin/**/build/
 /kotlin/local.properties

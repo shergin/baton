@@ -16,9 +16,10 @@ detail fetches.
   composable that renders a lens, `@Query` on the one that resolves an
   operation value with `rememberQuery`, documents with a variable in
   `$$"""…"""` strings.
-- The shared module's `generateBaton` task runs `batonc generate --language
-  kotlin` over the hosts into its `build/generated/baton`, which it
-  compiles beside its sources, as an app's build would.
+- The shared module's `generateBaton` task, the Gradle plugin's, runs
+  `batonc generate --language kotlin` over the hosts into its
+  `build/generated/baton`, which it compiles beside its sources, as an
+  app's build would.
 - `Main.kt` makes the environment in the composition, over a store whose
   image lives in the user's cache directory under the schema's digest
   (`Persistence.named("RickAndMorty", version = Types.schemaDigest)`), and
