@@ -38,13 +38,13 @@ data class TestAssetValue_asset(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.requiredString(Slots.Asset.uuid),
-        anchor.string(Slots.Asset.name),
-        anchor.mapped(Slots.Asset.price, baton.scalars.Decimals),
-        anchor.mapped(Slots.Asset.listedAt, baton.scalars.DateTimes),
-        anchor.mapped(Slots.Asset.page, baton.scalars.Urls),
-        anchor.nullableMappedList(Slots.Asset.prices, baton.scalars.Decimals),
-        anchor.caught(Slots.Asset.size) { it.int(Slots.Asset.size) },
+        `read-uuid`(anchor),
+        `read-name`(anchor),
+        `read-price`(anchor),
+        `read-listedAt`(anchor),
+        `read-page`(anchor),
+        `read-prices`(anchor),
+        `read-caughtSize`(anchor),
     )
 
     companion object {
@@ -69,6 +69,13 @@ data class TestAssetValue_asset(
             val errors = fieldErrors(anchor)
             return if (errors.isEmpty()) Result.success(TestAssetValue_asset(anchor)) else Result.failure(FieldErrors(errors))
         }
+        private fun `read-uuid`(anchor: Anchor): String = anchor.requiredString(Slots.Asset.uuid)
+        private fun `read-name`(anchor: Anchor): String? = anchor.string(Slots.Asset.name)
+        private fun `read-price`(anchor: Anchor): java.math.BigDecimal? = anchor.mapped(Slots.Asset.price, baton.scalars.Decimals)
+        private fun `read-listedAt`(anchor: Anchor): java.time.Instant? = anchor.mapped(Slots.Asset.listedAt, baton.scalars.DateTimes)
+        private fun `read-page`(anchor: Anchor): java.net.URI? = anchor.mapped(Slots.Asset.page, baton.scalars.Urls)
+        private fun `read-prices`(anchor: Anchor): List<java.math.BigDecimal?>? = anchor.nullableMappedList(Slots.Asset.prices, baton.scalars.Decimals)
+        private fun `read-caughtSize`(anchor: Anchor): Result<Int?> = anchor.caught(Slots.Asset.size) { it.int(Slots.Asset.size) }
     }
 }
 
@@ -92,11 +99,11 @@ data class TestCharacterValue_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.string(Slots.Character.id),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.status),
-        anchor.linked(Slots.Character.origin)?.let { Origin(it) },
-        anchor.requiredValues(Slots.Character.episode) { Episode(it) },
+        `read-id`(anchor),
+        `read-name`(anchor),
+        `read-status`(anchor),
+        `read-origin`(anchor),
+        `read-episode`(anchor),
     )
 
     companion object {
@@ -119,6 +126,11 @@ data class TestCharacterValue_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.id) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.status) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.episode)
+        private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Character.id)
+        private fun `read-name`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-status`(anchor: Anchor): String? = anchor.string(Slots.Character.status)
+        private fun `read-origin`(anchor: Anchor): Origin? = anchor.linked(Slots.Character.origin)?.let { Origin(it) }
+        private fun `read-episode`(anchor: Anchor): List<Episode> = anchor.requiredValues(Slots.Character.episode) { Episode(it) }
     }
 
     data class Origin(
@@ -127,7 +139,7 @@ data class TestCharacterValue_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            TestOriginValue_location(anchor.entering()),
+            `read-testOriginValue`(anchor),
         )
 
         companion object {
@@ -144,6 +156,7 @@ data class TestCharacterValue_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(TestCharacterValue_character.Origin(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-testOriginValue`(anchor: Anchor): TestOriginValue_location = TestOriginValue_location(anchor.entering())
         }
     }
 
@@ -154,8 +167,8 @@ data class TestCharacterValue_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
-            anchor.string(Slots.Episode.name),
+            `read-id`(anchor),
+            `read-name`(anchor),
         )
 
         companion object {
@@ -173,6 +186,8 @@ data class TestCharacterValue_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(TestCharacterValue_character.Episode(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
+            private fun `read-name`(anchor: Anchor): String? = anchor.string(Slots.Episode.name)
         }
     }
 }
@@ -184,7 +199,7 @@ data class TestNamedValue_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.string(Slots.Character.name),
+        `read-name`(anchor),
     )
 
     companion object {
@@ -201,6 +216,7 @@ data class TestNamedValue_character(
             val errors = fieldErrors(anchor)
             return if (errors.isEmpty()) Result.success(TestNamedValue_character(anchor)) else Result.failure(FieldErrors(errors))
         }
+        private fun `read-name`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
     }
 }
 
@@ -211,7 +227,7 @@ data class TestNotesValue_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        Notes(anchor.requiredLinked(anchor.owner.slot(Slots.Character.notes_041c11), Types.NoteConnection)),
+        `read-notes`(anchor),
     )
 
     companion object {
@@ -228,6 +244,7 @@ data class TestNotesValue_character(
             val errors = fieldErrors(anchor)
             return if (errors.isEmpty()) Result.success(TestNotesValue_character(anchor)) else Result.failure(FieldErrors(errors))
         }
+        private fun `read-notes`(anchor: Anchor): Notes = Notes(anchor.requiredLinked(anchor.owner.slot(Slots.Character.notes_041c11), Types.NoteConnection))
     }
 
     data class Notes(
@@ -236,7 +253,7 @@ data class TestNotesValue_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.requiredInt(Slots.NoteConnection.totalCount),
+            `read-totalCount`(anchor),
         )
 
         companion object {
@@ -253,6 +270,7 @@ data class TestNotesValue_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(TestNotesValue_character.Notes(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-totalCount`(anchor: Anchor): Int = anchor.requiredInt(Slots.NoteConnection.totalCount)
         }
     }
 }
@@ -266,9 +284,9 @@ data class TestOriginValue_location(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.string(Slots.Location.id),
-        anchor.string(Slots.Location.name),
-        anchor.string(Slots.Location.dimension),
+        `read-id`(anchor),
+        `read-name`(anchor),
+        `read-dimension`(anchor),
     )
 
     companion object {
@@ -287,6 +305,9 @@ data class TestOriginValue_location(
             val errors = fieldErrors(anchor)
             return if (errors.isEmpty()) Result.success(TestOriginValue_location(anchor)) else Result.failure(FieldErrors(errors))
         }
+        private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
+        private fun `read-name`(anchor: Anchor): String? = anchor.string(Slots.Location.name)
+        private fun `read-dimension`(anchor: Anchor): String? = anchor.string(Slots.Location.dimension)
     }
 }
 
@@ -298,9 +319,14 @@ data class TestResultValue_searchResult(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        if (anchor.record.type == Types.Character) AsCharacter(anchor) else null,
-        if (anchor.record.type == Types.Location) AsLocation(anchor) else null,
+        `read-asCharacter`(anchor),
+        `read-asLocation`(anchor),
     )
+
+    companion object {
+        private fun `read-asCharacter`(anchor: Anchor): AsCharacter? = if (anchor.record.type == Types.Character) AsCharacter(anchor) else null
+        private fun `read-asLocation`(anchor: Anchor): AsLocation? = if (anchor.record.type == Types.Location) AsLocation(anchor) else null
+    }
 
     data class AsCharacter(
         val name: String?,
@@ -309,9 +335,14 @@ data class TestResultValue_searchResult(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Character.name),
-            anchor.string(Slots.Character.status),
+            `read-name`(anchor),
+            `read-status`(anchor),
         )
+
+        companion object {
+            private fun `read-name`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+            private fun `read-status`(anchor: Anchor): String? = anchor.string(Slots.Character.status)
+        }
     }
 
     data class AsLocation(
@@ -321,9 +352,14 @@ data class TestResultValue_searchResult(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.name),
-            anchor.string(Slots.Location.dimension),
+            `read-name`(anchor),
+            `read-dimension`(anchor),
         )
+
+        companion object {
+            private fun `read-name`(anchor: Anchor): String? = anchor.string(Slots.Location.name)
+            private fun `read-dimension`(anchor: Anchor): String? = anchor.string(Slots.Location.dimension)
+        }
     }
 }
 
@@ -337,19 +373,10 @@ data class TestScanningValue_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.string(Slots.Character.id),
-        run {
-            val bound = anchor.binding(Sites.TestScanningValue_character_testNotesValue) { mapOf("count" to Variable.Int(1)) }
-            return@run TestNotesValue_character(bound.entering())
-        },
-        run {
-            if (!anchor.owner.selects(Guards.withName_true)) return@run null
-            return@run TestNamedValue_character(anchor.entering())
-        },
-        run {
-            val errors = TestCharacterValue_character.fieldErrors(anchor)
-            return@run if (errors.isEmpty()) Result.success(TestCharacterValue_character(anchor.entering())) else Result.failure(FieldErrors(errors))
-        },
+        `read-id`(anchor),
+        `read-testNotesValue`(anchor),
+        `read-named`(anchor),
+        `read-caughtCharacter`(anchor),
     )
 
     companion object {
@@ -370,6 +397,19 @@ data class TestScanningValue_character(
         fun caught(anchor: Anchor): Result<TestScanningValue_character> {
             val errors = fieldErrors(anchor)
             return if (errors.isEmpty()) Result.success(TestScanningValue_character(anchor)) else Result.failure(FieldErrors(errors))
+        }
+        private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Character.id)
+        private fun `read-testNotesValue`(anchor: Anchor): TestNotesValue_character {
+            val bound = anchor.binding(Sites.TestScanningValue_character_testNotesValue) { mapOf("count" to Variable.Int(1)) }
+            return TestNotesValue_character(bound.entering())
+        }
+        private fun `read-named`(anchor: Anchor): TestNamedValue_character? {
+            if (!anchor.owner.selects(Guards.withName_true)) return null
+            return TestNamedValue_character(anchor.entering())
+        }
+        private fun `read-caughtCharacter`(anchor: Anchor): Result<TestCharacterValue_character> {
+            val errors = TestCharacterValue_character.fieldErrors(anchor)
+            return if (errors.isEmpty()) Result.success(TestCharacterValue_character(anchor.entering())) else Result.failure(FieldErrors(errors))
         }
     }
 }

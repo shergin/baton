@@ -1075,159 +1075,159 @@ data class HostileInlineLinks_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.linked(Slots.Character.origin)?.let { Type2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Protocol2(it) },
-        anchor.linked(Slots.Character.origin)?.let { AnyLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { Self2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Self3(it) },
-        anchor.linked(Slots.Character.origin)?.let { Init(it) },
-        anchor.linked(Slots.Character.origin)?.let { Deinit(it) },
-        anchor.linked(Slots.Character.origin)?.let { Subscript(it) },
-        anchor.linked(Slots.Character.origin)?.let { Class(it) },
-        anchor.linked(Slots.Character.origin)?.let { Struct(it) },
-        anchor.linked(Slots.Character.origin)?.let { Enum(it) },
-        anchor.linked(Slots.Character.origin)?.let { Func(it) },
-        anchor.linked(Slots.Character.origin)?.let { Var(it) },
-        anchor.linked(Slots.Character.origin)?.let { Let(it) },
-        anchor.linked(Slots.Character.origin)?.let { Import(it) },
-        anchor.linked(Slots.Character.origin)?.let { Extension(it) },
-        anchor.linked(Slots.Character.origin)?.let { Operator(it) },
-        anchor.linked(Slots.Character.origin)?.let { Static(it) },
-        anchor.linked(Slots.Character.origin)?.let { Default(it) },
-        anchor.linked(Slots.Character.origin)?.let { Case(it) },
-        anchor.linked(Slots.Character.origin)?.let { Switch(it) },
-        anchor.linked(Slots.Character.origin)?.let { If(it) },
-        anchor.linked(Slots.Character.origin)?.let { Else(it) },
-        anchor.linked(Slots.Character.origin)?.let { For(it) },
-        anchor.linked(Slots.Character.origin)?.let { In(it) },
-        anchor.linked(Slots.Character.origin)?.let { While(it) },
-        anchor.linked(Slots.Character.origin)?.let { Repeat(it) },
-        anchor.linked(Slots.Character.origin)?.let { Return(it) },
-        anchor.linked(Slots.Character.origin)?.let { Break(it) },
-        anchor.linked(Slots.Character.origin)?.let { Continue(it) },
-        anchor.linked(Slots.Character.origin)?.let { Where(it) },
-        anchor.linked(Slots.Character.origin)?.let { Is(it) },
-        anchor.linked(Slots.Character.origin)?.let { As(it) },
-        anchor.linked(Slots.Character.origin)?.let { Try(it) },
-        anchor.linked(Slots.Character.origin)?.let { Throw(it) },
-        anchor.linked(Slots.Character.origin)?.let { Throws(it) },
-        anchor.linked(Slots.Character.origin)?.let { Guard(it) },
-        anchor.linked(Slots.Character.origin)?.let { Defer(it) },
-        anchor.linked(Slots.Character.origin)?.let { Do(it) },
-        anchor.linked(Slots.Character.origin)?.let { Catch(it) },
-        anchor.linked(Slots.Character.origin)?.let { True(it) },
-        anchor.linked(Slots.Character.origin)?.let { False(it) },
-        anchor.linked(Slots.Character.origin)?.let { Nil(it) },
-        anchor.linked(Slots.Character.origin)?.let { Super(it) },
-        anchor.linked(Slots.Character.origin)?.let { Internal(it) },
-        anchor.linked(Slots.Character.origin)?.let { Private(it) },
-        anchor.linked(Slots.Character.origin)?.let { Public(it) },
-        anchor.linked(Slots.Character.origin)?.let { Fileprivate(it) },
-        anchor.linked(Slots.Character.origin)?.let { Open(it) },
-        anchor.linked(Slots.Character.origin)?.let { Inout(it) },
-        anchor.linked(Slots.Character.origin)?.let { Typealias(it) },
-        anchor.linked(Slots.Character.origin)?.let { Associatedtype(it) },
-        anchor.linked(Slots.Character.origin)?.let { Protocol3(it) },
-        anchor.linked(Slots.Character.origin)?.let { Some(it) },
-        anchor.linked(Slots.Character.origin)?.let { AnyLens2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Rethrows(it) },
-        anchor.linked(Slots.Character.origin)?.let { Fallthrough(it) },
-        anchor.linked(Slots.Character.origin)?.let { Precedencegroup(it) },
-        anchor.linked(Slots.Character.origin)?.let { _2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Async(it) },
-        anchor.linked(Slots.Character.origin)?.let { Await(it) },
-        anchor.linked(Slots.Character.origin)?.let { Borrowing(it) },
-        anchor.linked(Slots.Character.origin)?.let { Consume(it) },
-        anchor.linked(Slots.Character.origin)?.let { Consuming(it) },
-        anchor.linked(Slots.Character.origin)?.let { Copy(it) },
-        anchor.linked(Slots.Character.origin)?.let { Discard(it) },
-        anchor.linked(Slots.Character.origin)?.let { Each(it) },
-        anchor.linked(Slots.Character.origin)?.let { Isolated(it) },
-        anchor.linked(Slots.Character.origin)?.let { Sending(it) },
-        anchor.linked(Slots.Character.origin)?.let { Then(it) },
-        anchor.linked(Slots.Character.origin)?.let { Unsafe(it) },
-        anchor.linked(Slots.Character.origin)?.let { Satisfied(it) },
-        anchor.linked(Slots.Character.origin)?.let { MissingRequiredField(it) },
-        anchor.linked(Slots.Character.origin)?.let { FieldErrorsLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { IsPresent(it) },
-        anchor.linked(Slots.Character.origin)?.let { Throwing(it) },
-        anchor.linked(Slots.Character.origin)?.let { Caught(it) },
-        anchor.linked(Slots.Character.origin)?.let { Refetchable(it) },
-        anchor.linked(Slots.Character.origin)?.let { RefetchLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { Connection(it) },
-        anchor.linked(Slots.Character.origin)?.let { Nodes(it) },
-        anchor.linked(Slots.Character.origin)?.let { HasNext(it) },
-        anchor.linked(Slots.Character.origin)?.let { HasPrevious(it) },
-        anchor.linked(Slots.Character.origin)?.let { IsLoadingNext(it) },
-        anchor.linked(Slots.Character.origin)?.let { IsLoadingPrevious(it) },
-        anchor.linked(Slots.Character.origin)?.let { ConnectionID(it) },
-        anchor.linked(Slots.Character.origin)?.let { LoadNext(it) },
-        anchor.linked(Slots.Character.origin)?.let { LoadPrevious(it) },
-        anchor.linked(Slots.Character.origin)?.let { Bound(it) },
-        anchor.linked(Slots.Character.origin)?.let { Errors(it) },
-        anchor.linked(Slots.Character.origin)?.let { Child(it) },
-        anchor.linked(Slots.Character.origin)?.let { Missing(it) },
-        anchor.linked(Slots.Character.origin)?.let { Count(it) },
-        anchor.linked(Slots.Character.origin)?.let { Fields(it) },
-        anchor.linked(Slots.Character.origin)?.let { Lhs(it) },
-        anchor.linked(Slots.Character.origin)?.let { Rhs(it) },
-        anchor.linked(Slots.Character.origin)?.let { Hasher2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Selection0(it) },
-        anchor.linked(Slots.Character.origin)?.let { Selection(it) },
-        anchor.linked(Slots.Character.origin)?.let { Optimistic(it) },
-        anchor.linked(Slots.Character.origin)?.let { SelfValue(it) },
-        anchor.linked(Slots.Character.origin)?.let { Values(it) },
-        anchor.linked(Slots.Character.origin)?.let { FragmentLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { Spread2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Owner2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Query2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Operation2(it) },
-        anchor.linked(Slots.Character.origin)?.let { RefetchQuery2(it) },
-        anchor.linked(Slots.Character.origin)?.let { VariablesLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { Resolution(it) },
-        anchor.linked(Slots.Character.origin)?.let { Name(it) },
-        anchor.linked(Slots.Character.origin)?.let { Document(it) },
-        anchor.linked(Slots.Character.origin)?.let { Text(it) },
-        anchor.linked(Slots.Character.origin)?.let { Plan(it) },
-        anchor.linked(Slots.Character.origin)?.let { ErrorBehavior(it) },
-        anchor.linked(Slots.Character.origin)?.let { ThrowsOnFieldError(it) },
-        anchor.linked(Slots.Character.origin)?.let { Bubbles(it) },
-        anchor.linked(Slots.Character.origin)?.let { HasDeferred(it) },
-        anchor.linked(Slots.Character.origin)?.let { CacheExpiration(it) },
-        anchor.linked(Slots.Character.origin)?.let { Data2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Action2(it) },
-        anchor.linked(Slots.Character.origin)?.let { OptimisticResponse2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Hash(it) },
-        anchor.linked(Slots.Character.origin)?.let { Commit(it) },
-        anchor.linked(Slots.Character.origin)?.let { CallAsFunction(it) },
-        anchor.linked(Slots.Character.origin)?.let { Op2(it) },
-        anchor.linked(Slots.Character.origin)?.let { VariableLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { Payload(it) },
-        anchor.linked(Slots.Character.origin)?.let { HashValue(it) },
-        anchor.linked(Slots.Character.origin)?.let { Phase(it) },
-        anchor.linked(Slots.Character.origin)?.let { IsRefreshing(it) },
-        anchor.linked(Slots.Character.origin)?.let { IsStale(it) },
-        anchor.linked(Slots.Character.origin)?.let { Retry(it) },
-        anchor.linked(Slots.Character.origin)?.let { Subscription(it) },
-        anchor.linked(Slots.Character.origin)?.let { TypesLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { SitesLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { GuardsLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { AbstractSlotsLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { SchemaDigest(it) },
-        anchor.linked(Slots.Character.origin)?.let { Format(it) },
-        anchor.linked(Slots.Character.origin)?.let { Transient(it) },
-        anchor.linked(Slots.Character.origin)?.let { Baton2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Swift2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Set2(it) },
-        anchor.linked(Slots.Character.origin)?.let { ResultLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { Optional2(it) },
-        anchor.linked(Slots.Character.origin)?.let { StringLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { IntLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { DoubleLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { Bool2(it) },
-        anchor.linked(Slots.Character.origin)?.let { MainActor2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Hasher3(it) },
-        anchor.linked(Slots.Character.origin)?.let { Sendable2(it) },
+        `read-Type`(anchor),
+        `read-Protocol`(anchor),
+        `read-Any`(anchor),
+        `read-self`(anchor),
+        `read-Self`(anchor),
+        `read-init`(anchor),
+        `read-deinit`(anchor),
+        `read-subscript`(anchor),
+        `read-class`(anchor),
+        `read-struct`(anchor),
+        `read-enum`(anchor),
+        `read-func`(anchor),
+        `read-var`(anchor),
+        `read-let`(anchor),
+        `read-import`(anchor),
+        `read-extension`(anchor),
+        `read-operator`(anchor),
+        `read-static`(anchor),
+        `read-default`(anchor),
+        `read-case`(anchor),
+        `read-switch`(anchor),
+        `read-if`(anchor),
+        `read-else`(anchor),
+        `read-for`(anchor),
+        `read-in`(anchor),
+        `read-while`(anchor),
+        `read-repeat`(anchor),
+        `read-return`(anchor),
+        `read-break`(anchor),
+        `read-continue`(anchor),
+        `read-where`(anchor),
+        `read-is`(anchor),
+        `read-as`(anchor),
+        `read-try`(anchor),
+        `read-throw`(anchor),
+        `read-throws`(anchor),
+        `read-guard`(anchor),
+        `read-defer`(anchor),
+        `read-do`(anchor),
+        `read-catch`(anchor),
+        `read-true`(anchor),
+        `read-false`(anchor),
+        `read-nil`(anchor),
+        `read-super`(anchor),
+        `read-internal`(anchor),
+        `read-private`(anchor),
+        `read-public`(anchor),
+        `read-fileprivate`(anchor),
+        `read-open`(anchor),
+        `read-inout`(anchor),
+        `read-typealias`(anchor),
+        `read-associatedtype`(anchor),
+        `read-protocol`(anchor),
+        `read-some`(anchor),
+        `read-any`(anchor),
+        `read-rethrows`(anchor),
+        `read-fallthrough`(anchor),
+        `read-precedencegroup`(anchor),
+        `read-_`(anchor),
+        `read-async`(anchor),
+        `read-await`(anchor),
+        `read-borrowing`(anchor),
+        `read-consume`(anchor),
+        `read-consuming`(anchor),
+        `read-copy`(anchor),
+        `read-discard`(anchor),
+        `read-each`(anchor),
+        `read-isolated`(anchor),
+        `read-sending`(anchor),
+        `read-then`(anchor),
+        `read-unsafe`(anchor),
+        `read-satisfied`(anchor),
+        `read-missingRequiredField`(anchor),
+        `read-fieldErrors`(anchor),
+        `read-isPresent`(anchor),
+        `read-throwing`(anchor),
+        `read-caught`(anchor),
+        `read-refetchable`(anchor),
+        `read-refetch`(anchor),
+        `read-connection`(anchor),
+        `read-nodes`(anchor),
+        `read-hasNext`(anchor),
+        `read-hasPrevious`(anchor),
+        `read-isLoadingNext`(anchor),
+        `read-isLoadingPrevious`(anchor),
+        `read-connectionID`(anchor),
+        `read-loadNext`(anchor),
+        `read-loadPrevious`(anchor),
+        `read-bound`(anchor),
+        `read-errors`(anchor),
+        `read-child`(anchor),
+        `read-missing`(anchor),
+        `read-count`(anchor),
+        `read-fields`(anchor),
+        `read-lhs`(anchor),
+        `read-rhs`(anchor),
+        `read-hasher`(anchor),
+        `read-selection0`(anchor),
+        `read-selection`(anchor),
+        `read-optimistic`(anchor),
+        `read-selfValue`(anchor),
+        `read-values`(anchor),
+        `read-Fragment`(anchor),
+        `read-Spread`(anchor),
+        `read-Owner`(anchor),
+        `read-Query`(anchor),
+        `read-Operation`(anchor),
+        `read-RefetchQuery`(anchor),
+        `read-variables`(anchor),
+        `read-resolution`(anchor),
+        `read-name`(anchor),
+        `read-document`(anchor),
+        `read-text`(anchor),
+        `read-plan`(anchor),
+        `read-errorBehavior`(anchor),
+        `read-throwsOnFieldError`(anchor),
+        `read-bubbles`(anchor),
+        `read-hasDeferred`(anchor),
+        `read-cacheExpiration`(anchor),
+        `read-Data`(anchor),
+        `read-Action`(anchor),
+        `read-OptimisticResponse`(anchor),
+        `read-hash`(anchor),
+        `read-commit`(anchor),
+        `read-callAsFunction`(anchor),
+        `read-Op`(anchor),
+        `read-variable`(anchor),
+        `read-payload`(anchor),
+        `read-hashValue`(anchor),
+        `read-phase`(anchor),
+        `read-isRefreshing`(anchor),
+        `read-isStale`(anchor),
+        `read-retry`(anchor),
+        `read-subscription`(anchor),
+        `read-Types`(anchor),
+        `read-Sites`(anchor),
+        `read-Guards`(anchor),
+        `read-AbstractSlots`(anchor),
+        `read-schemaDigest`(anchor),
+        `read-format`(anchor),
+        `read-transient`(anchor),
+        `read-Baton`(anchor),
+        `read-Swift`(anchor),
+        `read-Set`(anchor),
+        `read-Result`(anchor),
+        `read-Optional`(anchor),
+        `read-String`(anchor),
+        `read-Int`(anchor),
+        `read-Double`(anchor),
+        `read-Bool`(anchor),
+        `read-MainActor`(anchor),
+        `read-Hasher`(anchor),
+        `read-Sendable`(anchor),
     )
 
     companion object {
@@ -1398,6 +1398,159 @@ data class HostileInlineLinks_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin)
+        private fun `read-Type`(anchor: Anchor): Type2? = anchor.linked(Slots.Character.origin)?.let { Type2(it) }
+        private fun `read-Protocol`(anchor: Anchor): Protocol2? = anchor.linked(Slots.Character.origin)?.let { Protocol2(it) }
+        private fun `read-Any`(anchor: Anchor): AnyLens? = anchor.linked(Slots.Character.origin)?.let { AnyLens(it) }
+        private fun `read-self`(anchor: Anchor): Self2? = anchor.linked(Slots.Character.origin)?.let { Self2(it) }
+        private fun `read-Self`(anchor: Anchor): Self3? = anchor.linked(Slots.Character.origin)?.let { Self3(it) }
+        private fun `read-init`(anchor: Anchor): Init? = anchor.linked(Slots.Character.origin)?.let { Init(it) }
+        private fun `read-deinit`(anchor: Anchor): Deinit? = anchor.linked(Slots.Character.origin)?.let { Deinit(it) }
+        private fun `read-subscript`(anchor: Anchor): Subscript? = anchor.linked(Slots.Character.origin)?.let { Subscript(it) }
+        private fun `read-class`(anchor: Anchor): Class? = anchor.linked(Slots.Character.origin)?.let { Class(it) }
+        private fun `read-struct`(anchor: Anchor): Struct? = anchor.linked(Slots.Character.origin)?.let { Struct(it) }
+        private fun `read-enum`(anchor: Anchor): Enum? = anchor.linked(Slots.Character.origin)?.let { Enum(it) }
+        private fun `read-func`(anchor: Anchor): Func? = anchor.linked(Slots.Character.origin)?.let { Func(it) }
+        private fun `read-var`(anchor: Anchor): Var? = anchor.linked(Slots.Character.origin)?.let { Var(it) }
+        private fun `read-let`(anchor: Anchor): Let? = anchor.linked(Slots.Character.origin)?.let { Let(it) }
+        private fun `read-import`(anchor: Anchor): Import? = anchor.linked(Slots.Character.origin)?.let { Import(it) }
+        private fun `read-extension`(anchor: Anchor): Extension? = anchor.linked(Slots.Character.origin)?.let { Extension(it) }
+        private fun `read-operator`(anchor: Anchor): Operator? = anchor.linked(Slots.Character.origin)?.let { Operator(it) }
+        private fun `read-static`(anchor: Anchor): Static? = anchor.linked(Slots.Character.origin)?.let { Static(it) }
+        private fun `read-default`(anchor: Anchor): Default? = anchor.linked(Slots.Character.origin)?.let { Default(it) }
+        private fun `read-case`(anchor: Anchor): Case? = anchor.linked(Slots.Character.origin)?.let { Case(it) }
+        private fun `read-switch`(anchor: Anchor): Switch? = anchor.linked(Slots.Character.origin)?.let { Switch(it) }
+        private fun `read-if`(anchor: Anchor): If? = anchor.linked(Slots.Character.origin)?.let { If(it) }
+        private fun `read-else`(anchor: Anchor): Else? = anchor.linked(Slots.Character.origin)?.let { Else(it) }
+        private fun `read-for`(anchor: Anchor): For? = anchor.linked(Slots.Character.origin)?.let { For(it) }
+        private fun `read-in`(anchor: Anchor): In? = anchor.linked(Slots.Character.origin)?.let { In(it) }
+        private fun `read-while`(anchor: Anchor): While? = anchor.linked(Slots.Character.origin)?.let { While(it) }
+        private fun `read-repeat`(anchor: Anchor): Repeat? = anchor.linked(Slots.Character.origin)?.let { Repeat(it) }
+        private fun `read-return`(anchor: Anchor): Return? = anchor.linked(Slots.Character.origin)?.let { Return(it) }
+        private fun `read-break`(anchor: Anchor): Break? = anchor.linked(Slots.Character.origin)?.let { Break(it) }
+        private fun `read-continue`(anchor: Anchor): Continue? = anchor.linked(Slots.Character.origin)?.let { Continue(it) }
+        private fun `read-where`(anchor: Anchor): Where? = anchor.linked(Slots.Character.origin)?.let { Where(it) }
+        private fun `read-is`(anchor: Anchor): Is? = anchor.linked(Slots.Character.origin)?.let { Is(it) }
+        private fun `read-as`(anchor: Anchor): As? = anchor.linked(Slots.Character.origin)?.let { As(it) }
+        private fun `read-try`(anchor: Anchor): Try? = anchor.linked(Slots.Character.origin)?.let { Try(it) }
+        private fun `read-throw`(anchor: Anchor): Throw? = anchor.linked(Slots.Character.origin)?.let { Throw(it) }
+        private fun `read-throws`(anchor: Anchor): Throws? = anchor.linked(Slots.Character.origin)?.let { Throws(it) }
+        private fun `read-guard`(anchor: Anchor): Guard? = anchor.linked(Slots.Character.origin)?.let { Guard(it) }
+        private fun `read-defer`(anchor: Anchor): Defer? = anchor.linked(Slots.Character.origin)?.let { Defer(it) }
+        private fun `read-do`(anchor: Anchor): Do? = anchor.linked(Slots.Character.origin)?.let { Do(it) }
+        private fun `read-catch`(anchor: Anchor): Catch? = anchor.linked(Slots.Character.origin)?.let { Catch(it) }
+        private fun `read-true`(anchor: Anchor): True? = anchor.linked(Slots.Character.origin)?.let { True(it) }
+        private fun `read-false`(anchor: Anchor): False? = anchor.linked(Slots.Character.origin)?.let { False(it) }
+        private fun `read-nil`(anchor: Anchor): Nil? = anchor.linked(Slots.Character.origin)?.let { Nil(it) }
+        private fun `read-super`(anchor: Anchor): Super? = anchor.linked(Slots.Character.origin)?.let { Super(it) }
+        private fun `read-internal`(anchor: Anchor): Internal? = anchor.linked(Slots.Character.origin)?.let { Internal(it) }
+        private fun `read-private`(anchor: Anchor): Private? = anchor.linked(Slots.Character.origin)?.let { Private(it) }
+        private fun `read-public`(anchor: Anchor): Public? = anchor.linked(Slots.Character.origin)?.let { Public(it) }
+        private fun `read-fileprivate`(anchor: Anchor): Fileprivate? = anchor.linked(Slots.Character.origin)?.let { Fileprivate(it) }
+        private fun `read-open`(anchor: Anchor): Open? = anchor.linked(Slots.Character.origin)?.let { Open(it) }
+        private fun `read-inout`(anchor: Anchor): Inout? = anchor.linked(Slots.Character.origin)?.let { Inout(it) }
+        private fun `read-typealias`(anchor: Anchor): Typealias? = anchor.linked(Slots.Character.origin)?.let { Typealias(it) }
+        private fun `read-associatedtype`(anchor: Anchor): Associatedtype? = anchor.linked(Slots.Character.origin)?.let { Associatedtype(it) }
+        private fun `read-protocol`(anchor: Anchor): Protocol3? = anchor.linked(Slots.Character.origin)?.let { Protocol3(it) }
+        private fun `read-some`(anchor: Anchor): Some? = anchor.linked(Slots.Character.origin)?.let { Some(it) }
+        private fun `read-any`(anchor: Anchor): AnyLens2? = anchor.linked(Slots.Character.origin)?.let { AnyLens2(it) }
+        private fun `read-rethrows`(anchor: Anchor): Rethrows? = anchor.linked(Slots.Character.origin)?.let { Rethrows(it) }
+        private fun `read-fallthrough`(anchor: Anchor): Fallthrough? = anchor.linked(Slots.Character.origin)?.let { Fallthrough(it) }
+        private fun `read-precedencegroup`(anchor: Anchor): Precedencegroup? = anchor.linked(Slots.Character.origin)?.let { Precedencegroup(it) }
+        private fun `read-_`(anchor: Anchor): _2? = anchor.linked(Slots.Character.origin)?.let { _2(it) }
+        private fun `read-async`(anchor: Anchor): Async? = anchor.linked(Slots.Character.origin)?.let { Async(it) }
+        private fun `read-await`(anchor: Anchor): Await? = anchor.linked(Slots.Character.origin)?.let { Await(it) }
+        private fun `read-borrowing`(anchor: Anchor): Borrowing? = anchor.linked(Slots.Character.origin)?.let { Borrowing(it) }
+        private fun `read-consume`(anchor: Anchor): Consume? = anchor.linked(Slots.Character.origin)?.let { Consume(it) }
+        private fun `read-consuming`(anchor: Anchor): Consuming? = anchor.linked(Slots.Character.origin)?.let { Consuming(it) }
+        private fun `read-copy`(anchor: Anchor): Copy? = anchor.linked(Slots.Character.origin)?.let { Copy(it) }
+        private fun `read-discard`(anchor: Anchor): Discard? = anchor.linked(Slots.Character.origin)?.let { Discard(it) }
+        private fun `read-each`(anchor: Anchor): Each? = anchor.linked(Slots.Character.origin)?.let { Each(it) }
+        private fun `read-isolated`(anchor: Anchor): Isolated? = anchor.linked(Slots.Character.origin)?.let { Isolated(it) }
+        private fun `read-sending`(anchor: Anchor): Sending? = anchor.linked(Slots.Character.origin)?.let { Sending(it) }
+        private fun `read-then`(anchor: Anchor): Then? = anchor.linked(Slots.Character.origin)?.let { Then(it) }
+        private fun `read-unsafe`(anchor: Anchor): Unsafe? = anchor.linked(Slots.Character.origin)?.let { Unsafe(it) }
+        private fun `read-satisfied`(anchor: Anchor): Satisfied? = anchor.linked(Slots.Character.origin)?.let { Satisfied(it) }
+        private fun `read-missingRequiredField`(anchor: Anchor): MissingRequiredField? = anchor.linked(Slots.Character.origin)?.let { MissingRequiredField(it) }
+        private fun `read-fieldErrors`(anchor: Anchor): FieldErrorsLens? = anchor.linked(Slots.Character.origin)?.let { FieldErrorsLens(it) }
+        private fun `read-isPresent`(anchor: Anchor): IsPresent? = anchor.linked(Slots.Character.origin)?.let { IsPresent(it) }
+        private fun `read-throwing`(anchor: Anchor): Throwing? = anchor.linked(Slots.Character.origin)?.let { Throwing(it) }
+        private fun `read-caught`(anchor: Anchor): Caught? = anchor.linked(Slots.Character.origin)?.let { Caught(it) }
+        private fun `read-refetchable`(anchor: Anchor): Refetchable? = anchor.linked(Slots.Character.origin)?.let { Refetchable(it) }
+        private fun `read-refetch`(anchor: Anchor): RefetchLens? = anchor.linked(Slots.Character.origin)?.let { RefetchLens(it) }
+        private fun `read-connection`(anchor: Anchor): Connection? = anchor.linked(Slots.Character.origin)?.let { Connection(it) }
+        private fun `read-nodes`(anchor: Anchor): Nodes? = anchor.linked(Slots.Character.origin)?.let { Nodes(it) }
+        private fun `read-hasNext`(anchor: Anchor): HasNext? = anchor.linked(Slots.Character.origin)?.let { HasNext(it) }
+        private fun `read-hasPrevious`(anchor: Anchor): HasPrevious? = anchor.linked(Slots.Character.origin)?.let { HasPrevious(it) }
+        private fun `read-isLoadingNext`(anchor: Anchor): IsLoadingNext? = anchor.linked(Slots.Character.origin)?.let { IsLoadingNext(it) }
+        private fun `read-isLoadingPrevious`(anchor: Anchor): IsLoadingPrevious? = anchor.linked(Slots.Character.origin)?.let { IsLoadingPrevious(it) }
+        private fun `read-connectionID`(anchor: Anchor): ConnectionID? = anchor.linked(Slots.Character.origin)?.let { ConnectionID(it) }
+        private fun `read-loadNext`(anchor: Anchor): LoadNext? = anchor.linked(Slots.Character.origin)?.let { LoadNext(it) }
+        private fun `read-loadPrevious`(anchor: Anchor): LoadPrevious? = anchor.linked(Slots.Character.origin)?.let { LoadPrevious(it) }
+        private fun `read-bound`(anchor: Anchor): Bound? = anchor.linked(Slots.Character.origin)?.let { Bound(it) }
+        private fun `read-errors`(anchor: Anchor): Errors? = anchor.linked(Slots.Character.origin)?.let { Errors(it) }
+        private fun `read-child`(anchor: Anchor): Child? = anchor.linked(Slots.Character.origin)?.let { Child(it) }
+        private fun `read-missing`(anchor: Anchor): Missing? = anchor.linked(Slots.Character.origin)?.let { Missing(it) }
+        private fun `read-count`(anchor: Anchor): Count? = anchor.linked(Slots.Character.origin)?.let { Count(it) }
+        private fun `read-fields`(anchor: Anchor): Fields? = anchor.linked(Slots.Character.origin)?.let { Fields(it) }
+        private fun `read-lhs`(anchor: Anchor): Lhs? = anchor.linked(Slots.Character.origin)?.let { Lhs(it) }
+        private fun `read-rhs`(anchor: Anchor): Rhs? = anchor.linked(Slots.Character.origin)?.let { Rhs(it) }
+        private fun `read-hasher`(anchor: Anchor): Hasher2? = anchor.linked(Slots.Character.origin)?.let { Hasher2(it) }
+        private fun `read-selection0`(anchor: Anchor): Selection0? = anchor.linked(Slots.Character.origin)?.let { Selection0(it) }
+        private fun `read-selection`(anchor: Anchor): Selection? = anchor.linked(Slots.Character.origin)?.let { Selection(it) }
+        private fun `read-optimistic`(anchor: Anchor): Optimistic? = anchor.linked(Slots.Character.origin)?.let { Optimistic(it) }
+        private fun `read-selfValue`(anchor: Anchor): SelfValue? = anchor.linked(Slots.Character.origin)?.let { SelfValue(it) }
+        private fun `read-values`(anchor: Anchor): Values? = anchor.linked(Slots.Character.origin)?.let { Values(it) }
+        private fun `read-Fragment`(anchor: Anchor): FragmentLens? = anchor.linked(Slots.Character.origin)?.let { FragmentLens(it) }
+        private fun `read-Spread`(anchor: Anchor): Spread2? = anchor.linked(Slots.Character.origin)?.let { Spread2(it) }
+        private fun `read-Owner`(anchor: Anchor): Owner2? = anchor.linked(Slots.Character.origin)?.let { Owner2(it) }
+        private fun `read-Query`(anchor: Anchor): Query2? = anchor.linked(Slots.Character.origin)?.let { Query2(it) }
+        private fun `read-Operation`(anchor: Anchor): Operation2? = anchor.linked(Slots.Character.origin)?.let { Operation2(it) }
+        private fun `read-RefetchQuery`(anchor: Anchor): RefetchQuery2? = anchor.linked(Slots.Character.origin)?.let { RefetchQuery2(it) }
+        private fun `read-variables`(anchor: Anchor): VariablesLens? = anchor.linked(Slots.Character.origin)?.let { VariablesLens(it) }
+        private fun `read-resolution`(anchor: Anchor): Resolution? = anchor.linked(Slots.Character.origin)?.let { Resolution(it) }
+        private fun `read-name`(anchor: Anchor): Name? = anchor.linked(Slots.Character.origin)?.let { Name(it) }
+        private fun `read-document`(anchor: Anchor): Document? = anchor.linked(Slots.Character.origin)?.let { Document(it) }
+        private fun `read-text`(anchor: Anchor): Text? = anchor.linked(Slots.Character.origin)?.let { Text(it) }
+        private fun `read-plan`(anchor: Anchor): Plan? = anchor.linked(Slots.Character.origin)?.let { Plan(it) }
+        private fun `read-errorBehavior`(anchor: Anchor): ErrorBehavior? = anchor.linked(Slots.Character.origin)?.let { ErrorBehavior(it) }
+        private fun `read-throwsOnFieldError`(anchor: Anchor): ThrowsOnFieldError? = anchor.linked(Slots.Character.origin)?.let { ThrowsOnFieldError(it) }
+        private fun `read-bubbles`(anchor: Anchor): Bubbles? = anchor.linked(Slots.Character.origin)?.let { Bubbles(it) }
+        private fun `read-hasDeferred`(anchor: Anchor): HasDeferred? = anchor.linked(Slots.Character.origin)?.let { HasDeferred(it) }
+        private fun `read-cacheExpiration`(anchor: Anchor): CacheExpiration? = anchor.linked(Slots.Character.origin)?.let { CacheExpiration(it) }
+        private fun `read-Data`(anchor: Anchor): Data2? = anchor.linked(Slots.Character.origin)?.let { Data2(it) }
+        private fun `read-Action`(anchor: Anchor): Action2? = anchor.linked(Slots.Character.origin)?.let { Action2(it) }
+        private fun `read-OptimisticResponse`(anchor: Anchor): OptimisticResponse2? = anchor.linked(Slots.Character.origin)?.let { OptimisticResponse2(it) }
+        private fun `read-hash`(anchor: Anchor): Hash? = anchor.linked(Slots.Character.origin)?.let { Hash(it) }
+        private fun `read-commit`(anchor: Anchor): Commit? = anchor.linked(Slots.Character.origin)?.let { Commit(it) }
+        private fun `read-callAsFunction`(anchor: Anchor): CallAsFunction? = anchor.linked(Slots.Character.origin)?.let { CallAsFunction(it) }
+        private fun `read-Op`(anchor: Anchor): Op2? = anchor.linked(Slots.Character.origin)?.let { Op2(it) }
+        private fun `read-variable`(anchor: Anchor): VariableLens? = anchor.linked(Slots.Character.origin)?.let { VariableLens(it) }
+        private fun `read-payload`(anchor: Anchor): Payload? = anchor.linked(Slots.Character.origin)?.let { Payload(it) }
+        private fun `read-hashValue`(anchor: Anchor): HashValue? = anchor.linked(Slots.Character.origin)?.let { HashValue(it) }
+        private fun `read-phase`(anchor: Anchor): Phase? = anchor.linked(Slots.Character.origin)?.let { Phase(it) }
+        private fun `read-isRefreshing`(anchor: Anchor): IsRefreshing? = anchor.linked(Slots.Character.origin)?.let { IsRefreshing(it) }
+        private fun `read-isStale`(anchor: Anchor): IsStale? = anchor.linked(Slots.Character.origin)?.let { IsStale(it) }
+        private fun `read-retry`(anchor: Anchor): Retry? = anchor.linked(Slots.Character.origin)?.let { Retry(it) }
+        private fun `read-subscription`(anchor: Anchor): Subscription? = anchor.linked(Slots.Character.origin)?.let { Subscription(it) }
+        private fun `read-Types`(anchor: Anchor): TypesLens? = anchor.linked(Slots.Character.origin)?.let { TypesLens(it) }
+        private fun `read-Sites`(anchor: Anchor): SitesLens? = anchor.linked(Slots.Character.origin)?.let { SitesLens(it) }
+        private fun `read-Guards`(anchor: Anchor): GuardsLens? = anchor.linked(Slots.Character.origin)?.let { GuardsLens(it) }
+        private fun `read-AbstractSlots`(anchor: Anchor): AbstractSlotsLens? = anchor.linked(Slots.Character.origin)?.let { AbstractSlotsLens(it) }
+        private fun `read-schemaDigest`(anchor: Anchor): SchemaDigest? = anchor.linked(Slots.Character.origin)?.let { SchemaDigest(it) }
+        private fun `read-format`(anchor: Anchor): Format? = anchor.linked(Slots.Character.origin)?.let { Format(it) }
+        private fun `read-transient`(anchor: Anchor): Transient? = anchor.linked(Slots.Character.origin)?.let { Transient(it) }
+        private fun `read-Baton`(anchor: Anchor): Baton2? = anchor.linked(Slots.Character.origin)?.let { Baton2(it) }
+        private fun `read-Swift`(anchor: Anchor): Swift2? = anchor.linked(Slots.Character.origin)?.let { Swift2(it) }
+        private fun `read-Set`(anchor: Anchor): Set2? = anchor.linked(Slots.Character.origin)?.let { Set2(it) }
+        private fun `read-Result`(anchor: Anchor): ResultLens? = anchor.linked(Slots.Character.origin)?.let { ResultLens(it) }
+        private fun `read-Optional`(anchor: Anchor): Optional2? = anchor.linked(Slots.Character.origin)?.let { Optional2(it) }
+        private fun `read-String`(anchor: Anchor): StringLens? = anchor.linked(Slots.Character.origin)?.let { StringLens(it) }
+        private fun `read-Int`(anchor: Anchor): IntLens? = anchor.linked(Slots.Character.origin)?.let { IntLens(it) }
+        private fun `read-Double`(anchor: Anchor): DoubleLens? = anchor.linked(Slots.Character.origin)?.let { DoubleLens(it) }
+        private fun `read-Bool`(anchor: Anchor): Bool2? = anchor.linked(Slots.Character.origin)?.let { Bool2(it) }
+        private fun `read-MainActor`(anchor: Anchor): MainActor2? = anchor.linked(Slots.Character.origin)?.let { MainActor2(it) }
+        private fun `read-Hasher`(anchor: Anchor): Hasher3? = anchor.linked(Slots.Character.origin)?.let { Hasher3(it) }
+        private fun `read-Sendable`(anchor: Anchor): Sendable2? = anchor.linked(Slots.Character.origin)?.let { Sendable2(it) }
     }
 
     data class Type2(
@@ -1406,7 +1559,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1423,6 +1576,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Type2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1432,7 +1586,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1449,6 +1603,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Protocol2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1458,7 +1613,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1475,6 +1630,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.AnyLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1484,7 +1640,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1501,6 +1657,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Self2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1510,7 +1667,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1527,6 +1684,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Self3(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1536,7 +1694,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1553,6 +1711,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Init(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1562,7 +1721,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1579,6 +1738,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Deinit(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1588,7 +1748,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1605,6 +1765,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Subscript(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1614,7 +1775,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1631,6 +1792,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Class(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1640,7 +1802,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1657,6 +1819,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Struct(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1666,7 +1829,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1683,6 +1846,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Enum(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1692,7 +1856,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1709,6 +1873,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Func(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1718,7 +1883,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1735,6 +1900,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Var(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1744,7 +1910,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1761,6 +1927,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Let(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1770,7 +1937,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1787,6 +1954,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Import(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1796,7 +1964,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1813,6 +1981,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Extension(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1822,7 +1991,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1839,6 +2008,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Operator(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1848,7 +2018,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1865,6 +2035,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Static(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1874,7 +2045,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1891,6 +2062,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Default(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1900,7 +2072,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1917,6 +2089,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Case(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1926,7 +2099,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1943,6 +2116,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Switch(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1952,7 +2126,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1969,6 +2143,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.If(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1978,7 +2153,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1995,6 +2170,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Else(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2004,7 +2180,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2021,6 +2197,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.For(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2030,7 +2207,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2047,6 +2224,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.In(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2056,7 +2234,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2073,6 +2251,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.While(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2082,7 +2261,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2099,6 +2278,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Repeat(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2108,7 +2288,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2125,6 +2305,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Return(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2134,7 +2315,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2151,6 +2332,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Break(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2160,7 +2342,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2177,6 +2359,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Continue(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2186,7 +2369,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2203,6 +2386,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Where(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2212,7 +2396,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2229,6 +2413,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Is(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2238,7 +2423,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2255,6 +2440,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.As(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2264,7 +2450,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2281,6 +2467,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Try(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2290,7 +2477,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2307,6 +2494,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Throw(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2316,7 +2504,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2333,6 +2521,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Throws(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2342,7 +2531,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2359,6 +2548,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Guard(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2368,7 +2558,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2385,6 +2575,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Defer(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2394,7 +2585,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2411,6 +2602,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Do(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2420,7 +2612,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2437,6 +2629,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Catch(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2446,7 +2639,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2463,6 +2656,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.True(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2472,7 +2666,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2489,6 +2683,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.False(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2498,7 +2693,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2515,6 +2710,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Nil(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2524,7 +2720,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2541,6 +2737,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Super(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2550,7 +2747,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2567,6 +2764,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Internal(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2576,7 +2774,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2593,6 +2791,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Private(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2602,7 +2801,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2619,6 +2818,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Public(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2628,7 +2828,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2645,6 +2845,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Fileprivate(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2654,7 +2855,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2671,6 +2872,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Open(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2680,7 +2882,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2697,6 +2899,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Inout(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2706,7 +2909,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2723,6 +2926,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Typealias(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2732,7 +2936,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2749,6 +2953,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Associatedtype(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2758,7 +2963,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2775,6 +2980,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Protocol3(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2784,7 +2990,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2801,6 +3007,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Some(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2810,7 +3017,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2827,6 +3034,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.AnyLens2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2836,7 +3044,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2853,6 +3061,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Rethrows(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2862,7 +3071,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2879,6 +3088,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Fallthrough(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2888,7 +3098,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2905,6 +3115,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Precedencegroup(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2914,7 +3125,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2931,6 +3142,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character._2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2940,7 +3152,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2957,6 +3169,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Async(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2966,7 +3179,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2983,6 +3196,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Await(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2992,7 +3206,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3009,6 +3223,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Borrowing(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3018,7 +3233,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3035,6 +3250,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Consume(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3044,7 +3260,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3061,6 +3277,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Consuming(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3070,7 +3287,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3087,6 +3304,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Copy(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3096,7 +3314,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3113,6 +3331,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Discard(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3122,7 +3341,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3139,6 +3358,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Each(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3148,7 +3368,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3165,6 +3385,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Isolated(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3174,7 +3395,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3191,6 +3412,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Sending(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3200,7 +3422,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3217,6 +3439,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Then(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3226,7 +3449,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3243,6 +3466,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Unsafe(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3252,7 +3476,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3269,6 +3493,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Satisfied(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3278,7 +3503,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3295,6 +3520,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.MissingRequiredField(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3304,7 +3530,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3321,6 +3547,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.FieldErrorsLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3330,7 +3557,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3347,6 +3574,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.IsPresent(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3356,7 +3584,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3373,6 +3601,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Throwing(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3382,7 +3611,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3399,6 +3628,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Caught(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3408,7 +3638,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3425,6 +3655,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Refetchable(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3434,7 +3665,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3451,6 +3682,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.RefetchLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3460,7 +3692,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3477,6 +3709,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Connection(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3486,7 +3719,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3503,6 +3736,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Nodes(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3512,7 +3746,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3529,6 +3763,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.HasNext(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3538,7 +3773,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3555,6 +3790,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.HasPrevious(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3564,7 +3800,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3581,6 +3817,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.IsLoadingNext(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3590,7 +3827,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3607,6 +3844,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.IsLoadingPrevious(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3616,7 +3854,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3633,6 +3871,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.ConnectionID(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3642,7 +3881,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3659,6 +3898,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.LoadNext(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3668,7 +3908,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3685,6 +3925,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.LoadPrevious(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3694,7 +3935,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3711,6 +3952,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Bound(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3720,7 +3962,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3737,6 +3979,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Errors(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3746,7 +3989,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3763,6 +4006,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Child(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3772,7 +4016,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3789,6 +4033,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Missing(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3798,7 +4043,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3815,6 +4060,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Count(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3824,7 +4070,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3841,6 +4087,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Fields(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3850,7 +4097,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3867,6 +4114,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Lhs(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3876,7 +4124,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3893,6 +4141,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Rhs(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3902,7 +4151,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3919,6 +4168,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Hasher2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3928,7 +4178,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3945,6 +4195,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Selection0(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3954,7 +4205,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3971,6 +4222,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Selection(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3980,7 +4232,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3997,6 +4249,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Optimistic(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4006,7 +4259,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4023,6 +4276,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.SelfValue(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4032,7 +4286,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4049,6 +4303,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Values(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4058,7 +4313,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4075,6 +4330,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.FragmentLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4084,7 +4340,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4101,6 +4357,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Spread2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4110,7 +4367,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4127,6 +4384,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Owner2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4136,7 +4394,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4153,6 +4411,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Query2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4162,7 +4421,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4179,6 +4438,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Operation2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4188,7 +4448,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4205,6 +4465,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.RefetchQuery2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4214,7 +4475,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4231,6 +4492,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.VariablesLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4240,7 +4502,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4257,6 +4519,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Resolution(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4266,7 +4529,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4283,6 +4546,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Name(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4292,7 +4556,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4309,6 +4573,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Document(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4318,7 +4583,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4335,6 +4600,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Text(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4344,7 +4610,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4361,6 +4627,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Plan(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4370,7 +4637,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4387,6 +4654,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.ErrorBehavior(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4396,7 +4664,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4413,6 +4681,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.ThrowsOnFieldError(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4422,7 +4691,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4439,6 +4708,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Bubbles(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4448,7 +4718,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4465,6 +4735,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.HasDeferred(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4474,7 +4745,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4491,6 +4762,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.CacheExpiration(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4500,7 +4772,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4517,6 +4789,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Data2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4526,7 +4799,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4543,6 +4816,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Action2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4552,7 +4826,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4569,6 +4843,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.OptimisticResponse2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4578,7 +4853,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4595,6 +4870,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Hash(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4604,7 +4880,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4621,6 +4897,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Commit(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4630,7 +4907,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4647,6 +4924,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.CallAsFunction(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4656,7 +4934,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4673,6 +4951,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Op2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4682,7 +4961,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4699,6 +4978,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.VariableLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4708,7 +4988,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4725,6 +5005,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Payload(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4734,7 +5015,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4751,6 +5032,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.HashValue(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4760,7 +5042,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4777,6 +5059,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Phase(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4786,7 +5069,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4803,6 +5086,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.IsRefreshing(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4812,7 +5096,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4829,6 +5113,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.IsStale(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4838,7 +5123,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4855,6 +5140,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Retry(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4864,7 +5150,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4881,6 +5167,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Subscription(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4890,7 +5177,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4907,6 +5194,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.TypesLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4916,7 +5204,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4933,6 +5221,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.SitesLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4942,7 +5231,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4959,6 +5248,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.GuardsLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4968,7 +5258,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4985,6 +5275,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.AbstractSlotsLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4994,7 +5285,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5011,6 +5302,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.SchemaDigest(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5020,7 +5312,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5037,6 +5329,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Format(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5046,7 +5339,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5063,6 +5356,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Transient(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5072,7 +5366,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5089,6 +5383,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Baton2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5098,7 +5393,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5115,6 +5410,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Swift2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5124,7 +5420,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5141,6 +5437,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Set2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5150,7 +5447,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5167,6 +5464,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.ResultLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5176,7 +5474,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5193,6 +5491,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Optional2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5202,7 +5501,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5219,6 +5518,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.StringLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5228,7 +5528,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5245,6 +5545,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.IntLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5254,7 +5555,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5271,6 +5572,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.DoubleLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5280,7 +5582,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5297,6 +5599,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Bool2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5306,7 +5609,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5323,6 +5626,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.MainActor2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5332,7 +5636,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5349,6 +5653,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Hasher3(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5358,7 +5663,7 @@ data class HostileInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5375,6 +5680,7 @@ data class HostileInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlineLinks_character.Sendable2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 }
@@ -5538,159 +5844,159 @@ data class HostileInlinePlurals_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.requiredValues(Slots.Character.episode) { Type2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Protocol2(it) },
-        anchor.requiredValues(Slots.Character.episode) { AnyLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { Self2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Self3(it) },
-        anchor.requiredValues(Slots.Character.episode) { Init(it) },
-        anchor.requiredValues(Slots.Character.episode) { Deinit(it) },
-        anchor.requiredValues(Slots.Character.episode) { Subscript(it) },
-        anchor.requiredValues(Slots.Character.episode) { Class(it) },
-        anchor.requiredValues(Slots.Character.episode) { Struct(it) },
-        anchor.requiredValues(Slots.Character.episode) { Enum(it) },
-        anchor.requiredValues(Slots.Character.episode) { Func(it) },
-        anchor.requiredValues(Slots.Character.episode) { Var(it) },
-        anchor.requiredValues(Slots.Character.episode) { Let(it) },
-        anchor.requiredValues(Slots.Character.episode) { Import(it) },
-        anchor.requiredValues(Slots.Character.episode) { Extension(it) },
-        anchor.requiredValues(Slots.Character.episode) { Operator(it) },
-        anchor.requiredValues(Slots.Character.episode) { Static(it) },
-        anchor.requiredValues(Slots.Character.episode) { Default(it) },
-        anchor.requiredValues(Slots.Character.episode) { Case(it) },
-        anchor.requiredValues(Slots.Character.episode) { Switch(it) },
-        anchor.requiredValues(Slots.Character.episode) { If(it) },
-        anchor.requiredValues(Slots.Character.episode) { Else(it) },
-        anchor.requiredValues(Slots.Character.episode) { For(it) },
-        anchor.requiredValues(Slots.Character.episode) { In(it) },
-        anchor.requiredValues(Slots.Character.episode) { While(it) },
-        anchor.requiredValues(Slots.Character.episode) { Repeat(it) },
-        anchor.requiredValues(Slots.Character.episode) { Return(it) },
-        anchor.requiredValues(Slots.Character.episode) { Break(it) },
-        anchor.requiredValues(Slots.Character.episode) { Continue(it) },
-        anchor.requiredValues(Slots.Character.episode) { Where(it) },
-        anchor.requiredValues(Slots.Character.episode) { Is(it) },
-        anchor.requiredValues(Slots.Character.episode) { As(it) },
-        anchor.requiredValues(Slots.Character.episode) { Try(it) },
-        anchor.requiredValues(Slots.Character.episode) { Throw(it) },
-        anchor.requiredValues(Slots.Character.episode) { Throws(it) },
-        anchor.requiredValues(Slots.Character.episode) { Guard(it) },
-        anchor.requiredValues(Slots.Character.episode) { Defer(it) },
-        anchor.requiredValues(Slots.Character.episode) { Do(it) },
-        anchor.requiredValues(Slots.Character.episode) { Catch(it) },
-        anchor.requiredValues(Slots.Character.episode) { True(it) },
-        anchor.requiredValues(Slots.Character.episode) { False(it) },
-        anchor.requiredValues(Slots.Character.episode) { Nil(it) },
-        anchor.requiredValues(Slots.Character.episode) { Super(it) },
-        anchor.requiredValues(Slots.Character.episode) { Internal(it) },
-        anchor.requiredValues(Slots.Character.episode) { Private(it) },
-        anchor.requiredValues(Slots.Character.episode) { Public(it) },
-        anchor.requiredValues(Slots.Character.episode) { Fileprivate(it) },
-        anchor.requiredValues(Slots.Character.episode) { Open(it) },
-        anchor.requiredValues(Slots.Character.episode) { Inout(it) },
-        anchor.requiredValues(Slots.Character.episode) { Typealias(it) },
-        anchor.requiredValues(Slots.Character.episode) { Associatedtype(it) },
-        anchor.requiredValues(Slots.Character.episode) { Protocol3(it) },
-        anchor.requiredValues(Slots.Character.episode) { Some(it) },
-        anchor.requiredValues(Slots.Character.episode) { AnyLens2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Rethrows(it) },
-        anchor.requiredValues(Slots.Character.episode) { Fallthrough(it) },
-        anchor.requiredValues(Slots.Character.episode) { Precedencegroup(it) },
-        anchor.requiredValues(Slots.Character.episode) { _2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Async(it) },
-        anchor.requiredValues(Slots.Character.episode) { Await(it) },
-        anchor.requiredValues(Slots.Character.episode) { Borrowing(it) },
-        anchor.requiredValues(Slots.Character.episode) { Consume(it) },
-        anchor.requiredValues(Slots.Character.episode) { Consuming(it) },
-        anchor.requiredValues(Slots.Character.episode) { Copy(it) },
-        anchor.requiredValues(Slots.Character.episode) { Discard(it) },
-        anchor.requiredValues(Slots.Character.episode) { Each(it) },
-        anchor.requiredValues(Slots.Character.episode) { Isolated(it) },
-        anchor.requiredValues(Slots.Character.episode) { Sending(it) },
-        anchor.requiredValues(Slots.Character.episode) { Then(it) },
-        anchor.requiredValues(Slots.Character.episode) { Unsafe(it) },
-        anchor.requiredValues(Slots.Character.episode) { Satisfied(it) },
-        anchor.requiredValues(Slots.Character.episode) { MissingRequiredField(it) },
-        anchor.requiredValues(Slots.Character.episode) { FieldErrorsLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { IsPresent(it) },
-        anchor.requiredValues(Slots.Character.episode) { Throwing(it) },
-        anchor.requiredValues(Slots.Character.episode) { Caught(it) },
-        anchor.requiredValues(Slots.Character.episode) { Refetchable(it) },
-        anchor.requiredValues(Slots.Character.episode) { RefetchLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { Connection(it) },
-        anchor.requiredValues(Slots.Character.episode) { Nodes(it) },
-        anchor.requiredValues(Slots.Character.episode) { HasNext(it) },
-        anchor.requiredValues(Slots.Character.episode) { HasPrevious(it) },
-        anchor.requiredValues(Slots.Character.episode) { IsLoadingNext(it) },
-        anchor.requiredValues(Slots.Character.episode) { IsLoadingPrevious(it) },
-        anchor.requiredValues(Slots.Character.episode) { ConnectionID(it) },
-        anchor.requiredValues(Slots.Character.episode) { LoadNext(it) },
-        anchor.requiredValues(Slots.Character.episode) { LoadPrevious(it) },
-        anchor.requiredValues(Slots.Character.episode) { Bound(it) },
-        anchor.requiredValues(Slots.Character.episode) { Errors(it) },
-        anchor.requiredValues(Slots.Character.episode) { Child(it) },
-        anchor.requiredValues(Slots.Character.episode) { Missing(it) },
-        anchor.requiredValues(Slots.Character.episode) { Count(it) },
-        anchor.requiredValues(Slots.Character.episode) { Fields(it) },
-        anchor.requiredValues(Slots.Character.episode) { Lhs(it) },
-        anchor.requiredValues(Slots.Character.episode) { Rhs(it) },
-        anchor.requiredValues(Slots.Character.episode) { Hasher2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Selection0(it) },
-        anchor.requiredValues(Slots.Character.episode) { Selection(it) },
-        anchor.requiredValues(Slots.Character.episode) { Optimistic(it) },
-        anchor.requiredValues(Slots.Character.episode) { SelfValue(it) },
-        anchor.requiredValues(Slots.Character.episode) { Values(it) },
-        anchor.requiredValues(Slots.Character.episode) { FragmentLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { Spread2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Owner2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Query2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Operation2(it) },
-        anchor.requiredValues(Slots.Character.episode) { RefetchQuery2(it) },
-        anchor.requiredValues(Slots.Character.episode) { VariablesLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { Resolution(it) },
-        anchor.requiredValues(Slots.Character.episode) { Name(it) },
-        anchor.requiredValues(Slots.Character.episode) { Document(it) },
-        anchor.requiredValues(Slots.Character.episode) { Text(it) },
-        anchor.requiredValues(Slots.Character.episode) { Plan(it) },
-        anchor.requiredValues(Slots.Character.episode) { ErrorBehavior(it) },
-        anchor.requiredValues(Slots.Character.episode) { ThrowsOnFieldError(it) },
-        anchor.requiredValues(Slots.Character.episode) { Bubbles(it) },
-        anchor.requiredValues(Slots.Character.episode) { HasDeferred(it) },
-        anchor.requiredValues(Slots.Character.episode) { CacheExpiration(it) },
-        anchor.requiredValues(Slots.Character.episode) { Data2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Action2(it) },
-        anchor.requiredValues(Slots.Character.episode) { OptimisticResponse2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Hash(it) },
-        anchor.requiredValues(Slots.Character.episode) { Commit(it) },
-        anchor.requiredValues(Slots.Character.episode) { CallAsFunction(it) },
-        anchor.requiredValues(Slots.Character.episode) { Op2(it) },
-        anchor.requiredValues(Slots.Character.episode) { VariableLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { Payload(it) },
-        anchor.requiredValues(Slots.Character.episode) { HashValue(it) },
-        anchor.requiredValues(Slots.Character.episode) { Phase(it) },
-        anchor.requiredValues(Slots.Character.episode) { IsRefreshing(it) },
-        anchor.requiredValues(Slots.Character.episode) { IsStale(it) },
-        anchor.requiredValues(Slots.Character.episode) { Retry(it) },
-        anchor.requiredValues(Slots.Character.episode) { Subscription(it) },
-        anchor.requiredValues(Slots.Character.episode) { TypesLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { SitesLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { GuardsLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { AbstractSlotsLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { SchemaDigest(it) },
-        anchor.requiredValues(Slots.Character.episode) { Format(it) },
-        anchor.requiredValues(Slots.Character.episode) { Transient(it) },
-        anchor.requiredValues(Slots.Character.episode) { Baton2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Swift2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Set2(it) },
-        anchor.requiredValues(Slots.Character.episode) { ResultLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { Optional2(it) },
-        anchor.requiredValues(Slots.Character.episode) { StringLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { IntLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { DoubleLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { Bool2(it) },
-        anchor.requiredValues(Slots.Character.episode) { MainActor2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Hasher3(it) },
-        anchor.requiredValues(Slots.Character.episode) { Sendable2(it) },
+        `read-Type`(anchor),
+        `read-Protocol`(anchor),
+        `read-Any`(anchor),
+        `read-self`(anchor),
+        `read-Self`(anchor),
+        `read-init`(anchor),
+        `read-deinit`(anchor),
+        `read-subscript`(anchor),
+        `read-class`(anchor),
+        `read-struct`(anchor),
+        `read-enum`(anchor),
+        `read-func`(anchor),
+        `read-var`(anchor),
+        `read-let`(anchor),
+        `read-import`(anchor),
+        `read-extension`(anchor),
+        `read-operator`(anchor),
+        `read-static`(anchor),
+        `read-default`(anchor),
+        `read-case`(anchor),
+        `read-switch`(anchor),
+        `read-if`(anchor),
+        `read-else`(anchor),
+        `read-for`(anchor),
+        `read-in`(anchor),
+        `read-while`(anchor),
+        `read-repeat`(anchor),
+        `read-return`(anchor),
+        `read-break`(anchor),
+        `read-continue`(anchor),
+        `read-where`(anchor),
+        `read-is`(anchor),
+        `read-as`(anchor),
+        `read-try`(anchor),
+        `read-throw`(anchor),
+        `read-throws`(anchor),
+        `read-guard`(anchor),
+        `read-defer`(anchor),
+        `read-do`(anchor),
+        `read-catch`(anchor),
+        `read-true`(anchor),
+        `read-false`(anchor),
+        `read-nil`(anchor),
+        `read-super`(anchor),
+        `read-internal`(anchor),
+        `read-private`(anchor),
+        `read-public`(anchor),
+        `read-fileprivate`(anchor),
+        `read-open`(anchor),
+        `read-inout`(anchor),
+        `read-typealias`(anchor),
+        `read-associatedtype`(anchor),
+        `read-protocol`(anchor),
+        `read-some`(anchor),
+        `read-any`(anchor),
+        `read-rethrows`(anchor),
+        `read-fallthrough`(anchor),
+        `read-precedencegroup`(anchor),
+        `read-_`(anchor),
+        `read-async`(anchor),
+        `read-await`(anchor),
+        `read-borrowing`(anchor),
+        `read-consume`(anchor),
+        `read-consuming`(anchor),
+        `read-copy`(anchor),
+        `read-discard`(anchor),
+        `read-each`(anchor),
+        `read-isolated`(anchor),
+        `read-sending`(anchor),
+        `read-then`(anchor),
+        `read-unsafe`(anchor),
+        `read-satisfied`(anchor),
+        `read-missingRequiredField`(anchor),
+        `read-fieldErrors`(anchor),
+        `read-isPresent`(anchor),
+        `read-throwing`(anchor),
+        `read-caught`(anchor),
+        `read-refetchable`(anchor),
+        `read-refetch`(anchor),
+        `read-connection`(anchor),
+        `read-nodes`(anchor),
+        `read-hasNext`(anchor),
+        `read-hasPrevious`(anchor),
+        `read-isLoadingNext`(anchor),
+        `read-isLoadingPrevious`(anchor),
+        `read-connectionID`(anchor),
+        `read-loadNext`(anchor),
+        `read-loadPrevious`(anchor),
+        `read-bound`(anchor),
+        `read-errors`(anchor),
+        `read-child`(anchor),
+        `read-missing`(anchor),
+        `read-count`(anchor),
+        `read-fields`(anchor),
+        `read-lhs`(anchor),
+        `read-rhs`(anchor),
+        `read-hasher`(anchor),
+        `read-selection0`(anchor),
+        `read-selection`(anchor),
+        `read-optimistic`(anchor),
+        `read-selfValue`(anchor),
+        `read-values`(anchor),
+        `read-Fragment`(anchor),
+        `read-Spread`(anchor),
+        `read-Owner`(anchor),
+        `read-Query`(anchor),
+        `read-Operation`(anchor),
+        `read-RefetchQuery`(anchor),
+        `read-variables`(anchor),
+        `read-resolution`(anchor),
+        `read-name`(anchor),
+        `read-document`(anchor),
+        `read-text`(anchor),
+        `read-plan`(anchor),
+        `read-errorBehavior`(anchor),
+        `read-throwsOnFieldError`(anchor),
+        `read-bubbles`(anchor),
+        `read-hasDeferred`(anchor),
+        `read-cacheExpiration`(anchor),
+        `read-Data`(anchor),
+        `read-Action`(anchor),
+        `read-OptimisticResponse`(anchor),
+        `read-hash`(anchor),
+        `read-commit`(anchor),
+        `read-callAsFunction`(anchor),
+        `read-Op`(anchor),
+        `read-variable`(anchor),
+        `read-payload`(anchor),
+        `read-hashValue`(anchor),
+        `read-phase`(anchor),
+        `read-isRefreshing`(anchor),
+        `read-isStale`(anchor),
+        `read-retry`(anchor),
+        `read-subscription`(anchor),
+        `read-Types`(anchor),
+        `read-Sites`(anchor),
+        `read-Guards`(anchor),
+        `read-AbstractSlots`(anchor),
+        `read-schemaDigest`(anchor),
+        `read-format`(anchor),
+        `read-transient`(anchor),
+        `read-Baton`(anchor),
+        `read-Swift`(anchor),
+        `read-Set`(anchor),
+        `read-Result`(anchor),
+        `read-Optional`(anchor),
+        `read-String`(anchor),
+        `read-Int`(anchor),
+        `read-Double`(anchor),
+        `read-Bool`(anchor),
+        `read-MainActor`(anchor),
+        `read-Hasher`(anchor),
+        `read-Sendable`(anchor),
     )
 
     companion object {
@@ -5861,6 +6167,159 @@ data class HostileInlinePlurals_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode)
+        private fun `read-Type`(anchor: Anchor): List<Type2> = anchor.requiredValues(Slots.Character.episode) { Type2(it) }
+        private fun `read-Protocol`(anchor: Anchor): List<Protocol2> = anchor.requiredValues(Slots.Character.episode) { Protocol2(it) }
+        private fun `read-Any`(anchor: Anchor): List<AnyLens> = anchor.requiredValues(Slots.Character.episode) { AnyLens(it) }
+        private fun `read-self`(anchor: Anchor): List<Self2> = anchor.requiredValues(Slots.Character.episode) { Self2(it) }
+        private fun `read-Self`(anchor: Anchor): List<Self3> = anchor.requiredValues(Slots.Character.episode) { Self3(it) }
+        private fun `read-init`(anchor: Anchor): List<Init> = anchor.requiredValues(Slots.Character.episode) { Init(it) }
+        private fun `read-deinit`(anchor: Anchor): List<Deinit> = anchor.requiredValues(Slots.Character.episode) { Deinit(it) }
+        private fun `read-subscript`(anchor: Anchor): List<Subscript> = anchor.requiredValues(Slots.Character.episode) { Subscript(it) }
+        private fun `read-class`(anchor: Anchor): List<Class> = anchor.requiredValues(Slots.Character.episode) { Class(it) }
+        private fun `read-struct`(anchor: Anchor): List<Struct> = anchor.requiredValues(Slots.Character.episode) { Struct(it) }
+        private fun `read-enum`(anchor: Anchor): List<Enum> = anchor.requiredValues(Slots.Character.episode) { Enum(it) }
+        private fun `read-func`(anchor: Anchor): List<Func> = anchor.requiredValues(Slots.Character.episode) { Func(it) }
+        private fun `read-var`(anchor: Anchor): List<Var> = anchor.requiredValues(Slots.Character.episode) { Var(it) }
+        private fun `read-let`(anchor: Anchor): List<Let> = anchor.requiredValues(Slots.Character.episode) { Let(it) }
+        private fun `read-import`(anchor: Anchor): List<Import> = anchor.requiredValues(Slots.Character.episode) { Import(it) }
+        private fun `read-extension`(anchor: Anchor): List<Extension> = anchor.requiredValues(Slots.Character.episode) { Extension(it) }
+        private fun `read-operator`(anchor: Anchor): List<Operator> = anchor.requiredValues(Slots.Character.episode) { Operator(it) }
+        private fun `read-static`(anchor: Anchor): List<Static> = anchor.requiredValues(Slots.Character.episode) { Static(it) }
+        private fun `read-default`(anchor: Anchor): List<Default> = anchor.requiredValues(Slots.Character.episode) { Default(it) }
+        private fun `read-case`(anchor: Anchor): List<Case> = anchor.requiredValues(Slots.Character.episode) { Case(it) }
+        private fun `read-switch`(anchor: Anchor): List<Switch> = anchor.requiredValues(Slots.Character.episode) { Switch(it) }
+        private fun `read-if`(anchor: Anchor): List<If> = anchor.requiredValues(Slots.Character.episode) { If(it) }
+        private fun `read-else`(anchor: Anchor): List<Else> = anchor.requiredValues(Slots.Character.episode) { Else(it) }
+        private fun `read-for`(anchor: Anchor): List<For> = anchor.requiredValues(Slots.Character.episode) { For(it) }
+        private fun `read-in`(anchor: Anchor): List<In> = anchor.requiredValues(Slots.Character.episode) { In(it) }
+        private fun `read-while`(anchor: Anchor): List<While> = anchor.requiredValues(Slots.Character.episode) { While(it) }
+        private fun `read-repeat`(anchor: Anchor): List<Repeat> = anchor.requiredValues(Slots.Character.episode) { Repeat(it) }
+        private fun `read-return`(anchor: Anchor): List<Return> = anchor.requiredValues(Slots.Character.episode) { Return(it) }
+        private fun `read-break`(anchor: Anchor): List<Break> = anchor.requiredValues(Slots.Character.episode) { Break(it) }
+        private fun `read-continue`(anchor: Anchor): List<Continue> = anchor.requiredValues(Slots.Character.episode) { Continue(it) }
+        private fun `read-where`(anchor: Anchor): List<Where> = anchor.requiredValues(Slots.Character.episode) { Where(it) }
+        private fun `read-is`(anchor: Anchor): List<Is> = anchor.requiredValues(Slots.Character.episode) { Is(it) }
+        private fun `read-as`(anchor: Anchor): List<As> = anchor.requiredValues(Slots.Character.episode) { As(it) }
+        private fun `read-try`(anchor: Anchor): List<Try> = anchor.requiredValues(Slots.Character.episode) { Try(it) }
+        private fun `read-throw`(anchor: Anchor): List<Throw> = anchor.requiredValues(Slots.Character.episode) { Throw(it) }
+        private fun `read-throws`(anchor: Anchor): List<Throws> = anchor.requiredValues(Slots.Character.episode) { Throws(it) }
+        private fun `read-guard`(anchor: Anchor): List<Guard> = anchor.requiredValues(Slots.Character.episode) { Guard(it) }
+        private fun `read-defer`(anchor: Anchor): List<Defer> = anchor.requiredValues(Slots.Character.episode) { Defer(it) }
+        private fun `read-do`(anchor: Anchor): List<Do> = anchor.requiredValues(Slots.Character.episode) { Do(it) }
+        private fun `read-catch`(anchor: Anchor): List<Catch> = anchor.requiredValues(Slots.Character.episode) { Catch(it) }
+        private fun `read-true`(anchor: Anchor): List<True> = anchor.requiredValues(Slots.Character.episode) { True(it) }
+        private fun `read-false`(anchor: Anchor): List<False> = anchor.requiredValues(Slots.Character.episode) { False(it) }
+        private fun `read-nil`(anchor: Anchor): List<Nil> = anchor.requiredValues(Slots.Character.episode) { Nil(it) }
+        private fun `read-super`(anchor: Anchor): List<Super> = anchor.requiredValues(Slots.Character.episode) { Super(it) }
+        private fun `read-internal`(anchor: Anchor): List<Internal> = anchor.requiredValues(Slots.Character.episode) { Internal(it) }
+        private fun `read-private`(anchor: Anchor): List<Private> = anchor.requiredValues(Slots.Character.episode) { Private(it) }
+        private fun `read-public`(anchor: Anchor): List<Public> = anchor.requiredValues(Slots.Character.episode) { Public(it) }
+        private fun `read-fileprivate`(anchor: Anchor): List<Fileprivate> = anchor.requiredValues(Slots.Character.episode) { Fileprivate(it) }
+        private fun `read-open`(anchor: Anchor): List<Open> = anchor.requiredValues(Slots.Character.episode) { Open(it) }
+        private fun `read-inout`(anchor: Anchor): List<Inout> = anchor.requiredValues(Slots.Character.episode) { Inout(it) }
+        private fun `read-typealias`(anchor: Anchor): List<Typealias> = anchor.requiredValues(Slots.Character.episode) { Typealias(it) }
+        private fun `read-associatedtype`(anchor: Anchor): List<Associatedtype> = anchor.requiredValues(Slots.Character.episode) { Associatedtype(it) }
+        private fun `read-protocol`(anchor: Anchor): List<Protocol3> = anchor.requiredValues(Slots.Character.episode) { Protocol3(it) }
+        private fun `read-some`(anchor: Anchor): List<Some> = anchor.requiredValues(Slots.Character.episode) { Some(it) }
+        private fun `read-any`(anchor: Anchor): List<AnyLens2> = anchor.requiredValues(Slots.Character.episode) { AnyLens2(it) }
+        private fun `read-rethrows`(anchor: Anchor): List<Rethrows> = anchor.requiredValues(Slots.Character.episode) { Rethrows(it) }
+        private fun `read-fallthrough`(anchor: Anchor): List<Fallthrough> = anchor.requiredValues(Slots.Character.episode) { Fallthrough(it) }
+        private fun `read-precedencegroup`(anchor: Anchor): List<Precedencegroup> = anchor.requiredValues(Slots.Character.episode) { Precedencegroup(it) }
+        private fun `read-_`(anchor: Anchor): List<_2> = anchor.requiredValues(Slots.Character.episode) { _2(it) }
+        private fun `read-async`(anchor: Anchor): List<Async> = anchor.requiredValues(Slots.Character.episode) { Async(it) }
+        private fun `read-await`(anchor: Anchor): List<Await> = anchor.requiredValues(Slots.Character.episode) { Await(it) }
+        private fun `read-borrowing`(anchor: Anchor): List<Borrowing> = anchor.requiredValues(Slots.Character.episode) { Borrowing(it) }
+        private fun `read-consume`(anchor: Anchor): List<Consume> = anchor.requiredValues(Slots.Character.episode) { Consume(it) }
+        private fun `read-consuming`(anchor: Anchor): List<Consuming> = anchor.requiredValues(Slots.Character.episode) { Consuming(it) }
+        private fun `read-copy`(anchor: Anchor): List<Copy> = anchor.requiredValues(Slots.Character.episode) { Copy(it) }
+        private fun `read-discard`(anchor: Anchor): List<Discard> = anchor.requiredValues(Slots.Character.episode) { Discard(it) }
+        private fun `read-each`(anchor: Anchor): List<Each> = anchor.requiredValues(Slots.Character.episode) { Each(it) }
+        private fun `read-isolated`(anchor: Anchor): List<Isolated> = anchor.requiredValues(Slots.Character.episode) { Isolated(it) }
+        private fun `read-sending`(anchor: Anchor): List<Sending> = anchor.requiredValues(Slots.Character.episode) { Sending(it) }
+        private fun `read-then`(anchor: Anchor): List<Then> = anchor.requiredValues(Slots.Character.episode) { Then(it) }
+        private fun `read-unsafe`(anchor: Anchor): List<Unsafe> = anchor.requiredValues(Slots.Character.episode) { Unsafe(it) }
+        private fun `read-satisfied`(anchor: Anchor): List<Satisfied> = anchor.requiredValues(Slots.Character.episode) { Satisfied(it) }
+        private fun `read-missingRequiredField`(anchor: Anchor): List<MissingRequiredField> = anchor.requiredValues(Slots.Character.episode) { MissingRequiredField(it) }
+        private fun `read-fieldErrors`(anchor: Anchor): List<FieldErrorsLens> = anchor.requiredValues(Slots.Character.episode) { FieldErrorsLens(it) }
+        private fun `read-isPresent`(anchor: Anchor): List<IsPresent> = anchor.requiredValues(Slots.Character.episode) { IsPresent(it) }
+        private fun `read-throwing`(anchor: Anchor): List<Throwing> = anchor.requiredValues(Slots.Character.episode) { Throwing(it) }
+        private fun `read-caught`(anchor: Anchor): List<Caught> = anchor.requiredValues(Slots.Character.episode) { Caught(it) }
+        private fun `read-refetchable`(anchor: Anchor): List<Refetchable> = anchor.requiredValues(Slots.Character.episode) { Refetchable(it) }
+        private fun `read-refetch`(anchor: Anchor): List<RefetchLens> = anchor.requiredValues(Slots.Character.episode) { RefetchLens(it) }
+        private fun `read-connection`(anchor: Anchor): List<Connection> = anchor.requiredValues(Slots.Character.episode) { Connection(it) }
+        private fun `read-nodes`(anchor: Anchor): List<Nodes> = anchor.requiredValues(Slots.Character.episode) { Nodes(it) }
+        private fun `read-hasNext`(anchor: Anchor): List<HasNext> = anchor.requiredValues(Slots.Character.episode) { HasNext(it) }
+        private fun `read-hasPrevious`(anchor: Anchor): List<HasPrevious> = anchor.requiredValues(Slots.Character.episode) { HasPrevious(it) }
+        private fun `read-isLoadingNext`(anchor: Anchor): List<IsLoadingNext> = anchor.requiredValues(Slots.Character.episode) { IsLoadingNext(it) }
+        private fun `read-isLoadingPrevious`(anchor: Anchor): List<IsLoadingPrevious> = anchor.requiredValues(Slots.Character.episode) { IsLoadingPrevious(it) }
+        private fun `read-connectionID`(anchor: Anchor): List<ConnectionID> = anchor.requiredValues(Slots.Character.episode) { ConnectionID(it) }
+        private fun `read-loadNext`(anchor: Anchor): List<LoadNext> = anchor.requiredValues(Slots.Character.episode) { LoadNext(it) }
+        private fun `read-loadPrevious`(anchor: Anchor): List<LoadPrevious> = anchor.requiredValues(Slots.Character.episode) { LoadPrevious(it) }
+        private fun `read-bound`(anchor: Anchor): List<Bound> = anchor.requiredValues(Slots.Character.episode) { Bound(it) }
+        private fun `read-errors`(anchor: Anchor): List<Errors> = anchor.requiredValues(Slots.Character.episode) { Errors(it) }
+        private fun `read-child`(anchor: Anchor): List<Child> = anchor.requiredValues(Slots.Character.episode) { Child(it) }
+        private fun `read-missing`(anchor: Anchor): List<Missing> = anchor.requiredValues(Slots.Character.episode) { Missing(it) }
+        private fun `read-count`(anchor: Anchor): List<Count> = anchor.requiredValues(Slots.Character.episode) { Count(it) }
+        private fun `read-fields`(anchor: Anchor): List<Fields> = anchor.requiredValues(Slots.Character.episode) { Fields(it) }
+        private fun `read-lhs`(anchor: Anchor): List<Lhs> = anchor.requiredValues(Slots.Character.episode) { Lhs(it) }
+        private fun `read-rhs`(anchor: Anchor): List<Rhs> = anchor.requiredValues(Slots.Character.episode) { Rhs(it) }
+        private fun `read-hasher`(anchor: Anchor): List<Hasher2> = anchor.requiredValues(Slots.Character.episode) { Hasher2(it) }
+        private fun `read-selection0`(anchor: Anchor): List<Selection0> = anchor.requiredValues(Slots.Character.episode) { Selection0(it) }
+        private fun `read-selection`(anchor: Anchor): List<Selection> = anchor.requiredValues(Slots.Character.episode) { Selection(it) }
+        private fun `read-optimistic`(anchor: Anchor): List<Optimistic> = anchor.requiredValues(Slots.Character.episode) { Optimistic(it) }
+        private fun `read-selfValue`(anchor: Anchor): List<SelfValue> = anchor.requiredValues(Slots.Character.episode) { SelfValue(it) }
+        private fun `read-values`(anchor: Anchor): List<Values> = anchor.requiredValues(Slots.Character.episode) { Values(it) }
+        private fun `read-Fragment`(anchor: Anchor): List<FragmentLens> = anchor.requiredValues(Slots.Character.episode) { FragmentLens(it) }
+        private fun `read-Spread`(anchor: Anchor): List<Spread2> = anchor.requiredValues(Slots.Character.episode) { Spread2(it) }
+        private fun `read-Owner`(anchor: Anchor): List<Owner2> = anchor.requiredValues(Slots.Character.episode) { Owner2(it) }
+        private fun `read-Query`(anchor: Anchor): List<Query2> = anchor.requiredValues(Slots.Character.episode) { Query2(it) }
+        private fun `read-Operation`(anchor: Anchor): List<Operation2> = anchor.requiredValues(Slots.Character.episode) { Operation2(it) }
+        private fun `read-RefetchQuery`(anchor: Anchor): List<RefetchQuery2> = anchor.requiredValues(Slots.Character.episode) { RefetchQuery2(it) }
+        private fun `read-variables`(anchor: Anchor): List<VariablesLens> = anchor.requiredValues(Slots.Character.episode) { VariablesLens(it) }
+        private fun `read-resolution`(anchor: Anchor): List<Resolution> = anchor.requiredValues(Slots.Character.episode) { Resolution(it) }
+        private fun `read-name`(anchor: Anchor): List<Name> = anchor.requiredValues(Slots.Character.episode) { Name(it) }
+        private fun `read-document`(anchor: Anchor): List<Document> = anchor.requiredValues(Slots.Character.episode) { Document(it) }
+        private fun `read-text`(anchor: Anchor): List<Text> = anchor.requiredValues(Slots.Character.episode) { Text(it) }
+        private fun `read-plan`(anchor: Anchor): List<Plan> = anchor.requiredValues(Slots.Character.episode) { Plan(it) }
+        private fun `read-errorBehavior`(anchor: Anchor): List<ErrorBehavior> = anchor.requiredValues(Slots.Character.episode) { ErrorBehavior(it) }
+        private fun `read-throwsOnFieldError`(anchor: Anchor): List<ThrowsOnFieldError> = anchor.requiredValues(Slots.Character.episode) { ThrowsOnFieldError(it) }
+        private fun `read-bubbles`(anchor: Anchor): List<Bubbles> = anchor.requiredValues(Slots.Character.episode) { Bubbles(it) }
+        private fun `read-hasDeferred`(anchor: Anchor): List<HasDeferred> = anchor.requiredValues(Slots.Character.episode) { HasDeferred(it) }
+        private fun `read-cacheExpiration`(anchor: Anchor): List<CacheExpiration> = anchor.requiredValues(Slots.Character.episode) { CacheExpiration(it) }
+        private fun `read-Data`(anchor: Anchor): List<Data2> = anchor.requiredValues(Slots.Character.episode) { Data2(it) }
+        private fun `read-Action`(anchor: Anchor): List<Action2> = anchor.requiredValues(Slots.Character.episode) { Action2(it) }
+        private fun `read-OptimisticResponse`(anchor: Anchor): List<OptimisticResponse2> = anchor.requiredValues(Slots.Character.episode) { OptimisticResponse2(it) }
+        private fun `read-hash`(anchor: Anchor): List<Hash> = anchor.requiredValues(Slots.Character.episode) { Hash(it) }
+        private fun `read-commit`(anchor: Anchor): List<Commit> = anchor.requiredValues(Slots.Character.episode) { Commit(it) }
+        private fun `read-callAsFunction`(anchor: Anchor): List<CallAsFunction> = anchor.requiredValues(Slots.Character.episode) { CallAsFunction(it) }
+        private fun `read-Op`(anchor: Anchor): List<Op2> = anchor.requiredValues(Slots.Character.episode) { Op2(it) }
+        private fun `read-variable`(anchor: Anchor): List<VariableLens> = anchor.requiredValues(Slots.Character.episode) { VariableLens(it) }
+        private fun `read-payload`(anchor: Anchor): List<Payload> = anchor.requiredValues(Slots.Character.episode) { Payload(it) }
+        private fun `read-hashValue`(anchor: Anchor): List<HashValue> = anchor.requiredValues(Slots.Character.episode) { HashValue(it) }
+        private fun `read-phase`(anchor: Anchor): List<Phase> = anchor.requiredValues(Slots.Character.episode) { Phase(it) }
+        private fun `read-isRefreshing`(anchor: Anchor): List<IsRefreshing> = anchor.requiredValues(Slots.Character.episode) { IsRefreshing(it) }
+        private fun `read-isStale`(anchor: Anchor): List<IsStale> = anchor.requiredValues(Slots.Character.episode) { IsStale(it) }
+        private fun `read-retry`(anchor: Anchor): List<Retry> = anchor.requiredValues(Slots.Character.episode) { Retry(it) }
+        private fun `read-subscription`(anchor: Anchor): List<Subscription> = anchor.requiredValues(Slots.Character.episode) { Subscription(it) }
+        private fun `read-Types`(anchor: Anchor): List<TypesLens> = anchor.requiredValues(Slots.Character.episode) { TypesLens(it) }
+        private fun `read-Sites`(anchor: Anchor): List<SitesLens> = anchor.requiredValues(Slots.Character.episode) { SitesLens(it) }
+        private fun `read-Guards`(anchor: Anchor): List<GuardsLens> = anchor.requiredValues(Slots.Character.episode) { GuardsLens(it) }
+        private fun `read-AbstractSlots`(anchor: Anchor): List<AbstractSlotsLens> = anchor.requiredValues(Slots.Character.episode) { AbstractSlotsLens(it) }
+        private fun `read-schemaDigest`(anchor: Anchor): List<SchemaDigest> = anchor.requiredValues(Slots.Character.episode) { SchemaDigest(it) }
+        private fun `read-format`(anchor: Anchor): List<Format> = anchor.requiredValues(Slots.Character.episode) { Format(it) }
+        private fun `read-transient`(anchor: Anchor): List<Transient> = anchor.requiredValues(Slots.Character.episode) { Transient(it) }
+        private fun `read-Baton`(anchor: Anchor): List<Baton2> = anchor.requiredValues(Slots.Character.episode) { Baton2(it) }
+        private fun `read-Swift`(anchor: Anchor): List<Swift2> = anchor.requiredValues(Slots.Character.episode) { Swift2(it) }
+        private fun `read-Set`(anchor: Anchor): List<Set2> = anchor.requiredValues(Slots.Character.episode) { Set2(it) }
+        private fun `read-Result`(anchor: Anchor): List<ResultLens> = anchor.requiredValues(Slots.Character.episode) { ResultLens(it) }
+        private fun `read-Optional`(anchor: Anchor): List<Optional2> = anchor.requiredValues(Slots.Character.episode) { Optional2(it) }
+        private fun `read-String`(anchor: Anchor): List<StringLens> = anchor.requiredValues(Slots.Character.episode) { StringLens(it) }
+        private fun `read-Int`(anchor: Anchor): List<IntLens> = anchor.requiredValues(Slots.Character.episode) { IntLens(it) }
+        private fun `read-Double`(anchor: Anchor): List<DoubleLens> = anchor.requiredValues(Slots.Character.episode) { DoubleLens(it) }
+        private fun `read-Bool`(anchor: Anchor): List<Bool2> = anchor.requiredValues(Slots.Character.episode) { Bool2(it) }
+        private fun `read-MainActor`(anchor: Anchor): List<MainActor2> = anchor.requiredValues(Slots.Character.episode) { MainActor2(it) }
+        private fun `read-Hasher`(anchor: Anchor): List<Hasher3> = anchor.requiredValues(Slots.Character.episode) { Hasher3(it) }
+        private fun `read-Sendable`(anchor: Anchor): List<Sendable2> = anchor.requiredValues(Slots.Character.episode) { Sendable2(it) }
     }
 
     data class Type2(
@@ -5869,7 +6328,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5886,6 +6345,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Type2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -5895,7 +6355,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5912,6 +6372,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Protocol2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -5921,7 +6382,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5938,6 +6399,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.AnyLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -5947,7 +6409,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5964,6 +6426,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Self2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -5973,7 +6436,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5990,6 +6453,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Self3(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -5999,7 +6463,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6016,6 +6480,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Init(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6025,7 +6490,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6042,6 +6507,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Deinit(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6051,7 +6517,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6068,6 +6534,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Subscript(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6077,7 +6544,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6094,6 +6561,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Class(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6103,7 +6571,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6120,6 +6588,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Struct(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6129,7 +6598,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6146,6 +6615,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Enum(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6155,7 +6625,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6172,6 +6642,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Func(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6181,7 +6652,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6198,6 +6669,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Var(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6207,7 +6679,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6224,6 +6696,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Let(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6233,7 +6706,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6250,6 +6723,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Import(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6259,7 +6733,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6276,6 +6750,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Extension(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6285,7 +6760,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6302,6 +6777,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Operator(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6311,7 +6787,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6328,6 +6804,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Static(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6337,7 +6814,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6354,6 +6831,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Default(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6363,7 +6841,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6380,6 +6858,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Case(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6389,7 +6868,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6406,6 +6885,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Switch(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6415,7 +6895,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6432,6 +6912,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.If(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6441,7 +6922,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6458,6 +6939,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Else(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6467,7 +6949,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6484,6 +6966,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.For(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6493,7 +6976,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6510,6 +6993,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.In(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6519,7 +7003,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6536,6 +7020,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.While(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6545,7 +7030,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6562,6 +7047,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Repeat(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6571,7 +7057,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6588,6 +7074,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Return(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6597,7 +7084,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6614,6 +7101,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Break(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6623,7 +7111,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6640,6 +7128,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Continue(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6649,7 +7138,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6666,6 +7155,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Where(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6675,7 +7165,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6692,6 +7182,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Is(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6701,7 +7192,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6718,6 +7209,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.As(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6727,7 +7219,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6744,6 +7236,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Try(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6753,7 +7246,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6770,6 +7263,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Throw(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6779,7 +7273,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6796,6 +7290,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Throws(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6805,7 +7300,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6822,6 +7317,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Guard(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6831,7 +7327,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6848,6 +7344,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Defer(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6857,7 +7354,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6874,6 +7371,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Do(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6883,7 +7381,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6900,6 +7398,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Catch(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6909,7 +7408,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6926,6 +7425,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.True(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6935,7 +7435,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6952,6 +7452,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.False(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6961,7 +7462,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6978,6 +7479,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Nil(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -6987,7 +7489,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7004,6 +7506,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Super(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7013,7 +7516,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7030,6 +7533,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Internal(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7039,7 +7543,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7056,6 +7560,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Private(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7065,7 +7570,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7082,6 +7587,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Public(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7091,7 +7597,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7108,6 +7614,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Fileprivate(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7117,7 +7624,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7134,6 +7641,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Open(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7143,7 +7651,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7160,6 +7668,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Inout(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7169,7 +7678,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7186,6 +7695,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Typealias(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7195,7 +7705,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7212,6 +7722,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Associatedtype(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7221,7 +7732,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7238,6 +7749,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Protocol3(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7247,7 +7759,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7264,6 +7776,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Some(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7273,7 +7786,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7290,6 +7803,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.AnyLens2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7299,7 +7813,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7316,6 +7830,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Rethrows(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7325,7 +7840,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7342,6 +7857,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Fallthrough(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7351,7 +7867,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7368,6 +7884,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Precedencegroup(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7377,7 +7894,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7394,6 +7911,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character._2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7403,7 +7921,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7420,6 +7938,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Async(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7429,7 +7948,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7446,6 +7965,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Await(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7455,7 +7975,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7472,6 +7992,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Borrowing(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7481,7 +8002,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7498,6 +8019,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Consume(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7507,7 +8029,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7524,6 +8046,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Consuming(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7533,7 +8056,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7550,6 +8073,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Copy(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7559,7 +8083,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7576,6 +8100,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Discard(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7585,7 +8110,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7602,6 +8127,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Each(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7611,7 +8137,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7628,6 +8154,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Isolated(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7637,7 +8164,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7654,6 +8181,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Sending(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7663,7 +8191,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7680,6 +8208,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Then(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7689,7 +8218,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7706,6 +8235,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Unsafe(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7715,7 +8245,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7732,6 +8262,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Satisfied(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7741,7 +8272,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7758,6 +8289,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.MissingRequiredField(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7767,7 +8299,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7784,6 +8316,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.FieldErrorsLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7793,7 +8326,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7810,6 +8343,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.IsPresent(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7819,7 +8353,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7836,6 +8370,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Throwing(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7845,7 +8380,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7862,6 +8397,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Caught(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7871,7 +8407,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7888,6 +8424,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Refetchable(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7897,7 +8434,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7914,6 +8451,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.RefetchLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7923,7 +8461,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7940,6 +8478,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Connection(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7949,7 +8488,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7966,6 +8505,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Nodes(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -7975,7 +8515,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7992,6 +8532,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.HasNext(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8001,7 +8542,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8018,6 +8559,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.HasPrevious(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8027,7 +8569,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8044,6 +8586,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.IsLoadingNext(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8053,7 +8596,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8070,6 +8613,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.IsLoadingPrevious(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8079,7 +8623,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8096,6 +8640,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.ConnectionID(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8105,7 +8650,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8122,6 +8667,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.LoadNext(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8131,7 +8677,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8148,6 +8694,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.LoadPrevious(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8157,7 +8704,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8174,6 +8721,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Bound(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8183,7 +8731,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8200,6 +8748,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Errors(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8209,7 +8758,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8226,6 +8775,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Child(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8235,7 +8785,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8252,6 +8802,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Missing(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8261,7 +8812,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8278,6 +8829,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Count(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8287,7 +8839,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8304,6 +8856,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Fields(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8313,7 +8866,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8330,6 +8883,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Lhs(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8339,7 +8893,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8356,6 +8910,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Rhs(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8365,7 +8920,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8382,6 +8937,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Hasher2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8391,7 +8947,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8408,6 +8964,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Selection0(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8417,7 +8974,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8434,6 +8991,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Selection(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8443,7 +9001,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8460,6 +9018,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Optimistic(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8469,7 +9028,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8486,6 +9045,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.SelfValue(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8495,7 +9055,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8512,6 +9072,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Values(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8521,7 +9082,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8538,6 +9099,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.FragmentLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8547,7 +9109,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8564,6 +9126,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Spread2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8573,7 +9136,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8590,6 +9153,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Owner2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8599,7 +9163,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8616,6 +9180,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Query2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8625,7 +9190,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8642,6 +9207,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Operation2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8651,7 +9217,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8668,6 +9234,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.RefetchQuery2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8677,7 +9244,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8694,6 +9261,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.VariablesLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8703,7 +9271,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8720,6 +9288,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Resolution(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8729,7 +9298,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8746,6 +9315,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Name(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8755,7 +9325,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8772,6 +9342,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Document(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8781,7 +9352,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8798,6 +9369,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Text(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8807,7 +9379,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8824,6 +9396,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Plan(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8833,7 +9406,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8850,6 +9423,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.ErrorBehavior(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8859,7 +9433,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8876,6 +9450,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.ThrowsOnFieldError(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8885,7 +9460,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8902,6 +9477,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Bubbles(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8911,7 +9487,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8928,6 +9504,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.HasDeferred(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8937,7 +9514,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8954,6 +9531,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.CacheExpiration(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8963,7 +9541,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8980,6 +9558,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Data2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8989,7 +9568,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9006,6 +9585,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Action2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9015,7 +9595,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9032,6 +9612,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.OptimisticResponse2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9041,7 +9622,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9058,6 +9639,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Hash(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9067,7 +9649,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9084,6 +9666,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Commit(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9093,7 +9676,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9110,6 +9693,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.CallAsFunction(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9119,7 +9703,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9136,6 +9720,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Op2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9145,7 +9730,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9162,6 +9747,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.VariableLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9171,7 +9757,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9188,6 +9774,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Payload(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9197,7 +9784,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9214,6 +9801,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.HashValue(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9223,7 +9811,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9240,6 +9828,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Phase(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9249,7 +9838,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9266,6 +9855,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.IsRefreshing(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9275,7 +9865,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9292,6 +9882,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.IsStale(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9301,7 +9892,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9318,6 +9909,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Retry(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9327,7 +9919,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9344,6 +9936,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Subscription(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9353,7 +9946,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9370,6 +9963,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.TypesLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9379,7 +9973,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9396,6 +9990,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.SitesLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9405,7 +10000,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9422,6 +10017,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.GuardsLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9431,7 +10027,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9448,6 +10044,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.AbstractSlotsLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9457,7 +10054,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9474,6 +10071,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.SchemaDigest(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9483,7 +10081,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9500,6 +10098,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Format(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9509,7 +10108,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9526,6 +10125,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Transient(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9535,7 +10135,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9552,6 +10152,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Baton2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9561,7 +10162,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9578,6 +10179,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Swift2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9587,7 +10189,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9604,6 +10206,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Set2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9613,7 +10216,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9630,6 +10233,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.ResultLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9639,7 +10243,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9656,6 +10260,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Optional2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9665,7 +10270,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9682,6 +10287,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.StringLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9691,7 +10297,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9708,6 +10314,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.IntLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9717,7 +10324,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9734,6 +10341,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.DoubleLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9743,7 +10351,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9760,6 +10368,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Bool2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9769,7 +10378,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9786,6 +10395,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.MainActor2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9795,7 +10405,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9812,6 +10422,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Hasher3(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9821,7 +10432,7 @@ data class HostileInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9838,6 +10449,7 @@ data class HostileInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(HostileInlinePlurals_character.Sendable2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 }
@@ -10001,159 +10613,159 @@ data class HostileInlineScalars_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
+        `read-Type`(anchor),
+        `read-Protocol`(anchor),
+        `read-Any`(anchor),
+        `read-self`(anchor),
+        `read-Self`(anchor),
+        `read-init`(anchor),
+        `read-deinit`(anchor),
+        `read-subscript`(anchor),
+        `read-class`(anchor),
+        `read-struct`(anchor),
+        `read-enum`(anchor),
+        `read-func`(anchor),
+        `read-var`(anchor),
+        `read-let`(anchor),
+        `read-import`(anchor),
+        `read-extension`(anchor),
+        `read-operator`(anchor),
+        `read-static`(anchor),
+        `read-default`(anchor),
+        `read-case`(anchor),
+        `read-switch`(anchor),
+        `read-if`(anchor),
+        `read-else`(anchor),
+        `read-for`(anchor),
+        `read-in`(anchor),
+        `read-while`(anchor),
+        `read-repeat`(anchor),
+        `read-return`(anchor),
+        `read-break`(anchor),
+        `read-continue`(anchor),
+        `read-where`(anchor),
+        `read-is`(anchor),
+        `read-as`(anchor),
+        `read-try`(anchor),
+        `read-throw`(anchor),
+        `read-throws`(anchor),
+        `read-guard`(anchor),
+        `read-defer`(anchor),
+        `read-do`(anchor),
+        `read-catch`(anchor),
+        `read-true`(anchor),
+        `read-false`(anchor),
+        `read-nil`(anchor),
+        `read-super`(anchor),
+        `read-internal`(anchor),
+        `read-private`(anchor),
+        `read-public`(anchor),
+        `read-fileprivate`(anchor),
+        `read-open`(anchor),
+        `read-inout`(anchor),
+        `read-typealias`(anchor),
+        `read-associatedtype`(anchor),
+        `read-protocol`(anchor),
+        `read-some`(anchor),
+        `read-any`(anchor),
+        `read-rethrows`(anchor),
+        `read-fallthrough`(anchor),
+        `read-precedencegroup`(anchor),
+        `read-_`(anchor),
+        `read-async`(anchor),
+        `read-await`(anchor),
+        `read-borrowing`(anchor),
+        `read-consume`(anchor),
+        `read-consuming`(anchor),
+        `read-copy`(anchor),
+        `read-discard`(anchor),
+        `read-each`(anchor),
+        `read-isolated`(anchor),
+        `read-sending`(anchor),
+        `read-then`(anchor),
+        `read-unsafe`(anchor),
+        `read-satisfied`(anchor),
+        `read-missingRequiredField`(anchor),
+        `read-fieldErrors`(anchor),
+        `read-isPresent`(anchor),
+        `read-throwing`(anchor),
+        `read-caught`(anchor),
+        `read-refetchable`(anchor),
+        `read-refetch`(anchor),
+        `read-connection`(anchor),
+        `read-nodes`(anchor),
+        `read-hasNext`(anchor),
+        `read-hasPrevious`(anchor),
+        `read-isLoadingNext`(anchor),
+        `read-isLoadingPrevious`(anchor),
+        `read-connectionID`(anchor),
+        `read-loadNext`(anchor),
+        `read-loadPrevious`(anchor),
+        `read-bound`(anchor),
+        `read-errors`(anchor),
+        `read-child`(anchor),
+        `read-missing`(anchor),
+        `read-count`(anchor),
+        `read-fields`(anchor),
+        `read-lhs`(anchor),
+        `read-rhs`(anchor),
+        `read-hasher`(anchor),
+        `read-selection0`(anchor),
+        `read-selection`(anchor),
+        `read-optimistic`(anchor),
+        `read-selfValue`(anchor),
+        `read-values`(anchor),
+        `read-Fragment`(anchor),
+        `read-Spread`(anchor),
+        `read-Owner`(anchor),
+        `read-Query`(anchor),
+        `read-Operation`(anchor),
+        `read-RefetchQuery`(anchor),
+        `read-variables`(anchor),
+        `read-resolution`(anchor),
+        `read-name`(anchor),
+        `read-document`(anchor),
+        `read-text`(anchor),
+        `read-plan`(anchor),
+        `read-errorBehavior`(anchor),
+        `read-throwsOnFieldError`(anchor),
+        `read-bubbles`(anchor),
+        `read-hasDeferred`(anchor),
+        `read-cacheExpiration`(anchor),
+        `read-Data`(anchor),
+        `read-Action`(anchor),
+        `read-OptimisticResponse`(anchor),
+        `read-hash`(anchor),
+        `read-commit`(anchor),
+        `read-callAsFunction`(anchor),
+        `read-Op`(anchor),
+        `read-variable`(anchor),
+        `read-payload`(anchor),
+        `read-hashValue`(anchor),
+        `read-phase`(anchor),
+        `read-isRefreshing`(anchor),
+        `read-isStale`(anchor),
+        `read-retry`(anchor),
+        `read-subscription`(anchor),
+        `read-Types`(anchor),
+        `read-Sites`(anchor),
+        `read-Guards`(anchor),
+        `read-AbstractSlots`(anchor),
+        `read-schemaDigest`(anchor),
+        `read-format`(anchor),
+        `read-transient`(anchor),
+        `read-Baton`(anchor),
+        `read-Swift`(anchor),
+        `read-Set`(anchor),
+        `read-Result`(anchor),
+        `read-Optional`(anchor),
+        `read-String`(anchor),
+        `read-Int`(anchor),
+        `read-Double`(anchor),
+        `read-Bool`(anchor),
+        `read-MainActor`(anchor),
+        `read-Hasher`(anchor),
+        `read-Sendable`(anchor),
     )
 
     companion object {
@@ -10324,6 +10936,159 @@ data class HostileInlineScalars_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name)
+        private fun `read-Type`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Protocol`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Any`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-self`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Self`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-init`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-deinit`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-subscript`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-class`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-struct`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-enum`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-func`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-var`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-let`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-import`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-extension`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-operator`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-static`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-default`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-case`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-switch`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-if`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-else`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-for`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-in`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-while`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-repeat`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-return`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-break`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-continue`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-where`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-is`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-as`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-try`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-throw`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-throws`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-guard`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-defer`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-do`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-catch`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-true`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-false`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-nil`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-super`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-internal`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-private`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-public`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-fileprivate`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-open`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-inout`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-typealias`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-associatedtype`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-protocol`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-some`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-any`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-rethrows`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-fallthrough`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-precedencegroup`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-_`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-async`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-await`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-borrowing`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-consume`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-consuming`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-copy`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-discard`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-each`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-isolated`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-sending`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-then`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-unsafe`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-satisfied`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-missingRequiredField`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-fieldErrors`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-isPresent`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-throwing`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-caught`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-refetchable`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-refetch`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-connection`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-nodes`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-hasNext`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-hasPrevious`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-isLoadingNext`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-isLoadingPrevious`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-connectionID`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-loadNext`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-loadPrevious`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-bound`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-errors`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-child`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-missing`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-count`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-fields`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-lhs`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-rhs`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-hasher`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-selection0`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-selection`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-optimistic`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-selfValue`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-values`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Fragment`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Spread`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Owner`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Query`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Operation`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-RefetchQuery`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-variables`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-resolution`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-name`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-document`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-text`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-plan`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-errorBehavior`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-throwsOnFieldError`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-bubbles`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-hasDeferred`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-cacheExpiration`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Data`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Action`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-OptimisticResponse`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-hash`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-commit`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-callAsFunction`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Op`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-variable`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-payload`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-hashValue`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-phase`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-isRefreshing`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-isStale`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-retry`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-subscription`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Types`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Sites`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Guards`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-AbstractSlots`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-schemaDigest`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-format`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-transient`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Baton`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Swift`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Set`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Result`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Optional`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-String`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Int`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Double`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Bool`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-MainActor`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Hasher`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Sendable`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
     }
 }
 
@@ -10334,7 +11099,7 @@ data class HostileInlineSpreadTarget_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.string(Slots.Character.name),
+        `read-name`(anchor),
     )
 
     companion object {
@@ -10351,6 +11116,7 @@ data class HostileInlineSpreadTarget_character(
             val errors = fieldErrors(anchor)
             return if (errors.isEmpty()) Result.success(HostileInlineSpreadTarget_character(anchor)) else Result.failure(FieldErrors(errors))
         }
+        private fun `read-name`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
     }
 }
 
@@ -10514,160 +11280,160 @@ data class HostileInlineSpreads_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
-        HostileInlineSpreadTarget_character(anchor.entering()),
+        `read-Type`(anchor),
+        `read-Protocol`(anchor),
+        `read-Any`(anchor),
+        `read-self`(anchor),
+        `read-Self`(anchor),
+        `read-init`(anchor),
+        `read-deinit`(anchor),
+        `read-subscript`(anchor),
+        `read-class`(anchor),
+        `read-struct`(anchor),
+        `read-enum`(anchor),
+        `read-func`(anchor),
+        `read-var`(anchor),
+        `read-let`(anchor),
+        `read-import`(anchor),
+        `read-extension`(anchor),
+        `read-operator`(anchor),
+        `read-static`(anchor),
+        `read-default`(anchor),
+        `read-case`(anchor),
+        `read-switch`(anchor),
+        `read-if`(anchor),
+        `read-else`(anchor),
+        `read-for`(anchor),
+        `read-in`(anchor),
+        `read-while`(anchor),
+        `read-repeat`(anchor),
+        `read-return`(anchor),
+        `read-break`(anchor),
+        `read-continue`(anchor),
+        `read-where`(anchor),
+        `read-is`(anchor),
+        `read-as`(anchor),
+        `read-try`(anchor),
+        `read-throw`(anchor),
+        `read-throws`(anchor),
+        `read-guard`(anchor),
+        `read-defer`(anchor),
+        `read-do`(anchor),
+        `read-catch`(anchor),
+        `read-true`(anchor),
+        `read-false`(anchor),
+        `read-nil`(anchor),
+        `read-super`(anchor),
+        `read-internal`(anchor),
+        `read-private`(anchor),
+        `read-public`(anchor),
+        `read-fileprivate`(anchor),
+        `read-open`(anchor),
+        `read-inout`(anchor),
+        `read-typealias`(anchor),
+        `read-associatedtype`(anchor),
+        `read-protocol`(anchor),
+        `read-some`(anchor),
+        `read-any`(anchor),
+        `read-rethrows`(anchor),
+        `read-fallthrough`(anchor),
+        `read-precedencegroup`(anchor),
+        `read-_`(anchor),
+        `read-async`(anchor),
+        `read-await`(anchor),
+        `read-borrowing`(anchor),
+        `read-consume`(anchor),
+        `read-consuming`(anchor),
+        `read-copy`(anchor),
+        `read-discard`(anchor),
+        `read-each`(anchor),
+        `read-isolated`(anchor),
+        `read-sending`(anchor),
+        `read-then`(anchor),
+        `read-unsafe`(anchor),
+        `read-satisfied`(anchor),
+        `read-missingRequiredField`(anchor),
+        `read-fieldErrors`(anchor),
+        `read-isPresent`(anchor),
+        `read-throwing`(anchor),
+        `read-caught`(anchor),
+        `read-refetchable`(anchor),
+        `read-refetch`(anchor),
+        `read-connection`(anchor),
+        `read-nodes`(anchor),
+        `read-hasNext`(anchor),
+        `read-hasPrevious`(anchor),
+        `read-isLoadingNext`(anchor),
+        `read-isLoadingPrevious`(anchor),
+        `read-connectionID`(anchor),
+        `read-loadNext`(anchor),
+        `read-loadPrevious`(anchor),
+        `read-bound`(anchor),
+        `read-errors`(anchor),
+        `read-child`(anchor),
+        `read-missing`(anchor),
+        `read-count`(anchor),
+        `read-fields`(anchor),
+        `read-lhs`(anchor),
+        `read-rhs`(anchor),
+        `read-hasher`(anchor),
+        `read-selection0`(anchor),
+        `read-selection`(anchor),
+        `read-optimistic`(anchor),
+        `read-selfValue`(anchor),
+        `read-values`(anchor),
+        `read-Fragment`(anchor),
+        `read-Spread`(anchor),
+        `read-Owner`(anchor),
+        `read-Query`(anchor),
+        `read-Operation`(anchor),
+        `read-RefetchQuery`(anchor),
+        `read-variables`(anchor),
+        `read-resolution`(anchor),
+        `read-name`(anchor),
+        `read-document`(anchor),
+        `read-text`(anchor),
+        `read-plan`(anchor),
+        `read-errorBehavior`(anchor),
+        `read-throwsOnFieldError`(anchor),
+        `read-bubbles`(anchor),
+        `read-hasDeferred`(anchor),
+        `read-cacheExpiration`(anchor),
+        `read-Data`(anchor),
+        `read-Action`(anchor),
+        `read-OptimisticResponse`(anchor),
+        `read-hash`(anchor),
+        `read-commit`(anchor),
+        `read-callAsFunction`(anchor),
+        `read-Op`(anchor),
+        `read-variable`(anchor),
+        `read-payload`(anchor),
+        `read-hashValue`(anchor),
+        `read-phase`(anchor),
+        `read-isRefreshing`(anchor),
+        `read-isStale`(anchor),
+        `read-retry`(anchor),
+        `read-subscription`(anchor),
+        `read-Types`(anchor),
+        `read-Slots`(anchor),
+        `read-Sites`(anchor),
+        `read-Guards`(anchor),
+        `read-AbstractSlots`(anchor),
+        `read-schemaDigest`(anchor),
+        `read-format`(anchor),
+        `read-transient`(anchor),
+        `read-Baton`(anchor),
+        `read-Swift`(anchor),
+        `read-Set`(anchor),
+        `read-Result`(anchor),
+        `read-Optional`(anchor),
+        `read-String`(anchor),
+        `read-Int`(anchor),
+        `read-Double`(anchor),
+        `read-Bool`(anchor),
+        `read-MainActor`(anchor),
+        `read-Hasher`(anchor),
+        `read-Sendable`(anchor),
     )
 
     companion object {
@@ -10839,6 +11605,160 @@ data class HostileInlineSpreads_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = true
+        private fun `read-Type`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Protocol`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Any`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-self`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Self`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-init`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-deinit`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-subscript`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-class`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-struct`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-enum`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-func`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-var`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-let`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-import`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-extension`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-operator`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-static`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-default`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-case`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-switch`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-if`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-else`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-for`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-in`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-while`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-repeat`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-return`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-break`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-continue`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-where`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-is`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-as`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-try`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-throw`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-throws`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-guard`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-defer`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-do`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-catch`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-true`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-false`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-nil`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-super`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-internal`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-private`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-public`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-fileprivate`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-open`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-inout`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-typealias`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-associatedtype`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-protocol`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-some`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-any`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-rethrows`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-fallthrough`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-precedencegroup`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-_`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-async`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-await`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-borrowing`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-consume`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-consuming`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-copy`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-discard`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-each`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-isolated`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-sending`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-then`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-unsafe`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-satisfied`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-missingRequiredField`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-fieldErrors`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-isPresent`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-throwing`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-caught`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-refetchable`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-refetch`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-connection`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-nodes`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-hasNext`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-hasPrevious`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-isLoadingNext`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-isLoadingPrevious`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-connectionID`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-loadNext`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-loadPrevious`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-bound`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-errors`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-child`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-missing`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-count`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-fields`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-lhs`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-rhs`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-hasher`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-selection0`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-selection`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-optimistic`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-selfValue`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-values`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Fragment`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Spread`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Owner`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Query`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Operation`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-RefetchQuery`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-variables`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-resolution`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-name`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-document`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-text`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-plan`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-errorBehavior`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-throwsOnFieldError`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-bubbles`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-hasDeferred`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-cacheExpiration`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Data`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Action`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-OptimisticResponse`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-hash`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-commit`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-callAsFunction`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Op`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-variable`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-payload`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-hashValue`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-phase`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-isRefreshing`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-isStale`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-retry`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-subscription`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Types`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Slots`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Sites`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Guards`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-AbstractSlots`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-schemaDigest`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-format`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-transient`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Baton`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Swift`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Set`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Result`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Optional`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-String`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Int`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Double`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Bool`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-MainActor`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Hasher`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Sendable`(anchor: Anchor): HostileInlineSpreadTarget_character = HostileInlineSpreadTarget_character(anchor.entering())
     }
 }
 

@@ -195,6 +195,25 @@ fn a_graphql_source_takes_the_shared_package() {
 }
 
 #[test]
+fn a_value_s_constructor_reads_each_field_through_a_function_of_its_own() {
+    let output = emitted(
+        "Screen.kt",
+        Some("app.generated"),
+        "fragment Probe_character on Character @inline { name origin { id } }",
+    );
+    let text = file(&output);
+    assert!(text.contains(
+        "    constructor(anchor: Anchor) : this(\n        `read-name`(anchor),\n        `read-origin`(anchor),\n    )\n"
+    ));
+    assert!(text.contains(
+        "\n        private fun `read-name`(anchor: Anchor): String? = anchor.string(Slots.Character.name)\n"
+    ));
+    assert!(text.contains(
+        "\n        private fun `read-origin`(anchor: Anchor): Origin? = anchor.linked(Slots.Character.origin)?.let { Origin(it) }\n"
+    ));
+}
+
+#[test]
 fn every_selection_is_its_own_lazy_declaration_in_an_object_no_lens_sees() {
     let output = emitted(
         "Screen.kt",

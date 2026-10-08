@@ -74,11 +74,18 @@ fn compile_swift_tests() -> Plan {
     compile_sources(&[]).0
 }
 
-/// The plan of the Swift test target's sources and the Kotlin hostile-name
-/// corpus, which the Kotlin target writes into the package the corpus
-/// declares; with the package each Kotlin host declares, by its source.
+/// The Kotlin host whose value is too wide for a constructor that reads
+/// every field in place.
+const WIDE_VALUE: &str = "compiler/src/tests/hosts/WideValueDocuments.kt";
+
+/// The plan of the Swift test target's sources, the Kotlin hostile-name
+/// corpus and the wide value, which the Kotlin target writes into the
+/// package each host declares; with that package, by its source.
 fn compile_kotlin_tests() -> (Plan, BTreeMap<String, Option<String>>) {
-    compile_sources(&[repository().join(kotlin_hostile_names::CORPUS)])
+    compile_sources(&[
+        repository().join(kotlin_hostile_names::CORPUS),
+        repository().join(WIDE_VALUE),
+    ])
 }
 
 /// The plan of the Swift test target's sources and of `hosts` beside them,

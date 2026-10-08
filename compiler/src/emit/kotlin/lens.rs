@@ -194,7 +194,7 @@ impl Lenses<'_> {
                 "override fun equals(other: Any?): Boolean = other is {path} && other.anchor == anchor"
             ));
             writer.line("override fun hashCode(): Int = anchor.hashCode()");
-            self.companion(writer, plan, path, "lens", &hidden.aliases());
+            self.companion(writer, plan, path, "lens", &hidden.aliases(), &[]);
             for child in &plan.nested {
                 writer.blank();
                 self.lens(writer, child, &format!("{path}.{}", escape(&child.name)));
@@ -202,8 +202,8 @@ impl Lenses<'_> {
         });
     }
 
-    /// The companion of a lens or a value: the refetch descriptor and the
-    /// checks, when it has any.
+    /// The companion of a lens or a value: the refetch descriptor, the
+    /// checks and a value's reads, when it has any.
     fn companion(
         &self,
         writer: &mut Writer,
@@ -211,12 +211,14 @@ impl Lenses<'_> {
         path: &str,
         noun: &str,
         aliases: &[String],
+        reads: &[(String, Piece)],
     ) {
         let has_members = plan.refetch.is_some()
             || plan.satisfied.is_some()
             || plan.field_errors.is_some()
             || plan.is_present.is_some()
-            || !aliases.is_empty();
+            || !aliases.is_empty()
+            || !reads.is_empty();
         if !has_members {
             return;
         }
@@ -243,6 +245,9 @@ impl Lenses<'_> {
             }
             if let Some(checks) = &plan.is_present {
                 is_present_function(writer, checks);
+            }
+            for (function, piece) in reads {
+                read_function(writer, function, piece);
             }
         });
     }
@@ -934,6 +939,14 @@ impl Lenses<'_> {
     /// An `@inline` fragment's value and the values nested in it: a data
     /// class of what the lens's accessors read, and a constructor that reads
     /// them out of the record, once, at the call.
+    ///
+    /// The constructor calls a private function of the companion for each
+    /// field rather than reading it in place. Kotlin stores the arguments
+    /// already computed into locals before each inlined call, a `let` or a
+    /// `run`, and loads them back after it, so a constructor that read in
+    /// place grew with the square of its fields and passed the 64 KiB the
+    /// JVM allows a method at some two hundred; each function holds one
+    /// read, and the constructor grows by one call a field.
     pub(super) fn value(&self, writer: &mut Writer, plan: &ReaderPlan, path: &str) {
         debug_assert!(
             plan.refetch.is_none() && plan.connection.is_none() && plan.satisfied.is_none(),
@@ -949,7 +962,12 @@ impl Lenses<'_> {
         let pieces: Vec<Piece> = plan
             .accessors
             .iter()
-            .map(|accessor| self.piece(plan, accessor, &hidden, true, "return@run"))
+            .map(|accessor| self.piece(plan, accessor, &hidden, true, "return"))
+            .collect();
+        let functions: Vec<String> = plan
+            .accessors
+            .iter()
+            .map(|accessor| read_function_name(&accessor.name))
             .collect();
         let name = escape(&plan.name);
         let parameters: Vec<String> = plan
@@ -994,27 +1012,44 @@ impl Lenses<'_> {
                 writer.line("override fun hashCode(): Int = 0");
             } else {
                 writer.closed_block("constructor(anchor: Anchor) : this(", ")", |writer| {
-                    for piece in &pieces {
-                        match &piece.body {
-                            Body::Expression(expression) => writer.line(format!("{expression},")),
-                            Body::Statements(statements) => {
-                                writer.closed_block("run {", "},", |writer| {
-                                    for statement in statements {
-                                        writer.line(statement);
-                                    }
-                                });
-                            }
-                        }
+                    for function in &functions {
+                        writer.line(format!("{function}(anchor),"));
                     }
                 });
             }
-            self.companion(writer, plan, path, "value", &hidden.aliases());
+            let reads: Vec<(String, Piece)> = functions.into_iter().zip(pieces).collect();
+            self.companion(writer, plan, path, "value", &hidden.aliases(), &reads);
             for child in &plan.nested {
                 writer.blank();
                 self.value(writer, child, &format!("{path}.{}", escape(&child.name)));
             }
         });
         writer.line("}");
+    }
+}
+
+/// The companion function that reads a value's field `name`: the name with
+/// `read-` before it, in backticks. A GraphQL name holds no hyphen, so the
+/// function hides no fragment, nested value or companion member a read
+/// spells.
+fn read_function_name(name: &str) -> String {
+    format!("`read-{name}`")
+}
+
+/// A private function of a value's companion that reads one field out of
+/// the record.
+fn read_function(writer: &mut Writer, function: &str, piece: &Piece) {
+    let head = format!(
+        "private fun {function}(anchor: Anchor): {}",
+        piece.kotlin_type
+    );
+    match &piece.body {
+        Body::Expression(expression) => writer.line(format!("{head} = {expression}")),
+        Body::Statements(statements) => writer.block(head, |writer| {
+            for statement in statements {
+                writer.line(statement);
+            }
+        }),
     }
 }
 

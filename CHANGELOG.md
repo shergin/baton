@@ -95,6 +95,14 @@ are expected and listed without apology.
   operation values in a composition, retained while the composable stays.
   `kotlin/samples/desktop` is a Compose for Desktop app over the Rick and
   Morty API.
+- Generated Kotlin compiles for two shapes it did not: a fragment or a
+  field named like a plan's selection, `selection0`, which a lens read as
+  the selection, since the selections are now members of a private object
+  beside the operation's class, `` `HeroQuery-plan` ``, that no lens sees;
+  and an `@inline` fragment's value of some two hundred linked fields,
+  whose constructor passed the 64 KiB the JVM allows a method, since the
+  constructor now reads each field through a private function of the
+  value's companion, `` `read-name` ``.
 
 ## 0.10.0 (Vatrushka) — 2026-10-07
 

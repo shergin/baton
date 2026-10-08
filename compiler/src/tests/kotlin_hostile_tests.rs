@@ -663,7 +663,12 @@ fn inline_aliases(selections: &[SelectionPlan], spreads: bool) -> Vec<String> {
 }
 
 /// The fragment `name` and the values numbered after it, which share a
-/// position's names: a value's reading constructor is one JVM method.
+/// position's names. The split kept a value's reading constructor, once one
+/// JVM method of every read, under the 64 KiB the JVM allows; a value now
+/// reads each field through a function of its own, and the wide value of
+/// `WideValueDocuments.kt` proves the size no longer needs it, but the
+/// split stays, as the JVM's limit of 255 parameters will need it once the
+/// names outgrow one constructor.
 fn values<'a>(plan: &'a Plan, stem: &str) -> Vec<&'a FragmentPlan> {
     ["", "2", "3"]
         .into_iter()

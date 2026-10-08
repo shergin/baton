@@ -2041,7 +2041,11 @@ fun KotlinArgumentSpread() {}
 fun KotlinPayload() {}
 
 // Each name as a property of an `@inline` fragment's value and a parameter
-// of its constructor, beside every body a value can have.
+// of its constructor, beside every body a value can have. Each position's
+// names are split across three values, which kept a constructor that read
+// every field in place under the 64 KiB the JVM allows a method; a value
+// reads each field through a function of its own now, so the size no
+// longer needs the split, which stays ahead of the JVM's 255 parameters.
 @Fragment($$"""
     fragment KotlinInlineScalars_character on Character @inline @throwOnFieldError {
       # Kotlin's hard keywords, as `escape` lists them, and a name of underscores alone.

@@ -1457,75 +1457,75 @@ data class KotlinInlineLinks2_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.linked(Slots.Character.origin)?.let { Satisfied(it) },
-        anchor.linked(Slots.Character.origin)?.let { MissingRequiredField(it) },
-        anchor.linked(Slots.Character.origin)?.let { FieldErrorsLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { IsPresent(it) },
-        anchor.linked(Slots.Character.origin)?.let { Throwing(it) },
-        anchor.linked(Slots.Character.origin)?.let { Caught(it) },
-        anchor.linked(Slots.Character.origin)?.let { Refetchable(it) },
-        anchor.linked(Slots.Character.origin)?.let { RefetchLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { Connection(it) },
-        anchor.linked(Slots.Character.origin)?.let { Nodes(it) },
-        anchor.linked(Slots.Character.origin)?.let { HasNext(it) },
-        anchor.linked(Slots.Character.origin)?.let { HasPrevious(it) },
-        anchor.linked(Slots.Character.origin)?.let { IsLoadingNext(it) },
-        anchor.linked(Slots.Character.origin)?.let { IsLoadingPrevious(it) },
-        anchor.linked(Slots.Character.origin)?.let { ConnectionID(it) },
-        anchor.linked(Slots.Character.origin)?.let { LoadNext(it) },
-        anchor.linked(Slots.Character.origin)?.let { LoadPrevious(it) },
-        anchor.linked(Slots.Character.origin)?.let { Bound(it) },
-        anchor.linked(Slots.Character.origin)?.let { Errors(it) },
-        anchor.linked(Slots.Character.origin)?.let { Child(it) },
-        anchor.linked(Slots.Character.origin)?.let { Missing(it) },
-        anchor.linked(Slots.Character.origin)?.let { Other(it) },
-        anchor.linked(Slots.Character.origin)?.let { It(it) },
-        anchor.linked(Slots.Character.origin)?.let { Element(it) },
-        anchor.linked(Slots.Character.origin)?.let { Count(it) },
-        anchor.linked(Slots.Character.origin)?.let { Optimistic(it) },
-        anchor.linked(Slots.Character.origin)?.let { Text(it) },
-        anchor.linked(Slots.Character.origin)?.let { Fields(it) },
-        anchor.linked(Slots.Character.origin)?.let { VariablesLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { Type(it) },
-        anchor.linked(Slots.Character.origin)?.let { Resolution(it) },
-        anchor.linked(Slots.Character.origin)?.let { Name(it) },
-        anchor.linked(Slots.Character.origin)?.let { Document(it) },
-        anchor.linked(Slots.Character.origin)?.let { Kind(it) },
-        anchor.linked(Slots.Character.origin)?.let { ErrorBehavior(it) },
-        anchor.linked(Slots.Character.origin)?.let { CacheExpirationSeconds(it) },
-        anchor.linked(Slots.Character.origin)?.let { ThrowsOnFieldError(it) },
-        anchor.linked(Slots.Character.origin)?.let { Bubbles(it) },
-        anchor.linked(Slots.Character.origin)?.let { HasDeferred(it) },
-        anchor.linked(Slots.Character.origin)?.let { Plan(it) },
-        anchor.linked(Slots.Character.origin)?.let { Selection(it) },
-        anchor.linked(Slots.Character.origin)?.let { Selection0(it) },
-        anchor.linked(Slots.Character.origin)?.let { Data2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Action2(it) },
-        anchor.linked(Slots.Character.origin)?.let { OptimisticResponse2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Invoke(it) },
-        anchor.linked(Slots.Character.origin)?.let { Commit(it) },
-        anchor.linked(Slots.Character.origin)?.let { VariableLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { Payload(it) },
-        anchor.linked(Slots.Character.origin)?.let { Copy(it) },
-        anchor.linked(Slots.Character.origin)?.let { Component1(it) },
-        anchor.linked(Slots.Character.origin)?.let { Component2(it) },
-        anchor.linked(Slots.Character.origin)?.let { JavaClass(it) },
-        anchor.linked(Slots.Character.origin)?.let { Of(it) },
-        anchor.linked(Slots.Character.origin)?.let { ScalarText(it) },
-        anchor.linked(Slots.Character.origin)?.let { Undeclared2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Size(it) },
-        anchor.linked(Slots.Character.origin)?.let { Keys(it) },
-        anchor.linked(Slots.Character.origin)?.let { Values(it) },
-        anchor.linked(Slots.Character.origin)?.let { Entries(it) },
-        anchor.linked(Slots.Character.origin)?.let { TypesLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { AbstractSlotsLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { SitesLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { GuardsLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { SchemaDigest(it) },
-        anchor.linked(Slots.Character.origin)?.let { Format(it) },
-        anchor.linked(Slots.Character.origin)?.let { Transient(it) },
-        anchor.linked(Slots.Character.origin)?.let { Baton(it) },
-        anchor.linked(Slots.Character.origin)?.let { MappedScalar2(it) },
+        `read-satisfied`(anchor),
+        `read-missingRequiredField`(anchor),
+        `read-fieldErrors`(anchor),
+        `read-isPresent`(anchor),
+        `read-throwing`(anchor),
+        `read-caught`(anchor),
+        `read-refetchable`(anchor),
+        `read-refetch`(anchor),
+        `read-connection`(anchor),
+        `read-nodes`(anchor),
+        `read-hasNext`(anchor),
+        `read-hasPrevious`(anchor),
+        `read-isLoadingNext`(anchor),
+        `read-isLoadingPrevious`(anchor),
+        `read-connectionID`(anchor),
+        `read-loadNext`(anchor),
+        `read-loadPrevious`(anchor),
+        `read-bound`(anchor),
+        `read-errors`(anchor),
+        `read-child`(anchor),
+        `read-missing`(anchor),
+        `read-other`(anchor),
+        `read-it`(anchor),
+        `read-element`(anchor),
+        `read-count`(anchor),
+        `read-optimistic`(anchor),
+        `read-text`(anchor),
+        `read-fields`(anchor),
+        `read-variables`(anchor),
+        `read-type`(anchor),
+        `read-resolution`(anchor),
+        `read-name`(anchor),
+        `read-document`(anchor),
+        `read-kind`(anchor),
+        `read-errorBehavior`(anchor),
+        `read-cacheExpirationSeconds`(anchor),
+        `read-throwsOnFieldError`(anchor),
+        `read-bubbles`(anchor),
+        `read-hasDeferred`(anchor),
+        `read-plan`(anchor),
+        `read-selection`(anchor),
+        `read-selection0`(anchor),
+        `read-Data`(anchor),
+        `read-Action`(anchor),
+        `read-OptimisticResponse`(anchor),
+        `read-invoke`(anchor),
+        `read-commit`(anchor),
+        `read-variable`(anchor),
+        `read-payload`(anchor),
+        `read-copy`(anchor),
+        `read-component1`(anchor),
+        `read-component2`(anchor),
+        `read-javaClass`(anchor),
+        `read-of`(anchor),
+        `read-scalarText`(anchor),
+        `read-Undeclared`(anchor),
+        `read-size`(anchor),
+        `read-keys`(anchor),
+        `read-values`(anchor),
+        `read-entries`(anchor),
+        `read-Types`(anchor),
+        `read-AbstractSlots`(anchor),
+        `read-Sites`(anchor),
+        `read-Guards`(anchor),
+        `read-schemaDigest`(anchor),
+        `read-format`(anchor),
+        `read-transient`(anchor),
+        `read-baton`(anchor),
+        `read-MappedScalar`(anchor),
     )
 
     companion object {
@@ -1612,6 +1612,75 @@ data class KotlinInlineLinks2_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin)
+        private fun `read-satisfied`(anchor: Anchor): Satisfied? = anchor.linked(Slots.Character.origin)?.let { Satisfied(it) }
+        private fun `read-missingRequiredField`(anchor: Anchor): MissingRequiredField? = anchor.linked(Slots.Character.origin)?.let { MissingRequiredField(it) }
+        private fun `read-fieldErrors`(anchor: Anchor): FieldErrorsLens? = anchor.linked(Slots.Character.origin)?.let { FieldErrorsLens(it) }
+        private fun `read-isPresent`(anchor: Anchor): IsPresent? = anchor.linked(Slots.Character.origin)?.let { IsPresent(it) }
+        private fun `read-throwing`(anchor: Anchor): Throwing? = anchor.linked(Slots.Character.origin)?.let { Throwing(it) }
+        private fun `read-caught`(anchor: Anchor): Caught? = anchor.linked(Slots.Character.origin)?.let { Caught(it) }
+        private fun `read-refetchable`(anchor: Anchor): Refetchable? = anchor.linked(Slots.Character.origin)?.let { Refetchable(it) }
+        private fun `read-refetch`(anchor: Anchor): RefetchLens? = anchor.linked(Slots.Character.origin)?.let { RefetchLens(it) }
+        private fun `read-connection`(anchor: Anchor): Connection? = anchor.linked(Slots.Character.origin)?.let { Connection(it) }
+        private fun `read-nodes`(anchor: Anchor): Nodes? = anchor.linked(Slots.Character.origin)?.let { Nodes(it) }
+        private fun `read-hasNext`(anchor: Anchor): HasNext? = anchor.linked(Slots.Character.origin)?.let { HasNext(it) }
+        private fun `read-hasPrevious`(anchor: Anchor): HasPrevious? = anchor.linked(Slots.Character.origin)?.let { HasPrevious(it) }
+        private fun `read-isLoadingNext`(anchor: Anchor): IsLoadingNext? = anchor.linked(Slots.Character.origin)?.let { IsLoadingNext(it) }
+        private fun `read-isLoadingPrevious`(anchor: Anchor): IsLoadingPrevious? = anchor.linked(Slots.Character.origin)?.let { IsLoadingPrevious(it) }
+        private fun `read-connectionID`(anchor: Anchor): ConnectionID? = anchor.linked(Slots.Character.origin)?.let { ConnectionID(it) }
+        private fun `read-loadNext`(anchor: Anchor): LoadNext? = anchor.linked(Slots.Character.origin)?.let { LoadNext(it) }
+        private fun `read-loadPrevious`(anchor: Anchor): LoadPrevious? = anchor.linked(Slots.Character.origin)?.let { LoadPrevious(it) }
+        private fun `read-bound`(anchor: Anchor): Bound? = anchor.linked(Slots.Character.origin)?.let { Bound(it) }
+        private fun `read-errors`(anchor: Anchor): Errors? = anchor.linked(Slots.Character.origin)?.let { Errors(it) }
+        private fun `read-child`(anchor: Anchor): Child? = anchor.linked(Slots.Character.origin)?.let { Child(it) }
+        private fun `read-missing`(anchor: Anchor): Missing? = anchor.linked(Slots.Character.origin)?.let { Missing(it) }
+        private fun `read-other`(anchor: Anchor): Other? = anchor.linked(Slots.Character.origin)?.let { Other(it) }
+        private fun `read-it`(anchor: Anchor): It? = anchor.linked(Slots.Character.origin)?.let { It(it) }
+        private fun `read-element`(anchor: Anchor): Element? = anchor.linked(Slots.Character.origin)?.let { Element(it) }
+        private fun `read-count`(anchor: Anchor): Count? = anchor.linked(Slots.Character.origin)?.let { Count(it) }
+        private fun `read-optimistic`(anchor: Anchor): Optimistic? = anchor.linked(Slots.Character.origin)?.let { Optimistic(it) }
+        private fun `read-text`(anchor: Anchor): Text? = anchor.linked(Slots.Character.origin)?.let { Text(it) }
+        private fun `read-fields`(anchor: Anchor): Fields? = anchor.linked(Slots.Character.origin)?.let { Fields(it) }
+        private fun `read-variables`(anchor: Anchor): VariablesLens? = anchor.linked(Slots.Character.origin)?.let { VariablesLens(it) }
+        private fun `read-type`(anchor: Anchor): Type? = anchor.linked(Slots.Character.origin)?.let { Type(it) }
+        private fun `read-resolution`(anchor: Anchor): Resolution? = anchor.linked(Slots.Character.origin)?.let { Resolution(it) }
+        private fun `read-name`(anchor: Anchor): Name? = anchor.linked(Slots.Character.origin)?.let { Name(it) }
+        private fun `read-document`(anchor: Anchor): Document? = anchor.linked(Slots.Character.origin)?.let { Document(it) }
+        private fun `read-kind`(anchor: Anchor): Kind? = anchor.linked(Slots.Character.origin)?.let { Kind(it) }
+        private fun `read-errorBehavior`(anchor: Anchor): ErrorBehavior? = anchor.linked(Slots.Character.origin)?.let { ErrorBehavior(it) }
+        private fun `read-cacheExpirationSeconds`(anchor: Anchor): CacheExpirationSeconds? = anchor.linked(Slots.Character.origin)?.let { CacheExpirationSeconds(it) }
+        private fun `read-throwsOnFieldError`(anchor: Anchor): ThrowsOnFieldError? = anchor.linked(Slots.Character.origin)?.let { ThrowsOnFieldError(it) }
+        private fun `read-bubbles`(anchor: Anchor): Bubbles? = anchor.linked(Slots.Character.origin)?.let { Bubbles(it) }
+        private fun `read-hasDeferred`(anchor: Anchor): HasDeferred? = anchor.linked(Slots.Character.origin)?.let { HasDeferred(it) }
+        private fun `read-plan`(anchor: Anchor): Plan? = anchor.linked(Slots.Character.origin)?.let { Plan(it) }
+        private fun `read-selection`(anchor: Anchor): Selection? = anchor.linked(Slots.Character.origin)?.let { Selection(it) }
+        private fun `read-selection0`(anchor: Anchor): Selection0? = anchor.linked(Slots.Character.origin)?.let { Selection0(it) }
+        private fun `read-Data`(anchor: Anchor): Data2? = anchor.linked(Slots.Character.origin)?.let { Data2(it) }
+        private fun `read-Action`(anchor: Anchor): Action2? = anchor.linked(Slots.Character.origin)?.let { Action2(it) }
+        private fun `read-OptimisticResponse`(anchor: Anchor): OptimisticResponse2? = anchor.linked(Slots.Character.origin)?.let { OptimisticResponse2(it) }
+        private fun `read-invoke`(anchor: Anchor): Invoke? = anchor.linked(Slots.Character.origin)?.let { Invoke(it) }
+        private fun `read-commit`(anchor: Anchor): Commit? = anchor.linked(Slots.Character.origin)?.let { Commit(it) }
+        private fun `read-variable`(anchor: Anchor): VariableLens? = anchor.linked(Slots.Character.origin)?.let { VariableLens(it) }
+        private fun `read-payload`(anchor: Anchor): Payload? = anchor.linked(Slots.Character.origin)?.let { Payload(it) }
+        private fun `read-copy`(anchor: Anchor): Copy? = anchor.linked(Slots.Character.origin)?.let { Copy(it) }
+        private fun `read-component1`(anchor: Anchor): Component1? = anchor.linked(Slots.Character.origin)?.let { Component1(it) }
+        private fun `read-component2`(anchor: Anchor): Component2? = anchor.linked(Slots.Character.origin)?.let { Component2(it) }
+        private fun `read-javaClass`(anchor: Anchor): JavaClass? = anchor.linked(Slots.Character.origin)?.let { JavaClass(it) }
+        private fun `read-of`(anchor: Anchor): Of? = anchor.linked(Slots.Character.origin)?.let { Of(it) }
+        private fun `read-scalarText`(anchor: Anchor): ScalarText? = anchor.linked(Slots.Character.origin)?.let { ScalarText(it) }
+        private fun `read-Undeclared`(anchor: Anchor): Undeclared2? = anchor.linked(Slots.Character.origin)?.let { Undeclared2(it) }
+        private fun `read-size`(anchor: Anchor): Size? = anchor.linked(Slots.Character.origin)?.let { Size(it) }
+        private fun `read-keys`(anchor: Anchor): Keys? = anchor.linked(Slots.Character.origin)?.let { Keys(it) }
+        private fun `read-values`(anchor: Anchor): Values? = anchor.linked(Slots.Character.origin)?.let { Values(it) }
+        private fun `read-entries`(anchor: Anchor): Entries? = anchor.linked(Slots.Character.origin)?.let { Entries(it) }
+        private fun `read-Types`(anchor: Anchor): TypesLens? = anchor.linked(Slots.Character.origin)?.let { TypesLens(it) }
+        private fun `read-AbstractSlots`(anchor: Anchor): AbstractSlotsLens? = anchor.linked(Slots.Character.origin)?.let { AbstractSlotsLens(it) }
+        private fun `read-Sites`(anchor: Anchor): SitesLens? = anchor.linked(Slots.Character.origin)?.let { SitesLens(it) }
+        private fun `read-Guards`(anchor: Anchor): GuardsLens? = anchor.linked(Slots.Character.origin)?.let { GuardsLens(it) }
+        private fun `read-schemaDigest`(anchor: Anchor): SchemaDigest? = anchor.linked(Slots.Character.origin)?.let { SchemaDigest(it) }
+        private fun `read-format`(anchor: Anchor): Format? = anchor.linked(Slots.Character.origin)?.let { Format(it) }
+        private fun `read-transient`(anchor: Anchor): Transient? = anchor.linked(Slots.Character.origin)?.let { Transient(it) }
+        private fun `read-baton`(anchor: Anchor): Baton? = anchor.linked(Slots.Character.origin)?.let { Baton(it) }
+        private fun `read-MappedScalar`(anchor: Anchor): MappedScalar2? = anchor.linked(Slots.Character.origin)?.let { MappedScalar2(it) }
     }
 
     data class Satisfied(
@@ -1620,7 +1689,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1637,6 +1706,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Satisfied(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1646,7 +1716,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1663,6 +1733,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.MissingRequiredField(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1672,7 +1743,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1689,6 +1760,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.FieldErrorsLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1698,7 +1770,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1715,6 +1787,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.IsPresent(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1724,7 +1797,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1741,6 +1814,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Throwing(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1750,7 +1824,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1767,6 +1841,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Caught(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1776,7 +1851,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1793,6 +1868,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Refetchable(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1802,7 +1878,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1819,6 +1895,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.RefetchLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1828,7 +1905,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1845,6 +1922,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Connection(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1854,7 +1932,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1871,6 +1949,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Nodes(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1880,7 +1959,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1897,6 +1976,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.HasNext(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1906,7 +1986,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1923,6 +2003,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.HasPrevious(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1932,7 +2013,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1949,6 +2030,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.IsLoadingNext(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1958,7 +2040,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -1975,6 +2057,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.IsLoadingPrevious(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -1984,7 +2067,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2001,6 +2084,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.ConnectionID(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2010,7 +2094,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2027,6 +2111,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.LoadNext(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2036,7 +2121,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2053,6 +2138,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.LoadPrevious(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2062,7 +2148,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2079,6 +2165,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Bound(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2088,7 +2175,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2105,6 +2192,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Errors(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2114,7 +2202,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2131,6 +2219,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Child(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2140,7 +2229,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2157,6 +2246,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Missing(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2166,7 +2256,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2183,6 +2273,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Other(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2192,7 +2283,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2209,6 +2300,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.It(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2218,7 +2310,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2235,6 +2327,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Element(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2244,7 +2337,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2261,6 +2354,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Count(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2270,7 +2364,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2287,6 +2381,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Optimistic(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2296,7 +2391,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2313,6 +2408,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Text(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2322,7 +2418,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2339,6 +2435,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Fields(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2348,7 +2445,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2365,6 +2462,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.VariablesLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2374,7 +2472,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2391,6 +2489,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Type(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2400,7 +2499,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2417,6 +2516,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Resolution(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2426,7 +2526,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2443,6 +2543,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Name(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2452,7 +2553,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2469,6 +2570,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Document(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2478,7 +2580,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2495,6 +2597,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Kind(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2504,7 +2607,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2521,6 +2624,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.ErrorBehavior(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2530,7 +2634,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2547,6 +2651,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.CacheExpirationSeconds(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2556,7 +2661,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2573,6 +2678,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.ThrowsOnFieldError(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2582,7 +2688,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2599,6 +2705,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Bubbles(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2608,7 +2715,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2625,6 +2732,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.HasDeferred(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2634,7 +2742,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2651,6 +2759,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Plan(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2660,7 +2769,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2677,6 +2786,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Selection(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2686,7 +2796,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2703,6 +2813,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Selection0(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2712,7 +2823,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2729,6 +2840,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Data2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2738,7 +2850,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2755,6 +2867,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Action2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2764,7 +2877,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2781,6 +2894,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.OptimisticResponse2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2790,7 +2904,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2807,6 +2921,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Invoke(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2816,7 +2931,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2833,6 +2948,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Commit(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2842,7 +2958,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2859,6 +2975,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.VariableLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2868,7 +2985,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2885,6 +3002,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Payload(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2894,7 +3012,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2911,6 +3029,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Copy(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2920,7 +3039,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2937,6 +3056,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Component1(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2946,7 +3066,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2963,6 +3083,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Component2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2972,7 +3093,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -2989,6 +3110,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.JavaClass(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -2998,7 +3120,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3015,6 +3137,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Of(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3024,7 +3147,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3041,6 +3164,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.ScalarText(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3050,7 +3174,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3067,6 +3191,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Undeclared2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3076,7 +3201,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3093,6 +3218,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Size(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3102,7 +3228,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3119,6 +3245,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Keys(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3128,7 +3255,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3145,6 +3272,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Values(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3154,7 +3282,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3171,6 +3299,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Entries(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3180,7 +3309,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3197,6 +3326,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.TypesLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3206,7 +3336,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3223,6 +3353,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.AbstractSlotsLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3232,7 +3363,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3249,6 +3380,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.SitesLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3258,7 +3390,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3275,6 +3407,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.GuardsLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3284,7 +3417,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3301,6 +3434,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.SchemaDigest(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3310,7 +3444,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3327,6 +3461,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Format(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3336,7 +3471,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3353,6 +3488,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Transient(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3362,7 +3498,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3379,6 +3515,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.Baton(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3388,7 +3525,7 @@ data class KotlinInlineLinks2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3405,6 +3542,7 @@ data class KotlinInlineLinks2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks2_character.MappedScalar2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 }
@@ -3486,77 +3624,77 @@ data class KotlinInlineLinks3_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.linked(Slots.Character.origin)?.let { AbstractSlot2(it) },
-        anchor.linked(Slots.Character.origin)?.let { AnchorLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { ArgumentSite2(it) },
-        anchor.linked(Slots.Character.origin)?.let { ConnectionCursor2(it) },
-        anchor.linked(Slots.Character.origin)?.let { ConnectionPlan2(it) },
-        anchor.linked(Slots.Character.origin)?.let { ConnectionSlots2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Document2(it) },
-        anchor.linked(Slots.Character.origin)?.let { DynamicKey2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Edit2(it) },
-        anchor.linked(Slots.Character.origin)?.let { ErrorBehavior2(it) },
-        anchor.linked(Slots.Character.origin)?.let { FieldErrorLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { FieldErrorsLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { GeneratedLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { GeneratedEnum2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Guard2(it) },
-        anchor.linked(Slots.Character.origin)?.let { InputObject2(it) },
-        anchor.linked(Slots.Character.origin)?.let { KeyArgument2(it) },
-        anchor.linked(Slots.Character.origin)?.let { KeyPart2(it) },
-        anchor.linked(Slots.Character.origin)?.let { LensLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { LensList2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Lookup2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Members2(it) },
-        anchor.linked(Slots.Character.origin)?.let { MutationAction2(it) },
-        anchor.linked(Slots.Character.origin)?.let { MutationOperation2(it) },
-        anchor.linked(Slots.Character.origin)?.let { OperationHandle2(it) },
-        anchor.linked(Slots.Character.origin)?.let { OperationKind2(it) },
-        anchor.linked(Slots.Character.origin)?.let { OperationType2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Payload2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Plan2(it) },
-        anchor.linked(Slots.Character.origin)?.let { PlanField2(it) },
-        anchor.linked(Slots.Character.origin)?.let { QueryOperation2(it) },
-        anchor.linked(Slots.Character.origin)?.let { RefetchLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { Registry2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Resolution2(it) },
-        anchor.linked(Slots.Character.origin)?.let { ScalarKind2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Selection2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Slot2(it) },
-        anchor.linked(Slots.Character.origin)?.let { StorageKey2(it) },
-        anchor.linked(Slots.Character.origin)?.let { SubscriptionHandle2(it) },
-        anchor.linked(Slots.Character.origin)?.let { SubscriptionOperation2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Transient2(it) },
-        anchor.linked(Slots.Character.origin)?.let { TypeID2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Format12(it) },
-        anchor.linked(Slots.Character.origin)?.let { AnyLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { BooleanLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { DoubleLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { IntLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { ListLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { LongLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { Map2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Pair2(it) },
-        anchor.linked(Slots.Character.origin)?.let { ResultLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { StringLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { UnitLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { StableLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { JvmName2(it) },
-        anchor.linked(Slots.Character.origin)?.let { JvmField2(it) },
-        anchor.linked(Slots.Character.origin)?.let { OptIn2(it) },
-        anchor.linked(Slots.Character.origin)?.let { Run(it) },
-        anchor.linked(Slots.Character.origin)?.let { Let(it) },
-        anchor.linked(Slots.Character.origin)?.let { TakeIf(it) },
-        anchor.linked(Slots.Character.origin)?.let { Map3(it) },
-        anchor.linked(Slots.Character.origin)?.let { Lazy(it) },
-        anchor.linked(Slots.Character.origin)?.let { ListOf(it) },
-        anchor.linked(Slots.Character.origin)?.let { MapOf(it) },
-        anchor.linked(Slots.Character.origin)?.let { EmptyList(it) },
-        anchor.linked(Slots.Character.origin)?.let { EmptyMap(it) },
-        anchor.linked(Slots.Character.origin)?.let { MutableListOf(it) },
-        anchor.linked(Slots.Character.origin)?.let { GetOrThrow(it) },
-        anchor.linked(Slots.Character.origin)?.let { Success(it) },
-        anchor.linked(Slots.Character.origin)?.let { Failure(it) },
+        `read-AbstractSlot`(anchor),
+        `read-Anchor`(anchor),
+        `read-ArgumentSite`(anchor),
+        `read-ConnectionCursor`(anchor),
+        `read-ConnectionPlan`(anchor),
+        `read-ConnectionSlots`(anchor),
+        `read-Document`(anchor),
+        `read-DynamicKey`(anchor),
+        `read-Edit`(anchor),
+        `read-ErrorBehavior`(anchor),
+        `read-FieldError`(anchor),
+        `read-FieldErrors`(anchor),
+        `read-Generated`(anchor),
+        `read-GeneratedEnum`(anchor),
+        `read-Guard`(anchor),
+        `read-InputObject`(anchor),
+        `read-KeyArgument`(anchor),
+        `read-KeyPart`(anchor),
+        `read-Lens`(anchor),
+        `read-LensList`(anchor),
+        `read-Lookup`(anchor),
+        `read-Members`(anchor),
+        `read-MutationAction`(anchor),
+        `read-MutationOperation`(anchor),
+        `read-OperationHandle`(anchor),
+        `read-OperationKind`(anchor),
+        `read-OperationType`(anchor),
+        `read-Payload`(anchor),
+        `read-Plan`(anchor),
+        `read-PlanField`(anchor),
+        `read-QueryOperation`(anchor),
+        `read-Refetch`(anchor),
+        `read-Registry`(anchor),
+        `read-Resolution`(anchor),
+        `read-ScalarKind`(anchor),
+        `read-Selection`(anchor),
+        `read-Slot`(anchor),
+        `read-StorageKey`(anchor),
+        `read-SubscriptionHandle`(anchor),
+        `read-SubscriptionOperation`(anchor),
+        `read-Transient`(anchor),
+        `read-TypeID`(anchor),
+        `read-Format1`(anchor),
+        `read-Any`(anchor),
+        `read-Boolean`(anchor),
+        `read-Double`(anchor),
+        `read-Int`(anchor),
+        `read-List`(anchor),
+        `read-Long`(anchor),
+        `read-Map`(anchor),
+        `read-Pair`(anchor),
+        `read-Result`(anchor),
+        `read-String`(anchor),
+        `read-Unit`(anchor),
+        `read-Stable`(anchor),
+        `read-JvmName`(anchor),
+        `read-JvmField`(anchor),
+        `read-OptIn`(anchor),
+        `read-run`(anchor),
+        `read-let`(anchor),
+        `read-takeIf`(anchor),
+        `read-map`(anchor),
+        `read-lazy`(anchor),
+        `read-listOf`(anchor),
+        `read-mapOf`(anchor),
+        `read-emptyList`(anchor),
+        `read-emptyMap`(anchor),
+        `read-mutableListOf`(anchor),
+        `read-getOrThrow`(anchor),
+        `read-success`(anchor),
+        `read-failure`(anchor),
     )
 
     companion object {
@@ -3645,6 +3783,77 @@ data class KotlinInlineLinks3_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin)
+        private fun `read-AbstractSlot`(anchor: Anchor): AbstractSlot2? = anchor.linked(Slots.Character.origin)?.let { AbstractSlot2(it) }
+        private fun `read-Anchor`(anchor: Anchor): AnchorLens? = anchor.linked(Slots.Character.origin)?.let { AnchorLens(it) }
+        private fun `read-ArgumentSite`(anchor: Anchor): ArgumentSite2? = anchor.linked(Slots.Character.origin)?.let { ArgumentSite2(it) }
+        private fun `read-ConnectionCursor`(anchor: Anchor): ConnectionCursor2? = anchor.linked(Slots.Character.origin)?.let { ConnectionCursor2(it) }
+        private fun `read-ConnectionPlan`(anchor: Anchor): ConnectionPlan2? = anchor.linked(Slots.Character.origin)?.let { ConnectionPlan2(it) }
+        private fun `read-ConnectionSlots`(anchor: Anchor): ConnectionSlots2? = anchor.linked(Slots.Character.origin)?.let { ConnectionSlots2(it) }
+        private fun `read-Document`(anchor: Anchor): Document2? = anchor.linked(Slots.Character.origin)?.let { Document2(it) }
+        private fun `read-DynamicKey`(anchor: Anchor): DynamicKey2? = anchor.linked(Slots.Character.origin)?.let { DynamicKey2(it) }
+        private fun `read-Edit`(anchor: Anchor): Edit2? = anchor.linked(Slots.Character.origin)?.let { Edit2(it) }
+        private fun `read-ErrorBehavior`(anchor: Anchor): ErrorBehavior2? = anchor.linked(Slots.Character.origin)?.let { ErrorBehavior2(it) }
+        private fun `read-FieldError`(anchor: Anchor): FieldErrorLens? = anchor.linked(Slots.Character.origin)?.let { FieldErrorLens(it) }
+        private fun `read-FieldErrors`(anchor: Anchor): FieldErrorsLens? = anchor.linked(Slots.Character.origin)?.let { FieldErrorsLens(it) }
+        private fun `read-Generated`(anchor: Anchor): GeneratedLens? = anchor.linked(Slots.Character.origin)?.let { GeneratedLens(it) }
+        private fun `read-GeneratedEnum`(anchor: Anchor): GeneratedEnum2? = anchor.linked(Slots.Character.origin)?.let { GeneratedEnum2(it) }
+        private fun `read-Guard`(anchor: Anchor): Guard2? = anchor.linked(Slots.Character.origin)?.let { Guard2(it) }
+        private fun `read-InputObject`(anchor: Anchor): InputObject2? = anchor.linked(Slots.Character.origin)?.let { InputObject2(it) }
+        private fun `read-KeyArgument`(anchor: Anchor): KeyArgument2? = anchor.linked(Slots.Character.origin)?.let { KeyArgument2(it) }
+        private fun `read-KeyPart`(anchor: Anchor): KeyPart2? = anchor.linked(Slots.Character.origin)?.let { KeyPart2(it) }
+        private fun `read-Lens`(anchor: Anchor): LensLens? = anchor.linked(Slots.Character.origin)?.let { LensLens(it) }
+        private fun `read-LensList`(anchor: Anchor): LensList2? = anchor.linked(Slots.Character.origin)?.let { LensList2(it) }
+        private fun `read-Lookup`(anchor: Anchor): Lookup2? = anchor.linked(Slots.Character.origin)?.let { Lookup2(it) }
+        private fun `read-Members`(anchor: Anchor): Members2? = anchor.linked(Slots.Character.origin)?.let { Members2(it) }
+        private fun `read-MutationAction`(anchor: Anchor): MutationAction2? = anchor.linked(Slots.Character.origin)?.let { MutationAction2(it) }
+        private fun `read-MutationOperation`(anchor: Anchor): MutationOperation2? = anchor.linked(Slots.Character.origin)?.let { MutationOperation2(it) }
+        private fun `read-OperationHandle`(anchor: Anchor): OperationHandle2? = anchor.linked(Slots.Character.origin)?.let { OperationHandle2(it) }
+        private fun `read-OperationKind`(anchor: Anchor): OperationKind2? = anchor.linked(Slots.Character.origin)?.let { OperationKind2(it) }
+        private fun `read-OperationType`(anchor: Anchor): OperationType2? = anchor.linked(Slots.Character.origin)?.let { OperationType2(it) }
+        private fun `read-Payload`(anchor: Anchor): Payload2? = anchor.linked(Slots.Character.origin)?.let { Payload2(it) }
+        private fun `read-Plan`(anchor: Anchor): Plan2? = anchor.linked(Slots.Character.origin)?.let { Plan2(it) }
+        private fun `read-PlanField`(anchor: Anchor): PlanField2? = anchor.linked(Slots.Character.origin)?.let { PlanField2(it) }
+        private fun `read-QueryOperation`(anchor: Anchor): QueryOperation2? = anchor.linked(Slots.Character.origin)?.let { QueryOperation2(it) }
+        private fun `read-Refetch`(anchor: Anchor): RefetchLens? = anchor.linked(Slots.Character.origin)?.let { RefetchLens(it) }
+        private fun `read-Registry`(anchor: Anchor): Registry2? = anchor.linked(Slots.Character.origin)?.let { Registry2(it) }
+        private fun `read-Resolution`(anchor: Anchor): Resolution2? = anchor.linked(Slots.Character.origin)?.let { Resolution2(it) }
+        private fun `read-ScalarKind`(anchor: Anchor): ScalarKind2? = anchor.linked(Slots.Character.origin)?.let { ScalarKind2(it) }
+        private fun `read-Selection`(anchor: Anchor): Selection2? = anchor.linked(Slots.Character.origin)?.let { Selection2(it) }
+        private fun `read-Slot`(anchor: Anchor): Slot2? = anchor.linked(Slots.Character.origin)?.let { Slot2(it) }
+        private fun `read-StorageKey`(anchor: Anchor): StorageKey2? = anchor.linked(Slots.Character.origin)?.let { StorageKey2(it) }
+        private fun `read-SubscriptionHandle`(anchor: Anchor): SubscriptionHandle2? = anchor.linked(Slots.Character.origin)?.let { SubscriptionHandle2(it) }
+        private fun `read-SubscriptionOperation`(anchor: Anchor): SubscriptionOperation2? = anchor.linked(Slots.Character.origin)?.let { SubscriptionOperation2(it) }
+        private fun `read-Transient`(anchor: Anchor): Transient2? = anchor.linked(Slots.Character.origin)?.let { Transient2(it) }
+        private fun `read-TypeID`(anchor: Anchor): TypeID2? = anchor.linked(Slots.Character.origin)?.let { TypeID2(it) }
+        private fun `read-Format1`(anchor: Anchor): Format12? = anchor.linked(Slots.Character.origin)?.let { Format12(it) }
+        private fun `read-Any`(anchor: Anchor): AnyLens? = anchor.linked(Slots.Character.origin)?.let { AnyLens(it) }
+        private fun `read-Boolean`(anchor: Anchor): BooleanLens? = anchor.linked(Slots.Character.origin)?.let { BooleanLens(it) }
+        private fun `read-Double`(anchor: Anchor): DoubleLens? = anchor.linked(Slots.Character.origin)?.let { DoubleLens(it) }
+        private fun `read-Int`(anchor: Anchor): IntLens? = anchor.linked(Slots.Character.origin)?.let { IntLens(it) }
+        private fun `read-List`(anchor: Anchor): ListLens? = anchor.linked(Slots.Character.origin)?.let { ListLens(it) }
+        private fun `read-Long`(anchor: Anchor): LongLens? = anchor.linked(Slots.Character.origin)?.let { LongLens(it) }
+        private fun `read-Map`(anchor: Anchor): Map2? = anchor.linked(Slots.Character.origin)?.let { Map2(it) }
+        private fun `read-Pair`(anchor: Anchor): Pair2? = anchor.linked(Slots.Character.origin)?.let { Pair2(it) }
+        private fun `read-Result`(anchor: Anchor): ResultLens? = anchor.linked(Slots.Character.origin)?.let { ResultLens(it) }
+        private fun `read-String`(anchor: Anchor): StringLens? = anchor.linked(Slots.Character.origin)?.let { StringLens(it) }
+        private fun `read-Unit`(anchor: Anchor): UnitLens? = anchor.linked(Slots.Character.origin)?.let { UnitLens(it) }
+        private fun `read-Stable`(anchor: Anchor): StableLens? = anchor.linked(Slots.Character.origin)?.let { StableLens(it) }
+        private fun `read-JvmName`(anchor: Anchor): JvmName2? = anchor.linked(Slots.Character.origin)?.let { JvmName2(it) }
+        private fun `read-JvmField`(anchor: Anchor): JvmField2? = anchor.linked(Slots.Character.origin)?.let { JvmField2(it) }
+        private fun `read-OptIn`(anchor: Anchor): OptIn2? = anchor.linked(Slots.Character.origin)?.let { OptIn2(it) }
+        private fun `read-run`(anchor: Anchor): Run? = anchor.linked(Slots.Character.origin)?.let { Run(it) }
+        private fun `read-let`(anchor: Anchor): Let? = anchor.linked(Slots.Character.origin)?.let { Let(it) }
+        private fun `read-takeIf`(anchor: Anchor): TakeIf? = anchor.linked(Slots.Character.origin)?.let { TakeIf(it) }
+        private fun `read-map`(anchor: Anchor): Map3? = anchor.linked(Slots.Character.origin)?.let { Map3(it) }
+        private fun `read-lazy`(anchor: Anchor): Lazy? = anchor.linked(Slots.Character.origin)?.let { Lazy(it) }
+        private fun `read-listOf`(anchor: Anchor): ListOf? = anchor.linked(Slots.Character.origin)?.let { ListOf(it) }
+        private fun `read-mapOf`(anchor: Anchor): MapOf? = anchor.linked(Slots.Character.origin)?.let { MapOf(it) }
+        private fun `read-emptyList`(anchor: Anchor): EmptyList? = anchor.linked(Slots.Character.origin)?.let { EmptyList(it) }
+        private fun `read-emptyMap`(anchor: Anchor): EmptyMap? = anchor.linked(Slots.Character.origin)?.let { EmptyMap(it) }
+        private fun `read-mutableListOf`(anchor: Anchor): MutableListOf? = anchor.linked(Slots.Character.origin)?.let { MutableListOf(it) }
+        private fun `read-getOrThrow`(anchor: Anchor): GetOrThrow? = anchor.linked(Slots.Character.origin)?.let { GetOrThrow(it) }
+        private fun `read-success`(anchor: Anchor): Success? = anchor.linked(Slots.Character.origin)?.let { Success(it) }
+        private fun `read-failure`(anchor: Anchor): Failure? = anchor.linked(Slots.Character.origin)?.let { Failure(it) }
     }
 
     data class AbstractSlot2(
@@ -3653,7 +3862,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3670,6 +3879,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.AbstractSlot2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3679,7 +3889,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3696,6 +3906,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.AnchorLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3705,7 +3916,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3722,6 +3933,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.ArgumentSite2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3731,7 +3943,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3748,6 +3960,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.ConnectionCursor2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3757,7 +3970,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3774,6 +3987,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.ConnectionPlan2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3783,7 +3997,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3800,6 +4014,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.ConnectionSlots2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3809,7 +4024,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3826,6 +4041,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Document2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3835,7 +4051,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3852,6 +4068,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.DynamicKey2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3861,7 +4078,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3878,6 +4095,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Edit2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3887,7 +4105,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3904,6 +4122,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.ErrorBehavior2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3913,7 +4132,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3930,6 +4149,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.FieldErrorLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3939,7 +4159,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3956,6 +4176,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.FieldErrorsLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3965,7 +4186,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -3982,6 +4203,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.GeneratedLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -3991,7 +4213,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4008,6 +4230,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.GeneratedEnum2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4017,7 +4240,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4034,6 +4257,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Guard2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4043,7 +4267,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4060,6 +4284,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.InputObject2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4069,7 +4294,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4086,6 +4311,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.KeyArgument2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4095,7 +4321,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4112,6 +4338,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.KeyPart2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4121,7 +4348,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4138,6 +4365,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.LensLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4147,7 +4375,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4164,6 +4392,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.LensList2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4173,7 +4402,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4190,6 +4419,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Lookup2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4199,7 +4429,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4216,6 +4446,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Members2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4225,7 +4456,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4242,6 +4473,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.MutationAction2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4251,7 +4483,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4268,6 +4500,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.MutationOperation2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4277,7 +4510,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4294,6 +4527,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.OperationHandle2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4303,7 +4537,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4320,6 +4554,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.OperationKind2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4329,7 +4564,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4346,6 +4581,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.OperationType2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4355,7 +4591,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4372,6 +4608,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Payload2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4381,7 +4618,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4398,6 +4635,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Plan2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4407,7 +4645,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4424,6 +4662,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.PlanField2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4433,7 +4672,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4450,6 +4689,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.QueryOperation2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4459,7 +4699,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4476,6 +4716,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.RefetchLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4485,7 +4726,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4502,6 +4743,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Registry2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4511,7 +4753,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4528,6 +4770,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Resolution2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4537,7 +4780,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4554,6 +4797,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.ScalarKind2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4563,7 +4807,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4580,6 +4824,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Selection2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4589,7 +4834,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4606,6 +4851,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Slot2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4615,7 +4861,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4632,6 +4878,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.StorageKey2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4641,7 +4888,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4658,6 +4905,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.SubscriptionHandle2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4667,7 +4915,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4684,6 +4932,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.SubscriptionOperation2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4693,7 +4942,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4710,6 +4959,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Transient2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4719,7 +4969,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4736,6 +4986,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.TypeID2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4745,7 +4996,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4762,6 +5013,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Format12(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4771,7 +5023,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4788,6 +5040,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.AnyLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4797,7 +5050,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4814,6 +5067,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.BooleanLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4823,7 +5077,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4840,6 +5094,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.DoubleLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4849,7 +5104,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4866,6 +5121,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.IntLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4875,7 +5131,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4892,6 +5148,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.ListLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4901,7 +5158,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4918,6 +5175,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.LongLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4927,7 +5185,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4944,6 +5202,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Map2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4953,7 +5212,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4970,6 +5229,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Pair2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -4979,7 +5239,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -4996,6 +5256,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.ResultLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5005,7 +5266,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5022,6 +5283,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.StringLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5031,7 +5293,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5048,6 +5310,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.UnitLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5057,7 +5320,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5074,6 +5337,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.StableLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5083,7 +5347,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5100,6 +5364,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.JvmName2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5109,7 +5374,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5126,6 +5391,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.JvmField2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5135,7 +5401,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5152,6 +5418,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.OptIn2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5161,7 +5428,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5178,6 +5445,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Run(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5187,7 +5455,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5204,6 +5472,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Let(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5213,7 +5482,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5230,6 +5499,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.TakeIf(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5239,7 +5509,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5256,6 +5526,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Map3(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5265,7 +5536,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5282,6 +5553,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Lazy(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5291,7 +5563,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5308,6 +5580,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.ListOf(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5317,7 +5590,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5334,6 +5607,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.MapOf(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5343,7 +5617,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5360,6 +5634,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.EmptyList(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5369,7 +5644,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5386,6 +5661,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.EmptyMap(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5395,7 +5671,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5412,6 +5688,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.MutableListOf(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5421,7 +5698,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5438,6 +5715,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.GetOrThrow(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5447,7 +5725,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5464,6 +5742,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Success(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5473,7 +5752,7 @@ data class KotlinInlineLinks3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5490,6 +5769,7 @@ data class KotlinInlineLinks3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks3_character.Failure(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 }
@@ -5577,83 +5857,83 @@ data class KotlinInlineLinks_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.linked(Slots.Character.origin)?.let { As(it) },
-        anchor.linked(Slots.Character.origin)?.let { Break(it) },
-        anchor.linked(Slots.Character.origin)?.let { Class(it) },
-        anchor.linked(Slots.Character.origin)?.let { Continue(it) },
-        anchor.linked(Slots.Character.origin)?.let { Do(it) },
-        anchor.linked(Slots.Character.origin)?.let { Else(it) },
-        anchor.linked(Slots.Character.origin)?.let { False(it) },
-        anchor.linked(Slots.Character.origin)?.let { For(it) },
-        anchor.linked(Slots.Character.origin)?.let { Fun(it) },
-        anchor.linked(Slots.Character.origin)?.let { If(it) },
-        anchor.linked(Slots.Character.origin)?.let { In(it) },
-        anchor.linked(Slots.Character.origin)?.let { Interface(it) },
-        anchor.linked(Slots.Character.origin)?.let { Is(it) },
-        anchor.linked(Slots.Character.origin)?.let { Null(it) },
-        anchor.linked(Slots.Character.origin)?.let { Object(it) },
-        anchor.linked(Slots.Character.origin)?.let { Package(it) },
-        anchor.linked(Slots.Character.origin)?.let { Return(it) },
-        anchor.linked(Slots.Character.origin)?.let { Super(it) },
-        anchor.linked(Slots.Character.origin)?.let { This(it) },
-        anchor.linked(Slots.Character.origin)?.let { Throw(it) },
-        anchor.linked(Slots.Character.origin)?.let { True(it) },
-        anchor.linked(Slots.Character.origin)?.let { Try(it) },
-        anchor.linked(Slots.Character.origin)?.let { Typealias(it) },
-        anchor.linked(Slots.Character.origin)?.let { Typeof(it) },
-        anchor.linked(Slots.Character.origin)?.let { Val(it) },
-        anchor.linked(Slots.Character.origin)?.let { Var(it) },
-        anchor.linked(Slots.Character.origin)?.let { When(it) },
-        anchor.linked(Slots.Character.origin)?.let { While(it) },
-        anchor.linked(Slots.Character.origin)?.let { _2(it) },
-        anchor.linked(Slots.Character.origin)?.let { By(it) },
-        anchor.linked(Slots.Character.origin)?.let { Catch(it) },
-        anchor.linked(Slots.Character.origin)?.let { Constructor(it) },
-        anchor.linked(Slots.Character.origin)?.let { Delegate(it) },
-        anchor.linked(Slots.Character.origin)?.let { Dynamic(it) },
-        anchor.linked(Slots.Character.origin)?.let { Field(it) },
-        anchor.linked(Slots.Character.origin)?.let { File(it) },
-        anchor.linked(Slots.Character.origin)?.let { Finally(it) },
-        anchor.linked(Slots.Character.origin)?.let { Get(it) },
-        anchor.linked(Slots.Character.origin)?.let { Import(it) },
-        anchor.linked(Slots.Character.origin)?.let { Init(it) },
-        anchor.linked(Slots.Character.origin)?.let { Param(it) },
-        anchor.linked(Slots.Character.origin)?.let { Property(it) },
-        anchor.linked(Slots.Character.origin)?.let { Receiver(it) },
-        anchor.linked(Slots.Character.origin)?.let { Set(it) },
-        anchor.linked(Slots.Character.origin)?.let { Setparam(it) },
-        anchor.linked(Slots.Character.origin)?.let { Value(it) },
-        anchor.linked(Slots.Character.origin)?.let { Where(it) },
-        anchor.linked(Slots.Character.origin)?.let { Abstract(it) },
-        anchor.linked(Slots.Character.origin)?.let { Actual(it) },
-        anchor.linked(Slots.Character.origin)?.let { Annotation(it) },
-        anchor.linked(Slots.Character.origin)?.let { CompanionLens(it) },
-        anchor.linked(Slots.Character.origin)?.let { Const(it) },
-        anchor.linked(Slots.Character.origin)?.let { Crossinline(it) },
-        anchor.linked(Slots.Character.origin)?.let { Data(it) },
-        anchor.linked(Slots.Character.origin)?.let { Enum(it) },
-        anchor.linked(Slots.Character.origin)?.let { Expect(it) },
-        anchor.linked(Slots.Character.origin)?.let { External(it) },
-        anchor.linked(Slots.Character.origin)?.let { Final(it) },
-        anchor.linked(Slots.Character.origin)?.let { Infix(it) },
-        anchor.linked(Slots.Character.origin)?.let { Inline(it) },
-        anchor.linked(Slots.Character.origin)?.let { Inner(it) },
-        anchor.linked(Slots.Character.origin)?.let { Internal(it) },
-        anchor.linked(Slots.Character.origin)?.let { Lateinit(it) },
-        anchor.linked(Slots.Character.origin)?.let { Noinline(it) },
-        anchor.linked(Slots.Character.origin)?.let { Open(it) },
-        anchor.linked(Slots.Character.origin)?.let { Operator(it) },
-        anchor.linked(Slots.Character.origin)?.let { Out(it) },
-        anchor.linked(Slots.Character.origin)?.let { Override(it) },
-        anchor.linked(Slots.Character.origin)?.let { Private(it) },
-        anchor.linked(Slots.Character.origin)?.let { Protected(it) },
-        anchor.linked(Slots.Character.origin)?.let { Public(it) },
-        anchor.linked(Slots.Character.origin)?.let { Reified(it) },
-        anchor.linked(Slots.Character.origin)?.let { Sealed(it) },
-        anchor.linked(Slots.Character.origin)?.let { Suspend(it) },
-        anchor.linked(Slots.Character.origin)?.let { Tailrec(it) },
-        anchor.linked(Slots.Character.origin)?.let { Vararg(it) },
-        anchor.linked(Slots.Character.origin)?.let { Context(it) },
+        `read-as`(anchor),
+        `read-break`(anchor),
+        `read-class`(anchor),
+        `read-continue`(anchor),
+        `read-do`(anchor),
+        `read-else`(anchor),
+        `read-false`(anchor),
+        `read-for`(anchor),
+        `read-fun`(anchor),
+        `read-if`(anchor),
+        `read-in`(anchor),
+        `read-interface`(anchor),
+        `read-is`(anchor),
+        `read-null`(anchor),
+        `read-object`(anchor),
+        `read-package`(anchor),
+        `read-return`(anchor),
+        `read-super`(anchor),
+        `read-this`(anchor),
+        `read-throw`(anchor),
+        `read-true`(anchor),
+        `read-try`(anchor),
+        `read-typealias`(anchor),
+        `read-typeof`(anchor),
+        `read-val`(anchor),
+        `read-var`(anchor),
+        `read-when`(anchor),
+        `read-while`(anchor),
+        `read-_`(anchor),
+        `read-by`(anchor),
+        `read-catch`(anchor),
+        `read-constructor`(anchor),
+        `read-delegate`(anchor),
+        `read-dynamic`(anchor),
+        `read-field`(anchor),
+        `read-file`(anchor),
+        `read-finally`(anchor),
+        `read-get`(anchor),
+        `read-import`(anchor),
+        `read-init`(anchor),
+        `read-param`(anchor),
+        `read-property`(anchor),
+        `read-receiver`(anchor),
+        `read-set`(anchor),
+        `read-setparam`(anchor),
+        `read-value`(anchor),
+        `read-where`(anchor),
+        `read-abstract`(anchor),
+        `read-actual`(anchor),
+        `read-annotation`(anchor),
+        `read-companion`(anchor),
+        `read-const`(anchor),
+        `read-crossinline`(anchor),
+        `read-data`(anchor),
+        `read-enum`(anchor),
+        `read-expect`(anchor),
+        `read-external`(anchor),
+        `read-final`(anchor),
+        `read-infix`(anchor),
+        `read-inline`(anchor),
+        `read-inner`(anchor),
+        `read-internal`(anchor),
+        `read-lateinit`(anchor),
+        `read-noinline`(anchor),
+        `read-open`(anchor),
+        `read-operator`(anchor),
+        `read-out`(anchor),
+        `read-override`(anchor),
+        `read-private`(anchor),
+        `read-protected`(anchor),
+        `read-public`(anchor),
+        `read-reified`(anchor),
+        `read-sealed`(anchor),
+        `read-suspend`(anchor),
+        `read-tailrec`(anchor),
+        `read-vararg`(anchor),
+        `read-context`(anchor),
     )
 
     companion object {
@@ -5748,6 +6028,83 @@ data class KotlinInlineLinks_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin) && anchor.present(Slots.Character.origin)
+        private fun `read-as`(anchor: Anchor): As? = anchor.linked(Slots.Character.origin)?.let { As(it) }
+        private fun `read-break`(anchor: Anchor): Break? = anchor.linked(Slots.Character.origin)?.let { Break(it) }
+        private fun `read-class`(anchor: Anchor): Class? = anchor.linked(Slots.Character.origin)?.let { Class(it) }
+        private fun `read-continue`(anchor: Anchor): Continue? = anchor.linked(Slots.Character.origin)?.let { Continue(it) }
+        private fun `read-do`(anchor: Anchor): Do? = anchor.linked(Slots.Character.origin)?.let { Do(it) }
+        private fun `read-else`(anchor: Anchor): Else? = anchor.linked(Slots.Character.origin)?.let { Else(it) }
+        private fun `read-false`(anchor: Anchor): False? = anchor.linked(Slots.Character.origin)?.let { False(it) }
+        private fun `read-for`(anchor: Anchor): For? = anchor.linked(Slots.Character.origin)?.let { For(it) }
+        private fun `read-fun`(anchor: Anchor): Fun? = anchor.linked(Slots.Character.origin)?.let { Fun(it) }
+        private fun `read-if`(anchor: Anchor): If? = anchor.linked(Slots.Character.origin)?.let { If(it) }
+        private fun `read-in`(anchor: Anchor): In? = anchor.linked(Slots.Character.origin)?.let { In(it) }
+        private fun `read-interface`(anchor: Anchor): Interface? = anchor.linked(Slots.Character.origin)?.let { Interface(it) }
+        private fun `read-is`(anchor: Anchor): Is? = anchor.linked(Slots.Character.origin)?.let { Is(it) }
+        private fun `read-null`(anchor: Anchor): Null? = anchor.linked(Slots.Character.origin)?.let { Null(it) }
+        private fun `read-object`(anchor: Anchor): Object? = anchor.linked(Slots.Character.origin)?.let { Object(it) }
+        private fun `read-package`(anchor: Anchor): Package? = anchor.linked(Slots.Character.origin)?.let { Package(it) }
+        private fun `read-return`(anchor: Anchor): Return? = anchor.linked(Slots.Character.origin)?.let { Return(it) }
+        private fun `read-super`(anchor: Anchor): Super? = anchor.linked(Slots.Character.origin)?.let { Super(it) }
+        private fun `read-this`(anchor: Anchor): This? = anchor.linked(Slots.Character.origin)?.let { This(it) }
+        private fun `read-throw`(anchor: Anchor): Throw? = anchor.linked(Slots.Character.origin)?.let { Throw(it) }
+        private fun `read-true`(anchor: Anchor): True? = anchor.linked(Slots.Character.origin)?.let { True(it) }
+        private fun `read-try`(anchor: Anchor): Try? = anchor.linked(Slots.Character.origin)?.let { Try(it) }
+        private fun `read-typealias`(anchor: Anchor): Typealias? = anchor.linked(Slots.Character.origin)?.let { Typealias(it) }
+        private fun `read-typeof`(anchor: Anchor): Typeof? = anchor.linked(Slots.Character.origin)?.let { Typeof(it) }
+        private fun `read-val`(anchor: Anchor): Val? = anchor.linked(Slots.Character.origin)?.let { Val(it) }
+        private fun `read-var`(anchor: Anchor): Var? = anchor.linked(Slots.Character.origin)?.let { Var(it) }
+        private fun `read-when`(anchor: Anchor): When? = anchor.linked(Slots.Character.origin)?.let { When(it) }
+        private fun `read-while`(anchor: Anchor): While? = anchor.linked(Slots.Character.origin)?.let { While(it) }
+        private fun `read-_`(anchor: Anchor): _2? = anchor.linked(Slots.Character.origin)?.let { _2(it) }
+        private fun `read-by`(anchor: Anchor): By? = anchor.linked(Slots.Character.origin)?.let { By(it) }
+        private fun `read-catch`(anchor: Anchor): Catch? = anchor.linked(Slots.Character.origin)?.let { Catch(it) }
+        private fun `read-constructor`(anchor: Anchor): Constructor? = anchor.linked(Slots.Character.origin)?.let { Constructor(it) }
+        private fun `read-delegate`(anchor: Anchor): Delegate? = anchor.linked(Slots.Character.origin)?.let { Delegate(it) }
+        private fun `read-dynamic`(anchor: Anchor): Dynamic? = anchor.linked(Slots.Character.origin)?.let { Dynamic(it) }
+        private fun `read-field`(anchor: Anchor): Field? = anchor.linked(Slots.Character.origin)?.let { Field(it) }
+        private fun `read-file`(anchor: Anchor): File? = anchor.linked(Slots.Character.origin)?.let { File(it) }
+        private fun `read-finally`(anchor: Anchor): Finally? = anchor.linked(Slots.Character.origin)?.let { Finally(it) }
+        private fun `read-get`(anchor: Anchor): Get? = anchor.linked(Slots.Character.origin)?.let { Get(it) }
+        private fun `read-import`(anchor: Anchor): Import? = anchor.linked(Slots.Character.origin)?.let { Import(it) }
+        private fun `read-init`(anchor: Anchor): Init? = anchor.linked(Slots.Character.origin)?.let { Init(it) }
+        private fun `read-param`(anchor: Anchor): Param? = anchor.linked(Slots.Character.origin)?.let { Param(it) }
+        private fun `read-property`(anchor: Anchor): Property? = anchor.linked(Slots.Character.origin)?.let { Property(it) }
+        private fun `read-receiver`(anchor: Anchor): Receiver? = anchor.linked(Slots.Character.origin)?.let { Receiver(it) }
+        private fun `read-set`(anchor: Anchor): Set? = anchor.linked(Slots.Character.origin)?.let { Set(it) }
+        private fun `read-setparam`(anchor: Anchor): Setparam? = anchor.linked(Slots.Character.origin)?.let { Setparam(it) }
+        private fun `read-value`(anchor: Anchor): Value? = anchor.linked(Slots.Character.origin)?.let { Value(it) }
+        private fun `read-where`(anchor: Anchor): Where? = anchor.linked(Slots.Character.origin)?.let { Where(it) }
+        private fun `read-abstract`(anchor: Anchor): Abstract? = anchor.linked(Slots.Character.origin)?.let { Abstract(it) }
+        private fun `read-actual`(anchor: Anchor): Actual? = anchor.linked(Slots.Character.origin)?.let { Actual(it) }
+        private fun `read-annotation`(anchor: Anchor): Annotation? = anchor.linked(Slots.Character.origin)?.let { Annotation(it) }
+        private fun `read-companion`(anchor: Anchor): CompanionLens? = anchor.linked(Slots.Character.origin)?.let { CompanionLens(it) }
+        private fun `read-const`(anchor: Anchor): Const? = anchor.linked(Slots.Character.origin)?.let { Const(it) }
+        private fun `read-crossinline`(anchor: Anchor): Crossinline? = anchor.linked(Slots.Character.origin)?.let { Crossinline(it) }
+        private fun `read-data`(anchor: Anchor): Data? = anchor.linked(Slots.Character.origin)?.let { Data(it) }
+        private fun `read-enum`(anchor: Anchor): Enum? = anchor.linked(Slots.Character.origin)?.let { Enum(it) }
+        private fun `read-expect`(anchor: Anchor): Expect? = anchor.linked(Slots.Character.origin)?.let { Expect(it) }
+        private fun `read-external`(anchor: Anchor): External? = anchor.linked(Slots.Character.origin)?.let { External(it) }
+        private fun `read-final`(anchor: Anchor): Final? = anchor.linked(Slots.Character.origin)?.let { Final(it) }
+        private fun `read-infix`(anchor: Anchor): Infix? = anchor.linked(Slots.Character.origin)?.let { Infix(it) }
+        private fun `read-inline`(anchor: Anchor): Inline? = anchor.linked(Slots.Character.origin)?.let { Inline(it) }
+        private fun `read-inner`(anchor: Anchor): Inner? = anchor.linked(Slots.Character.origin)?.let { Inner(it) }
+        private fun `read-internal`(anchor: Anchor): Internal? = anchor.linked(Slots.Character.origin)?.let { Internal(it) }
+        private fun `read-lateinit`(anchor: Anchor): Lateinit? = anchor.linked(Slots.Character.origin)?.let { Lateinit(it) }
+        private fun `read-noinline`(anchor: Anchor): Noinline? = anchor.linked(Slots.Character.origin)?.let { Noinline(it) }
+        private fun `read-open`(anchor: Anchor): Open? = anchor.linked(Slots.Character.origin)?.let { Open(it) }
+        private fun `read-operator`(anchor: Anchor): Operator? = anchor.linked(Slots.Character.origin)?.let { Operator(it) }
+        private fun `read-out`(anchor: Anchor): Out? = anchor.linked(Slots.Character.origin)?.let { Out(it) }
+        private fun `read-override`(anchor: Anchor): Override? = anchor.linked(Slots.Character.origin)?.let { Override(it) }
+        private fun `read-private`(anchor: Anchor): Private? = anchor.linked(Slots.Character.origin)?.let { Private(it) }
+        private fun `read-protected`(anchor: Anchor): Protected? = anchor.linked(Slots.Character.origin)?.let { Protected(it) }
+        private fun `read-public`(anchor: Anchor): Public? = anchor.linked(Slots.Character.origin)?.let { Public(it) }
+        private fun `read-reified`(anchor: Anchor): Reified? = anchor.linked(Slots.Character.origin)?.let { Reified(it) }
+        private fun `read-sealed`(anchor: Anchor): Sealed? = anchor.linked(Slots.Character.origin)?.let { Sealed(it) }
+        private fun `read-suspend`(anchor: Anchor): Suspend? = anchor.linked(Slots.Character.origin)?.let { Suspend(it) }
+        private fun `read-tailrec`(anchor: Anchor): Tailrec? = anchor.linked(Slots.Character.origin)?.let { Tailrec(it) }
+        private fun `read-vararg`(anchor: Anchor): Vararg? = anchor.linked(Slots.Character.origin)?.let { Vararg(it) }
+        private fun `read-context`(anchor: Anchor): Context? = anchor.linked(Slots.Character.origin)?.let { Context(it) }
     }
 
     data class As(
@@ -5756,7 +6113,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5773,6 +6130,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.As(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5782,7 +6140,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5799,6 +6157,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Break(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5808,7 +6167,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5825,6 +6184,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Class(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5834,7 +6194,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5851,6 +6211,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Continue(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5860,7 +6221,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5877,6 +6238,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Do(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5886,7 +6248,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5903,6 +6265,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Else(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5912,7 +6275,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5929,6 +6292,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.False(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5938,7 +6302,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5955,6 +6319,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.For(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5964,7 +6329,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -5981,6 +6346,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Fun(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -5990,7 +6356,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6007,6 +6373,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.If(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6016,7 +6383,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6033,6 +6400,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.In(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6042,7 +6410,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6059,6 +6427,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Interface(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6068,7 +6437,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6085,6 +6454,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Is(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6094,7 +6464,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6111,6 +6481,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Null(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6120,7 +6491,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6137,6 +6508,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Object(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6146,7 +6518,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6163,6 +6535,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Package(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6172,7 +6545,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6189,6 +6562,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Return(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6198,7 +6572,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6215,6 +6589,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Super(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6224,7 +6599,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6241,6 +6616,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.This(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6250,7 +6626,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6267,6 +6643,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Throw(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6276,7 +6653,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6293,6 +6670,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.True(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6302,7 +6680,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6319,6 +6697,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Try(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6328,7 +6707,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6345,6 +6724,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Typealias(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6354,7 +6734,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6371,6 +6751,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Typeof(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6380,7 +6761,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6397,6 +6778,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Val(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6406,7 +6788,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6423,6 +6805,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Var(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6432,7 +6815,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6449,6 +6832,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.When(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6458,7 +6842,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6475,6 +6859,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.While(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6484,7 +6869,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6501,6 +6886,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character._2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6510,7 +6896,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6527,6 +6913,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.By(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6536,7 +6923,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6553,6 +6940,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Catch(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6562,7 +6950,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6579,6 +6967,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Constructor(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6588,7 +6977,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6605,6 +6994,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Delegate(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6614,7 +7004,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6631,6 +7021,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Dynamic(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6640,7 +7031,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6657,6 +7048,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Field(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6666,7 +7058,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6683,6 +7075,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.File(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6692,7 +7085,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6709,6 +7102,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Finally(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6718,7 +7112,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6735,6 +7129,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Get(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6744,7 +7139,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6761,6 +7156,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Import(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6770,7 +7166,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6787,6 +7183,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Init(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6796,7 +7193,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6813,6 +7210,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Param(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6822,7 +7220,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6839,6 +7237,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Property(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6848,7 +7247,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6865,6 +7264,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Receiver(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6874,7 +7274,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6891,6 +7291,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Set(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6900,7 +7301,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6917,6 +7318,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Setparam(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6926,7 +7328,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6943,6 +7345,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Value(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6952,7 +7355,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6969,6 +7372,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Where(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -6978,7 +7382,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -6995,6 +7399,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Abstract(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7004,7 +7409,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7021,6 +7426,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Actual(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7030,7 +7436,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7047,6 +7453,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Annotation(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7056,7 +7463,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7073,6 +7480,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.CompanionLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7082,7 +7490,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7099,6 +7507,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Const(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7108,7 +7517,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7125,6 +7534,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Crossinline(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7134,7 +7544,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7151,6 +7561,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Data(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7160,7 +7571,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7177,6 +7588,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Enum(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7186,7 +7598,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7203,6 +7615,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Expect(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7212,7 +7625,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7229,6 +7642,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.External(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7238,7 +7652,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7255,6 +7669,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Final(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7264,7 +7679,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7281,6 +7696,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Infix(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7290,7 +7706,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7307,6 +7723,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Inline(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7316,7 +7733,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7333,6 +7750,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Inner(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7342,7 +7760,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7359,6 +7777,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Internal(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7368,7 +7787,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7385,6 +7804,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Lateinit(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7394,7 +7814,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7411,6 +7831,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Noinline(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7420,7 +7841,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7437,6 +7858,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Open(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7446,7 +7868,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7463,6 +7885,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Operator(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7472,7 +7895,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7489,6 +7912,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Out(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7498,7 +7922,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7515,6 +7939,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Override(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7524,7 +7949,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7541,6 +7966,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Private(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7550,7 +7976,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7567,6 +7993,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Protected(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7576,7 +8003,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7593,6 +8020,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Public(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7602,7 +8030,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7619,6 +8047,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Reified(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7628,7 +8057,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7645,6 +8074,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Sealed(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7654,7 +8084,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7671,6 +8101,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Suspend(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7680,7 +8111,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7697,6 +8128,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Tailrec(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7706,7 +8138,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7723,6 +8155,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Vararg(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 
@@ -7732,7 +8165,7 @@ data class KotlinInlineLinks_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Location.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -7749,6 +8182,7 @@ data class KotlinInlineLinks_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlineLinks_character.Context(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Location.id)
         }
     }
 }
@@ -7828,75 +8262,75 @@ data class KotlinInlinePlurals2_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.requiredValues(Slots.Character.episode) { Satisfied(it) },
-        anchor.requiredValues(Slots.Character.episode) { MissingRequiredField(it) },
-        anchor.requiredValues(Slots.Character.episode) { FieldErrorsLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { IsPresent(it) },
-        anchor.requiredValues(Slots.Character.episode) { Throwing(it) },
-        anchor.requiredValues(Slots.Character.episode) { Caught(it) },
-        anchor.requiredValues(Slots.Character.episode) { Refetchable(it) },
-        anchor.requiredValues(Slots.Character.episode) { RefetchLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { Connection(it) },
-        anchor.requiredValues(Slots.Character.episode) { Nodes(it) },
-        anchor.requiredValues(Slots.Character.episode) { HasNext(it) },
-        anchor.requiredValues(Slots.Character.episode) { HasPrevious(it) },
-        anchor.requiredValues(Slots.Character.episode) { IsLoadingNext(it) },
-        anchor.requiredValues(Slots.Character.episode) { IsLoadingPrevious(it) },
-        anchor.requiredValues(Slots.Character.episode) { ConnectionID(it) },
-        anchor.requiredValues(Slots.Character.episode) { LoadNext(it) },
-        anchor.requiredValues(Slots.Character.episode) { LoadPrevious(it) },
-        anchor.requiredValues(Slots.Character.episode) { Bound(it) },
-        anchor.requiredValues(Slots.Character.episode) { Errors(it) },
-        anchor.requiredValues(Slots.Character.episode) { Child(it) },
-        anchor.requiredValues(Slots.Character.episode) { Missing(it) },
-        anchor.requiredValues(Slots.Character.episode) { Other(it) },
-        anchor.requiredValues(Slots.Character.episode) { It(it) },
-        anchor.requiredValues(Slots.Character.episode) { Element(it) },
-        anchor.requiredValues(Slots.Character.episode) { Count(it) },
-        anchor.requiredValues(Slots.Character.episode) { Optimistic(it) },
-        anchor.requiredValues(Slots.Character.episode) { Text(it) },
-        anchor.requiredValues(Slots.Character.episode) { Fields(it) },
-        anchor.requiredValues(Slots.Character.episode) { VariablesLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { Type(it) },
-        anchor.requiredValues(Slots.Character.episode) { Resolution(it) },
-        anchor.requiredValues(Slots.Character.episode) { Name(it) },
-        anchor.requiredValues(Slots.Character.episode) { Document(it) },
-        anchor.requiredValues(Slots.Character.episode) { Kind(it) },
-        anchor.requiredValues(Slots.Character.episode) { ErrorBehavior(it) },
-        anchor.requiredValues(Slots.Character.episode) { CacheExpirationSeconds(it) },
-        anchor.requiredValues(Slots.Character.episode) { ThrowsOnFieldError(it) },
-        anchor.requiredValues(Slots.Character.episode) { Bubbles(it) },
-        anchor.requiredValues(Slots.Character.episode) { HasDeferred(it) },
-        anchor.requiredValues(Slots.Character.episode) { Plan(it) },
-        anchor.requiredValues(Slots.Character.episode) { Selection(it) },
-        anchor.requiredValues(Slots.Character.episode) { Selection0(it) },
-        anchor.requiredValues(Slots.Character.episode) { Data2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Action2(it) },
-        anchor.requiredValues(Slots.Character.episode) { OptimisticResponse2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Invoke(it) },
-        anchor.requiredValues(Slots.Character.episode) { Commit(it) },
-        anchor.requiredValues(Slots.Character.episode) { VariableLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { Payload(it) },
-        anchor.requiredValues(Slots.Character.episode) { Copy(it) },
-        anchor.requiredValues(Slots.Character.episode) { Component1(it) },
-        anchor.requiredValues(Slots.Character.episode) { Component2(it) },
-        anchor.requiredValues(Slots.Character.episode) { JavaClass(it) },
-        anchor.requiredValues(Slots.Character.episode) { Of(it) },
-        anchor.requiredValues(Slots.Character.episode) { ScalarText(it) },
-        anchor.requiredValues(Slots.Character.episode) { Undeclared2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Size(it) },
-        anchor.requiredValues(Slots.Character.episode) { Keys(it) },
-        anchor.requiredValues(Slots.Character.episode) { Values(it) },
-        anchor.requiredValues(Slots.Character.episode) { Entries(it) },
-        anchor.requiredValues(Slots.Character.episode) { TypesLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { AbstractSlotsLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { SitesLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { GuardsLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { SchemaDigest(it) },
-        anchor.requiredValues(Slots.Character.episode) { Format(it) },
-        anchor.requiredValues(Slots.Character.episode) { Transient(it) },
-        anchor.requiredValues(Slots.Character.episode) { Baton(it) },
-        anchor.requiredValues(Slots.Character.episode) { MappedScalar2(it) },
+        `read-satisfied`(anchor),
+        `read-missingRequiredField`(anchor),
+        `read-fieldErrors`(anchor),
+        `read-isPresent`(anchor),
+        `read-throwing`(anchor),
+        `read-caught`(anchor),
+        `read-refetchable`(anchor),
+        `read-refetch`(anchor),
+        `read-connection`(anchor),
+        `read-nodes`(anchor),
+        `read-hasNext`(anchor),
+        `read-hasPrevious`(anchor),
+        `read-isLoadingNext`(anchor),
+        `read-isLoadingPrevious`(anchor),
+        `read-connectionID`(anchor),
+        `read-loadNext`(anchor),
+        `read-loadPrevious`(anchor),
+        `read-bound`(anchor),
+        `read-errors`(anchor),
+        `read-child`(anchor),
+        `read-missing`(anchor),
+        `read-other`(anchor),
+        `read-it`(anchor),
+        `read-element`(anchor),
+        `read-count`(anchor),
+        `read-optimistic`(anchor),
+        `read-text`(anchor),
+        `read-fields`(anchor),
+        `read-variables`(anchor),
+        `read-type`(anchor),
+        `read-resolution`(anchor),
+        `read-name`(anchor),
+        `read-document`(anchor),
+        `read-kind`(anchor),
+        `read-errorBehavior`(anchor),
+        `read-cacheExpirationSeconds`(anchor),
+        `read-throwsOnFieldError`(anchor),
+        `read-bubbles`(anchor),
+        `read-hasDeferred`(anchor),
+        `read-plan`(anchor),
+        `read-selection`(anchor),
+        `read-selection0`(anchor),
+        `read-Data`(anchor),
+        `read-Action`(anchor),
+        `read-OptimisticResponse`(anchor),
+        `read-invoke`(anchor),
+        `read-commit`(anchor),
+        `read-variable`(anchor),
+        `read-payload`(anchor),
+        `read-copy`(anchor),
+        `read-component1`(anchor),
+        `read-component2`(anchor),
+        `read-javaClass`(anchor),
+        `read-of`(anchor),
+        `read-scalarText`(anchor),
+        `read-Undeclared`(anchor),
+        `read-size`(anchor),
+        `read-keys`(anchor),
+        `read-values`(anchor),
+        `read-entries`(anchor),
+        `read-Types`(anchor),
+        `read-AbstractSlots`(anchor),
+        `read-Sites`(anchor),
+        `read-Guards`(anchor),
+        `read-schemaDigest`(anchor),
+        `read-format`(anchor),
+        `read-transient`(anchor),
+        `read-baton`(anchor),
+        `read-MappedScalar`(anchor),
     )
 
     companion object {
@@ -7983,6 +8417,75 @@ data class KotlinInlinePlurals2_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode)
+        private fun `read-satisfied`(anchor: Anchor): List<Satisfied> = anchor.requiredValues(Slots.Character.episode) { Satisfied(it) }
+        private fun `read-missingRequiredField`(anchor: Anchor): List<MissingRequiredField> = anchor.requiredValues(Slots.Character.episode) { MissingRequiredField(it) }
+        private fun `read-fieldErrors`(anchor: Anchor): List<FieldErrorsLens> = anchor.requiredValues(Slots.Character.episode) { FieldErrorsLens(it) }
+        private fun `read-isPresent`(anchor: Anchor): List<IsPresent> = anchor.requiredValues(Slots.Character.episode) { IsPresent(it) }
+        private fun `read-throwing`(anchor: Anchor): List<Throwing> = anchor.requiredValues(Slots.Character.episode) { Throwing(it) }
+        private fun `read-caught`(anchor: Anchor): List<Caught> = anchor.requiredValues(Slots.Character.episode) { Caught(it) }
+        private fun `read-refetchable`(anchor: Anchor): List<Refetchable> = anchor.requiredValues(Slots.Character.episode) { Refetchable(it) }
+        private fun `read-refetch`(anchor: Anchor): List<RefetchLens> = anchor.requiredValues(Slots.Character.episode) { RefetchLens(it) }
+        private fun `read-connection`(anchor: Anchor): List<Connection> = anchor.requiredValues(Slots.Character.episode) { Connection(it) }
+        private fun `read-nodes`(anchor: Anchor): List<Nodes> = anchor.requiredValues(Slots.Character.episode) { Nodes(it) }
+        private fun `read-hasNext`(anchor: Anchor): List<HasNext> = anchor.requiredValues(Slots.Character.episode) { HasNext(it) }
+        private fun `read-hasPrevious`(anchor: Anchor): List<HasPrevious> = anchor.requiredValues(Slots.Character.episode) { HasPrevious(it) }
+        private fun `read-isLoadingNext`(anchor: Anchor): List<IsLoadingNext> = anchor.requiredValues(Slots.Character.episode) { IsLoadingNext(it) }
+        private fun `read-isLoadingPrevious`(anchor: Anchor): List<IsLoadingPrevious> = anchor.requiredValues(Slots.Character.episode) { IsLoadingPrevious(it) }
+        private fun `read-connectionID`(anchor: Anchor): List<ConnectionID> = anchor.requiredValues(Slots.Character.episode) { ConnectionID(it) }
+        private fun `read-loadNext`(anchor: Anchor): List<LoadNext> = anchor.requiredValues(Slots.Character.episode) { LoadNext(it) }
+        private fun `read-loadPrevious`(anchor: Anchor): List<LoadPrevious> = anchor.requiredValues(Slots.Character.episode) { LoadPrevious(it) }
+        private fun `read-bound`(anchor: Anchor): List<Bound> = anchor.requiredValues(Slots.Character.episode) { Bound(it) }
+        private fun `read-errors`(anchor: Anchor): List<Errors> = anchor.requiredValues(Slots.Character.episode) { Errors(it) }
+        private fun `read-child`(anchor: Anchor): List<Child> = anchor.requiredValues(Slots.Character.episode) { Child(it) }
+        private fun `read-missing`(anchor: Anchor): List<Missing> = anchor.requiredValues(Slots.Character.episode) { Missing(it) }
+        private fun `read-other`(anchor: Anchor): List<Other> = anchor.requiredValues(Slots.Character.episode) { Other(it) }
+        private fun `read-it`(anchor: Anchor): List<It> = anchor.requiredValues(Slots.Character.episode) { It(it) }
+        private fun `read-element`(anchor: Anchor): List<Element> = anchor.requiredValues(Slots.Character.episode) { Element(it) }
+        private fun `read-count`(anchor: Anchor): List<Count> = anchor.requiredValues(Slots.Character.episode) { Count(it) }
+        private fun `read-optimistic`(anchor: Anchor): List<Optimistic> = anchor.requiredValues(Slots.Character.episode) { Optimistic(it) }
+        private fun `read-text`(anchor: Anchor): List<Text> = anchor.requiredValues(Slots.Character.episode) { Text(it) }
+        private fun `read-fields`(anchor: Anchor): List<Fields> = anchor.requiredValues(Slots.Character.episode) { Fields(it) }
+        private fun `read-variables`(anchor: Anchor): List<VariablesLens> = anchor.requiredValues(Slots.Character.episode) { VariablesLens(it) }
+        private fun `read-type`(anchor: Anchor): List<Type> = anchor.requiredValues(Slots.Character.episode) { Type(it) }
+        private fun `read-resolution`(anchor: Anchor): List<Resolution> = anchor.requiredValues(Slots.Character.episode) { Resolution(it) }
+        private fun `read-name`(anchor: Anchor): List<Name> = anchor.requiredValues(Slots.Character.episode) { Name(it) }
+        private fun `read-document`(anchor: Anchor): List<Document> = anchor.requiredValues(Slots.Character.episode) { Document(it) }
+        private fun `read-kind`(anchor: Anchor): List<Kind> = anchor.requiredValues(Slots.Character.episode) { Kind(it) }
+        private fun `read-errorBehavior`(anchor: Anchor): List<ErrorBehavior> = anchor.requiredValues(Slots.Character.episode) { ErrorBehavior(it) }
+        private fun `read-cacheExpirationSeconds`(anchor: Anchor): List<CacheExpirationSeconds> = anchor.requiredValues(Slots.Character.episode) { CacheExpirationSeconds(it) }
+        private fun `read-throwsOnFieldError`(anchor: Anchor): List<ThrowsOnFieldError> = anchor.requiredValues(Slots.Character.episode) { ThrowsOnFieldError(it) }
+        private fun `read-bubbles`(anchor: Anchor): List<Bubbles> = anchor.requiredValues(Slots.Character.episode) { Bubbles(it) }
+        private fun `read-hasDeferred`(anchor: Anchor): List<HasDeferred> = anchor.requiredValues(Slots.Character.episode) { HasDeferred(it) }
+        private fun `read-plan`(anchor: Anchor): List<Plan> = anchor.requiredValues(Slots.Character.episode) { Plan(it) }
+        private fun `read-selection`(anchor: Anchor): List<Selection> = anchor.requiredValues(Slots.Character.episode) { Selection(it) }
+        private fun `read-selection0`(anchor: Anchor): List<Selection0> = anchor.requiredValues(Slots.Character.episode) { Selection0(it) }
+        private fun `read-Data`(anchor: Anchor): List<Data2> = anchor.requiredValues(Slots.Character.episode) { Data2(it) }
+        private fun `read-Action`(anchor: Anchor): List<Action2> = anchor.requiredValues(Slots.Character.episode) { Action2(it) }
+        private fun `read-OptimisticResponse`(anchor: Anchor): List<OptimisticResponse2> = anchor.requiredValues(Slots.Character.episode) { OptimisticResponse2(it) }
+        private fun `read-invoke`(anchor: Anchor): List<Invoke> = anchor.requiredValues(Slots.Character.episode) { Invoke(it) }
+        private fun `read-commit`(anchor: Anchor): List<Commit> = anchor.requiredValues(Slots.Character.episode) { Commit(it) }
+        private fun `read-variable`(anchor: Anchor): List<VariableLens> = anchor.requiredValues(Slots.Character.episode) { VariableLens(it) }
+        private fun `read-payload`(anchor: Anchor): List<Payload> = anchor.requiredValues(Slots.Character.episode) { Payload(it) }
+        private fun `read-copy`(anchor: Anchor): List<Copy> = anchor.requiredValues(Slots.Character.episode) { Copy(it) }
+        private fun `read-component1`(anchor: Anchor): List<Component1> = anchor.requiredValues(Slots.Character.episode) { Component1(it) }
+        private fun `read-component2`(anchor: Anchor): List<Component2> = anchor.requiredValues(Slots.Character.episode) { Component2(it) }
+        private fun `read-javaClass`(anchor: Anchor): List<JavaClass> = anchor.requiredValues(Slots.Character.episode) { JavaClass(it) }
+        private fun `read-of`(anchor: Anchor): List<Of> = anchor.requiredValues(Slots.Character.episode) { Of(it) }
+        private fun `read-scalarText`(anchor: Anchor): List<ScalarText> = anchor.requiredValues(Slots.Character.episode) { ScalarText(it) }
+        private fun `read-Undeclared`(anchor: Anchor): List<Undeclared2> = anchor.requiredValues(Slots.Character.episode) { Undeclared2(it) }
+        private fun `read-size`(anchor: Anchor): List<Size> = anchor.requiredValues(Slots.Character.episode) { Size(it) }
+        private fun `read-keys`(anchor: Anchor): List<Keys> = anchor.requiredValues(Slots.Character.episode) { Keys(it) }
+        private fun `read-values`(anchor: Anchor): List<Values> = anchor.requiredValues(Slots.Character.episode) { Values(it) }
+        private fun `read-entries`(anchor: Anchor): List<Entries> = anchor.requiredValues(Slots.Character.episode) { Entries(it) }
+        private fun `read-Types`(anchor: Anchor): List<TypesLens> = anchor.requiredValues(Slots.Character.episode) { TypesLens(it) }
+        private fun `read-AbstractSlots`(anchor: Anchor): List<AbstractSlotsLens> = anchor.requiredValues(Slots.Character.episode) { AbstractSlotsLens(it) }
+        private fun `read-Sites`(anchor: Anchor): List<SitesLens> = anchor.requiredValues(Slots.Character.episode) { SitesLens(it) }
+        private fun `read-Guards`(anchor: Anchor): List<GuardsLens> = anchor.requiredValues(Slots.Character.episode) { GuardsLens(it) }
+        private fun `read-schemaDigest`(anchor: Anchor): List<SchemaDigest> = anchor.requiredValues(Slots.Character.episode) { SchemaDigest(it) }
+        private fun `read-format`(anchor: Anchor): List<Format> = anchor.requiredValues(Slots.Character.episode) { Format(it) }
+        private fun `read-transient`(anchor: Anchor): List<Transient> = anchor.requiredValues(Slots.Character.episode) { Transient(it) }
+        private fun `read-baton`(anchor: Anchor): List<Baton> = anchor.requiredValues(Slots.Character.episode) { Baton(it) }
+        private fun `read-MappedScalar`(anchor: Anchor): List<MappedScalar2> = anchor.requiredValues(Slots.Character.episode) { MappedScalar2(it) }
     }
 
     data class Satisfied(
@@ -7991,7 +8494,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8008,6 +8511,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Satisfied(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8017,7 +8521,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8034,6 +8538,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.MissingRequiredField(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8043,7 +8548,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8060,6 +8565,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.FieldErrorsLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8069,7 +8575,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8086,6 +8592,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.IsPresent(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8095,7 +8602,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8112,6 +8619,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Throwing(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8121,7 +8629,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8138,6 +8646,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Caught(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8147,7 +8656,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8164,6 +8673,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Refetchable(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8173,7 +8683,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8190,6 +8700,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.RefetchLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8199,7 +8710,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8216,6 +8727,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Connection(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8225,7 +8737,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8242,6 +8754,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Nodes(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8251,7 +8764,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8268,6 +8781,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.HasNext(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8277,7 +8791,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8294,6 +8808,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.HasPrevious(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8303,7 +8818,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8320,6 +8835,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.IsLoadingNext(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8329,7 +8845,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8346,6 +8862,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.IsLoadingPrevious(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8355,7 +8872,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8372,6 +8889,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.ConnectionID(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8381,7 +8899,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8398,6 +8916,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.LoadNext(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8407,7 +8926,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8424,6 +8943,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.LoadPrevious(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8433,7 +8953,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8450,6 +8970,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Bound(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8459,7 +8980,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8476,6 +8997,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Errors(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8485,7 +9007,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8502,6 +9024,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Child(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8511,7 +9034,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8528,6 +9051,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Missing(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8537,7 +9061,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8554,6 +9078,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Other(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8563,7 +9088,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8580,6 +9105,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.It(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8589,7 +9115,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8606,6 +9132,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Element(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8615,7 +9142,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8632,6 +9159,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Count(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8641,7 +9169,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8658,6 +9186,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Optimistic(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8667,7 +9196,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8684,6 +9213,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Text(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8693,7 +9223,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8710,6 +9240,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Fields(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8719,7 +9250,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8736,6 +9267,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.VariablesLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8745,7 +9277,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8762,6 +9294,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Type(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8771,7 +9304,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8788,6 +9321,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Resolution(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8797,7 +9331,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8814,6 +9348,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Name(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8823,7 +9358,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8840,6 +9375,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Document(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8849,7 +9385,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8866,6 +9402,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Kind(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8875,7 +9412,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8892,6 +9429,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.ErrorBehavior(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8901,7 +9439,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8918,6 +9456,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.CacheExpirationSeconds(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8927,7 +9466,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8944,6 +9483,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.ThrowsOnFieldError(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8953,7 +9493,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8970,6 +9510,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Bubbles(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -8979,7 +9520,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -8996,6 +9537,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.HasDeferred(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9005,7 +9547,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9022,6 +9564,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Plan(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9031,7 +9574,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9048,6 +9591,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Selection(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9057,7 +9601,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9074,6 +9618,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Selection0(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9083,7 +9628,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9100,6 +9645,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Data2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9109,7 +9655,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9126,6 +9672,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Action2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9135,7 +9682,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9152,6 +9699,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.OptimisticResponse2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9161,7 +9709,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9178,6 +9726,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Invoke(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9187,7 +9736,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9204,6 +9753,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Commit(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9213,7 +9763,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9230,6 +9780,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.VariableLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9239,7 +9790,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9256,6 +9807,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Payload(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9265,7 +9817,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9282,6 +9834,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Copy(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9291,7 +9844,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9308,6 +9861,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Component1(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9317,7 +9871,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9334,6 +9888,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Component2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9343,7 +9898,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9360,6 +9915,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.JavaClass(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9369,7 +9925,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9386,6 +9942,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Of(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9395,7 +9952,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9412,6 +9969,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.ScalarText(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9421,7 +9979,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9438,6 +9996,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Undeclared2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9447,7 +10006,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9464,6 +10023,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Size(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9473,7 +10033,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9490,6 +10050,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Keys(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9499,7 +10060,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9516,6 +10077,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Values(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9525,7 +10087,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9542,6 +10104,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Entries(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9551,7 +10114,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9568,6 +10131,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.TypesLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9577,7 +10141,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9594,6 +10158,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.AbstractSlotsLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9603,7 +10168,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9620,6 +10185,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.SitesLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9629,7 +10195,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9646,6 +10212,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.GuardsLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9655,7 +10222,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9672,6 +10239,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.SchemaDigest(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9681,7 +10249,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9698,6 +10266,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Format(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9707,7 +10276,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9724,6 +10293,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Transient(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9733,7 +10303,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9750,6 +10320,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.Baton(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -9759,7 +10330,7 @@ data class KotlinInlinePlurals2_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -9776,6 +10347,7 @@ data class KotlinInlinePlurals2_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals2_character.MappedScalar2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 }
@@ -9857,77 +10429,77 @@ data class KotlinInlinePlurals3_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.requiredValues(Slots.Character.episode) { AbstractSlot2(it) },
-        anchor.requiredValues(Slots.Character.episode) { AnchorLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { ArgumentSite2(it) },
-        anchor.requiredValues(Slots.Character.episode) { ConnectionCursor2(it) },
-        anchor.requiredValues(Slots.Character.episode) { ConnectionPlan2(it) },
-        anchor.requiredValues(Slots.Character.episode) { ConnectionSlots2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Document2(it) },
-        anchor.requiredValues(Slots.Character.episode) { DynamicKey2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Edit2(it) },
-        anchor.requiredValues(Slots.Character.episode) { ErrorBehavior2(it) },
-        anchor.requiredValues(Slots.Character.episode) { FieldErrorLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { FieldErrorsLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { GeneratedLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { GeneratedEnum2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Guard2(it) },
-        anchor.requiredValues(Slots.Character.episode) { InputObject2(it) },
-        anchor.requiredValues(Slots.Character.episode) { KeyArgument2(it) },
-        anchor.requiredValues(Slots.Character.episode) { KeyPart2(it) },
-        anchor.requiredValues(Slots.Character.episode) { LensLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { LensList2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Lookup2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Members2(it) },
-        anchor.requiredValues(Slots.Character.episode) { MutationAction2(it) },
-        anchor.requiredValues(Slots.Character.episode) { MutationOperation2(it) },
-        anchor.requiredValues(Slots.Character.episode) { OperationHandle2(it) },
-        anchor.requiredValues(Slots.Character.episode) { OperationKind2(it) },
-        anchor.requiredValues(Slots.Character.episode) { OperationType2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Payload2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Plan2(it) },
-        anchor.requiredValues(Slots.Character.episode) { PlanField2(it) },
-        anchor.requiredValues(Slots.Character.episode) { QueryOperation2(it) },
-        anchor.requiredValues(Slots.Character.episode) { RefetchLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { Registry2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Resolution2(it) },
-        anchor.requiredValues(Slots.Character.episode) { ScalarKind2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Selection2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Slot2(it) },
-        anchor.requiredValues(Slots.Character.episode) { StorageKey2(it) },
-        anchor.requiredValues(Slots.Character.episode) { SubscriptionHandle2(it) },
-        anchor.requiredValues(Slots.Character.episode) { SubscriptionOperation2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Transient2(it) },
-        anchor.requiredValues(Slots.Character.episode) { TypeID2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Format12(it) },
-        anchor.requiredValues(Slots.Character.episode) { AnyLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { BooleanLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { DoubleLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { IntLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { ListLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { LongLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { Map2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Pair2(it) },
-        anchor.requiredValues(Slots.Character.episode) { ResultLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { StringLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { UnitLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { StableLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { JvmName2(it) },
-        anchor.requiredValues(Slots.Character.episode) { JvmField2(it) },
-        anchor.requiredValues(Slots.Character.episode) { OptIn2(it) },
-        anchor.requiredValues(Slots.Character.episode) { Run(it) },
-        anchor.requiredValues(Slots.Character.episode) { Let(it) },
-        anchor.requiredValues(Slots.Character.episode) { TakeIf(it) },
-        anchor.requiredValues(Slots.Character.episode) { Map3(it) },
-        anchor.requiredValues(Slots.Character.episode) { Lazy(it) },
-        anchor.requiredValues(Slots.Character.episode) { ListOf(it) },
-        anchor.requiredValues(Slots.Character.episode) { MapOf(it) },
-        anchor.requiredValues(Slots.Character.episode) { EmptyList(it) },
-        anchor.requiredValues(Slots.Character.episode) { EmptyMap(it) },
-        anchor.requiredValues(Slots.Character.episode) { MutableListOf(it) },
-        anchor.requiredValues(Slots.Character.episode) { GetOrThrow(it) },
-        anchor.requiredValues(Slots.Character.episode) { Success(it) },
-        anchor.requiredValues(Slots.Character.episode) { Failure(it) },
+        `read-AbstractSlot`(anchor),
+        `read-Anchor`(anchor),
+        `read-ArgumentSite`(anchor),
+        `read-ConnectionCursor`(anchor),
+        `read-ConnectionPlan`(anchor),
+        `read-ConnectionSlots`(anchor),
+        `read-Document`(anchor),
+        `read-DynamicKey`(anchor),
+        `read-Edit`(anchor),
+        `read-ErrorBehavior`(anchor),
+        `read-FieldError`(anchor),
+        `read-FieldErrors`(anchor),
+        `read-Generated`(anchor),
+        `read-GeneratedEnum`(anchor),
+        `read-Guard`(anchor),
+        `read-InputObject`(anchor),
+        `read-KeyArgument`(anchor),
+        `read-KeyPart`(anchor),
+        `read-Lens`(anchor),
+        `read-LensList`(anchor),
+        `read-Lookup`(anchor),
+        `read-Members`(anchor),
+        `read-MutationAction`(anchor),
+        `read-MutationOperation`(anchor),
+        `read-OperationHandle`(anchor),
+        `read-OperationKind`(anchor),
+        `read-OperationType`(anchor),
+        `read-Payload`(anchor),
+        `read-Plan`(anchor),
+        `read-PlanField`(anchor),
+        `read-QueryOperation`(anchor),
+        `read-Refetch`(anchor),
+        `read-Registry`(anchor),
+        `read-Resolution`(anchor),
+        `read-ScalarKind`(anchor),
+        `read-Selection`(anchor),
+        `read-Slot`(anchor),
+        `read-StorageKey`(anchor),
+        `read-SubscriptionHandle`(anchor),
+        `read-SubscriptionOperation`(anchor),
+        `read-Transient`(anchor),
+        `read-TypeID`(anchor),
+        `read-Format1`(anchor),
+        `read-Any`(anchor),
+        `read-Boolean`(anchor),
+        `read-Double`(anchor),
+        `read-Int`(anchor),
+        `read-List`(anchor),
+        `read-Long`(anchor),
+        `read-Map`(anchor),
+        `read-Pair`(anchor),
+        `read-Result`(anchor),
+        `read-String`(anchor),
+        `read-Unit`(anchor),
+        `read-Stable`(anchor),
+        `read-JvmName`(anchor),
+        `read-JvmField`(anchor),
+        `read-OptIn`(anchor),
+        `read-run`(anchor),
+        `read-let`(anchor),
+        `read-takeIf`(anchor),
+        `read-map`(anchor),
+        `read-lazy`(anchor),
+        `read-listOf`(anchor),
+        `read-mapOf`(anchor),
+        `read-emptyList`(anchor),
+        `read-emptyMap`(anchor),
+        `read-mutableListOf`(anchor),
+        `read-getOrThrow`(anchor),
+        `read-success`(anchor),
+        `read-failure`(anchor),
     )
 
     companion object {
@@ -10016,6 +10588,77 @@ data class KotlinInlinePlurals3_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode)
+        private fun `read-AbstractSlot`(anchor: Anchor): List<AbstractSlot2> = anchor.requiredValues(Slots.Character.episode) { AbstractSlot2(it) }
+        private fun `read-Anchor`(anchor: Anchor): List<AnchorLens> = anchor.requiredValues(Slots.Character.episode) { AnchorLens(it) }
+        private fun `read-ArgumentSite`(anchor: Anchor): List<ArgumentSite2> = anchor.requiredValues(Slots.Character.episode) { ArgumentSite2(it) }
+        private fun `read-ConnectionCursor`(anchor: Anchor): List<ConnectionCursor2> = anchor.requiredValues(Slots.Character.episode) { ConnectionCursor2(it) }
+        private fun `read-ConnectionPlan`(anchor: Anchor): List<ConnectionPlan2> = anchor.requiredValues(Slots.Character.episode) { ConnectionPlan2(it) }
+        private fun `read-ConnectionSlots`(anchor: Anchor): List<ConnectionSlots2> = anchor.requiredValues(Slots.Character.episode) { ConnectionSlots2(it) }
+        private fun `read-Document`(anchor: Anchor): List<Document2> = anchor.requiredValues(Slots.Character.episode) { Document2(it) }
+        private fun `read-DynamicKey`(anchor: Anchor): List<DynamicKey2> = anchor.requiredValues(Slots.Character.episode) { DynamicKey2(it) }
+        private fun `read-Edit`(anchor: Anchor): List<Edit2> = anchor.requiredValues(Slots.Character.episode) { Edit2(it) }
+        private fun `read-ErrorBehavior`(anchor: Anchor): List<ErrorBehavior2> = anchor.requiredValues(Slots.Character.episode) { ErrorBehavior2(it) }
+        private fun `read-FieldError`(anchor: Anchor): List<FieldErrorLens> = anchor.requiredValues(Slots.Character.episode) { FieldErrorLens(it) }
+        private fun `read-FieldErrors`(anchor: Anchor): List<FieldErrorsLens> = anchor.requiredValues(Slots.Character.episode) { FieldErrorsLens(it) }
+        private fun `read-Generated`(anchor: Anchor): List<GeneratedLens> = anchor.requiredValues(Slots.Character.episode) { GeneratedLens(it) }
+        private fun `read-GeneratedEnum`(anchor: Anchor): List<GeneratedEnum2> = anchor.requiredValues(Slots.Character.episode) { GeneratedEnum2(it) }
+        private fun `read-Guard`(anchor: Anchor): List<Guard2> = anchor.requiredValues(Slots.Character.episode) { Guard2(it) }
+        private fun `read-InputObject`(anchor: Anchor): List<InputObject2> = anchor.requiredValues(Slots.Character.episode) { InputObject2(it) }
+        private fun `read-KeyArgument`(anchor: Anchor): List<KeyArgument2> = anchor.requiredValues(Slots.Character.episode) { KeyArgument2(it) }
+        private fun `read-KeyPart`(anchor: Anchor): List<KeyPart2> = anchor.requiredValues(Slots.Character.episode) { KeyPart2(it) }
+        private fun `read-Lens`(anchor: Anchor): List<LensLens> = anchor.requiredValues(Slots.Character.episode) { LensLens(it) }
+        private fun `read-LensList`(anchor: Anchor): List<LensList2> = anchor.requiredValues(Slots.Character.episode) { LensList2(it) }
+        private fun `read-Lookup`(anchor: Anchor): List<Lookup2> = anchor.requiredValues(Slots.Character.episode) { Lookup2(it) }
+        private fun `read-Members`(anchor: Anchor): List<Members2> = anchor.requiredValues(Slots.Character.episode) { Members2(it) }
+        private fun `read-MutationAction`(anchor: Anchor): List<MutationAction2> = anchor.requiredValues(Slots.Character.episode) { MutationAction2(it) }
+        private fun `read-MutationOperation`(anchor: Anchor): List<MutationOperation2> = anchor.requiredValues(Slots.Character.episode) { MutationOperation2(it) }
+        private fun `read-OperationHandle`(anchor: Anchor): List<OperationHandle2> = anchor.requiredValues(Slots.Character.episode) { OperationHandle2(it) }
+        private fun `read-OperationKind`(anchor: Anchor): List<OperationKind2> = anchor.requiredValues(Slots.Character.episode) { OperationKind2(it) }
+        private fun `read-OperationType`(anchor: Anchor): List<OperationType2> = anchor.requiredValues(Slots.Character.episode) { OperationType2(it) }
+        private fun `read-Payload`(anchor: Anchor): List<Payload2> = anchor.requiredValues(Slots.Character.episode) { Payload2(it) }
+        private fun `read-Plan`(anchor: Anchor): List<Plan2> = anchor.requiredValues(Slots.Character.episode) { Plan2(it) }
+        private fun `read-PlanField`(anchor: Anchor): List<PlanField2> = anchor.requiredValues(Slots.Character.episode) { PlanField2(it) }
+        private fun `read-QueryOperation`(anchor: Anchor): List<QueryOperation2> = anchor.requiredValues(Slots.Character.episode) { QueryOperation2(it) }
+        private fun `read-Refetch`(anchor: Anchor): List<RefetchLens> = anchor.requiredValues(Slots.Character.episode) { RefetchLens(it) }
+        private fun `read-Registry`(anchor: Anchor): List<Registry2> = anchor.requiredValues(Slots.Character.episode) { Registry2(it) }
+        private fun `read-Resolution`(anchor: Anchor): List<Resolution2> = anchor.requiredValues(Slots.Character.episode) { Resolution2(it) }
+        private fun `read-ScalarKind`(anchor: Anchor): List<ScalarKind2> = anchor.requiredValues(Slots.Character.episode) { ScalarKind2(it) }
+        private fun `read-Selection`(anchor: Anchor): List<Selection2> = anchor.requiredValues(Slots.Character.episode) { Selection2(it) }
+        private fun `read-Slot`(anchor: Anchor): List<Slot2> = anchor.requiredValues(Slots.Character.episode) { Slot2(it) }
+        private fun `read-StorageKey`(anchor: Anchor): List<StorageKey2> = anchor.requiredValues(Slots.Character.episode) { StorageKey2(it) }
+        private fun `read-SubscriptionHandle`(anchor: Anchor): List<SubscriptionHandle2> = anchor.requiredValues(Slots.Character.episode) { SubscriptionHandle2(it) }
+        private fun `read-SubscriptionOperation`(anchor: Anchor): List<SubscriptionOperation2> = anchor.requiredValues(Slots.Character.episode) { SubscriptionOperation2(it) }
+        private fun `read-Transient`(anchor: Anchor): List<Transient2> = anchor.requiredValues(Slots.Character.episode) { Transient2(it) }
+        private fun `read-TypeID`(anchor: Anchor): List<TypeID2> = anchor.requiredValues(Slots.Character.episode) { TypeID2(it) }
+        private fun `read-Format1`(anchor: Anchor): List<Format12> = anchor.requiredValues(Slots.Character.episode) { Format12(it) }
+        private fun `read-Any`(anchor: Anchor): List<AnyLens> = anchor.requiredValues(Slots.Character.episode) { AnyLens(it) }
+        private fun `read-Boolean`(anchor: Anchor): List<BooleanLens> = anchor.requiredValues(Slots.Character.episode) { BooleanLens(it) }
+        private fun `read-Double`(anchor: Anchor): List<DoubleLens> = anchor.requiredValues(Slots.Character.episode) { DoubleLens(it) }
+        private fun `read-Int`(anchor: Anchor): List<IntLens> = anchor.requiredValues(Slots.Character.episode) { IntLens(it) }
+        private fun `read-List`(anchor: Anchor): List<ListLens> = anchor.requiredValues(Slots.Character.episode) { ListLens(it) }
+        private fun `read-Long`(anchor: Anchor): List<LongLens> = anchor.requiredValues(Slots.Character.episode) { LongLens(it) }
+        private fun `read-Map`(anchor: Anchor): List<Map2> = anchor.requiredValues(Slots.Character.episode) { Map2(it) }
+        private fun `read-Pair`(anchor: Anchor): List<Pair2> = anchor.requiredValues(Slots.Character.episode) { Pair2(it) }
+        private fun `read-Result`(anchor: Anchor): List<ResultLens> = anchor.requiredValues(Slots.Character.episode) { ResultLens(it) }
+        private fun `read-String`(anchor: Anchor): List<StringLens> = anchor.requiredValues(Slots.Character.episode) { StringLens(it) }
+        private fun `read-Unit`(anchor: Anchor): List<UnitLens> = anchor.requiredValues(Slots.Character.episode) { UnitLens(it) }
+        private fun `read-Stable`(anchor: Anchor): List<StableLens> = anchor.requiredValues(Slots.Character.episode) { StableLens(it) }
+        private fun `read-JvmName`(anchor: Anchor): List<JvmName2> = anchor.requiredValues(Slots.Character.episode) { JvmName2(it) }
+        private fun `read-JvmField`(anchor: Anchor): List<JvmField2> = anchor.requiredValues(Slots.Character.episode) { JvmField2(it) }
+        private fun `read-OptIn`(anchor: Anchor): List<OptIn2> = anchor.requiredValues(Slots.Character.episode) { OptIn2(it) }
+        private fun `read-run`(anchor: Anchor): List<Run> = anchor.requiredValues(Slots.Character.episode) { Run(it) }
+        private fun `read-let`(anchor: Anchor): List<Let> = anchor.requiredValues(Slots.Character.episode) { Let(it) }
+        private fun `read-takeIf`(anchor: Anchor): List<TakeIf> = anchor.requiredValues(Slots.Character.episode) { TakeIf(it) }
+        private fun `read-map`(anchor: Anchor): List<Map3> = anchor.requiredValues(Slots.Character.episode) { Map3(it) }
+        private fun `read-lazy`(anchor: Anchor): List<Lazy> = anchor.requiredValues(Slots.Character.episode) { Lazy(it) }
+        private fun `read-listOf`(anchor: Anchor): List<ListOf> = anchor.requiredValues(Slots.Character.episode) { ListOf(it) }
+        private fun `read-mapOf`(anchor: Anchor): List<MapOf> = anchor.requiredValues(Slots.Character.episode) { MapOf(it) }
+        private fun `read-emptyList`(anchor: Anchor): List<EmptyList> = anchor.requiredValues(Slots.Character.episode) { EmptyList(it) }
+        private fun `read-emptyMap`(anchor: Anchor): List<EmptyMap> = anchor.requiredValues(Slots.Character.episode) { EmptyMap(it) }
+        private fun `read-mutableListOf`(anchor: Anchor): List<MutableListOf> = anchor.requiredValues(Slots.Character.episode) { MutableListOf(it) }
+        private fun `read-getOrThrow`(anchor: Anchor): List<GetOrThrow> = anchor.requiredValues(Slots.Character.episode) { GetOrThrow(it) }
+        private fun `read-success`(anchor: Anchor): List<Success> = anchor.requiredValues(Slots.Character.episode) { Success(it) }
+        private fun `read-failure`(anchor: Anchor): List<Failure> = anchor.requiredValues(Slots.Character.episode) { Failure(it) }
     }
 
     data class AbstractSlot2(
@@ -10024,7 +10667,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10041,6 +10684,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.AbstractSlot2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10050,7 +10694,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10067,6 +10711,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.AnchorLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10076,7 +10721,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10093,6 +10738,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.ArgumentSite2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10102,7 +10748,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10119,6 +10765,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.ConnectionCursor2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10128,7 +10775,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10145,6 +10792,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.ConnectionPlan2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10154,7 +10802,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10171,6 +10819,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.ConnectionSlots2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10180,7 +10829,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10197,6 +10846,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Document2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10206,7 +10856,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10223,6 +10873,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.DynamicKey2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10232,7 +10883,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10249,6 +10900,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Edit2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10258,7 +10910,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10275,6 +10927,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.ErrorBehavior2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10284,7 +10937,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10301,6 +10954,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.FieldErrorLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10310,7 +10964,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10327,6 +10981,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.FieldErrorsLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10336,7 +10991,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10353,6 +11008,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.GeneratedLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10362,7 +11018,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10379,6 +11035,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.GeneratedEnum2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10388,7 +11045,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10405,6 +11062,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Guard2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10414,7 +11072,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10431,6 +11089,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.InputObject2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10440,7 +11099,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10457,6 +11116,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.KeyArgument2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10466,7 +11126,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10483,6 +11143,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.KeyPart2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10492,7 +11153,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10509,6 +11170,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.LensLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10518,7 +11180,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10535,6 +11197,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.LensList2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10544,7 +11207,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10561,6 +11224,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Lookup2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10570,7 +11234,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10587,6 +11251,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Members2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10596,7 +11261,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10613,6 +11278,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.MutationAction2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10622,7 +11288,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10639,6 +11305,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.MutationOperation2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10648,7 +11315,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10665,6 +11332,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.OperationHandle2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10674,7 +11342,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10691,6 +11359,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.OperationKind2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10700,7 +11369,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10717,6 +11386,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.OperationType2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10726,7 +11396,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10743,6 +11413,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Payload2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10752,7 +11423,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10769,6 +11440,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Plan2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10778,7 +11450,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10795,6 +11467,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.PlanField2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10804,7 +11477,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10821,6 +11494,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.QueryOperation2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10830,7 +11504,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10847,6 +11521,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.RefetchLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10856,7 +11531,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10873,6 +11548,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Registry2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10882,7 +11558,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10899,6 +11575,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Resolution2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10908,7 +11585,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10925,6 +11602,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.ScalarKind2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10934,7 +11612,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10951,6 +11629,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Selection2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10960,7 +11639,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -10977,6 +11656,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Slot2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -10986,7 +11666,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11003,6 +11683,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.StorageKey2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11012,7 +11693,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11029,6 +11710,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.SubscriptionHandle2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11038,7 +11720,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11055,6 +11737,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.SubscriptionOperation2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11064,7 +11747,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11081,6 +11764,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Transient2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11090,7 +11774,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11107,6 +11791,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.TypeID2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11116,7 +11801,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11133,6 +11818,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Format12(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11142,7 +11828,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11159,6 +11845,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.AnyLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11168,7 +11855,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11185,6 +11872,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.BooleanLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11194,7 +11882,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11211,6 +11899,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.DoubleLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11220,7 +11909,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11237,6 +11926,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.IntLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11246,7 +11936,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11263,6 +11953,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.ListLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11272,7 +11963,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11289,6 +11980,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.LongLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11298,7 +11990,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11315,6 +12007,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Map2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11324,7 +12017,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11341,6 +12034,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Pair2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11350,7 +12044,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11367,6 +12061,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.ResultLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11376,7 +12071,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11393,6 +12088,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.StringLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11402,7 +12098,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11419,6 +12115,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.UnitLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11428,7 +12125,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11445,6 +12142,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.StableLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11454,7 +12152,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11471,6 +12169,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.JvmName2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11480,7 +12179,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11497,6 +12196,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.JvmField2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11506,7 +12206,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11523,6 +12223,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.OptIn2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11532,7 +12233,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11549,6 +12250,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Run(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11558,7 +12260,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11575,6 +12277,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Let(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11584,7 +12287,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11601,6 +12304,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.TakeIf(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11610,7 +12314,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11627,6 +12331,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Map3(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11636,7 +12341,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11653,6 +12358,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Lazy(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11662,7 +12368,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11679,6 +12385,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.ListOf(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11688,7 +12395,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11705,6 +12412,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.MapOf(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11714,7 +12422,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11731,6 +12439,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.EmptyList(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11740,7 +12449,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11757,6 +12466,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.EmptyMap(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11766,7 +12476,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11783,6 +12493,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.MutableListOf(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11792,7 +12503,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11809,6 +12520,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.GetOrThrow(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11818,7 +12530,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11835,6 +12547,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Success(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -11844,7 +12557,7 @@ data class KotlinInlinePlurals3_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -11861,6 +12574,7 @@ data class KotlinInlinePlurals3_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals3_character.Failure(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 }
@@ -11948,83 +12662,83 @@ data class KotlinInlinePlurals_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.requiredValues(Slots.Character.episode) { As(it) },
-        anchor.requiredValues(Slots.Character.episode) { Break(it) },
-        anchor.requiredValues(Slots.Character.episode) { Class(it) },
-        anchor.requiredValues(Slots.Character.episode) { Continue(it) },
-        anchor.requiredValues(Slots.Character.episode) { Do(it) },
-        anchor.requiredValues(Slots.Character.episode) { Else(it) },
-        anchor.requiredValues(Slots.Character.episode) { False(it) },
-        anchor.requiredValues(Slots.Character.episode) { For(it) },
-        anchor.requiredValues(Slots.Character.episode) { Fun(it) },
-        anchor.requiredValues(Slots.Character.episode) { If(it) },
-        anchor.requiredValues(Slots.Character.episode) { In(it) },
-        anchor.requiredValues(Slots.Character.episode) { Interface(it) },
-        anchor.requiredValues(Slots.Character.episode) { Is(it) },
-        anchor.requiredValues(Slots.Character.episode) { Null(it) },
-        anchor.requiredValues(Slots.Character.episode) { Object(it) },
-        anchor.requiredValues(Slots.Character.episode) { Package(it) },
-        anchor.requiredValues(Slots.Character.episode) { Return(it) },
-        anchor.requiredValues(Slots.Character.episode) { Super(it) },
-        anchor.requiredValues(Slots.Character.episode) { This(it) },
-        anchor.requiredValues(Slots.Character.episode) { Throw(it) },
-        anchor.requiredValues(Slots.Character.episode) { True(it) },
-        anchor.requiredValues(Slots.Character.episode) { Try(it) },
-        anchor.requiredValues(Slots.Character.episode) { Typealias(it) },
-        anchor.requiredValues(Slots.Character.episode) { Typeof(it) },
-        anchor.requiredValues(Slots.Character.episode) { Val(it) },
-        anchor.requiredValues(Slots.Character.episode) { Var(it) },
-        anchor.requiredValues(Slots.Character.episode) { When(it) },
-        anchor.requiredValues(Slots.Character.episode) { While(it) },
-        anchor.requiredValues(Slots.Character.episode) { _2(it) },
-        anchor.requiredValues(Slots.Character.episode) { By(it) },
-        anchor.requiredValues(Slots.Character.episode) { Catch(it) },
-        anchor.requiredValues(Slots.Character.episode) { Constructor(it) },
-        anchor.requiredValues(Slots.Character.episode) { Delegate(it) },
-        anchor.requiredValues(Slots.Character.episode) { Dynamic(it) },
-        anchor.requiredValues(Slots.Character.episode) { Field(it) },
-        anchor.requiredValues(Slots.Character.episode) { File(it) },
-        anchor.requiredValues(Slots.Character.episode) { Finally(it) },
-        anchor.requiredValues(Slots.Character.episode) { Get(it) },
-        anchor.requiredValues(Slots.Character.episode) { Import(it) },
-        anchor.requiredValues(Slots.Character.episode) { Init(it) },
-        anchor.requiredValues(Slots.Character.episode) { Param(it) },
-        anchor.requiredValues(Slots.Character.episode) { Property(it) },
-        anchor.requiredValues(Slots.Character.episode) { Receiver(it) },
-        anchor.requiredValues(Slots.Character.episode) { Set(it) },
-        anchor.requiredValues(Slots.Character.episode) { Setparam(it) },
-        anchor.requiredValues(Slots.Character.episode) { Value(it) },
-        anchor.requiredValues(Slots.Character.episode) { Where(it) },
-        anchor.requiredValues(Slots.Character.episode) { Abstract(it) },
-        anchor.requiredValues(Slots.Character.episode) { Actual(it) },
-        anchor.requiredValues(Slots.Character.episode) { Annotation(it) },
-        anchor.requiredValues(Slots.Character.episode) { CompanionLens(it) },
-        anchor.requiredValues(Slots.Character.episode) { Const(it) },
-        anchor.requiredValues(Slots.Character.episode) { Crossinline(it) },
-        anchor.requiredValues(Slots.Character.episode) { Data(it) },
-        anchor.requiredValues(Slots.Character.episode) { Enum(it) },
-        anchor.requiredValues(Slots.Character.episode) { Expect(it) },
-        anchor.requiredValues(Slots.Character.episode) { External(it) },
-        anchor.requiredValues(Slots.Character.episode) { Final(it) },
-        anchor.requiredValues(Slots.Character.episode) { Infix(it) },
-        anchor.requiredValues(Slots.Character.episode) { Inline(it) },
-        anchor.requiredValues(Slots.Character.episode) { Inner(it) },
-        anchor.requiredValues(Slots.Character.episode) { Internal(it) },
-        anchor.requiredValues(Slots.Character.episode) { Lateinit(it) },
-        anchor.requiredValues(Slots.Character.episode) { Noinline(it) },
-        anchor.requiredValues(Slots.Character.episode) { Open(it) },
-        anchor.requiredValues(Slots.Character.episode) { Operator(it) },
-        anchor.requiredValues(Slots.Character.episode) { Out(it) },
-        anchor.requiredValues(Slots.Character.episode) { Override(it) },
-        anchor.requiredValues(Slots.Character.episode) { Private(it) },
-        anchor.requiredValues(Slots.Character.episode) { Protected(it) },
-        anchor.requiredValues(Slots.Character.episode) { Public(it) },
-        anchor.requiredValues(Slots.Character.episode) { Reified(it) },
-        anchor.requiredValues(Slots.Character.episode) { Sealed(it) },
-        anchor.requiredValues(Slots.Character.episode) { Suspend(it) },
-        anchor.requiredValues(Slots.Character.episode) { Tailrec(it) },
-        anchor.requiredValues(Slots.Character.episode) { Vararg(it) },
-        anchor.requiredValues(Slots.Character.episode) { Context(it) },
+        `read-as`(anchor),
+        `read-break`(anchor),
+        `read-class`(anchor),
+        `read-continue`(anchor),
+        `read-do`(anchor),
+        `read-else`(anchor),
+        `read-false`(anchor),
+        `read-for`(anchor),
+        `read-fun`(anchor),
+        `read-if`(anchor),
+        `read-in`(anchor),
+        `read-interface`(anchor),
+        `read-is`(anchor),
+        `read-null`(anchor),
+        `read-object`(anchor),
+        `read-package`(anchor),
+        `read-return`(anchor),
+        `read-super`(anchor),
+        `read-this`(anchor),
+        `read-throw`(anchor),
+        `read-true`(anchor),
+        `read-try`(anchor),
+        `read-typealias`(anchor),
+        `read-typeof`(anchor),
+        `read-val`(anchor),
+        `read-var`(anchor),
+        `read-when`(anchor),
+        `read-while`(anchor),
+        `read-_`(anchor),
+        `read-by`(anchor),
+        `read-catch`(anchor),
+        `read-constructor`(anchor),
+        `read-delegate`(anchor),
+        `read-dynamic`(anchor),
+        `read-field`(anchor),
+        `read-file`(anchor),
+        `read-finally`(anchor),
+        `read-get`(anchor),
+        `read-import`(anchor),
+        `read-init`(anchor),
+        `read-param`(anchor),
+        `read-property`(anchor),
+        `read-receiver`(anchor),
+        `read-set`(anchor),
+        `read-setparam`(anchor),
+        `read-value`(anchor),
+        `read-where`(anchor),
+        `read-abstract`(anchor),
+        `read-actual`(anchor),
+        `read-annotation`(anchor),
+        `read-companion`(anchor),
+        `read-const`(anchor),
+        `read-crossinline`(anchor),
+        `read-data`(anchor),
+        `read-enum`(anchor),
+        `read-expect`(anchor),
+        `read-external`(anchor),
+        `read-final`(anchor),
+        `read-infix`(anchor),
+        `read-inline`(anchor),
+        `read-inner`(anchor),
+        `read-internal`(anchor),
+        `read-lateinit`(anchor),
+        `read-noinline`(anchor),
+        `read-open`(anchor),
+        `read-operator`(anchor),
+        `read-out`(anchor),
+        `read-override`(anchor),
+        `read-private`(anchor),
+        `read-protected`(anchor),
+        `read-public`(anchor),
+        `read-reified`(anchor),
+        `read-sealed`(anchor),
+        `read-suspend`(anchor),
+        `read-tailrec`(anchor),
+        `read-vararg`(anchor),
+        `read-context`(anchor),
     )
 
     companion object {
@@ -12119,6 +12833,83 @@ data class KotlinInlinePlurals_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode) && anchor.present(Slots.Character.episode)
+        private fun `read-as`(anchor: Anchor): List<As> = anchor.requiredValues(Slots.Character.episode) { As(it) }
+        private fun `read-break`(anchor: Anchor): List<Break> = anchor.requiredValues(Slots.Character.episode) { Break(it) }
+        private fun `read-class`(anchor: Anchor): List<Class> = anchor.requiredValues(Slots.Character.episode) { Class(it) }
+        private fun `read-continue`(anchor: Anchor): List<Continue> = anchor.requiredValues(Slots.Character.episode) { Continue(it) }
+        private fun `read-do`(anchor: Anchor): List<Do> = anchor.requiredValues(Slots.Character.episode) { Do(it) }
+        private fun `read-else`(anchor: Anchor): List<Else> = anchor.requiredValues(Slots.Character.episode) { Else(it) }
+        private fun `read-false`(anchor: Anchor): List<False> = anchor.requiredValues(Slots.Character.episode) { False(it) }
+        private fun `read-for`(anchor: Anchor): List<For> = anchor.requiredValues(Slots.Character.episode) { For(it) }
+        private fun `read-fun`(anchor: Anchor): List<Fun> = anchor.requiredValues(Slots.Character.episode) { Fun(it) }
+        private fun `read-if`(anchor: Anchor): List<If> = anchor.requiredValues(Slots.Character.episode) { If(it) }
+        private fun `read-in`(anchor: Anchor): List<In> = anchor.requiredValues(Slots.Character.episode) { In(it) }
+        private fun `read-interface`(anchor: Anchor): List<Interface> = anchor.requiredValues(Slots.Character.episode) { Interface(it) }
+        private fun `read-is`(anchor: Anchor): List<Is> = anchor.requiredValues(Slots.Character.episode) { Is(it) }
+        private fun `read-null`(anchor: Anchor): List<Null> = anchor.requiredValues(Slots.Character.episode) { Null(it) }
+        private fun `read-object`(anchor: Anchor): List<Object> = anchor.requiredValues(Slots.Character.episode) { Object(it) }
+        private fun `read-package`(anchor: Anchor): List<Package> = anchor.requiredValues(Slots.Character.episode) { Package(it) }
+        private fun `read-return`(anchor: Anchor): List<Return> = anchor.requiredValues(Slots.Character.episode) { Return(it) }
+        private fun `read-super`(anchor: Anchor): List<Super> = anchor.requiredValues(Slots.Character.episode) { Super(it) }
+        private fun `read-this`(anchor: Anchor): List<This> = anchor.requiredValues(Slots.Character.episode) { This(it) }
+        private fun `read-throw`(anchor: Anchor): List<Throw> = anchor.requiredValues(Slots.Character.episode) { Throw(it) }
+        private fun `read-true`(anchor: Anchor): List<True> = anchor.requiredValues(Slots.Character.episode) { True(it) }
+        private fun `read-try`(anchor: Anchor): List<Try> = anchor.requiredValues(Slots.Character.episode) { Try(it) }
+        private fun `read-typealias`(anchor: Anchor): List<Typealias> = anchor.requiredValues(Slots.Character.episode) { Typealias(it) }
+        private fun `read-typeof`(anchor: Anchor): List<Typeof> = anchor.requiredValues(Slots.Character.episode) { Typeof(it) }
+        private fun `read-val`(anchor: Anchor): List<Val> = anchor.requiredValues(Slots.Character.episode) { Val(it) }
+        private fun `read-var`(anchor: Anchor): List<Var> = anchor.requiredValues(Slots.Character.episode) { Var(it) }
+        private fun `read-when`(anchor: Anchor): List<When> = anchor.requiredValues(Slots.Character.episode) { When(it) }
+        private fun `read-while`(anchor: Anchor): List<While> = anchor.requiredValues(Slots.Character.episode) { While(it) }
+        private fun `read-_`(anchor: Anchor): List<_2> = anchor.requiredValues(Slots.Character.episode) { _2(it) }
+        private fun `read-by`(anchor: Anchor): List<By> = anchor.requiredValues(Slots.Character.episode) { By(it) }
+        private fun `read-catch`(anchor: Anchor): List<Catch> = anchor.requiredValues(Slots.Character.episode) { Catch(it) }
+        private fun `read-constructor`(anchor: Anchor): List<Constructor> = anchor.requiredValues(Slots.Character.episode) { Constructor(it) }
+        private fun `read-delegate`(anchor: Anchor): List<Delegate> = anchor.requiredValues(Slots.Character.episode) { Delegate(it) }
+        private fun `read-dynamic`(anchor: Anchor): List<Dynamic> = anchor.requiredValues(Slots.Character.episode) { Dynamic(it) }
+        private fun `read-field`(anchor: Anchor): List<Field> = anchor.requiredValues(Slots.Character.episode) { Field(it) }
+        private fun `read-file`(anchor: Anchor): List<File> = anchor.requiredValues(Slots.Character.episode) { File(it) }
+        private fun `read-finally`(anchor: Anchor): List<Finally> = anchor.requiredValues(Slots.Character.episode) { Finally(it) }
+        private fun `read-get`(anchor: Anchor): List<Get> = anchor.requiredValues(Slots.Character.episode) { Get(it) }
+        private fun `read-import`(anchor: Anchor): List<Import> = anchor.requiredValues(Slots.Character.episode) { Import(it) }
+        private fun `read-init`(anchor: Anchor): List<Init> = anchor.requiredValues(Slots.Character.episode) { Init(it) }
+        private fun `read-param`(anchor: Anchor): List<Param> = anchor.requiredValues(Slots.Character.episode) { Param(it) }
+        private fun `read-property`(anchor: Anchor): List<Property> = anchor.requiredValues(Slots.Character.episode) { Property(it) }
+        private fun `read-receiver`(anchor: Anchor): List<Receiver> = anchor.requiredValues(Slots.Character.episode) { Receiver(it) }
+        private fun `read-set`(anchor: Anchor): List<Set> = anchor.requiredValues(Slots.Character.episode) { Set(it) }
+        private fun `read-setparam`(anchor: Anchor): List<Setparam> = anchor.requiredValues(Slots.Character.episode) { Setparam(it) }
+        private fun `read-value`(anchor: Anchor): List<Value> = anchor.requiredValues(Slots.Character.episode) { Value(it) }
+        private fun `read-where`(anchor: Anchor): List<Where> = anchor.requiredValues(Slots.Character.episode) { Where(it) }
+        private fun `read-abstract`(anchor: Anchor): List<Abstract> = anchor.requiredValues(Slots.Character.episode) { Abstract(it) }
+        private fun `read-actual`(anchor: Anchor): List<Actual> = anchor.requiredValues(Slots.Character.episode) { Actual(it) }
+        private fun `read-annotation`(anchor: Anchor): List<Annotation> = anchor.requiredValues(Slots.Character.episode) { Annotation(it) }
+        private fun `read-companion`(anchor: Anchor): List<CompanionLens> = anchor.requiredValues(Slots.Character.episode) { CompanionLens(it) }
+        private fun `read-const`(anchor: Anchor): List<Const> = anchor.requiredValues(Slots.Character.episode) { Const(it) }
+        private fun `read-crossinline`(anchor: Anchor): List<Crossinline> = anchor.requiredValues(Slots.Character.episode) { Crossinline(it) }
+        private fun `read-data`(anchor: Anchor): List<Data> = anchor.requiredValues(Slots.Character.episode) { Data(it) }
+        private fun `read-enum`(anchor: Anchor): List<Enum> = anchor.requiredValues(Slots.Character.episode) { Enum(it) }
+        private fun `read-expect`(anchor: Anchor): List<Expect> = anchor.requiredValues(Slots.Character.episode) { Expect(it) }
+        private fun `read-external`(anchor: Anchor): List<External> = anchor.requiredValues(Slots.Character.episode) { External(it) }
+        private fun `read-final`(anchor: Anchor): List<Final> = anchor.requiredValues(Slots.Character.episode) { Final(it) }
+        private fun `read-infix`(anchor: Anchor): List<Infix> = anchor.requiredValues(Slots.Character.episode) { Infix(it) }
+        private fun `read-inline`(anchor: Anchor): List<Inline> = anchor.requiredValues(Slots.Character.episode) { Inline(it) }
+        private fun `read-inner`(anchor: Anchor): List<Inner> = anchor.requiredValues(Slots.Character.episode) { Inner(it) }
+        private fun `read-internal`(anchor: Anchor): List<Internal> = anchor.requiredValues(Slots.Character.episode) { Internal(it) }
+        private fun `read-lateinit`(anchor: Anchor): List<Lateinit> = anchor.requiredValues(Slots.Character.episode) { Lateinit(it) }
+        private fun `read-noinline`(anchor: Anchor): List<Noinline> = anchor.requiredValues(Slots.Character.episode) { Noinline(it) }
+        private fun `read-open`(anchor: Anchor): List<Open> = anchor.requiredValues(Slots.Character.episode) { Open(it) }
+        private fun `read-operator`(anchor: Anchor): List<Operator> = anchor.requiredValues(Slots.Character.episode) { Operator(it) }
+        private fun `read-out`(anchor: Anchor): List<Out> = anchor.requiredValues(Slots.Character.episode) { Out(it) }
+        private fun `read-override`(anchor: Anchor): List<Override> = anchor.requiredValues(Slots.Character.episode) { Override(it) }
+        private fun `read-private`(anchor: Anchor): List<Private> = anchor.requiredValues(Slots.Character.episode) { Private(it) }
+        private fun `read-protected`(anchor: Anchor): List<Protected> = anchor.requiredValues(Slots.Character.episode) { Protected(it) }
+        private fun `read-public`(anchor: Anchor): List<Public> = anchor.requiredValues(Slots.Character.episode) { Public(it) }
+        private fun `read-reified`(anchor: Anchor): List<Reified> = anchor.requiredValues(Slots.Character.episode) { Reified(it) }
+        private fun `read-sealed`(anchor: Anchor): List<Sealed> = anchor.requiredValues(Slots.Character.episode) { Sealed(it) }
+        private fun `read-suspend`(anchor: Anchor): List<Suspend> = anchor.requiredValues(Slots.Character.episode) { Suspend(it) }
+        private fun `read-tailrec`(anchor: Anchor): List<Tailrec> = anchor.requiredValues(Slots.Character.episode) { Tailrec(it) }
+        private fun `read-vararg`(anchor: Anchor): List<Vararg> = anchor.requiredValues(Slots.Character.episode) { Vararg(it) }
+        private fun `read-context`(anchor: Anchor): List<Context> = anchor.requiredValues(Slots.Character.episode) { Context(it) }
     }
 
     data class As(
@@ -12127,7 +12918,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12144,6 +12935,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.As(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12153,7 +12945,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12170,6 +12962,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Break(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12179,7 +12972,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12196,6 +12989,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Class(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12205,7 +12999,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12222,6 +13016,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Continue(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12231,7 +13026,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12248,6 +13043,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Do(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12257,7 +13053,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12274,6 +13070,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Else(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12283,7 +13080,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12300,6 +13097,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.False(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12309,7 +13107,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12326,6 +13124,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.For(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12335,7 +13134,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12352,6 +13151,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Fun(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12361,7 +13161,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12378,6 +13178,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.If(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12387,7 +13188,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12404,6 +13205,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.In(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12413,7 +13215,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12430,6 +13232,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Interface(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12439,7 +13242,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12456,6 +13259,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Is(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12465,7 +13269,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12482,6 +13286,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Null(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12491,7 +13296,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12508,6 +13313,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Object(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12517,7 +13323,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12534,6 +13340,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Package(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12543,7 +13350,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12560,6 +13367,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Return(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12569,7 +13377,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12586,6 +13394,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Super(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12595,7 +13404,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12612,6 +13421,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.This(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12621,7 +13431,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12638,6 +13448,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Throw(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12647,7 +13458,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12664,6 +13475,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.True(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12673,7 +13485,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12690,6 +13502,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Try(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12699,7 +13512,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12716,6 +13529,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Typealias(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12725,7 +13539,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12742,6 +13556,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Typeof(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12751,7 +13566,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12768,6 +13583,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Val(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12777,7 +13593,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12794,6 +13610,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Var(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12803,7 +13620,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12820,6 +13637,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.When(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12829,7 +13647,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12846,6 +13664,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.While(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12855,7 +13674,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12872,6 +13691,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character._2(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12881,7 +13701,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12898,6 +13718,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.By(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12907,7 +13728,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12924,6 +13745,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Catch(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12933,7 +13755,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12950,6 +13772,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Constructor(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12959,7 +13782,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -12976,6 +13799,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Delegate(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -12985,7 +13809,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13002,6 +13826,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Dynamic(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13011,7 +13836,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13028,6 +13853,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Field(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13037,7 +13863,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13054,6 +13880,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.File(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13063,7 +13890,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13080,6 +13907,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Finally(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13089,7 +13917,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13106,6 +13934,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Get(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13115,7 +13944,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13132,6 +13961,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Import(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13141,7 +13971,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13158,6 +13988,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Init(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13167,7 +13998,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13184,6 +14015,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Param(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13193,7 +14025,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13210,6 +14042,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Property(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13219,7 +14052,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13236,6 +14069,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Receiver(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13245,7 +14079,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13262,6 +14096,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Set(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13271,7 +14106,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13288,6 +14123,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Setparam(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13297,7 +14133,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13314,6 +14150,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Value(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13323,7 +14160,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13340,6 +14177,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Where(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13349,7 +14187,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13366,6 +14204,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Abstract(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13375,7 +14214,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13392,6 +14231,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Actual(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13401,7 +14241,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13418,6 +14258,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Annotation(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13427,7 +14268,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13444,6 +14285,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.CompanionLens(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13453,7 +14295,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13470,6 +14312,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Const(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13479,7 +14322,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13496,6 +14339,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Crossinline(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13505,7 +14349,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13522,6 +14366,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Data(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13531,7 +14376,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13548,6 +14393,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Enum(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13557,7 +14403,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13574,6 +14420,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Expect(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13583,7 +14430,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13600,6 +14447,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.External(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13609,7 +14457,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13626,6 +14474,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Final(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13635,7 +14484,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13652,6 +14501,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Infix(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13661,7 +14511,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13678,6 +14528,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Inline(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13687,7 +14538,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13704,6 +14555,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Inner(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13713,7 +14565,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13730,6 +14582,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Internal(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13739,7 +14592,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13756,6 +14609,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Lateinit(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13765,7 +14619,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13782,6 +14636,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Noinline(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13791,7 +14646,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13808,6 +14663,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Open(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13817,7 +14673,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13834,6 +14690,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Operator(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13843,7 +14700,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13860,6 +14717,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Out(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13869,7 +14727,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13886,6 +14744,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Override(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13895,7 +14754,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13912,6 +14771,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Private(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13921,7 +14781,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13938,6 +14798,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Protected(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13947,7 +14808,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13964,6 +14825,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Public(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13973,7 +14835,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -13990,6 +14852,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Reified(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -13999,7 +14862,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -14016,6 +14879,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Sealed(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -14025,7 +14889,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -14042,6 +14906,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Suspend(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -14051,7 +14916,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -14068,6 +14933,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Tailrec(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -14077,7 +14943,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -14094,6 +14960,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Vararg(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 
@@ -14103,7 +14970,7 @@ data class KotlinInlinePlurals_character(
         /** Reads the fragment's fields out of the record, once, at the call. */
         @Generated
         constructor(anchor: Anchor) : this(
-            anchor.string(Slots.Episode.id),
+            `read-id`(anchor),
         )
 
         companion object {
@@ -14120,6 +14987,7 @@ data class KotlinInlinePlurals_character(
                 val errors = fieldErrors(anchor)
                 return if (errors.isEmpty()) Result.success(KotlinInlinePlurals_character.Context(anchor)) else Result.failure(FieldErrors(errors))
             }
+            private fun `read-id`(anchor: Anchor): String? = anchor.string(Slots.Episode.id)
         }
     }
 }
@@ -14199,75 +15067,75 @@ data class KotlinInlineScalars2_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
+        `read-satisfied`(anchor),
+        `read-missingRequiredField`(anchor),
+        `read-fieldErrors`(anchor),
+        `read-isPresent`(anchor),
+        `read-throwing`(anchor),
+        `read-caught`(anchor),
+        `read-refetchable`(anchor),
+        `read-refetch`(anchor),
+        `read-connection`(anchor),
+        `read-nodes`(anchor),
+        `read-hasNext`(anchor),
+        `read-hasPrevious`(anchor),
+        `read-isLoadingNext`(anchor),
+        `read-isLoadingPrevious`(anchor),
+        `read-connectionID`(anchor),
+        `read-loadNext`(anchor),
+        `read-loadPrevious`(anchor),
+        `read-bound`(anchor),
+        `read-errors`(anchor),
+        `read-child`(anchor),
+        `read-missing`(anchor),
+        `read-other`(anchor),
+        `read-it`(anchor),
+        `read-element`(anchor),
+        `read-count`(anchor),
+        `read-optimistic`(anchor),
+        `read-text`(anchor),
+        `read-fields`(anchor),
+        `read-variables`(anchor),
+        `read-type`(anchor),
+        `read-resolution`(anchor),
+        `read-name`(anchor),
+        `read-document`(anchor),
+        `read-kind`(anchor),
+        `read-errorBehavior`(anchor),
+        `read-cacheExpirationSeconds`(anchor),
+        `read-throwsOnFieldError`(anchor),
+        `read-bubbles`(anchor),
+        `read-hasDeferred`(anchor),
+        `read-plan`(anchor),
+        `read-selection`(anchor),
+        `read-selection0`(anchor),
+        `read-Data`(anchor),
+        `read-Action`(anchor),
+        `read-OptimisticResponse`(anchor),
+        `read-invoke`(anchor),
+        `read-commit`(anchor),
+        `read-variable`(anchor),
+        `read-payload`(anchor),
+        `read-copy`(anchor),
+        `read-component1`(anchor),
+        `read-component2`(anchor),
+        `read-javaClass`(anchor),
+        `read-of`(anchor),
+        `read-scalarText`(anchor),
+        `read-Undeclared`(anchor),
+        `read-size`(anchor),
+        `read-keys`(anchor),
+        `read-values`(anchor),
+        `read-entries`(anchor),
+        `read-Types`(anchor),
+        `read-AbstractSlots`(anchor),
+        `read-Sites`(anchor),
+        `read-Guards`(anchor),
+        `read-schemaDigest`(anchor),
+        `read-format`(anchor),
+        `read-transient`(anchor),
+        `read-baton`(anchor),
+        `read-MappedScalar`(anchor),
     )
 
     companion object {
@@ -14354,6 +15222,75 @@ data class KotlinInlineScalars2_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name)
+        private fun `read-satisfied`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-missingRequiredField`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-fieldErrors`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-isPresent`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-throwing`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-caught`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-refetchable`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-refetch`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-connection`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-nodes`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-hasNext`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-hasPrevious`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-isLoadingNext`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-isLoadingPrevious`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-connectionID`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-loadNext`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-loadPrevious`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-bound`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-errors`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-child`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-missing`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-other`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-it`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-element`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-count`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-optimistic`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-text`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-fields`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-variables`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-type`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-resolution`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-name`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-document`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-kind`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-errorBehavior`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-cacheExpirationSeconds`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-throwsOnFieldError`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-bubbles`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-hasDeferred`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-plan`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-selection`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-selection0`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Data`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Action`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-OptimisticResponse`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-invoke`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-commit`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-variable`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-payload`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-copy`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-component1`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-component2`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-javaClass`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-of`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-scalarText`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Undeclared`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-size`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-keys`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-values`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-entries`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Types`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-AbstractSlots`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Sites`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Guards`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-schemaDigest`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-format`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-transient`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-baton`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-MappedScalar`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
     }
 }
 
@@ -14434,77 +15371,77 @@ data class KotlinInlineScalars3_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
+        `read-AbstractSlot`(anchor),
+        `read-Anchor`(anchor),
+        `read-ArgumentSite`(anchor),
+        `read-ConnectionCursor`(anchor),
+        `read-ConnectionPlan`(anchor),
+        `read-ConnectionSlots`(anchor),
+        `read-Document`(anchor),
+        `read-DynamicKey`(anchor),
+        `read-Edit`(anchor),
+        `read-ErrorBehavior`(anchor),
+        `read-FieldError`(anchor),
+        `read-FieldErrors`(anchor),
+        `read-Generated`(anchor),
+        `read-GeneratedEnum`(anchor),
+        `read-Guard`(anchor),
+        `read-InputObject`(anchor),
+        `read-KeyArgument`(anchor),
+        `read-KeyPart`(anchor),
+        `read-Lens`(anchor),
+        `read-LensList`(anchor),
+        `read-Lookup`(anchor),
+        `read-Members`(anchor),
+        `read-MutationAction`(anchor),
+        `read-MutationOperation`(anchor),
+        `read-OperationHandle`(anchor),
+        `read-OperationKind`(anchor),
+        `read-OperationType`(anchor),
+        `read-Payload`(anchor),
+        `read-Plan`(anchor),
+        `read-PlanField`(anchor),
+        `read-QueryOperation`(anchor),
+        `read-Refetch`(anchor),
+        `read-Registry`(anchor),
+        `read-Resolution`(anchor),
+        `read-ScalarKind`(anchor),
+        `read-Selection`(anchor),
+        `read-Slot`(anchor),
+        `read-StorageKey`(anchor),
+        `read-SubscriptionHandle`(anchor),
+        `read-SubscriptionOperation`(anchor),
+        `read-Transient`(anchor),
+        `read-TypeID`(anchor),
+        `read-Format1`(anchor),
+        `read-Any`(anchor),
+        `read-Boolean`(anchor),
+        `read-Double`(anchor),
+        `read-Int`(anchor),
+        `read-List`(anchor),
+        `read-Long`(anchor),
+        `read-Map`(anchor),
+        `read-Pair`(anchor),
+        `read-Result`(anchor),
+        `read-String`(anchor),
+        `read-Unit`(anchor),
+        `read-Stable`(anchor),
+        `read-JvmName`(anchor),
+        `read-JvmField`(anchor),
+        `read-OptIn`(anchor),
+        `read-run`(anchor),
+        `read-let`(anchor),
+        `read-takeIf`(anchor),
+        `read-map`(anchor),
+        `read-lazy`(anchor),
+        `read-listOf`(anchor),
+        `read-mapOf`(anchor),
+        `read-emptyList`(anchor),
+        `read-emptyMap`(anchor),
+        `read-mutableListOf`(anchor),
+        `read-getOrThrow`(anchor),
+        `read-success`(anchor),
+        `read-failure`(anchor),
     )
 
     companion object {
@@ -14593,6 +15530,77 @@ data class KotlinInlineScalars3_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name)
+        private fun `read-AbstractSlot`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Anchor`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-ArgumentSite`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-ConnectionCursor`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-ConnectionPlan`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-ConnectionSlots`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Document`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-DynamicKey`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Edit`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-ErrorBehavior`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-FieldError`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-FieldErrors`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Generated`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-GeneratedEnum`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Guard`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-InputObject`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-KeyArgument`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-KeyPart`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Lens`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-LensList`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Lookup`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Members`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-MutationAction`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-MutationOperation`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-OperationHandle`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-OperationKind`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-OperationType`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Payload`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Plan`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-PlanField`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-QueryOperation`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Refetch`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Registry`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Resolution`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-ScalarKind`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Selection`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Slot`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-StorageKey`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-SubscriptionHandle`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-SubscriptionOperation`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Transient`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-TypeID`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Format1`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Any`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Boolean`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Double`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Int`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-List`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Long`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Map`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Pair`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Result`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-String`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Unit`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-Stable`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-JvmName`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-JvmField`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-OptIn`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-run`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-let`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-takeIf`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-map`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-lazy`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-listOf`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-mapOf`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-emptyList`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-emptyMap`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-mutableListOf`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-getOrThrow`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-success`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-failure`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
     }
 }
 
@@ -14679,83 +15687,83 @@ data class KotlinInlineScalars_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
-        anchor.string(Slots.Character.name),
+        `read-as`(anchor),
+        `read-break`(anchor),
+        `read-class`(anchor),
+        `read-continue`(anchor),
+        `read-do`(anchor),
+        `read-else`(anchor),
+        `read-false`(anchor),
+        `read-for`(anchor),
+        `read-fun`(anchor),
+        `read-if`(anchor),
+        `read-in`(anchor),
+        `read-interface`(anchor),
+        `read-is`(anchor),
+        `read-null`(anchor),
+        `read-object`(anchor),
+        `read-package`(anchor),
+        `read-return`(anchor),
+        `read-super`(anchor),
+        `read-this`(anchor),
+        `read-throw`(anchor),
+        `read-true`(anchor),
+        `read-try`(anchor),
+        `read-typealias`(anchor),
+        `read-typeof`(anchor),
+        `read-val`(anchor),
+        `read-var`(anchor),
+        `read-when`(anchor),
+        `read-while`(anchor),
+        `read-_`(anchor),
+        `read-by`(anchor),
+        `read-catch`(anchor),
+        `read-constructor`(anchor),
+        `read-delegate`(anchor),
+        `read-dynamic`(anchor),
+        `read-field`(anchor),
+        `read-file`(anchor),
+        `read-finally`(anchor),
+        `read-get`(anchor),
+        `read-import`(anchor),
+        `read-init`(anchor),
+        `read-param`(anchor),
+        `read-property`(anchor),
+        `read-receiver`(anchor),
+        `read-set`(anchor),
+        `read-setparam`(anchor),
+        `read-value`(anchor),
+        `read-where`(anchor),
+        `read-abstract`(anchor),
+        `read-actual`(anchor),
+        `read-annotation`(anchor),
+        `read-companion`(anchor),
+        `read-const`(anchor),
+        `read-crossinline`(anchor),
+        `read-data`(anchor),
+        `read-enum`(anchor),
+        `read-expect`(anchor),
+        `read-external`(anchor),
+        `read-final`(anchor),
+        `read-infix`(anchor),
+        `read-inline`(anchor),
+        `read-inner`(anchor),
+        `read-internal`(anchor),
+        `read-lateinit`(anchor),
+        `read-noinline`(anchor),
+        `read-open`(anchor),
+        `read-operator`(anchor),
+        `read-out`(anchor),
+        `read-override`(anchor),
+        `read-private`(anchor),
+        `read-protected`(anchor),
+        `read-public`(anchor),
+        `read-reified`(anchor),
+        `read-sealed`(anchor),
+        `read-suspend`(anchor),
+        `read-tailrec`(anchor),
+        `read-vararg`(anchor),
+        `read-context`(anchor),
     )
 
     companion object {
@@ -14850,6 +15858,83 @@ data class KotlinInlineScalars_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name) && anchor.present(Slots.Character.name)
+        private fun `read-as`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-break`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-class`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-continue`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-do`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-else`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-false`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-for`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-fun`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-if`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-in`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-interface`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-is`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-null`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-object`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-package`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-return`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-super`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-this`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-throw`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-true`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-try`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-typealias`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-typeof`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-val`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-var`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-when`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-while`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-_`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-by`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-catch`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-constructor`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-delegate`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-dynamic`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-field`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-file`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-finally`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-get`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-import`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-init`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-param`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-property`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-receiver`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-set`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-setparam`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-value`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-where`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-abstract`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-actual`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-annotation`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-companion`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-const`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-crossinline`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-data`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-enum`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-expect`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-external`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-final`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-infix`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-inline`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-inner`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-internal`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-lateinit`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-noinline`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-open`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-operator`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-out`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-override`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-private`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-protected`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-public`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-reified`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-sealed`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-suspend`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-tailrec`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-vararg`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
+        private fun `read-context`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
     }
 }
 
@@ -14860,7 +15945,7 @@ data class KotlinInlineSpreadTarget_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        anchor.string(Slots.Character.name),
+        `read-name`(anchor),
     )
 
     companion object {
@@ -14877,6 +15962,7 @@ data class KotlinInlineSpreadTarget_character(
             val errors = fieldErrors(anchor)
             return if (errors.isEmpty()) Result.success(KotlinInlineSpreadTarget_character(anchor)) else Result.failure(FieldErrors(errors))
         }
+        private fun `read-name`(anchor: Anchor): String? = anchor.string(Slots.Character.name)
     }
 }
 
@@ -14956,76 +16042,76 @@ data class KotlinInlineSpreads2_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
+        `read-satisfied`(anchor),
+        `read-missingRequiredField`(anchor),
+        `read-fieldErrors`(anchor),
+        `read-isPresent`(anchor),
+        `read-throwing`(anchor),
+        `read-caught`(anchor),
+        `read-refetchable`(anchor),
+        `read-refetch`(anchor),
+        `read-connection`(anchor),
+        `read-nodes`(anchor),
+        `read-hasNext`(anchor),
+        `read-hasPrevious`(anchor),
+        `read-isLoadingNext`(anchor),
+        `read-isLoadingPrevious`(anchor),
+        `read-connectionID`(anchor),
+        `read-loadNext`(anchor),
+        `read-loadPrevious`(anchor),
+        `read-bound`(anchor),
+        `read-errors`(anchor),
+        `read-child`(anchor),
+        `read-missing`(anchor),
+        `read-other`(anchor),
+        `read-it`(anchor),
+        `read-element`(anchor),
+        `read-count`(anchor),
+        `read-optimistic`(anchor),
+        `read-text`(anchor),
+        `read-fields`(anchor),
+        `read-variables`(anchor),
+        `read-type`(anchor),
+        `read-resolution`(anchor),
+        `read-name`(anchor),
+        `read-document`(anchor),
+        `read-kind`(anchor),
+        `read-errorBehavior`(anchor),
+        `read-cacheExpirationSeconds`(anchor),
+        `read-throwsOnFieldError`(anchor),
+        `read-bubbles`(anchor),
+        `read-hasDeferred`(anchor),
+        `read-plan`(anchor),
+        `read-selection`(anchor),
+        `read-selection0`(anchor),
+        `read-Data`(anchor),
+        `read-Action`(anchor),
+        `read-OptimisticResponse`(anchor),
+        `read-invoke`(anchor),
+        `read-commit`(anchor),
+        `read-variable`(anchor),
+        `read-payload`(anchor),
+        `read-copy`(anchor),
+        `read-component1`(anchor),
+        `read-component2`(anchor),
+        `read-javaClass`(anchor),
+        `read-of`(anchor),
+        `read-scalarText`(anchor),
+        `read-Undeclared`(anchor),
+        `read-size`(anchor),
+        `read-keys`(anchor),
+        `read-values`(anchor),
+        `read-entries`(anchor),
+        `read-Types`(anchor),
+        `read-Slots`(anchor),
+        `read-AbstractSlots`(anchor),
+        `read-Sites`(anchor),
+        `read-Guards`(anchor),
+        `read-schemaDigest`(anchor),
+        `read-format`(anchor),
+        `read-transient`(anchor),
+        `read-baton`(anchor),
+        `read-MappedScalar`(anchor),
     )
 
     companion object {
@@ -15113,6 +16199,76 @@ data class KotlinInlineSpreads2_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = true
+        private fun `read-satisfied`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-missingRequiredField`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-fieldErrors`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-isPresent`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-throwing`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-caught`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-refetchable`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-refetch`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-connection`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-nodes`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-hasNext`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-hasPrevious`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-isLoadingNext`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-isLoadingPrevious`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-connectionID`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-loadNext`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-loadPrevious`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-bound`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-errors`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-child`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-missing`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-other`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-it`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-element`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-count`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-optimistic`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-text`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-fields`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-variables`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-type`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-resolution`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-name`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-document`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-kind`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-errorBehavior`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-cacheExpirationSeconds`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-throwsOnFieldError`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-bubbles`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-hasDeferred`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-plan`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-selection`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-selection0`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Data`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Action`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-OptimisticResponse`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-invoke`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-commit`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-variable`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-payload`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-copy`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-component1`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-component2`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-javaClass`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-of`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-scalarText`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Undeclared`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-size`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-keys`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-values`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-entries`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Types`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Slots`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-AbstractSlots`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Sites`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Guards`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-schemaDigest`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-format`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-transient`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-baton`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-MappedScalar`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
     }
 }
 
@@ -15193,77 +16349,77 @@ data class KotlinInlineSpreads3_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
+        `read-AbstractSlot`(anchor),
+        `read-Anchor`(anchor),
+        `read-ArgumentSite`(anchor),
+        `read-ConnectionCursor`(anchor),
+        `read-ConnectionPlan`(anchor),
+        `read-ConnectionSlots`(anchor),
+        `read-Document`(anchor),
+        `read-DynamicKey`(anchor),
+        `read-Edit`(anchor),
+        `read-ErrorBehavior`(anchor),
+        `read-FieldError`(anchor),
+        `read-FieldErrors`(anchor),
+        `read-Generated`(anchor),
+        `read-GeneratedEnum`(anchor),
+        `read-Guard`(anchor),
+        `read-InputObject`(anchor),
+        `read-KeyArgument`(anchor),
+        `read-KeyPart`(anchor),
+        `read-Lens`(anchor),
+        `read-LensList`(anchor),
+        `read-Lookup`(anchor),
+        `read-Members`(anchor),
+        `read-MutationAction`(anchor),
+        `read-MutationOperation`(anchor),
+        `read-OperationHandle`(anchor),
+        `read-OperationKind`(anchor),
+        `read-OperationType`(anchor),
+        `read-Payload`(anchor),
+        `read-Plan`(anchor),
+        `read-PlanField`(anchor),
+        `read-QueryOperation`(anchor),
+        `read-Refetch`(anchor),
+        `read-Registry`(anchor),
+        `read-Resolution`(anchor),
+        `read-ScalarKind`(anchor),
+        `read-Selection`(anchor),
+        `read-Slot`(anchor),
+        `read-StorageKey`(anchor),
+        `read-SubscriptionHandle`(anchor),
+        `read-SubscriptionOperation`(anchor),
+        `read-Transient`(anchor),
+        `read-TypeID`(anchor),
+        `read-Format1`(anchor),
+        `read-Any`(anchor),
+        `read-Boolean`(anchor),
+        `read-Double`(anchor),
+        `read-Int`(anchor),
+        `read-List`(anchor),
+        `read-Long`(anchor),
+        `read-Map`(anchor),
+        `read-Pair`(anchor),
+        `read-Result`(anchor),
+        `read-String`(anchor),
+        `read-Unit`(anchor),
+        `read-Stable`(anchor),
+        `read-JvmName`(anchor),
+        `read-JvmField`(anchor),
+        `read-OptIn`(anchor),
+        `read-run`(anchor),
+        `read-let`(anchor),
+        `read-takeIf`(anchor),
+        `read-map`(anchor),
+        `read-lazy`(anchor),
+        `read-listOf`(anchor),
+        `read-mapOf`(anchor),
+        `read-emptyList`(anchor),
+        `read-emptyMap`(anchor),
+        `read-mutableListOf`(anchor),
+        `read-getOrThrow`(anchor),
+        `read-success`(anchor),
+        `read-failure`(anchor),
     )
 
     companion object {
@@ -15352,6 +16508,77 @@ data class KotlinInlineSpreads3_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = true
+        private fun `read-AbstractSlot`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Anchor`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-ArgumentSite`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-ConnectionCursor`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-ConnectionPlan`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-ConnectionSlots`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Document`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-DynamicKey`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Edit`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-ErrorBehavior`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-FieldError`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-FieldErrors`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Generated`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-GeneratedEnum`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Guard`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-InputObject`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-KeyArgument`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-KeyPart`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Lens`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-LensList`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Lookup`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Members`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-MutationAction`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-MutationOperation`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-OperationHandle`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-OperationKind`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-OperationType`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Payload`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Plan`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-PlanField`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-QueryOperation`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Refetch`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Registry`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Resolution`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-ScalarKind`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Selection`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Slot`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-StorageKey`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-SubscriptionHandle`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-SubscriptionOperation`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Transient`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-TypeID`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Format1`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Any`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Boolean`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Double`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Int`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-List`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Long`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Map`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Pair`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Result`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-String`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Unit`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-Stable`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-JvmName`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-JvmField`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-OptIn`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-run`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-let`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-takeIf`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-map`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-lazy`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-listOf`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-mapOf`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-emptyList`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-emptyMap`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-mutableListOf`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-getOrThrow`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-success`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-failure`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
     }
 }
 
@@ -15438,83 +16665,83 @@ data class KotlinInlineSpreads_character(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
-        KotlinInlineSpreadTarget_character(anchor.entering()),
+        `read-as`(anchor),
+        `read-break`(anchor),
+        `read-class`(anchor),
+        `read-continue`(anchor),
+        `read-do`(anchor),
+        `read-else`(anchor),
+        `read-false`(anchor),
+        `read-for`(anchor),
+        `read-fun`(anchor),
+        `read-if`(anchor),
+        `read-in`(anchor),
+        `read-interface`(anchor),
+        `read-is`(anchor),
+        `read-null`(anchor),
+        `read-object`(anchor),
+        `read-package`(anchor),
+        `read-return`(anchor),
+        `read-super`(anchor),
+        `read-this`(anchor),
+        `read-throw`(anchor),
+        `read-true`(anchor),
+        `read-try`(anchor),
+        `read-typealias`(anchor),
+        `read-typeof`(anchor),
+        `read-val`(anchor),
+        `read-var`(anchor),
+        `read-when`(anchor),
+        `read-while`(anchor),
+        `read-_`(anchor),
+        `read-by`(anchor),
+        `read-catch`(anchor),
+        `read-constructor`(anchor),
+        `read-delegate`(anchor),
+        `read-dynamic`(anchor),
+        `read-field`(anchor),
+        `read-file`(anchor),
+        `read-finally`(anchor),
+        `read-get`(anchor),
+        `read-import`(anchor),
+        `read-init`(anchor),
+        `read-param`(anchor),
+        `read-property`(anchor),
+        `read-receiver`(anchor),
+        `read-set`(anchor),
+        `read-setparam`(anchor),
+        `read-value`(anchor),
+        `read-where`(anchor),
+        `read-abstract`(anchor),
+        `read-actual`(anchor),
+        `read-annotation`(anchor),
+        `read-companion`(anchor),
+        `read-const`(anchor),
+        `read-crossinline`(anchor),
+        `read-data`(anchor),
+        `read-enum`(anchor),
+        `read-expect`(anchor),
+        `read-external`(anchor),
+        `read-final`(anchor),
+        `read-infix`(anchor),
+        `read-inline`(anchor),
+        `read-inner`(anchor),
+        `read-internal`(anchor),
+        `read-lateinit`(anchor),
+        `read-noinline`(anchor),
+        `read-open`(anchor),
+        `read-operator`(anchor),
+        `read-out`(anchor),
+        `read-override`(anchor),
+        `read-private`(anchor),
+        `read-protected`(anchor),
+        `read-public`(anchor),
+        `read-reified`(anchor),
+        `read-sealed`(anchor),
+        `read-suspend`(anchor),
+        `read-tailrec`(anchor),
+        `read-vararg`(anchor),
+        `read-context`(anchor),
     )
 
     companion object {
@@ -15609,6 +16836,83 @@ data class KotlinInlineSpreads_character(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = true
+        private fun `read-as`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-break`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-class`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-continue`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-do`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-else`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-false`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-for`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-fun`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-if`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-in`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-interface`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-is`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-null`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-object`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-package`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-return`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-super`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-this`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-throw`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-true`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-try`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-typealias`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-typeof`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-val`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-var`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-when`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-while`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-_`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-by`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-catch`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-constructor`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-delegate`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-dynamic`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-field`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-file`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-finally`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-get`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-import`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-init`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-param`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-property`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-receiver`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-set`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-setparam`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-value`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-where`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-abstract`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-actual`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-annotation`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-companion`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-const`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-crossinline`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-data`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-enum`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-expect`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-external`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-final`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-infix`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-inline`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-inner`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-internal`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-lateinit`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-noinline`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-open`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-operator`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-out`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-override`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-private`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-protected`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-public`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-reified`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-sealed`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-suspend`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-tailrec`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-vararg`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
+        private fun `read-context`(anchor: Anchor): KotlinInlineSpreadTarget_character = KotlinInlineSpreadTarget_character(anchor.entering())
     }
 }
 
@@ -20073,7 +21377,7 @@ data class selection1(
     /** Reads the fragment's fields out of the record, once, at the call. */
     @Generated
     constructor(anchor: Anchor) : this(
-        if (anchor.owner.selects(Guards.flag_true)) anchor.string(Slots.Character.name) else null,
+        `read-name`(anchor),
     )
 
     companion object {
@@ -20094,6 +21398,7 @@ data class selection1(
         }
         /** Whether the deferred part that carries this fragment has arrived. */
         fun isPresent(anchor: Anchor): Boolean = (!anchor.owner.selects(Guards.flag_true) || anchor.present(Slots.Character.name))
+        private fun `read-name`(anchor: Anchor): String? = if (anchor.owner.selects(Guards.flag_true)) anchor.string(Slots.Character.name) else null
     }
 }
 

@@ -114,6 +114,22 @@ than fifty lines.
   A fragment named like an operation's numbered selection, `selection0`,
   is a known defect. Beside the names, a value's reading constructor with
   some two hundred linked fields passes the size the JVM allows a method.
+- The emitter answers both, 2026-10-07. A lens nested in an operation sees
+  its companion's private members, so the plan's selections moved to a
+  private top-level object beside the class, named for the operation with
+  a hyphen, `` `HeroQuery-plan` ``, a character no GraphQL name holds, so
+  no fragment or operation takes its name; the corpus holds a fragment
+  `selection0` and a value `selection1`, spread in every form, and its
+  golden compiles. The constructor's size was Kotlin's: before each
+  inlined `let` or `run` it stores every argument computed so far into a
+  local and loads it back after, so reading in place grew with the square
+  of the fields. A value's constructor now calls one private function of
+  its companion per field, `` `read-name` ``, named with a hyphen for the
+  same reason; `WideValueDocuments.kt`, a value of 240 linked fields,
+  compiles, and failed with `Method too large` under the old printing. A
+  private member of a companion costs a synthetic accessor on the JVM,
+  which R8 removes; a value is still bounded by the JVM's 255 parameters
+  of a constructor.
 - Relay's own compiler: its type generator has an `AST` of types that no
   language owns and a `Writer` per language, for Flow, TypeScript and
   JavaScript.
