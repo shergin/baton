@@ -34,6 +34,13 @@ class AbstractSlot internal constructor(val storageKey: String, private val keys
         indices[position] = slot.index
         return slot
     }
+
+    /** Adds the store's numbers this slot resolved to on the types it met to [into]: what a live scope keeps from being freed. */
+    internal fun renderedSlots(into: MutableSet<Slot>) {
+        for ((position, index) in indices.withIndex()) {
+            if (index != Int.MIN_VALUE && index < 0) into.add(Slot(TypeID(position), index))
+        }
+    }
 }
 
 /**

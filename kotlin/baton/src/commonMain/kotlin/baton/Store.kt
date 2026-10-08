@@ -1,25 +1,8 @@
 package baton
 
-/** What the store tells the environment's log: never a record, a value or a variable. See `spec/runtime.md`, section 10. */
-internal sealed interface LogEvent {
-    /** A server batch committed, with the slots it changed in records that existed before it. */
-    data class Committed(val changed: Int) : LogEvent
-
-    /** An incremental part named a place the store or the plan does not have, and was dropped. */
-    data class PartDropped(val path: String) : LogEvent
-
-    /** An id names live records of several types, so a directive by bare id did nothing. */
-    data class AmbiguousIdentity(val id: String, val types: List<String>) : LogEvent
-
-    /** A lens read a field the store never received. */
-    data class Missing(val type: String, val field: String) : LogEvent
-
-    /** A lens read a value its type cannot hold, a null in a non-null field or a value of another kind; it read as a zero value or null. */
-    data class Unexpected(val type: String, val field: String) : LogEvent
-
-    /** A `@required(action: LOG)` field is null; its lens reads as null. */
-    data class RequiredFieldMissing(val type: String, val path: String) : LogEvent
-}
+import androidx.compose.runtime.mutableStateOf
+import kotlin.time.Duration
+import kotlin.time.TimeSource
 
 /**
  * The normalized records. The store belongs to the thread that made it, the
@@ -27,9 +10,68 @@ internal sealed interface LogEvent {
  * commit, the only writer, runs there. The ingest runs off it and hands the
  * commit a change set. See `spec/runtime.md`, sections 1 and 4.
  */
-internal class Store {
+internal class Store(
+    /**
+     * How old an operation's data may be before it reads as stale, for an
+     * operation whose document states no `@cacheExpiration` of its own; null
+     * is forever. Given when the store is made, where Relay gives it.
+     */
+    val cacheExpiration: Duration? = null,
+    /** How many released roots keep their records alive, oldest out first, and how many completed mutations keep their payloads, apart from them. */
+    val releaseBufferSize: Int = 10,
+) {
     private val thread = currentThreadId()
     private val records = HashMap<String, Record>()
+
+    /** Whether the store's session has ended: it holds nothing, commits nothing more and reports nothing. */
+    var ended = false
+        private set
+
+    /** Bumped by `invalidate()`; data fetched before it is stale. */
+    var invalidationEpoch = 0
+        private set
+
+    /** Where the store's clock starts. */
+    private val origin = TimeSource.Monotonic.markNow()
+
+    /** How far ahead of the monotonic clock the store reads; for the tests and the scripts, which advance time rather than wait for it. */
+    var clockOffset: Duration = Duration.ZERO
+
+    /** The store's clock, read for every stamp and every staleness: the monotonic clock, run ahead by [clockOffset]. */
+    val now: TimeSource.Monotonic.ValueTimeMark get() = origin + origin.elapsedNow() + clockOffset
+
+    /** The roots, by the operation's key: retained, waiting in the release buffer, or a completed mutation's. */
+    internal val roots = HashMap<String, Root>()
+    /** Released roots' keys, oldest first. */
+    internal val releaseBuffer = ArrayList<String>()
+    /** Completed mutations' roots' keys, oldest first, apart from the buffer. */
+    internal val completedMutations = ArrayList<String>()
+    internal var collectionScheduled = false
+    /** How many collections have run; for tests. */
+    internal var collections = 0
+
+    /**
+     * Runs a pass on a later turn of the store's thread; the environment
+     * sets it to its main dispatcher. A store without an environment
+     * collects when asked.
+     */
+    var scheduler: ((() -> Unit) -> Unit)? = null
+
+    /** The scopes made by hand over the store, whose rendered keys stay numbered for the session. */
+    internal val looseScopes = ArrayList<Owner>()
+
+    /** The resolutions of fetches in flight, whose numbers stay until the fetch ends. */
+    internal val inFlight = ArrayList<ResolvedSelection>()
+
+    /** Whether the batch in progress moved or dropped a link, which may have orphaned what the link reached: a pass follows the batch. */
+    private var linkDropped = false
+
+    /**
+     * Whether the batch in progress changed a field error, a null, a link,
+     * or whether a record is deleted: what `@throwOnFieldError` and bubbling
+     * `@required` read, so the roots' verdicts are settled again.
+     */
+    private var nullsOrErrorsChanged = false
 
     /** The record query root fields hang off, typed `Query` whatever the schema calls its root type. */
     val root: Record = Record(Registry.type("Query"), ROOT_KEY)
@@ -51,8 +93,105 @@ internal class Store {
     /** The environment's log. */
     var log: ((LogEvent) -> Unit)? = null
 
-    /** An operation the store retains, whose data a heal refetches. Defined with retention; an owner keeps its reference. */
-    class Root
+    /**
+     * What an operation's data deserves, by the operation's own policies:
+     * sound; failed on the uncaught field errors in the operation's own
+     * selection, under `@throwOnFieldError`; or failed on the first
+     * `@required` field that is null and bubbles to the root. A fact about
+     * data, kept on the root and settled by the store; the handle derives
+     * its phase from it and stores none.
+     */
+    sealed interface Verdict {
+        data object Sound : Verdict
+        data class FieldErrors(val errors: List<FieldError>) : Verdict
+        data class RequiredMissing(val path: String) : Verdict
+    }
+
+    /** What judges an operation's data: the handle of an operation with a policy, whose generated code walks the operation's own selection. */
+    fun interface Judge {
+        fun judge(): Verdict
+    }
+
+    /**
+     * An operation's selection and the record it starts from, kept by the
+     * store: how many hold it, its age (when the store last received the
+     * operation's response, and under which invalidation), whether the
+     * store holds its data, and the verdict on that data. Its key is the
+     * operation's name and its variables as JSON. Whether the data is
+     * present, the verdict and the fetch time are snapshot state, so a
+     * composable that reads a handle's phase follows the commit that moves
+     * them. See `spec/runtime.md`, sections 7 and 8.
+     */
+    class Root internal constructor(val key: String, val resolved: ResolvedSelection, val record: Record) {
+        internal var holders = 0
+        /** How many of the holders attached with a policy that allows the network: a fetch the runtime starts later asks whether any does. */
+        internal var networkHolders = 0
+        private val fetchTimeState = mutableStateOf<TimeSource.Monotonic.ValueTimeMark?>(null)
+        /** When the store last committed the operation's response. */
+        val fetchTime: TimeSource.Monotonic.ValueTimeMark? get() = fetchTimeState.value
+        /** The invalidation the data was fetched under. */
+        internal var fetchEpoch = 0
+        /** How many responses the store has committed for the operation. */
+        internal var fetches = 0
+        /** The fetch a heal asked for, by its number: a miss under that fetch's data is unexpected, and healed no further. */
+        internal var healedAt: Int? = null
+        private val presentState = mutableStateOf(false)
+        /**
+         * Whether the store holds the operation's data: a check found it, or
+         * the operation's response committed. Once present, it stays so for
+         * the root's life; a root pushed out and made again starts over.
+         */
+        val present: Boolean get() = presentState.value
+        private val verdictState = mutableStateOf<Verdict>(Verdict.Sound)
+        /**
+         * What the data deserves, settled by [settle]: after a batch that
+         * changed a null, a link, an error or a deletion, and when the handle
+         * finds or fetches the data. A verdict equal to the last is no
+         * change, so a body reading a phase it did not move is not woken.
+         */
+        val verdict: Verdict get() = verdictState.value
+        /** Who judges the data: the handle of an operation with a policy; none for an operation whose data is always sound. */
+        internal var judge: Judge? = null
+        /** The scope that reads under the root, whose rendered keys the root keeps numbered; one per root. */
+        internal var scope: Owner? = null
+
+        /** Whether a holder's policy allows the network. */
+        val allowsNetwork: Boolean get() = networkHolders > 0
+
+        /** Settles the verdict by the judge, when the root has one and holds data. */
+        fun settle() {
+            if (!present) return
+            val judge = judge ?: return
+            val next = judge.judge()
+            if (next != verdictState.value) verdictState.value = next
+        }
+
+        /** A check found the operation's data in the store; the verdict is settled on it, since a root nobody held saw no batch settle it. */
+        fun found() {
+            if (!present) presentState.value = true
+            settle()
+        }
+
+        /** The operation's own response just committed: the first response, and a root nobody holds, are settled here; a batch settled the rest. */
+        fun committed() {
+            val first = !present
+            if (first) presentState.value = true
+            if (first || holders == 0) settle()
+        }
+
+        internal fun stamp(time: TimeSource.Monotonic.ValueTimeMark?, epoch: Int) {
+            fetchTimeState.value = time
+            fetchEpoch = epoch
+        }
+
+        /** Adds the store's numbers the root's resolution and scopes hold to [into]. */
+        internal fun renderedSlots(into: MutableSet<Slot>) {
+            resolved.renderedSlots(into)
+            scope?.renderedSlots(into)
+        }
+
+        override fun toString(): String = "Root($key)"
+    }
 
     /** The placeholder record of each type a non-null link without a record has read. */
     private val placeholders = HashMap<TypeID, Record>()
@@ -120,13 +259,18 @@ internal class Store {
 
     internal fun recordFor(key: String, type: TypeID, idOffset: Int): Record = record(key, type, idOffset).first
 
+    /** The kinds of batch: the server's, an optimistic response's, and the runtime's own writes (a lookup's link bound). */
+    internal enum class BatchKind { SERVER, OPTIMISTIC, LOCAL }
+
     /**
-     * One batch of writes. A plain server batch, the only kind before
-     * optimistic layers, notifies as it writes, since nothing in it can
-     * change back; it counts the slots it changed in records that existed
-     * before it, a twin's write once with its twin.
+     * One batch of writes. A plain batch notifies as it writes, since
+     * nothing in it can change back; it counts the slots it changed in
+     * records that existed before it, a twin's write once with its twin.
+     * Optimistic layers, whose batches net their notifications, come with
+     * their milestone; until then an optimistic response is written as a
+     * plain batch of its kind.
      */
-    internal class Batch {
+    internal class Batch(val kind: BatchKind = BatchKind.SERVER) {
         var changed = 0
         val flagged = HashMap<Record, Boolean>()
 
@@ -145,18 +289,96 @@ internal class Store {
      * errors cleared where the set answers the slot without one, then the
      * edits in the set's order, then the field errors.
      */
-    fun commit(changes: ChangeSet): Int {
+    fun commit(changes: ChangeSet, kind: BatchKind = BatchKind.SERVER): Int {
         checkThread()
+        if (ended) return 0
         adoptConstants()
-        val batch = Batch()
+        val batch = Batch(kind)
         apply(changes, batch)
+        val changed = finish(batch)
+        settleVerdictsIfNeeded()
+        return changed
+    }
+
+    /**
+     * Ends a batch: when it changed whether records are deleted, every slot
+     * that links to one of them is notified, since a link to a deleted
+     * record reads as null and a list skips it; a pass is scheduled when a
+     * link moved or dropped; the log hears of what the server and the app
+     * wrote. Returns how many slots changed.
+     */
+    private fun finish(batch: Batch): Int {
+        if (linkDropped) {
+            linkDropped = false
+            scheduleCollection()
+        }
         val flipped = batch.flipped()
         if (flipped.isNotEmpty()) {
-            // A link to a deleted record reads as null and a list skips it.
             for (record in records.values) record.notifyLinks(flipped)
         }
-        log?.invoke(LogEvent.Committed(batch.changed))
+        when (batch.kind) {
+            BatchKind.SERVER -> log?.invoke(LogEvent.Committed(LogEvent.CommitKind.SERVER, batch.changed))
+            BatchKind.OPTIMISTIC -> log?.invoke(LogEvent.Committed(LogEvent.CommitKind.OPTIMISTIC, batch.changed))
+            // A local batch is the runtime's own writing, as frequent as a read walk.
+            BatchKind.LOCAL -> Unit
+        }
         return batch.changed
+    }
+
+    /** Runs the runtime's own writes as one local batch: a lookup's link bound. */
+    internal fun local(writes: (Batch) -> Unit) {
+        val batch = Batch(BatchKind.LOCAL)
+        writes(batch)
+        finish(batch)
+    }
+
+    /** Settles the roots' verdicts once a batch that changed a null, a link, an error or a deletion has notified. */
+    private fun settleVerdictsIfNeeded() {
+        if (!nullsOrErrorsChanged) return
+        nullsOrErrorsChanged = false
+        settleVerdicts()
+    }
+
+    /**
+     * Ends the store, once and for good: the roots go, every record is
+     * cleared and its readers told, the session's keys are forgotten, and
+     * nothing is committed or reported after.
+     */
+    fun end() {
+        checkThread()
+        if (ended) return
+        ended = true
+        roots.clear()
+        releaseBuffer.clear()
+        completedMutations.clear()
+        looseScopes.clear()
+        inFlight.clear()
+        for (record in records.values) record.clear()
+        records.clear()
+        records[ROOT_KEY] = root
+        records[MUTATION_ROOT_KEY] = mutationRoot
+        records[SUBSCRIPTION_ROOT_KEY] = subscriptionRoot
+        placeholders.clear()
+        twins.clear()
+        keys.clear()
+        log = null
+    }
+
+    /** Marks everything fetched so far as stale; `Environment.invalidate()` is the public way, which also refetches. */
+    fun invalidate() {
+        if (ended) return
+        invalidationEpoch += 1
+    }
+
+    /** Runs a pass on a later turn of the store's thread; several reasons in one turn run one pass. */
+    fun scheduleCollection() {
+        if (collectionScheduled || ended) return
+        val scheduler = scheduler ?: return
+        collectionScheduled = true
+        scheduler {
+            collectionScheduled = false
+            if (!ended) collect()
+        }
     }
 
     /**
@@ -175,6 +397,36 @@ internal class Store {
     }
 
     /**
+     * Removes every record not in [reachable] (the three roots stay), clears
+     * their slots so links between them break, and drops the roots' links to
+     * them. Returns how many records were removed.
+     */
+    internal fun sweep(reachable: Set<Record>): Int {
+        val unreachable = ArrayList<String>()
+        for ((key, record) in records) {
+            if (key == ROOT_KEY || key == MUTATION_ROOT_KEY || key == SUBSCRIPTION_ROOT_KEY || record in reachable) continue
+            unreachable.add(key)
+        }
+        val swept = HashSet<Record>()
+        for (key in unreachable) {
+            val record = records.remove(key) ?: continue
+            swept.add(record)
+            record.clear()
+        }
+        if (swept.isNotEmpty()) {
+            root.prune(swept)
+            mutationRoot.prune(swept)
+            subscriptionRoot.prune(swept)
+        }
+        return swept.size
+    }
+
+    /** Adds every slot that has a twin, whose number the constant it was adopted for keeps, to [into]. */
+    internal fun twinSlots(into: MutableSet<Slot>) {
+        into.addAll(twins.keys)
+    }
+
+    /**
      * The placeholder record of a type: what a non-null link with no record
      * reads, every field missing, never among the store's records and never
      * written. See `spec/runtime.md`, section 1.
@@ -183,13 +435,20 @@ internal class Store {
 
     /** Writes one slot inside a batch, and its twin when it has one. */
     internal fun set(record: Record, slot: Slot, value: Value, batch: Batch) {
-        if (record.write(slot, value) != null) batch.touched(twin = false)
+        record.write(slot, value)?.let { previous ->
+            batch.touched(twin = false)
+            // A local write binds a link; it brings no new null or error into a selection.
+            if (batch.kind != BatchKind.LOCAL) noteNulls(previous, value)
+        }
         val twin = twins[slot] ?: return
         if (record.write(twin, value) != null) batch.touched(twin = true)
     }
 
     private fun setError(record: Record, slot: Slot, error: FieldError?, batch: Batch) {
-        if (record.setError(slot, error)) batch.touched(twin = false)
+        if (record.setError(slot, error)) {
+            batch.touched(twin = false)
+            nullsOrErrorsChanged = true
+        }
         val twin = twins[slot] ?: return
         if (record.setError(twin, error)) batch.touched(twin = true)
     }
@@ -198,6 +457,39 @@ internal class Store {
         if (record.deleted == deleted) return
         if (!batch.flagged.containsKey(record)) batch.flagged[record] = record.deleted
         record.setDeleted(deleted)
+        nullsOrErrorsChanged = true
+    }
+
+    /** Notes for the batch a write to or from null, or a link that moved. */
+    private fun noteNulls(previous: Value, value: Value) {
+        when {
+            previous is Value.Refs && value is Value.Refs -> {
+                // A list that only grew, a page appended or prepended to a connection, left what it reached reachable.
+                if (!keeps(previous.records, value.records)) linkDropped = true
+                nullsOrErrorsChanged = true
+            }
+            previous is Value.Ref || previous is Value.Refs -> {
+                // A link that moved, was nulled or was cleared may have left what it reached unreachable.
+                linkDropped = true
+                nullsOrErrorsChanged = true
+            }
+            previous == Value.Null || value == Value.Null -> nullsOrErrorsChanged = true
+        }
+    }
+
+    /** Whether every link of [old] is still in [new], which a page appended or prepended leaves true: [old] is a prefix or a suffix of [new], by identity. */
+    private fun keeps(old: List<Record?>, new: List<Record?>): Boolean {
+        if (old.size > new.size) return false
+        if (old.isEmpty()) return true
+        var prefix = true
+        var suffix = true
+        val offset = new.size - old.size
+        for (index in old.indices) {
+            if (prefix && old[index] !== new[index]) prefix = false
+            if (suffix && old[index] !== new[offset + index]) suffix = false
+            if (!prefix && !suffix) return false
+        }
+        return true
     }
 
     private fun apply(changes: ChangeSet, batch: Batch) {
@@ -472,5 +764,8 @@ internal class Store {
             OperationKind.MUTATION -> MUTATION_ROOT_KEY
             OperationKind.SUBSCRIPTION -> SUBSCRIPTION_ROOT_KEY
         }
+
+        /** The key of an operation's root: its name and its variables as JSON, which names the root in the store and the handle in the environment. */
+        fun rootKey(name: String, variables: Variables): String = name + variables.json
     }
 }

@@ -18,7 +18,7 @@ class Owner private constructor(
     internal val store: Store?,
     /** What numbers the keys the scope renders: the store's keys, or a table of the scope's own for a lens made by hand over no store. */
     private val keys: Keys,
-    /** The environment that fetches for the scope's lenses; none until the environment exists, and none for a lens made by hand. */
+    /** The environment that fetches for the scope's lenses and heals what they find missing; none for a lens made by hand. */
     internal val environment: Environment?,
     /** The root the scope reads under, whose operation a heal refetches; none for a lens made by hand. */
     internal val root: Store.Root?,
@@ -28,8 +28,28 @@ class Owner private constructor(
     /** A scope over no store, for a lens made by hand. */
     internal constructor(variables: Variables) : this(variables, null, Keys(), null, null, reports = true)
 
-    /** A scope over [store], which numbers the keys it renders. */
-    internal constructor(variables: Variables, store: Store) : this(variables, store, store.keys, null, null, reports = true)
+    /** A scope over [store], which numbers the keys it renders: a lens made by hand, whose numbers the store keeps for the session. */
+    internal constructor(variables: Variables, store: Store) : this(variables, store, store.keys, null, null, reports = true) {
+        store.looseScopes.add(this)
+    }
+
+    /**
+     * The scope of a handle's lenses, or of a mutation's data, which fetch
+     * through [environment] and are healed through [root]. The root keeps
+     * the numbers the scope renders for as long as it is the store's.
+     */
+    internal constructor(variables: Variables, store: Store, environment: Environment, root: Store.Root) :
+        this(variables, store, store.keys, environment, root, reports = true) {
+        root.scope = this
+    }
+
+    internal companion object {
+        /**
+         * A scope over [store] for one synchronous reading, which keeps no
+         * number: whatever it renders, the resolution it reads beside holds.
+         */
+        fun reading(variables: Variables, store: Store): Owner = Owner(variables, store, store.keys, null, null, reports = true)
+    }
 
     // Caches by identity, scanned linearly as Swift's owner scans them: a
     // lens reads a handful of keys, conditions and sites.
@@ -86,6 +106,14 @@ class Owner private constructor(
         val owner = Owner(Variables(merged), store, keys, environment, root, reports)
         bound.add(site to owner)
         return owner
+    }
+
+    /** Adds the store's numbers the scope rendered, and its bound scopes', to [into]: what keeps them from being freed. */
+    internal fun renderedSlots(into: MutableSet<Slot>) {
+        for ((_, slot) in slots) if (slot.index < 0) into.add(slot)
+        for ((_, slot) in abstractSlots) slot.renderedSlots(into)
+        for ((_, owner) in bound) owner.renderedSlots(into)
+        inertOwner?.takeIf { it !== this }?.renderedSlots(into)
     }
 
     /**

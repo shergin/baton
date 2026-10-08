@@ -90,13 +90,14 @@ class Anchor @Generated constructor(val record: Record, val owner: Owner) {
     /**
      * Reports a slot the store never received. A deleted record's fields are
      * gone on purpose; a client field is absent until a payload writes it;
-     * a placeholder's link reported already. The heal comes with the
-     * environment.
+     * a placeholder's link reported already. The owner's environment is
+     * asked to heal: mark the operation stale and refetch it.
      */
     private fun missing(slot: Slot) {
         if (record.deleted || !owner.reports || Registry.isClient(slot)) return
         val store = store ?: return
         store.log?.invoke(LogEvent.Missing(record.type.name, store.keys.text(slot)))
+        owner.environment?.heal(owner.root, record, slot)
     }
 
     /** Reports a value the reader's type cannot hold: a null in a non-null field, or a value of another kind. */

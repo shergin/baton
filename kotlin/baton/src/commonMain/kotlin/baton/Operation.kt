@@ -1,5 +1,10 @@
 package baton
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
+import kotlin.time.TimeMark
+
 /** The text the compiler printed, or the id it was registered under; never both. */
 sealed interface Document {
     data class Text(val text: String) : Document
@@ -110,22 +115,81 @@ sealed interface Phase<out Data> {
     data class Failed(val error: Throwable) : Phase<Nothing>
 }
 
-/** A query's handle: the operation's data in the store, observed in composition. Defined with the environment. */
-class OperationHandle<Data : Lens> internal constructor()
+/**
+ * The last fetch of a handle, as a value read beside the phase: idle, in
+ * flight, or failed with its failure and when it failed. Not a phase: the
+ * phase is what the data deserves and the fetch is what the network did, so
+ * a fetch that fails behind data is read here while the phase stays ready.
+ * The handle's next response replaces it.
+ */
+sealed interface Fetch {
+    /** The failure, when the last fetch failed. */
+    val failure: Failure? get() = null
+
+    data object Idle : Fetch
+    data object InFlight : Fetch
+    data class Failed(override val failure: Failure, val at: TimeMark) : Fetch
+}
+
+/** Loading until resolved in a composable; failed with `EnvironmentError.NotInjected` outside every environment. */
+val <Data : Lens> QueryOperation<Data>.phase: Phase<Data>
+    get() = when (val resolution = resolution) {
+        Resolution.Unresolved -> Phase.Loading
+        Resolution.NotInjected -> Phase.Failed(EnvironmentError.NotInjected)
+        is Resolution.Resolved -> resolution.handle.phase
+    }
+
+/** The last fetch: idle, in flight, or failed with its failure and when; idle where no environment could make one. */
+val QueryOperation<*>.fetch: Fetch get() = resolution.handle?.fetch ?: Fetch.Idle
+
+/** Whether a fetch is running while earlier data stays visible. */
+val QueryOperation<*>.isRefreshing: Boolean get() = resolution.handle?.isRefreshing ?: false
+
+/** Whether the data predates an invalidation or the cache expiration. */
+val QueryOperation<*>.isStale: Boolean get() = resolution.handle?.isStale ?: false
+
+/**
+ * Fetches again and commits; the data stays visible meanwhile, and a failure
+ * is thrown here rather than shown in place of it. Outside every environment
+ * it throws `EnvironmentError.NotInjected`.
+ */
+suspend fun QueryOperation<*>.refetch() {
+    when (val resolution = resolution) {
+        Resolution.Unresolved -> return
+        Resolution.NotInjected -> throw EnvironmentError.NotInjected
+        is Resolution.Resolved -> resolution.handle.refetch()
+    }
+}
+
+/** After a failure, fetches again: a failure with data behind it keeps the data visible meanwhile; any other shows loading. */
+fun QueryOperation<*>.retry() {
+    resolution.handle?.retry()
+}
 
 /**
  * A mutation as a callable value: generated code gives it an `invoke` with
  * one argument per variable and an optional optimistic response, which
- * commits the mutation through the environment and returns its data.
- * Defined with the environment.
+ * commits the mutation through the environment and returns its data. An
+ * action outside every environment throws `EnvironmentError.NotInjected`
+ * rather than commit into a store that stands in.
  */
-class MutationAction<Op : MutationOperation<Data>, Data : Lens> internal constructor() {
+class MutationAction<Op : MutationOperation<Data>, Data : Lens> internal constructor(private val environment: Environment?) {
+    private var inFlight by mutableIntStateOf(0)
+
     /** Whether a commit of this mutation is in flight. */
-    val isInFlight: Boolean get() = TODO("milestone 3: the environment")
+    val isInFlight: Boolean get() = inFlight > 0
 
     /** Commits [operation], an optimistic response's payload applied first when given, and returns the mutation's data. */
     @Generated
-    suspend fun commit(operation: Op, optimistic: Payload? = null): Data = TODO("milestone 3: the environment")
+    suspend fun commit(operation: Op, optimistic: Payload? = null): Data {
+        val environment = environment ?: throw EnvironmentError.NotInjected
+        inFlight += 1
+        try {
+            return environment.mutate(operation, optimistic)
+        } finally {
+            inFlight -= 1
+        }
+    }
 }
 
 /** A subscription's handle: its events, its latest data and its stream. Defined with the environment. */

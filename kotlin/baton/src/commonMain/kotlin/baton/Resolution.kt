@@ -116,8 +116,56 @@ internal class ResolvedVariant(val type: TypeID, val key: List<String>, fields: 
     /** Where in [read] the fields are that a complete response carries. */
     val expected: IntArray = read.indices.filter { read[it].isServer }.toIntArray()
 
+    /** The fields the availability check waits for: the server's own, outside any deferred part. */
+    val waits: List<ResolvedField> = read.filter { it.isServer }
+
+    /** The client fields, which a payload committed by hand writes: the check waits for none. */
+    val payloadFields: List<ResolvedField> = read.filter { it.client }
+
+    /** The connections' client links, which the check walks for their merged pages after the fields, and the collector follows. */
+    val clientLinks: List<ResolvedField>
+
+    /** The links the collector follows: every linked field, deferred or not, and the client links. */
+    val follows: List<ResolvedField>
+
+    init {
+        val links = ArrayList<ResolvedField>()
+        val followed = ArrayList<ResolvedField>()
+        for (field in read) {
+            val kind = field.kind as? ResolvedField.Kind.Linked ?: continue
+            followed.add(field)
+            val connection = kind.connection ?: continue
+            val link = ResolvedField(
+                responseKey = connection.storageKey,
+                keyBytes = ByteArray(0),
+                storageKey = connection.storageKey,
+                rendered = connection.rendered,
+                slot = connection.slot,
+                kind = ResolvedField.Kind.Linked(kind.selection, plural = false, lookup = null, connection = null),
+                edit = null,
+                deferred = null,
+                caught = field.caught,
+                client = true,
+            )
+            links.add(link)
+            followed.add(link)
+        }
+        clientLinks = links
+        follows = followed
+    }
+
     /** The field with a response key, for walking a response path. */
     fun field(responseKey: String): ResolvedField? = fields.firstOrNull { it.responseKey == responseKey }
+
+    /** Adds the store's numbers the variant's fields and connections are slotted at, and those below them, to [into]. */
+    internal fun renderedSlots(into: MutableSet<Slot>, seen: MutableSet<ResolvedSelection>) {
+        for (field in fields) {
+            if (field.slot.index < 0) into.add(field.slot)
+            val kind = field.kind as? ResolvedField.Kind.Linked ?: continue
+            kind.connection?.let { if (it.slot.index < 0) into.add(it.slot) }
+            kind.selection.renderedSlots(into, seen)
+        }
+    }
 }
 
 /**
@@ -198,6 +246,18 @@ internal class ResolvedSelection(
             current[cacheKey]?.let { return it }
             if (others.compareAndSet(current, current + (cacheKey to variant))) return variant
         }
+    }
+
+    /**
+     * Adds the store's numbers the selection's variants hold, those its
+     * response met since among them, to [into]: what a live resolution keeps
+     * from being freed. A selection that reads no variables holds none.
+     */
+    internal fun renderedSlots(into: MutableSet<Slot>, seen: MutableSet<ResolvedSelection> = HashSet()) {
+        if (keys == null || !seen.add(this)) return
+        own.renderedSlots(into, seen)
+        for (variant in listed.values) variant.renderedSlots(into, seen)
+        for (variant in others.load().values) variant.renderedSlots(into, seen)
     }
 
     /** The selection an incremental part with this `@defer` label fills: the fields the label marks, on the same record; null when none. */

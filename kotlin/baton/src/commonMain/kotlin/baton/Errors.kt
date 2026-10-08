@@ -73,6 +73,17 @@ sealed class Failure : Exception() {
     class Malformed(val ingestError: IngestError) : Failure()
     class Environment(val environmentError: EnvironmentError) : Failure()
 
+    companion object {
+        /** Classifies what a fetch threw: a failure as it is, the server's errors, a response the plan could not read, a missing environment, or the transport's own. */
+        fun of(error: Throwable): Failure = when (error) {
+            is Failure -> error
+            is GraphQLErrors -> Request(error)
+            is IngestError -> Malformed(error)
+            is EnvironmentError -> Environment(error)
+            else -> Transport(error)
+        }
+    }
+
     /** The error a phase or a caller sees. */
     val error: Throwable
         get() = when (this) {

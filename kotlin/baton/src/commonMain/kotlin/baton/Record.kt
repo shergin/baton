@@ -140,6 +140,75 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
         this.deleted = deleted
     }
 
+    /** Whether a collection removed the record from its store, or the store ended: a link to it reads nothing more from it. */
+    internal var swept: Boolean = false
+        private set
+
+    /**
+     * Clears every value and error, telling the slots' readers, and marks
+     * the record swept: a collection removes it, so links between removed
+     * records break, or the store's session ended.
+     */
+    internal fun clear() {
+        for (cell in cells) {
+            if (cell != null && cell.value != Value.Missing) cell.value = Value.Missing
+        }
+        for (position in 0 until renderedCount) {
+            val cell = renderedCells[position] ?: continue
+            if (cell.value != Value.Missing) cell.value = Value.Missing
+        }
+        renderedNumbers = EMPTY_NUMBERS
+        renderedCells = EMPTY_CELLS
+        renderedCount = 0
+        errors = null
+        swept = true
+    }
+
+    /** Drops every value that links to a removed record: a root's links to what a collection swept. */
+    internal fun prune(removed: Set<Record>) {
+        fun linksRemoved(value: Value): Boolean = when (value) {
+            is Value.Ref -> value.record in removed
+            is Value.Refs -> value.records.any { it != null && it in removed }
+            else -> false
+        }
+        val pruned = ArrayList<Slot>()
+        forEachValue { slot, value -> if (linksRemoved(value)) pruned.add(slot) }
+        for (slot in pruned) write(slot, Value.Missing)
+    }
+
+    /** Drops the entries under the store's numbers that were freed, with their errors: nothing can name them any more. */
+    internal fun drop(freed: Set<Slot>) {
+        if (renderedCount == 0) return
+        var kept = 0
+        for (position in 0 until renderedCount) {
+            val number = renderedNumbers[position]
+            if (Slot(type, number.inv()) in freed) {
+                errors?.remove(number.inv())
+                continue
+            }
+            renderedNumbers[kept] = number
+            renderedCells[kept] = renderedCells[position]
+            kept += 1
+        }
+        for (position in kept until renderedCount) renderedCells[position] = null
+        renderedCount = kept
+        if (errors?.isEmpty() == true) errors = null
+    }
+
+    /** Calls [body] with every slot that holds a value and the state of its cell; for the harness that observes notifications. */
+    internal fun forEachCell(body: (Slot, Any) -> Unit) {
+        for (index in cells.indices) {
+            val cell = cells[index] ?: continue
+            if (cell.value == Value.Missing) continue
+            body(Slot(type, index), cell)
+        }
+        for (position in 0 until renderedCount) {
+            val cell = renderedCells[position] ?: continue
+            if (cell.value == Value.Missing) continue
+            body(Slot(type, renderedNumbers[position].inv()), cell)
+        }
+    }
+
     /** Whether the record holds no value: never written, or every value since cleared. */
     internal val isEmpty: Boolean
         get() {

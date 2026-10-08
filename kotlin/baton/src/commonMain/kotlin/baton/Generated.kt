@@ -8,7 +8,7 @@ package baton
     message = "This is the runtime's contract with generated code, not an API for an application.",
     level = RequiresOptIn.Level.ERROR,
 )
-@Retention(AnnotationRetention.BINARY)
+@kotlin.annotation.Retention(AnnotationRetention.BINARY)
 @Target(
     AnnotationTarget.CLASS,
     AnnotationTarget.FUNCTION,

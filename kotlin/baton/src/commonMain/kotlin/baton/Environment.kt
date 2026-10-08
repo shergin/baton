@@ -1,9 +1,349 @@
 package baton
 
+import kotlin.time.Duration
+import kotlin.time.TimeSource
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.transformWhile
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 /**
- * The environment: the store, the transports and the log one app session
- * runs on, which fetches for the lenses an owner scopes and heals what they
- * find missing. Defined with the environment; an owner keeps its reference.
- * See `spec/runtime.md`, section 10.
+ * Store plus transport plus configuration, in Relay's sense: one per backend
+ * and app session. It holds the live side of the operations, their handles
+ * with the fetches in flight; what keeps records alive is the store's. The
+ * store belongs to the thread that made it, so the environment commits on
+ * [mainDispatcher], which runs there, and tokenizes responses on
+ * [ingestDispatcher]; a test passes one test dispatcher for both. See
+ * `spec/runtime.md`, section 10.
  */
-internal class Environment
+class Environment internal constructor(
+    val transport: Transport,
+    /** The transport subscriptions go through, when one is given: a socket, or another that streams events. */
+    val subscriptions: Transport?,
+    internal val store: Store,
+    private val mainDispatcher: CoroutineDispatcher,
+    private val ingestDispatcher: CoroutineDispatcher,
+) {
+    /**
+     * An environment over [transport], with a store of its own: an
+     * operation that states no `@cacheExpiration` takes [cacheExpiration]
+     * (none is forever), and [releaseBufferSize] released roots keep their
+     * records alive. Made on the thread the store will belong to.
+     */
+    constructor(
+        transport: Transport,
+        subscriptions: Transport? = null,
+        cacheExpiration: Duration? = null,
+        releaseBufferSize: Int = 10,
+        mainDispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
+        ingestDispatcher: CoroutineDispatcher = Dispatchers.Default,
+    ) : this(transport, subscriptions, Store(cacheExpiration, releaseBufferSize), mainDispatcher, ingestDispatcher)
+
+    /** Where the environment's fetches, and the collector's passes, run: on the store's thread, ended with the session. */
+    internal val scope = CoroutineScope(SupervisorJob() + mainDispatcher)
+
+    init {
+        store.scheduler = { pass -> scope.launch { pass() } }
+    }
+
+    /**
+     * What the runtime did and what went wrong, one `LogEvent` at a time, for
+     * the app's own logging and metrics: names and counts, never a record or
+     * a value.
+     */
+    var log: ((LogEvent) -> Unit)?
+        get() = store.log
+        set(value) {
+            if (!ended) store.log = value
+        }
+
+    /** The handles, by the operation's key, for as long as their roots are the store's: equal operation values share one. */
+    private val handles = HashMap<String, OperationHandle<*>>()
+
+    /** Whether the session has ended: every later call fails with `EnvironmentError.Gone`, and what is still held says so. */
+    var ended: Boolean = false
+        private set
+
+    /**
+     * Whether the app is active, set by the app and by hand in tests; true
+     * until set. Subscriptions' streams park while it is false, when
+     * subscriptions come; queries read nothing of it: `revalidate()` is the
+     * app's call on return.
+     */
+    var isActive: Boolean = true
+
+    /** The handle for an operation value, shared by every holder of an equal value. The policy is applied on every attach. */
+    fun <Data : Lens> handle(operation: QueryOperation<Data>, fetchPolicy: FetchPolicy = FetchPolicy.Default): OperationHandle<Data> {
+        store.checkThread()
+        val key = Store.rootKey(operation.type.name, operation.variables)
+        @Suppress("UNCHECKED_CAST")
+        val handle = handles[key] as OperationHandle<Data>? ?: OperationHandle(operation, key, this).also {
+            // A root until its first release; the caller retains it.
+            if (!ended) handles[key] = it
+        }
+        handle.apply(fetchPolicy)
+        return handle
+    }
+
+    /** Starts fetching before anything attaches; the root waits in the release buffer, and the first attach makes no request of its own. */
+    fun <Data : Lens> preload(operation: QueryOperation<Data>, fetchPolicy: FetchPolicy = FetchPolicy.Default): OperationHandle<Data> {
+        val handle = handle(operation, fetchPolicy)
+        // Only a fetch the preload made can serve the first attach.
+        handle.preloaded = handle.isFetching
+        if (handle.retainCount == 0 && !ended) evict(store.park(handle.key))
+        return handle
+    }
+
+    /** Marks every handle's data stale; retained handles whose holders allow the network refetch at once, the data visible until the response commits. */
+    fun invalidate() {
+        store.checkThread()
+        if (ended) return
+        store.invalidate()
+        for (handle in handles.values.toList()) if (handle.retainCount > 0) handle.refetchIfStale()
+    }
+
+    /** Refetches the retained operations that are stale or whose last fetch failed, where a holder allows the network. Marks nothing. */
+    fun revalidate() {
+        store.checkThread()
+        if (ended) return
+        for (handle in handles.values.toList()) if (handle.retainCount > 0) handle.revalidate()
+    }
+
+    /**
+     * Ends the session, once and for good: cancels every fetch the
+     * environment started, drops the roots, clears every record and forgets
+     * the session's keys. A handle still held reads failed with
+     * `EnvironmentError.Gone` and tells its observers; a lens still held
+     * finds its records cleared; every later call fails with the same
+     * error, and a response that lands later reaches neither the store nor
+     * the log.
+     */
+    suspend fun end() {
+        store.checkThread()
+        if (ended) return
+        ended = true
+        for (handle in handles.values.toList()) handle.end()
+        handles.clear()
+        store.end()
+        scope.cancel()
+    }
+
+    /**
+     * Fetches an operation and commits the response; a handle of it, if any,
+     * follows. An operation with `@throwOnFieldError` throws the field errors
+     * its handle fails on; any other operation's field errors are read where
+     * a lens reads them and logged as `fieldError` events.
+     */
+    suspend fun <Data : Lens> fetch(operation: QueryOperation<Data>) {
+        if (ended) throw EnvironmentError.Gone
+        val type = operation.type
+        val committed = fetch(type, operation.variables, store.resolve(type.plan, operation.variables), null)
+        if (!type.throwsOnFieldError || ended) return
+        // The handle's reading: the operation's own selection and the errors no field holds, read once and healed nowhere.
+        val anchor = Anchor(store.root, Owner.reading(operation.variables, store))
+        val errors = committed.unplaced + type.fieldErrors(anchor)
+        if (errors.isNotEmpty()) throw FieldErrors(errors)
+    }
+
+    /**
+     * Commits a payload for an operation that some other road delivered: a
+     * REST response in the operation's shape, a socket's tick, a preview's
+     * fixture, a test's seed. It is read by the operation's plan and
+     * committed as a fetch's response is, at the root of the operation's
+     * kind, and may carry part of what the operation selects. Under
+     * `@throwOnFieldError` the field errors no `@catch` handled are thrown.
+     */
+    suspend fun commitPayload(operation: Operation<*>, payload: Payload) {
+        if (ended) throw EnvironmentError.Gone
+        val type = operation.type
+        val root = store.root(Store.rootKey(type.name, operation.variables), store.resolve(type.plan, operation.variables), store.root(type.kind))
+        val committed = commit(payload.bytes, root.resolved, root, checkingCancellation = false, complete = false)
+        if (type.throwsOnFieldError && committed.uncaught.isNotEmpty()) throw FieldErrors(committed.uncaught)
+    }
+
+    /**
+     * Commits a mutation and returns its data, which reads the mutation root.
+     * The request and the commit run where the caller's cancellation does not
+     * reach them: a server that received the mutation applied it. The data
+     * stays alive until `releaseBufferSize` completions of other operation
+     * values follow it. An optimistic response is written before the request
+     * as a plain batch of its kind; layers that rebase and revert come with
+     * their milestone, so a failure leaves it in place.
+     */
+    suspend fun <Data : Lens> mutate(operation: MutationOperation<Data>, optimistic: Payload? = null): Data {
+        if (ended) throw EnvironmentError.Gone
+        val type = operation.type
+        val resolved = store.resolve(type.plan, operation.variables)
+        val root = store.root(Store.rootKey(type.name, operation.variables), resolved, store.mutationRoot)
+        if (optimistic != null) {
+            store.commit(Ingest.normalize(optimistic.bytes, resolved, Store.MUTATION_ROOT_KEY), Store.BatchKind.OPTIMISTIC)
+        }
+        val committed = withContext(NonCancellable) {
+            val payload = transport.payload(request(type, operation.variables))
+            commit(payload, resolved, root, checkingCancellation = false)
+        }
+        store.keepCompleted(root)
+        if (type.throwsOnFieldError && committed.uncaught.isNotEmpty()) throw FieldErrors(committed.uncaught)
+        return type.data(Anchor(store.mutationRoot, scope(root, operation.variables)))
+    }
+
+    /** What a commit left for the operation's reading besides its records: the field errors no `@catch` handled, and those no field holds. */
+    internal class Committed(val uncaught: List<FieldError> = emptyList(), val unplaced: List<FieldError> = emptyList()) {
+        operator fun plus(other: Committed): Committed = Committed(uncaught + other.uncaught, unplaced + other.unplaced)
+
+        companion object {
+            fun of(changes: ChangeSet): Committed = Committed(changes.uncaughtFieldErrors, changes.unplacedErrors)
+
+            /** A part the server could not deliver: its errors count once each. */
+            fun of(failure: Ingest.FailedPart): Committed = Committed(failure.uncaught, failure.changes.unplacedErrors)
+        }
+    }
+
+    private fun request(type: OperationType<*>, variables: Variables): Request = Request(
+        operationName = type.name,
+        kind = type.kind,
+        document = type.document,
+        variables = variables,
+        errorBehavior = type.errorBehavior,
+        incremental = type.hasDeferred,
+    )
+
+    /**
+     * Fetches with a plan already resolved, as a handle holds it, and logs
+     * the fetch's events. The field errors are the caller's to weigh;
+     * [firstPart] is handed what the first part of a deferred response
+     * committed.
+     */
+    internal suspend fun fetch(
+        type: OperationType<*>,
+        variables: Variables,
+        resolved: ResolvedSelection,
+        firstPart: ((Committed) -> Unit)?,
+    ): Committed {
+        log(LogEvent.FetchStarted(type.name))
+        val started = TimeSource.Monotonic.markNow()
+        store.inFlight.add(resolved)
+        try {
+            val committed = send(type, variables, resolved, firstPart)
+            for (error in committed.uncaught) log(LogEvent.FieldError(type.name, error.path))
+            log(LogEvent.FetchCompleted(type.name, started.elapsedNow()))
+            return committed
+        } catch (error: Throwable) {
+            log(LogEvent.FetchFailed(type.name, LogEvent.FailureKind.of(error)))
+            throw error
+        } finally {
+            store.inFlight.remove(resolved)
+        }
+    }
+
+    /** Logs an event, unless the session has ended: a response that lands after the end reaches neither the store nor the log. */
+    private fun log(event: LogEvent) {
+        if (ended) return
+        store.log?.invoke(event)
+    }
+
+    /** The fetch itself: the request sent, and the one payload or the parts of a deferred response committed. */
+    private suspend fun send(type: OperationType<*>, variables: Variables, resolved: ResolvedSelection, firstPart: ((Committed) -> Unit)?): Committed {
+        val request = request(type, variables)
+        // The operation's root: a handle's, or one made here, which waits in the release buffer once dated if nothing retains it.
+        val root = store.root(Store.rootKey(type.name, variables), resolved, store.root)
+        if (!type.hasDeferred) return commit(transport.payload(request), resolved, root)
+        var committed = Committed()
+        val delivery = Delivery(store, resolved)
+        var first = true
+        transport.send(request).transformWhile<ByteArray, Unit> { part ->
+            if (first) {
+                first = false
+                val opening = withContext(ingestDispatcher) { Ingest.normalizeFirstPart(part, resolved, Store.ROOT_KEY, complete = true) }
+                currentCoroutineContext().ensureActive()
+                committed += commit(opening.changes)
+                delivery.announce(opening.pending)
+                firstPart?.invoke(committed)
+                return@transformWhile opening.hasNext
+            }
+            val incremental = withContext(ingestDispatcher) { Ingest.incremental(part) }
+            delivery.announce(incremental.pending)
+            val objects = delivery.objects(incremental)
+            val failures = delivery.failures(incremental)
+            val changes = withContext(ingestDispatcher) { objects.map { it.normalize() } }
+            currentCoroutineContext().ensureActive()
+            for (change in changes) committed += commit(change)
+            for (failure in failures) {
+                commit(failure.changes)
+                committed += Committed.of(failure)
+            }
+            incremental.hasNext
+        }.collect()
+        // A deferred response is fetched, and fresh, once its stream completes.
+        if (!ended) evict(store.date(root))
+        return committed
+    }
+
+    /**
+     * The one door from a payload to slots: the payload is read by the plan
+     * on [ingestDispatcher] into a change set, which is committed on the
+     * store's thread as a server batch at the root the operation hangs off.
+     * A query's fetch checks for cancellation before the commit, so a
+     * response superseded while it was read never lands; a mutation and a
+     * payload committed by hand do not. [complete] says whether the payload
+     * must answer every field the plan selects, as a server's response does.
+     */
+    private suspend fun commit(payload: ByteArray, plan: ResolvedSelection, root: Store.Root, checkingCancellation: Boolean = true, complete: Boolean = true): Committed {
+        val changes = withContext(ingestDispatcher) { Ingest.normalize(payload, plan, root.record.key, complete) }
+        if (checkingCancellation) currentCoroutineContext().ensureActive()
+        return commit(changes, root, complete)
+    }
+
+    /**
+     * The door's lower half: a change set committed as a server batch, and
+     * the root dated when the change set completes its operation's response.
+     * A response that lands after the end reaches nothing.
+     */
+    private fun commit(changes: ChangeSet, root: Store.Root? = null, complete: Boolean = true): Committed {
+        if (ended) return Committed()
+        store.commit(changes)
+        if (root != null) evict(store.date(root, complete))
+        return Committed.of(changes)
+    }
+
+    /**
+     * The heal: a read under [root] found data missing. The store marks the
+     * root stale, and its handle refetches if a holder allows the network,
+     * once per fetch of the root; a field still missing after the heal's own
+     * refetch is reported as unexpected and healed no further. A lens with
+     * no root is reported and not healed.
+     */
+    internal fun heal(root: Store.Root?, record: Record, slot: Slot) {
+        if (root == null || ended) return
+        if (!store.heal(root)) {
+            store.log?.invoke(LogEvent.Unexpected(record.type.name, store.keys.text(slot)))
+            return
+        }
+        handles[root.key]?.fetchForHeal()
+    }
+
+    /** A handle retained: it is among the environment's again if its root had left. */
+    internal fun didRetain(handle: OperationHandle<*>) {
+        if (ended) return
+        if (handles[handle.key] == null) handles[handle.key] = handle
+    }
+
+    /** Drops the handles of roots the store pushed out, with the fetches they had in flight. */
+    internal fun evict(keys: List<String>) {
+        for (key in keys) handles.remove(key)?.cancel()
+    }
+
+    /** The scope the lenses under [root] read in, made once per root: they fetch through this environment and are healed through the root. */
+    internal fun scope(root: Store.Root, variables: Variables): Owner = root.scope ?: Owner(variables, store, this, root)
+
+    /** A mutation action over this environment, as the composable for a mutation makes one. */
+    internal fun <Op : MutationOperation<Data>, Data : Lens> action(): MutationAction<Op, Data> = MutationAction(this)
+}

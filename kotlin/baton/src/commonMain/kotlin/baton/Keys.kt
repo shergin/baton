@@ -18,16 +18,16 @@ import kotlin.concurrent.atomics.ExperimentalAtomicApi
  *
  * A variant for a type the plan did not list is resolved where the response
  * is read, off the store's thread, so the state is an immutable snapshot
- * replaced by compare-and-set, as the registry's is. Freeing a number nothing
- * can name comes with collection.
+ * replaced by compare-and-set, as the registry's is. A collection frees the
+ * numbers nothing can name any more.
  */
 @OptIn(ExperimentalAtomicApi::class)
 internal class Keys {
     private class Table(
         /** The store's number of each text it rendered on the type. */
         val numbers: Map<String, Int>,
-        /** The text of each number. */
-        val texts: List<String>,
+        /** The text of each number; null for a number freed, which the next text takes, lowest first. */
+        val texts: List<String?>,
         /** The build's constants on the type, by text, as far as [scanned] reaches. */
         val constants: Map<String, Int>,
         /** How many of the registry's slots on the type are read into [constants]. */
@@ -45,11 +45,14 @@ internal class Keys {
             val (table, adoptions) = scanned(type, current.tables[type.raw] ?: EMPTY)
             val dense = table.constants[text]
             val known = table.numbers[text]
+            val free = if (dense != null || known != null) -1 else table.texts.indexOf(null)
+            val number = known ?: if (free >= 0) free else table.texts.size
             val next = when {
                 dense != null || known != null -> table
-                else -> Table(table.numbers + (text to table.texts.size), table.texts + text, table.constants, table.scanned)
+                free >= 0 -> Table(table.numbers + (text to number), table.texts.toMutableList().also { it[number] = text }, table.constants, table.scanned)
+                else -> Table(table.numbers + (text to number), table.texts + text, table.constants, table.scanned)
             }
-            val slot = Slot(type, dense ?: (known ?: table.texts.size).inv())
+            val slot = Slot(type, dense ?: number.inv())
             if (next === current.tables[type.raw] && adoptions.isEmpty()) return slot
             val updated = State(current.tables + (type.raw to next), current.adoptions + adoptions)
             if (state.compareAndSet(current, updated)) return slot
@@ -60,6 +63,46 @@ internal class Keys {
     fun text(slot: Slot): String {
         if (slot.index >= 0) return Registry.storageKey(slot)
         return state.load().tables[slot.type.raw]?.texts?.getOrNull(slot.index.inv()) ?: ""
+    }
+
+    /**
+     * Frees every number not in [kept]: the store passes what a live
+     * resolution or scope took and every twin. Their texts go, the numbers
+     * are used again lowest first, and each table shrinks to its highest
+     * number in use. Returns the freed slots, for the store to drop the
+     * records' entries under them.
+     */
+    fun free(kept: Set<Slot>): List<Slot> {
+        while (true) {
+            val current = state.load()
+            val freed = ArrayList<Slot>()
+            val tables = HashMap<Int, Table>(current.tables.size)
+            for ((raw, table) in current.tables) {
+                val type = TypeID(raw)
+                val texts = table.texts.toMutableList()
+                val numbers = HashMap(table.numbers)
+                for (number in texts.indices) {
+                    val text = texts[number] ?: continue
+                    val slot = Slot(type, number.inv())
+                    if (slot in kept) continue
+                    texts[number] = null
+                    numbers.remove(text)
+                    freed.add(slot)
+                }
+                while (texts.isNotEmpty() && texts.last() == null) texts.removeAt(texts.lastIndex)
+                tables[raw] = Table(numbers, texts, table.constants, table.scanned)
+            }
+            if (freed.isEmpty()) return freed
+            if (state.compareAndSet(current, State(tables, current.adoptions))) return freed
+        }
+    }
+
+    /** Forgets every key: the session ended, and the process keeps no text it rendered. */
+    fun clear() {
+        while (true) {
+            val current = state.load()
+            if (state.compareAndSet(current, State(emptyMap(), emptyList()))) return
+        }
     }
 
     /**
