@@ -50,8 +50,7 @@ device, the OS and the date.
 |---|---|---|---|
 | The response into the store | 3.4 ms | 318 ms | **94×** |
 | The same payload again | 165 µs | 3.99 ms | **24×** |
-| The store into something a view can read | the first body has it, after a 115 µs check | 228 ms to rebuild the query | |
-| One field | 26 ns | 296 ns | **11×** |
+| A screen whose data is already in the store | the first body has it, after a 115 µs check | 228 ms to rebuild the query | |
 
 **Kotlin against Apollo Kotlin 5.2**, a Google Pixel 9 on Android 17,
 release builds, 7 October 2026:
@@ -60,15 +59,17 @@ release builds, 7 October 2026:
 |---|---|---|---|
 | The response into the store | 6.4 ms | 44.6 ms | **6.9×** |
 | The same payload again | 0.36 ms | 1.1 ms | **3.1×** |
-| The store into something a view can read | a 1.2 ms check | 25 ms to rebuild the query | |
-| One field | 43 ns | 2 ns | Apollo, **20×** |
+| A screen whose data is already in the store | a 1.2 ms check | 25 ms to rebuild the query | **20×** |
 
-The last row is Apollo's: once it has rebuilt the tree, a field is a
-property load. Every row before it is the price of that tree, paid once
-from the bytes and again on every read. Baton materializes nothing a view
-did not read: on the phone the whole response is in the store in less than
-a 120 Hz frame, 1.3 ms of it on the main thread, and a screen that reads
-every field of twenty rows pays about 7 µs after the check.
+The difference is the model tree Apollo builds from the bytes and rebuilds
+on every read. Baton materializes nothing a view did not read: on the phone
+the whole response is in the store in less than a 120 Hz frame, 1.3 ms of
+it on the main thread, and the screen reads its fields from there. From
+the last byte to a list a screen can render, Baton is 6.4 ms; Apollo
+Kotlin is 44.6 ms with its default cache write before the response is
+emitted, or about 12 ms to a first render with the write deferred and
+32 ms of work after it. End-to-end numbers on the device, from the response
+to the frame, are being measured next.
 
 Also measured: an optimistic write shows at once and the whole cycle costs
 0.4 ms; forty-two pages of scrolling plateau near five megabytes, since
