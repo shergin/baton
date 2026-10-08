@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -79,12 +80,15 @@ class WebSocketTransportTests {
         val server = server()
         val socket = GraphQLTransportWebSocket(server.url)
         val query = Request("Stub", OperationKind.QUERY, Document.Text("query Stub { a }"), Variables.none)
-        val answer = async(Dispatchers.Default) { socket.payload(query) }
+        // The whole flow, not its first payload: a reader that stops at the first payload may go away before the
+        // server's `complete` is read, and then rightly completes the stream itself. The flow ends only when the
+        // transport has handled the server's `complete`, so what the client sent after it is settled.
+        val answer = async(Dispatchers.Default) { socket.send(query).toList() }
         until("the query was sent") { server.count("subscribe") == 1 }
         val id = server.ids("subscribe").single()
         server.send("{\"id\":\"$id\",\"type\":\"next\",\"payload\":{\"data\":{\"a\":1}}}")
         server.send("{\"id\":\"$id\",\"type\":\"complete\"}")
-        assertEquals("{\"data\":{\"a\":1}}", answer.await().decodeToString())
+        assertEquals(listOf("{\"data\":{\"a\":1}}"), answer.await().map { it.decodeToString() })
         until("the socket closed once nothing was on it") { server.closed == 1 }
         assertEquals(0, server.count("complete"), "a stream the server completed owes it nothing")
     }
