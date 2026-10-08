@@ -155,7 +155,8 @@ fun IssueList(repository: IssueList_repository, onSelect: (String) -> Unit, head
         }
         items(issues.nodes, key = { it.id }) { issue ->
             // The row requires an author; an issue without one reads as no row.
-            issue.issueRow?.let { row -> IssueRow(row, onClick = { onSelect(issue.id) }) }
+            val id = issue.id
+            issue.issueRow?.let { row -> IssueRow(row, onClick = { onSelect(id) }) }
         }
         if (issues.hasNext) {
             item(key = "next page") {
@@ -197,9 +198,12 @@ fun StarButton(repository: StarButton_repository) {
     val starred = repository.viewerHasStarred
     OutlinedButton(
         onClick = {
-            val id = repository.id
-            val count = repository.stargazerCount
+            // The lens is read in the coroutine, which runs on the
+            // composition's dispatcher, the store's thread, wherever the
+            // click was delivered from.
             scope.launch {
+                val id = repository.id
+                val count = repository.stargazerCount
                 runCatching { if (starred) unstar(removeStar, id, count) else star(addStar, id, count) }
                     .onFailure { println("star toggle failed: $it") }
             }

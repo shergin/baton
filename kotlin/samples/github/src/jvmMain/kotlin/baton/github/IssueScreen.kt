@@ -177,6 +177,7 @@ fun CommentComposer(subjectID: String, connectionID: String) {
         )
         Button(
             onClick = {
+                val author = viewer ?: return@Button
                 val body = text
                 // The field empties at once, as the comment appears; a refusal puts the text back.
                 text = ""
@@ -185,7 +186,7 @@ fun CommentComposer(subjectID: String, connectionID: String) {
                         addComment(
                             input = AddCommentInput(body = body, subjectId = subjectID),
                             connections = listOf(connectionID),
-                            optimistic = optimisticComment(body, viewer?.id, viewer?.login),
+                            optimistic = optimisticComment(body, author),
                         )
                     }.onFailure {
                         println("comment failed: $it")
@@ -193,18 +194,17 @@ fun CommentComposer(subjectID: String, connectionID: String) {
                     }
                 }
             },
-            enabled = text.isNotBlank() && !addComment.isInFlight,
+            // The optimistic comment is the viewer's, so the button waits for the viewer.
+            enabled = text.isNotBlank() && viewer != null && !addComment.isInFlight,
         ) { Text("Comment") }
     }
 }
 
 /**
  * The comment as the server will answer it, under a client id the server's
- * edge replaces: the [body] by the viewer [viewerID], whose login is
- * [login], now. Without the viewer yet the author is left out and reads as
- * the ghost.
+ * edge replaces: the [body] by the [viewer], now.
  */
-private fun optimisticComment(body: String, viewerID: String?, login: String?): CommentComposerAddComment.OptimisticResponse =
+private fun optimisticComment(body: String, viewer: ViewerQuery.Data.Viewer): CommentComposerAddComment.OptimisticResponse =
     CommentComposerAddComment.OptimisticResponse(
         CommentComposerAddComment.OptimisticResponse.AddComment(
             CommentComposerAddComment.OptimisticResponse.AddComment.CommentEdge(
@@ -212,7 +212,7 @@ private fun optimisticComment(body: String, viewerID: String?, login: String?): 
                     id = "client:optimistic-comment:${UUID.randomUUID()}",
                     bodyText = body,
                     createdAt = Instant.now().toString(),
-                    author = login?.let { CommentComposerAddComment.OptimisticResponse.AddComment.CommentEdge.Node.Author(__typename = "User", login = it, id = viewerID) },
+                    author = CommentComposerAddComment.OptimisticResponse.AddComment.CommentEdge.Node.Author(__typename = "User", login = viewer.login, id = viewer.id),
                 ),
             ),
         ),
