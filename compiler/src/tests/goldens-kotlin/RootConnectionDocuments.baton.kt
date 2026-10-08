@@ -16,6 +16,7 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.QueryType
 import baton.Refetch
 import baton.Resolution
 import baton.ScalarKind
@@ -94,7 +95,7 @@ class TestRootNotesPaginationQuery(val count: Int? = null, val cursor: String? =
     override fun equals(other: Any?): Boolean = other is TestRootNotesPaginationQuery && other.count == count && other.cursor == cursor
     override fun hashCode(): Int = listOf(count, cursor).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestRootNotesPaginationQuery, TestRootNotesPaginationQuery.Data> {
         override val name = "TestRootNotesPaginationQuery"
         override val document: Document = Document.Text("query TestRootNotesPaginationQuery(\$count:Int=2,\$cursor:String){...TestRootNotes_query_1G22uz}fragment TestRootNotes_query_1G22uz on Query{notes(first:\$count,after:\$cursor){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}")
         override val kind = OperationKind.QUERY
@@ -159,7 +160,7 @@ class TestRootNotesQuery : QueryOperation<TestRootNotesQuery.Data> {
     override fun equals(other: Any?): Boolean = other is TestRootNotesQuery
     override fun hashCode(): Int = 0
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestRootNotesQuery, TestRootNotesQuery.Data> {
         override val name = "TestRootNotesQuery"
         override val document: Document = Document.Text("query TestRootNotesQuery{...TestRootNotes_query}fragment TestRootNotes_query on Query{notes(first:2){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}")
         override val kind = OperationKind.QUERY

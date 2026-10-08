@@ -265,7 +265,16 @@ fn companion(writer: &mut Writer, operation: &OperationValue, shared: &Shared, p
         OperationKind::Mutation => "MUTATION",
         OperationKind::Subscription => "SUBSCRIPTION",
     };
-    writer.block("companion object : OperationType<Data>", |writer| {
+    // The companion names the operation's class beside its data, so a call
+    // that takes it, as `rememberMutation(RenameMutation)` does, infers both.
+    let interface = match operation.kind {
+        OperationKind::Query => "QueryType",
+        OperationKind::Mutation => "MutationType",
+        OperationKind::Subscription => "SubscriptionType",
+    };
+    let class = escape(&operation.name);
+    let head = format!("companion object : {interface}<{class}, {class}.Data>");
+    writer.block(head, |writer| {
         writer.line(format!(
             "override val name = {}",
             string_literal(&operation.name)

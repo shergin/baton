@@ -14,6 +14,7 @@ import baton.Lens
 import baton.Lookup
 import baton.MutationAction
 import baton.MutationOperation
+import baton.MutationType
 import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
@@ -21,6 +22,7 @@ import baton.Payload
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.QueryType
 import baton.Refetch
 import baton.Resolution
 import baton.ScalarKind
@@ -443,7 +445,7 @@ class TestAddNote(val characterId: String, val text: String, val connections: Li
     override fun equals(other: Any?): Boolean = other is TestAddNote && other.characterId == characterId && other.text == text && other.connections == connections
     override fun hashCode(): Int = listOf(characterId, text, connections).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : MutationType<TestAddNote, TestAddNote.Data> {
         override val name = "TestAddNote"
         override val document: Document = Document.Text("mutation TestAddNote(\$characterId:ID!,\$text:String!){addNote(characterId:\$characterId,text:\$text){noteEdge{cursor,node{id,text}}}}")
         override val kind = OperationKind.MUTATION
@@ -554,7 +556,7 @@ class TestAddNoteFirst(val characterId: String, val text: String, val connection
     override fun equals(other: Any?): Boolean = other is TestAddNoteFirst && other.characterId == characterId && other.text == text && other.connections == connections
     override fun hashCode(): Int = listOf(characterId, text, connections).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : MutationType<TestAddNoteFirst, TestAddNoteFirst.Data> {
         override val name = "TestAddNoteFirst"
         override val document: Document = Document.Text("mutation TestAddNoteFirst(\$characterId:ID!,\$text:String!){addNote(characterId:\$characterId,text:\$text){noteEdge{cursor,node{id,text}}}}")
         override val kind = OperationKind.MUTATION
@@ -665,7 +667,7 @@ class TestAddNoteNode(val characterId: String, val text: String, val connections
     override fun equals(other: Any?): Boolean = other is TestAddNoteNode && other.characterId == characterId && other.text == text && other.connections == connections
     override fun hashCode(): Int = listOf(characterId, text, connections).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : MutationType<TestAddNoteNode, TestAddNoteNode.Data> {
         override val name = "TestAddNoteNode"
         override val document: Document = Document.Text("mutation TestAddNoteNode(\$characterId:ID!,\$text:String!){addNote(characterId:\$characterId,text:\$text){note{id,text}}}")
         override val kind = OperationKind.MUTATION
@@ -754,7 +756,7 @@ class TestAddNoteNodeFirst(val characterId: String, val text: String, val connec
     override fun equals(other: Any?): Boolean = other is TestAddNoteNodeFirst && other.characterId == characterId && other.text == text && other.connections == connections
     override fun hashCode(): Int = listOf(characterId, text, connections).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : MutationType<TestAddNoteNodeFirst, TestAddNoteNodeFirst.Data> {
         override val name = "TestAddNoteNodeFirst"
         override val document: Document = Document.Text("mutation TestAddNoteNodeFirst(\$characterId:ID!,\$text:String!){addNote(characterId:\$characterId,text:\$text){note{id,text}}}")
         override val kind = OperationKind.MUTATION
@@ -843,7 +845,7 @@ class TestAddNoteNodeOfAnotherType(val characterId: String, val text: String, va
     override fun equals(other: Any?): Boolean = other is TestAddNoteNodeOfAnotherType && other.characterId == characterId && other.text == text && other.connections == connections
     override fun hashCode(): Int = listOf(characterId, text, connections).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : MutationType<TestAddNoteNodeOfAnotherType, TestAddNoteNodeOfAnotherType.Data> {
         override val name = "TestAddNoteNodeOfAnotherType"
         override val document: Document = Document.Text("mutation TestAddNoteNodeOfAnotherType(\$characterId:ID!,\$text:String!){addNote(characterId:\$characterId,text:\$text){note{id,text}}}")
         override val kind = OperationKind.MUTATION
@@ -933,7 +935,7 @@ class TestAliasQuery(val id: String) : QueryOperation<TestAliasQuery.Data> {
     override fun equals(other: Any?): Boolean = other is TestAliasQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestAliasQuery, TestAliasQuery.Data> {
         override val name = "TestAliasQuery"
         override val document: Document = Document.Text("query TestAliasQuery(\$id:ID!){character(id:\$id){...TestRow_character,id}}fragment TestRow_character on Character{name,status,image}")
         override val kind = OperationKind.QUERY
@@ -983,7 +985,7 @@ class TestAuthorNotesPaginationQuery(val count: Int? = null, val cursor: String?
     override fun equals(other: Any?): Boolean = other is TestAuthorNotesPaginationQuery && other.count == count && other.cursor == cursor && other.id == id
     override fun hashCode(): Int = listOf(count, cursor, id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestAuthorNotesPaginationQuery, TestAuthorNotesPaginationQuery.Data> {
         override val name = "TestAuthorNotesPaginationQuery"
         override val document: Document = Document.Text("query TestAuthorNotesPaginationQuery(\$count:Int=2,\$cursor:String,\$id:ID!){node(id:\$id){__typename,...TestAuthorNotes_note_1G22uz,id}}fragment TestAuthorNotes_note_1G22uz on Note{id,author{id,name,notes(first:\$count,after:\$cursor){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}}")
         override val kind = OperationKind.QUERY
@@ -1075,7 +1077,7 @@ class TestAuthorNotesQuery(val id: String) : QueryOperation<TestAuthorNotesQuery
     override fun equals(other: Any?): Boolean = other is TestAuthorNotesQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestAuthorNotesQuery, TestAuthorNotesQuery.Data> {
         override val name = "TestAuthorNotesQuery"
         override val document: Document = Document.Text("query TestAuthorNotesQuery(\$id:ID!){node(id:\$id){__typename,...TestAuthorNotes_note,id}}fragment TestAuthorNotes_note on Note{id,author{id,name,notes(first:2){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}}")
         override val kind = OperationKind.QUERY
@@ -1167,7 +1169,7 @@ class TestDeferredNotesPaginationQuery(val count: Int? = null, val cursor: Strin
     override fun equals(other: Any?): Boolean = other is TestDeferredNotesPaginationQuery && other.count == count && other.cursor == cursor && other.id == id
     override fun hashCode(): Int = listOf(count, cursor, id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestDeferredNotesPaginationQuery, TestDeferredNotesPaginationQuery.Data> {
         override val name = "TestDeferredNotesPaginationQuery"
         override val document: Document = Document.Text("query TestDeferredNotesPaginationQuery(\$count:Int=2,\$cursor:String,\$id:ID!){node(id:\$id){__typename,...TestDeferredNotes_character_1G22uz,id}}fragment TestDeferredNotes_character_1G22uz on Character{notes(first:\$count,after:\$cursor){edges{node{id,...TestNoteText_note@defer(label:\"TestDeferredNotes_character\$defer\$noteText\"),__typename},cursor},pageInfo{endCursor,hasNextPage}},id}fragment TestNoteText_note on Note{text}")
         override val kind = OperationKind.QUERY
@@ -1252,7 +1254,7 @@ class TestDeleteNote(val id: String) : MutationOperation<TestDeleteNote.Data> {
     override fun equals(other: Any?): Boolean = other is TestDeleteNote && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : MutationType<TestDeleteNote, TestDeleteNote.Data> {
         override val name = "TestDeleteNote"
         override val document: Document = Document.Text("mutation TestDeleteNote(\$id:ID!){removeNote(id:\$id){removedNoteId}}")
         override val kind = OperationKind.MUTATION
@@ -1320,7 +1322,7 @@ class TestHiddenNotesPaginationQuery(val count: Int? = null, val cursor: String?
     override fun equals(other: Any?): Boolean = other is TestHiddenNotesPaginationQuery && other.count == count && other.cursor == cursor && other.id == id
     override fun hashCode(): Int = listOf(count, cursor, id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestHiddenNotesPaginationQuery, TestHiddenNotesPaginationQuery.Data> {
         override val name = "TestHiddenNotesPaginationQuery"
         override val document: Document = Document.Text("query TestHiddenNotesPaginationQuery(\$count:Int=2,\$cursor:String,\$id:ID!){node(id:\$id){__typename,...TestHiddenNotes_character_1G22uz,id}}fragment TestHiddenNotes_character_1G22uz on Character{TestHiddenNotes_character:name,TestHiddenNotesPaginationQuery:status,notes(first:\$count,after:\$cursor){TestHiddenNotes_character:totalCount,TestHiddenNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}")
         override val kind = OperationKind.QUERY
@@ -1409,7 +1411,7 @@ class TestHiddenNotesQuery(val id: String) : QueryOperation<TestHiddenNotesQuery
     override fun equals(other: Any?): Boolean = other is TestHiddenNotesQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestHiddenNotesQuery, TestHiddenNotesQuery.Data> {
         override val name = "TestHiddenNotesQuery"
         override val document: Document = Document.Text("query TestHiddenNotesQuery(\$id:ID!){character(id:\$id){...TestHiddenNotes_character,id}}fragment TestHiddenNotes_character on Character{TestHiddenNotes_character:name,TestHiddenNotesPaginationQuery:status,notes(first:2){TestHiddenNotes_character:totalCount,TestHiddenNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}")
         override val kind = OperationKind.QUERY
@@ -1490,7 +1492,7 @@ class TestHiddenRecentNotesPaginationQuery(val count: Int? = null, val cursor: S
     override fun equals(other: Any?): Boolean = other is TestHiddenRecentNotesPaginationQuery && other.count == count && other.cursor == cursor && other.id == id
     override fun hashCode(): Int = listOf(count, cursor, id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestHiddenRecentNotesPaginationQuery, TestHiddenRecentNotesPaginationQuery.Data> {
         override val name = "TestHiddenRecentNotesPaginationQuery"
         override val document: Document = Document.Text("query TestHiddenRecentNotesPaginationQuery(\$count:Int=2,\$cursor:String,\$id:ID!){node(id:\$id){__typename,...TestHiddenRecentNotes_character_1G22uz,id}}fragment TestHiddenRecentNotes_character_1G22uz on Character{notes(last:\$count,before:\$cursor){TestHiddenRecentNotes_character:totalCount,TestHiddenRecentNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}")
         override val kind = OperationKind.QUERY
@@ -1577,7 +1579,7 @@ class TestHiddenRecentNotesQuery(val id: String) : QueryOperation<TestHiddenRece
     override fun equals(other: Any?): Boolean = other is TestHiddenRecentNotesQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestHiddenRecentNotesQuery, TestHiddenRecentNotesQuery.Data> {
         override val name = "TestHiddenRecentNotesQuery"
         override val document: Document = Document.Text("query TestHiddenRecentNotesQuery(\$id:ID!){character(id:\$id){...TestHiddenRecentNotes_character,id}}fragment TestHiddenRecentNotes_character on Character{notes(last:2){TestHiddenRecentNotes_character:totalCount,TestHiddenRecentNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}")
         override val kind = OperationKind.QUERY
@@ -1656,7 +1658,7 @@ class TestNotesPaginationQuery(val count: Int? = null, val cursor: String? = nul
     override fun equals(other: Any?): Boolean = other is TestNotesPaginationQuery && other.count == count && other.cursor == cursor && other.id == id
     override fun hashCode(): Int = listOf(count, cursor, id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestNotesPaginationQuery, TestNotesPaginationQuery.Data> {
         override val name = "TestNotesPaginationQuery"
         override val document: Document = Document.Text("query TestNotesPaginationQuery(\$count:Int=2,\$cursor:String,\$id:ID!){node(id:\$id){__typename,...TestNotes_character_1G22uz,id}}fragment TestNotes_character_1G22uz on Character{name,notes(first:\$count,after:\$cursor){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}")
         override val kind = OperationKind.QUERY
@@ -1743,7 +1745,7 @@ class TestNotesQuery(val id: String) : QueryOperation<TestNotesQuery.Data> {
     override fun equals(other: Any?): Boolean = other is TestNotesQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestNotesQuery, TestNotesQuery.Data> {
         override val name = "TestNotesQuery"
         override val document: Document = Document.Text("query TestNotesQuery(\$id:ID!){character(id:\$id){...TestNotes_character,id}}fragment TestNotes_character on Character{name,notes(first:2){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}")
         override val kind = OperationKind.QUERY
@@ -1822,7 +1824,7 @@ class TestNotesSizedQuery(val id: String, val size: Int? = null) : QueryOperatio
     override fun equals(other: Any?): Boolean = other is TestNotesSizedQuery && other.id == id && other.size == size
     override fun hashCode(): Int = listOf(id, size).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestNotesSizedQuery, TestNotesSizedQuery.Data> {
         override val name = "TestNotesSizedQuery"
         override val document: Document = Document.Text("query TestNotesSizedQuery(\$id:ID!,\$size:Int){character(id:\$id){...TestNotes_character_2H9PL,id}}fragment TestNotes_character_2H9PL on Character{name,notes(first:\$size){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}")
         override val kind = OperationKind.QUERY
@@ -1901,7 +1903,7 @@ class TestRecentNotesPaginationQuery(val count: Int? = null, val cursor: String?
     override fun equals(other: Any?): Boolean = other is TestRecentNotesPaginationQuery && other.count == count && other.cursor == cursor && other.id == id
     override fun hashCode(): Int = listOf(count, cursor, id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestRecentNotesPaginationQuery, TestRecentNotesPaginationQuery.Data> {
         override val name = "TestRecentNotesPaginationQuery"
         override val document: Document = Document.Text("query TestRecentNotesPaginationQuery(\$count:Int=2,\$cursor:String,\$id:ID!){node(id:\$id){__typename,...TestRecentNotes_character_1G22uz,id}}fragment TestRecentNotes_character_1G22uz on Character{notes(last:\$count,before:\$cursor){edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}")
         override val kind = OperationKind.QUERY
@@ -1986,7 +1988,7 @@ class TestRecentNotesQuery(val id: String) : QueryOperation<TestRecentNotesQuery
     override fun equals(other: Any?): Boolean = other is TestRecentNotesQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestRecentNotesQuery, TestRecentNotesQuery.Data> {
         override val name = "TestRecentNotesQuery"
         override val document: Document = Document.Text("query TestRecentNotesQuery(\$id:ID!){character(id:\$id){...TestRecentNotes_character,id}}fragment TestRecentNotes_character on Character{notes(last:2){edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}")
         override val kind = OperationKind.QUERY
@@ -2062,7 +2064,7 @@ class TestRemoveNote(val id: String, val connections: List<String>) : MutationOp
     override fun equals(other: Any?): Boolean = other is TestRemoveNote && other.id == id && other.connections == connections
     override fun hashCode(): Int = listOf(id, connections).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : MutationType<TestRemoveNote, TestRemoveNote.Data> {
         override val name = "TestRemoveNote"
         override val document: Document = Document.Text("mutation TestRemoveNote(\$id:ID!){removeNote(id:\$id){removedNoteId,deleted:removedNoteId}}")
         override val kind = OperationKind.MUTATION
@@ -2132,7 +2134,7 @@ class TestTwoPagesQuery(val id: String) : QueryOperation<TestTwoPagesQuery.Data>
     override fun equals(other: Any?): Boolean = other is TestTwoPagesQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestTwoPagesQuery, TestTwoPagesQuery.Data> {
         override val name = "TestTwoPagesQuery"
         override val document: Document = Document.Text("query TestTwoPagesQuery(\$id:ID!){character(id:\$id){id,notes(first:2){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}},node(id:\$id){__typename,...on Character{notes(first:2,after:\"c2\"){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}},id}}")
         override val kind = OperationKind.QUERY

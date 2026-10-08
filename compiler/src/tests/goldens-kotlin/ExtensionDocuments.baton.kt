@@ -14,6 +14,7 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.QueryType
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
@@ -31,7 +32,7 @@ class TestDrafts : QueryOperation<TestDrafts.Data> {
     override fun equals(other: Any?): Boolean = other is TestDrafts
     override fun hashCode(): Int = 0
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestDrafts, TestDrafts.Data> {
         override val name = "TestDrafts"
         override val document: Document = Document.Text("query TestDrafts{character(id:\"1\"){id,name}}")
         override val kind = OperationKind.QUERY
@@ -112,7 +113,7 @@ class TestPinnedCharacter(val id: String) : QueryOperation<TestPinnedCharacter.D
     override fun equals(other: Any?): Boolean = other is TestPinnedCharacter && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestPinnedCharacter, TestPinnedCharacter.Data> {
         override val name = "TestPinnedCharacter"
         override val document: Document = Document.Text("query TestPinnedCharacter(\$id:ID!){character(id:\$id){id,name,status}}")
         override val kind = OperationKind.QUERY

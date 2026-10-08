@@ -67,7 +67,7 @@ fun <Data : Lens, Op : QueryOperation<Data>> rememberQuery(operation: Op, fetchP
  * commit throws `EnvironmentError.NotInjected`.
  */
 @Composable
-fun <Op : MutationOperation<Data>, Data : Lens> rememberMutation(type: OperationType<Data>): MutationAction<Op, Data> {
+fun <Op : MutationOperation<Data>, Data : Lens> rememberMutation(type: MutationType<Op, Data>): MutationAction<Op, Data> {
     val environment = LocalBaton.current
     return remember(type, environment) { MutationAction(environment) }
 }

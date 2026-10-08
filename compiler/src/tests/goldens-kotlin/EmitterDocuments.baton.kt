@@ -14,6 +14,7 @@ import baton.Lens
 import baton.Lookup
 import baton.MutationAction
 import baton.MutationOperation
+import baton.MutationType
 import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
@@ -21,6 +22,7 @@ import baton.Payload
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.QueryType
 import baton.Refetch
 import baton.Resolution
 import baton.ScalarKind
@@ -256,7 +258,7 @@ class TestBuilderNames(val id: String, val favorite: Boolean, val self: String) 
     override fun equals(other: Any?): Boolean = other is TestBuilderNames && other.id == id && other.favorite == favorite && other.self == self
     override fun hashCode(): Int = listOf(id, favorite, self).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : MutationType<TestBuilderNames, TestBuilderNames.Data> {
         override val name = "TestBuilderNames"
         override val document: Document = Document.Text("mutation TestBuilderNames(\$id:ID!,\$favorite:Boolean!,\$self:ID!){type:setFavorite(id:\$id,favorite:\$favorite){character{id,favorite}},self:setFavorite(id:\$self,favorite:\$favorite){character{id,favorite}},string:setFavorite(id:\$id,favorite:\$favorite){character{id,name}},sendable:setFavorite(id:\$id,favorite:\$favorite){character{id,favorite}}}")
         override val kind = OperationKind.MUTATION
@@ -456,7 +458,7 @@ class TestCaughtSpreads(val id: String) : QueryOperation<TestCaughtSpreads.Data>
     override fun equals(other: Any?): Boolean = other is TestCaughtSpreads && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestCaughtSpreads, TestCaughtSpreads.Data> {
         override val name = "TestCaughtSpreads"
         override val document: Document = Document.Text("query TestCaughtSpreads(\$id:ID!){character(id:\$id){id,...TestCaughtProfile_character,...TestCaughtStrict_character},node(id:\$id){__typename,id,...on Character{...TestCaughtProfile_character}}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestCaughtStrict_character on Character{species}")
         override val kind = OperationKind.QUERY
@@ -566,7 +568,7 @@ class TestCommitVariable(val commit: String) : MutationOperation<TestCommitVaria
     override fun equals(other: Any?): Boolean = other is TestCommitVariable && other.commit == commit
     override fun hashCode(): Int = listOf(commit).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : MutationType<TestCommitVariable, TestCommitVariable.Data> {
         override val name = "TestCommitVariable"
         override val document: Document = Document.Text("mutation TestCommitVariable(\$commit:ID!){setFavorite(id:\$commit,favorite:true){character{id,name,favorite}}}")
         override val kind = OperationKind.MUTATION
@@ -658,7 +660,7 @@ class TestConditionNames(val id: String, val name: String) : QueryOperation<Test
     override fun equals(other: Any?): Boolean = other is TestConditionNames && other.id == id && other.name == name
     override fun hashCode(): Int = listOf(id, name).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestConditionNames, TestConditionNames.Data> {
         override val name = "TestConditionNames"
         override val document: Document = Document.Text("query TestConditionNames(\$id:ID!,\$name:String!){namesake(name:\$name){__typename,asCharacter:name,...on Character{status},...on Node{__isNode:__typename,id}},node(id:\$id){__typename,id,...on Episode{name},...on Character{name}}}")
         override val kind = OperationKind.QUERY
@@ -770,7 +772,7 @@ class TestEdgesNamesQuery(val id: String) : QueryOperation<TestEdgesNamesQuery.D
     override fun equals(other: Any?): Boolean = other is TestEdgesNamesQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestEdgesNamesQuery, TestEdgesNamesQuery.Data> {
         override val name = "TestEdgesNamesQuery"
         override val document: Document = Document.Text("query TestEdgesNamesQuery(\$id:ID!){character(id:\$id){...TestEdgesNames_character,id}}fragment TestEdgesNames_character on Character{notes(first:2){Edges:pageInfo{hasNextPage},edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}")
         override val kind = OperationKind.QUERY
@@ -849,7 +851,7 @@ class TestEscapedText : QueryOperation<TestEscapedText.Data> {
     override fun equals(other: Any?): Boolean = other is TestEscapedText
     override fun hashCode(): Int = 0
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestEscapedText, TestEscapedText.Data> {
         override val name = "TestEscapedText"
         override val document: Document = Document.Text("query TestEscapedText{search(name:\"\\\\#1\"){__typename,...on Node{__isNode:__typename,id}}}")
         override val kind = OperationKind.QUERY
@@ -905,7 +907,7 @@ class TestFragmentNamedFields(val id: String) : QueryOperation<TestFragmentNamed
     override fun equals(other: Any?): Boolean = other is TestFragmentNamedFields && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestFragmentNamedFields, TestFragmentNamedFields.Data> {
         override val name = "TestFragmentNamedFields"
         override val document: Document = Document.Text("query TestFragmentNamedFields(\$id:ID!){character(id:\$id){TestCaughtProfile_character:name,TestCaughtStrict_character:species,...TestCaughtProfile_character,...TestCaughtStrict_character,Fragment:status,...Fragment,id}}fragment Fragment on Character{status}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestCaughtStrict_character on Character{species}")
         override val kind = OperationKind.QUERY
@@ -990,7 +992,7 @@ class TestHasherVariable(val hasher: String) : QueryOperation<TestHasherVariable
     override fun equals(other: Any?): Boolean = other is TestHasherVariable && other.hasher == hasher
     override fun hashCode(): Int = listOf(hasher).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestHasherVariable, TestHasherVariable.Data> {
         override val name = "TestHasherVariable"
         override val document: Document = Document.Text("query TestHasherVariable(\$hasher:ID!){character(id:\$hasher){id,name}}")
         override val kind = OperationKind.QUERY
@@ -1038,7 +1040,7 @@ class TestListPayload : MutationOperation<TestListPayload.Data> {
     override fun equals(other: Any?): Boolean = other is TestListPayload
     override fun hashCode(): Int = 0
 
-    companion object : OperationType<Data> {
+    companion object : MutationType<TestListPayload, TestListPayload.Data> {
         override val name = "TestListPayload"
         override val document: Document = Document.Text("mutation TestListPayload{setLists{strings,ids,counts,ratios,flags,jsons,statuses}}")
         override val kind = OperationKind.MUTATION
@@ -1118,7 +1120,7 @@ class TestLowercaseSpreads(val id: String) : QueryOperation<TestLowercaseSpreads
     override fun equals(other: Any?): Boolean = other is TestLowercaseSpreads && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestLowercaseSpreads, TestLowercaseSpreads.Data> {
         override val name = "TestLowercaseSpreads"
         override val document: Document = Document.Text("query TestLowercaseSpreads(\$id:ID!){character(id:\$id){...testLowercase,...testLowercaseRequired,id}}fragment testLowercase on Character{name}fragment testLowercaseRequired on Character{origin{name,id}}")
         override val kind = OperationKind.QUERY
@@ -1181,7 +1183,7 @@ class TestModuleNamedPayload(val id: String) : MutationOperation<TestModuleNamed
     override fun equals(other: Any?): Boolean = other is TestModuleNamedPayload && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : MutationType<TestModuleNamedPayload, TestModuleNamedPayload.Data> {
         override val name = "TestModuleNamedPayload"
         override val document: Document = Document.Text("mutation TestModuleNamedPayload(\$id:ID!){setFavorite(id:\$id,favorite:true){Baton:character{id,Baton:name}}}")
         override val kind = OperationKind.MUTATION
@@ -1271,7 +1273,7 @@ class TestProgramNamesQuery(val id: String) : QueryOperation<TestProgramNamesQue
     override fun equals(other: Any?): Boolean = other is TestProgramNamesQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestProgramNamesQuery, TestProgramNamesQuery.Data> {
         override val name = "TestProgramNamesQuery"
         override val document: Document = Document.Text("query TestProgramNamesQuery(\$id:ID!){character(id:\$id){...TestProgramNames_character,id}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestProgramNames_character on Character{testProgramNamesRefetchQuery:origin{name,id},testCaughtProfile_character:location{name,id},...TestCaughtProfile_character,id}")
         override val kind = OperationKind.QUERY
@@ -1328,7 +1330,7 @@ class TestProgramNamesRefetchQuery(val id: String) : QueryOperation<TestProgramN
     override fun equals(other: Any?): Boolean = other is TestProgramNamesRefetchQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestProgramNamesRefetchQuery, TestProgramNamesRefetchQuery.Data> {
         override val name = "TestProgramNamesRefetchQuery"
         override val document: Document = Document.Text("query TestProgramNamesRefetchQuery(\$id:ID!){node(id:\$id){__typename,...TestProgramNames_character,id}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestProgramNames_character on Character{testProgramNamesRefetchQuery:origin{name,id},testCaughtProfile_character:location{name,id},...TestCaughtProfile_character,id}")
         override val kind = OperationKind.QUERY
@@ -1396,7 +1398,7 @@ class TestSpreadNames(val id: String) : QueryOperation<TestSpreadNames.Data> {
     override fun equals(other: Any?): Boolean = other is TestSpreadNames && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestSpreadNames, TestSpreadNames.Data> {
         override val name = "TestSpreadNames"
         override val document: Document = Document.Text("query TestSpreadNames(\$id:ID!){character(id:\$id){testCaughtStrict:species,...TestCaughtStrict_character,id}}fragment TestCaughtStrict_character on Character{species}")
         override val kind = OperationKind.QUERY

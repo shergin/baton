@@ -362,7 +362,10 @@ as it refuses every name generated code reserves.
 Kotlin: the action is the runtime's `MutationAction<Op, Data>`, and the call
 a generated `suspend operator fun` extension `invoke` on it, one parameter
 per variable and `optimistic`, the mutation's `OptimisticResponse`, last
-and null by default.
+and null by default. A composable takes it from the mutation's companion,
+`val rename = rememberMutation(RenameMutation)`, its type inferred: the
+companion is a `MutationType<RenameMutation, RenameMutation.Data>`, as a
+query's is a `QueryType` and a subscription's a `SubscriptionType`.
 
 ## Store
 

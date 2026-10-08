@@ -17,6 +17,7 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.QueryType
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
@@ -189,7 +190,7 @@ class TestCaughtEpisodes(val id: String) : QueryOperation<TestCaughtEpisodes.Dat
     override fun equals(other: Any?): Boolean = other is TestCaughtEpisodes && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestCaughtEpisodes, TestCaughtEpisodes.Data> {
         override val name = "TestCaughtEpisodes"
         override val document: Document = Document.Text("query TestCaughtEpisodes(\$id:ID!){character(id:\$id){id,caught:episode{name,id}}}")
         override val kind = OperationKind.QUERY
@@ -267,7 +268,7 @@ class TestCaughtPartQuery(val id: String) : QueryOperation<TestCaughtPartQuery.D
     override fun equals(other: Any?): Boolean = other is TestCaughtPartQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestCaughtPartQuery, TestCaughtPartQuery.Data> {
         override val name = "TestCaughtPartQuery"
         override val document: Document = Document.Text("query TestCaughtPartQuery(\$id:ID!){character(id:\$id){id,name,...TestCaughtAppearances_character@defer(label:\"TestCaughtPartQuery\$defer\$TestCaughtAppearances_character\")}}fragment TestCaughtAppearances_character on Character{episode{name,id}}")
         override val kind = OperationKind.QUERY
@@ -364,7 +365,7 @@ class TestCollidingErrors(val id: String) : QueryOperation<TestCollidingErrors.D
     override fun equals(other: Any?): Boolean = other is TestCollidingErrors && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestCollidingErrors, TestCollidingErrors.Data> {
         override val name = "TestCollidingErrors"
         override val document: Document = Document.Text("query TestCollidingErrors(\$id:ID!){types:character(id:\$id){id},typesLens:character(id:\$id){id,name}}")
         override val kind = OperationKind.QUERY
@@ -479,7 +480,7 @@ class TestCollidingRequired(val id: String) : QueryOperation<TestCollidingRequir
     override fun equals(other: Any?): Boolean = other is TestCollidingRequired && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestCollidingRequired, TestCollidingRequired.Data> {
         override val name = "TestCollidingRequired"
         override val document: Document = Document.Text("query TestCollidingRequired(\$id:ID!){types:character(id:\$id){id},typesLens:character(id:\$id){id,name}}")
         override val kind = OperationKind.QUERY
@@ -574,7 +575,7 @@ class TestFilteredCharacters(val filters: List<FilterCharacter>) : QueryOperatio
     override fun equals(other: Any?): Boolean = other is TestFilteredCharacters && other.filters == filters
     override fun hashCode(): Int = listOf(filters).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestFilteredCharacters, TestFilteredCharacters.Data> {
         override val name = "TestFilteredCharacters"
         override val document: Document = Document.Text("query TestFilteredCharacters(\$filters:[FilterCharacter!]!){charactersMatching(filters:\$filters){id,name}}")
         override val kind = OperationKind.QUERY
@@ -623,7 +624,7 @@ class TestKeywordVariables(val where: String, val `in`: String) : QueryOperation
     override fun equals(other: Any?): Boolean = other is TestKeywordVariables && other.where == where && other.`in` == `in`
     override fun hashCode(): Int = listOf(where, `in`).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestKeywordVariables, TestKeywordVariables.Data> {
         override val name = "TestKeywordVariables"
         override val document: Document = Document.Text("query TestKeywordVariables(\$where:ID!,\$in:String!){character(id:\$where){id},search(name:\$in){__typename,...on Node{__isNode:__typename,id}}}")
         override val kind = OperationKind.QUERY
@@ -693,7 +694,7 @@ class TestLoggedOrigin(val id: String) : QueryOperation<TestLoggedOrigin.Data> {
     override fun equals(other: Any?): Boolean = other is TestLoggedOrigin && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestLoggedOrigin, TestLoggedOrigin.Data> {
         override val name = "TestLoggedOrigin"
         override val document: Document = Document.Text("query TestLoggedOrigin(\$id:ID!){character(id:\$id){id,origin{id,name}}}")
         override val kind = OperationKind.QUERY
@@ -788,7 +789,7 @@ class TestRequiredOrigin(val id: String) : QueryOperation<TestRequiredOrigin.Dat
     override fun equals(other: Any?): Boolean = other is TestRequiredOrigin && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestRequiredOrigin, TestRequiredOrigin.Data> {
         override val name = "TestRequiredOrigin"
         override val document: Document = Document.Text("query TestRequiredOrigin(\$id:ID!){character(id:\$id){id,origin{id,name}}}")
         override val kind = OperationKind.QUERY
@@ -883,7 +884,7 @@ class TestReservedNames(val id: String) : QueryOperation<TestReservedNames.Data>
     override fun equals(other: Any?): Boolean = other is TestReservedNames && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestReservedNames, TestReservedNames.Data> {
         override val name = "TestReservedNames"
         override val document: Document = Document.Text("query TestReservedNames(\$id:ID!){sites:character(id:\$id){id,...TestNotes_character_35kO5h},types:character(id:\$id){id},slots:character(id:\$id){id}}fragment TestNotes_character_35kO5h on Character{name,notes(first:1){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}")
         override val kind = OperationKind.QUERY
@@ -986,7 +987,7 @@ class TestStandaloneFragmentsQuery(val id: String) : QueryOperation<TestStandalo
     override fun equals(other: Any?): Boolean = other is TestStandaloneFragmentsQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestStandaloneFragmentsQuery, TestStandaloneFragmentsQuery.Data> {
         override val name = "TestStandaloneFragmentsQuery"
         override val document: Document = Document.Text("query TestStandaloneFragmentsQuery(\$id:ID!){character(id:\$id){id,...TestThrowingOrigin_character,...TestLoggedNotes_character,notes(first:1){...TestLogEdges_connection}}}fragment TestLogEdges_connection on NoteConnection{edges{cursor}}fragment TestLoggedNotes_character on Character{notes(first:1){totalCount,...TestLogEdges_connection}}fragment TestThrowingOrigin_character on Character{origin{name,id}}")
         override val kind = OperationKind.QUERY
@@ -1066,7 +1067,7 @@ class TestStrictEpisodes(val id: String) : QueryOperation<TestStrictEpisodes.Dat
     override fun equals(other: Any?): Boolean = other is TestStrictEpisodes && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestStrictEpisodes, TestStrictEpisodes.Data> {
         override val name = "TestStrictEpisodes"
         override val document: Document = Document.Text("query TestStrictEpisodes(\$id:ID!){character(id:\$id){id,episode{id,name}}}")
         override val kind = OperationKind.QUERY
@@ -1181,7 +1182,7 @@ class TestStrictOrigin(val id: String) : QueryOperation<TestStrictOrigin.Data> {
     override fun equals(other: Any?): Boolean = other is TestStrictOrigin && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestStrictOrigin, TestStrictOrigin.Data> {
         override val name = "TestStrictOrigin"
         override val document: Document = Document.Text("query TestStrictOrigin(\$id:ID!){character(id:\$id){id,origin{id,name}}}")
         override val kind = OperationKind.QUERY
@@ -1296,7 +1297,7 @@ class TestSwiftNames(val id: String) : QueryOperation<TestSwiftNames.Data> {
     override fun equals(other: Any?): Boolean = other is TestSwiftNames && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestSwiftNames, TestSwiftNames.Data> {
         override val name = "TestSwiftNames"
         override val document: Document = Document.Text("query TestSwiftNames(\$id:ID!){type:character(id:\$id){id},self:character(id:\$id){id},protocol:character(id:\$id){id},any:character(id:\$id){id},mainActor:character(id:\$id){id},baton:character(id:\$id){id},abstractSlots:character(id:\$id){id},result:character(id:\$id){id},optional:character(id:\$id){id},string:character(id:\$id){id},int:character(id:\$id){id},double:character(id:\$id){id},bool:character(id:\$id){id},owner:character(id:\$id){id},caught:character(id:\$id){id},node(id:\$id){__typename,id},tokenizer{ratio,count,flag,id}}")
         override val kind = OperationKind.QUERY
@@ -1524,7 +1525,7 @@ class TestThrowingNode(val id: String) : QueryOperation<TestThrowingNode.Data> {
     override fun equals(other: Any?): Boolean = other is TestThrowingNode && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestThrowingNode, TestThrowingNode.Data> {
         override val name = "TestThrowingNode"
         override val document: Document = Document.Text("query TestThrowingNode(\$id:ID!){node(id:\$id){__typename,id,...on Character{name}}}")
         override val kind = OperationKind.QUERY
@@ -1638,7 +1639,7 @@ class TestTwoFieldPartQuery(val id: String) : QueryOperation<TestTwoFieldPartQue
     override fun equals(other: Any?): Boolean = other is TestTwoFieldPartQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestTwoFieldPartQuery, TestTwoFieldPartQuery.Data> {
         override val name = "TestTwoFieldPartQuery"
         override val document: Document = Document.Text("query TestTwoFieldPartQuery(\$id:ID!){character(id:\$id){id,name,...TestOriginAndEpisode_character@defer(label:\"TestTwoFieldPartQuery\$defer\$TestOriginAndEpisode_character\")}}fragment TestOriginAndEpisode_character on Character{origin{name,id},episode{name,id}}")
         override val kind = OperationKind.QUERY
@@ -1707,7 +1708,7 @@ class TestTwoScopes(val a: String, val b: String) : QueryOperation<TestTwoScopes
     override fun equals(other: Any?): Boolean = other is TestTwoScopes && other.a == a && other.b == b
     override fun hashCode(): Int = listOf(a, b).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestTwoScopes, TestTwoScopes.Data> {
         override val name = "TestTwoScopes"
         override val document: Document = Document.Text("query TestTwoScopes(\$a:ID!,\$b:ID!){first:character(id:\$a){id,name,...TestNotes_character_35kO5h},second:character(id:\$b){id,name,...TestNotes_character_41grAF}}fragment TestNotes_character_35kO5h on Character{name,notes(first:1){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}fragment TestNotes_character_41grAF on Character{name,notes(first:3){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}")
         override val kind = OperationKind.QUERY
@@ -1810,7 +1811,7 @@ class TestUncaughtPartQuery(val id: String) : QueryOperation<TestUncaughtPartQue
     override fun equals(other: Any?): Boolean = other is TestUncaughtPartQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestUncaughtPartQuery, TestUncaughtPartQuery.Data> {
         override val name = "TestUncaughtPartQuery"
         override val document: Document = Document.Text("query TestUncaughtPartQuery(\$id:ID!){character(id:\$id){id,name,...TestAppearances_character@defer(label:\"TestUncaughtPartQuery\$defer\$TestAppearances_character\")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}")
         override val kind = OperationKind.QUERY

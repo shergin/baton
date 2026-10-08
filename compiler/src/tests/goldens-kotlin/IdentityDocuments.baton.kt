@@ -14,6 +14,7 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.QueryType
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
@@ -31,7 +32,7 @@ class TestAssetNameQuery(val uuid: String) : QueryOperation<TestAssetNameQuery.D
     override fun equals(other: Any?): Boolean = other is TestAssetNameQuery && other.uuid == uuid
     override fun hashCode(): Int = listOf(uuid).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestAssetNameQuery, TestAssetNameQuery.Data> {
         override val name = "TestAssetNameQuery"
         override val document: Document = Document.Text("query TestAssetNameQuery(\$uuid:String!){asset(uuid:\$uuid){name,id,uuid}}")
         override val kind = OperationKind.QUERY
@@ -80,7 +81,7 @@ class TestAssetQuery(val uuid: String) : QueryOperation<TestAssetQuery.Data> {
     override fun equals(other: Any?): Boolean = other is TestAssetQuery && other.uuid == uuid
     override fun hashCode(): Int = listOf(uuid).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestAssetQuery, TestAssetQuery.Data> {
         override val name = "TestAssetQuery"
         override val document: Document = Document.Text("query TestAssetQuery(\$uuid:String!){asset(uuid:\$uuid){owner{name,id},uuid,name,id}}")
         override val kind = OperationKind.QUERY
@@ -145,7 +146,7 @@ class TestAssetsQuery : QueryOperation<TestAssetsQuery.Data> {
     override fun equals(other: Any?): Boolean = other is TestAssetsQuery
     override fun hashCode(): Int = 0
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestAssetsQuery, TestAssetsQuery.Data> {
         override val name = "TestAssetsQuery"
         override val document: Document = Document.Text("query TestAssetsQuery{assets{name,size,id,uuid}}")
         override val kind = OperationKind.QUERY
@@ -196,7 +197,7 @@ class TestQuoteQuery(val base: String, val quote: String) : QueryOperation<TestQ
     override fun equals(other: Any?): Boolean = other is TestQuoteQuery && other.base == base && other.quote == quote
     override fun hashCode(): Int = listOf(base, quote).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestQuoteQuery, TestQuoteQuery.Data> {
         override val name = "TestQuoteQuery"
         override val document: Document = Document.Text("query TestQuoteQuery(\$base:String!,\$quote:String!){quote(base:\$base,quote:\$quote){base,quote,rate}}")
         override val kind = OperationKind.QUERY
@@ -247,7 +248,7 @@ class TestQuotesQuery : QueryOperation<TestQuotesQuery.Data> {
     override fun equals(other: Any?): Boolean = other is TestQuotesQuery
     override fun hashCode(): Int = 0
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestQuotesQuery, TestQuotesQuery.Data> {
         override val name = "TestQuotesQuery"
         override val document: Document = Document.Text("query TestQuotesQuery{quotes{rate,base,quote}}")
         override val kind = OperationKind.QUERY

@@ -10,6 +10,7 @@ import baton.Generated
 import baton.Lens
 import baton.MutationAction
 import baton.MutationOperation
+import baton.MutationType
 import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
@@ -17,6 +18,7 @@ import baton.Payload
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.QueryType
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
@@ -34,7 +36,7 @@ class TestCharactersWithStatus(val status: Status, val any: List<Status>? = null
     override fun equals(other: Any?): Boolean = other is TestCharactersWithStatus && other.status == status && other.any == any
     override fun hashCode(): Int = listOf(status, any).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestCharactersWithStatus, TestCharactersWithStatus.Data> {
         override val name = "TestCharactersWithStatus"
         override val document: Document = Document.Text("query TestCharactersWithStatus(\$status:Status!,\$any:[Status!]){charactersWithStatus(status:\$status,any:\$any){name,id}}")
         override val kind = OperationKind.QUERY
@@ -81,7 +83,7 @@ class TestSetStatuses : MutationOperation<TestSetStatuses.Data> {
     override fun equals(other: Any?): Boolean = other is TestSetStatuses
     override fun hashCode(): Int = 0
 
-    companion object : OperationType<Data> {
+    companion object : MutationType<TestSetStatuses, TestSetStatuses.Data> {
         override val name = "TestSetStatuses"
         override val document: Document = Document.Text("mutation TestSetStatuses{setLists{statuses}}")
         override val kind = OperationKind.MUTATION

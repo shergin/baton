@@ -13,6 +13,7 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.QueryType
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
@@ -29,7 +30,7 @@ class TestTokenizerQuery : QueryOperation<TestTokenizerQuery.Data> {
     override fun equals(other: Any?): Boolean = other is TestTokenizerQuery
     override fun hashCode(): Int = 0
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestTokenizerQuery, TestTokenizerQuery.Data> {
         override val name = "TestTokenizerQuery"
         override val document: Document = Document.Text("query TestTokenizerQuery{tokenizer{id,text,strings,count,counts,ratio,ratios,flag,flags,json,jsons}}")
         override val kind = OperationKind.QUERY

@@ -14,6 +14,7 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.QueryType
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
@@ -61,7 +62,7 @@ class TestKeys(val id: String, val name: String? = null) : QueryOperation<TestKe
     override fun equals(other: Any?): Boolean = other is TestKeys && other.id == id && other.name == name
     override fun hashCode(): Int = listOf(id, name).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestKeys, TestKeys.Data> {
         override val name = "TestKeys"
         override val document: Document = Document.Text("query TestKeys(\$id:ID!,\$name:String){search(name:\"\$0.00\"){__typename,...on Node{__isNode:__typename,id}},character(id:\"a,b\"){name,id},charactersByIds(ids:[\$id,\"2\"]){name,id},characters(filter:{status:\"Alive\",name:\$name}){info{count}}}")
         override val kind = OperationKind.QUERY
@@ -167,7 +168,7 @@ class TestNoteCounts(val page: Int? = null, val count: Int? = null) : QueryOpera
     override fun equals(other: Any?): Boolean = other is TestNoteCounts && other.page == page && other.count == count
     override fun hashCode(): Int = listOf(page, count).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestNoteCounts, TestNoteCounts.Data> {
         override val name = "TestNoteCounts"
         override val document: Document = Document.Text("query TestNoteCounts(\$page:Int,\$count:Int){characters(page:\$page){results{id,name,pinned:notes(first:97){totalCount},recent:notes(first:\$count){totalCount}}}}")
         override val kind = OperationKind.QUERY
@@ -251,7 +252,7 @@ class TestSpreadKeys(val id: String, val name: String? = null) : QueryOperation<
     override fun equals(other: Any?): Boolean = other is TestSpreadKeys && other.id == id && other.name == name
     override fun hashCode(): Int = listOf(id, name).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestSpreadKeys, TestSpreadKeys.Data> {
         override val name = "TestSpreadKeys"
         override val document: Document = Document.Text("query TestSpreadKeys(\$id:ID!,\$name:String){character(id:\$id){name,id},named:characters(filter:{name:\$name}){info{count}},...TestKeyArguments_query_p86SO}fragment TestKeyArguments_query_p86SO on Query{charactersByIds(ids:[\$id,\"2\"]){name,id},characters(filter:{status:\"Alive\",name:\$name}){info{count}}}")
         override val kind = OperationKind.QUERY

@@ -67,6 +67,27 @@ interface OperationType<Data : Lens> {
 }
 
 /**
+ * A query's type, naming the operation's class beside its data, so a call
+ * that takes the companion infers both.
+ */
+@Generated
+interface QueryType<Op : QueryOperation<Data>, Data : Lens> : OperationType<Data>
+
+/**
+ * A mutation's type, naming the operation's class beside its data, so
+ * `rememberMutation(RenameMutation)` infers its action's type.
+ */
+@Generated
+interface MutationType<Op : MutationOperation<Data>, Data : Lens> : OperationType<Data>
+
+/**
+ * A subscription's type, naming the operation's class beside its data, so a
+ * call that takes the companion infers both.
+ */
+@Generated
+interface SubscriptionType<Op : SubscriptionOperation<Data>, Data : Lens> : OperationType<Data>
+
+/**
  * An operation value: the variables it is run with, equal by them, and the
  * type that knows everything else about it. The host markers `@Query`,
  * `@Mutation` and `@Subscription` keep the short names; a generated value

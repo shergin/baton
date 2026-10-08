@@ -15,6 +15,7 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.QueryType
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
@@ -85,7 +86,7 @@ class TestAssetPricesQuery : QueryOperation<TestAssetPricesQuery.Data> {
     override fun equals(other: Any?): Boolean = other is TestAssetPricesQuery
     override fun hashCode(): Int = 0
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestAssetPricesQuery, TestAssetPricesQuery.Data> {
         override val name = "TestAssetPricesQuery"
         override val document: Document = Document.Text("query TestAssetPricesQuery{assets{uuid,price,listedAt,page,prices,id}}")
         override val kind = OperationKind.QUERY
@@ -141,7 +142,7 @@ class TestPricedAssetsQuery(val price: java.math.BigDecimal, val among: List<jav
     override fun equals(other: Any?): Boolean = other is TestPricedAssetsQuery && other.price == price && other.among == among
     override fun hashCode(): Int = listOf(price, among).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestPricedAssetsQuery, TestPricedAssetsQuery.Data> {
         override val name = "TestPricedAssetsQuery"
         override val document: Document = Document.Text("query TestPricedAssetsQuery(\$price:Decimal!,\$among:[Decimal!]){assetsPricedAbove(price:\$price,among:\$among){uuid,...TestCaughtPrices_asset,...TestThrowingPrices_asset,...TestRequiredPrice_asset,id}}fragment TestCaughtPrices_asset on Asset{price,listedAt,page}fragment TestRequiredPrice_asset on Asset{price}fragment TestThrowingPrices_asset on Asset{price,prices}")
         override val kind = OperationKind.QUERY

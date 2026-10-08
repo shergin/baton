@@ -17,6 +17,7 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.QueryType
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
@@ -42,7 +43,7 @@ class TestConditions(val id: String, val withOrigin: Boolean, val hideStatus: Bo
     override fun equals(other: Any?): Boolean = other is TestConditions && other.id == id && other.withOrigin == withOrigin && other.hideStatus == hideStatus
     override fun hashCode(): Int = listOf(id, withOrigin, hideStatus).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestConditions, TestConditions.Data> {
         override val name = "TestConditions"
         override val document: Document = Document.Text("query TestConditions(\$id:ID!,\$withOrigin:Boolean!,\$hideStatus:Boolean!){character(id:\$id){name,origin{id},origin@include(if:\$withOrigin){name,dimension,id}\n    species@include(if:\$withOrigin),status@skip(if:\$hideStatus),id}}")
         override val kind = OperationKind.QUERY
@@ -112,7 +113,7 @@ class TestFoldedNode(val name: String) : QueryOperation<TestFoldedNode.Data> {
     override fun equals(other: Any?): Boolean = other is TestFoldedNode && other.name == name
     override fun hashCode(): Int = listOf(name).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestFoldedNode, TestFoldedNode.Data> {
         override val name = "TestFoldedNode"
         override val document: Document = Document.Text("query TestFoldedNode(\$name:String!){search(name:\$name){__typename,...on Node{__isNode:__typename,id}}}")
         override val kind = OperationKind.QUERY
@@ -169,7 +170,7 @@ class TestNamedSpread(val id: String) : QueryOperation<TestNamedSpread.Data> {
     override fun equals(other: Any?): Boolean = other is TestNamedSpread && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestNamedSpread, TestNamedSpread.Data> {
         override val name = "TestNamedSpread"
         override val document: Document = Document.Text("query TestNamedSpread(\$id:ID!){node(id:\$id){__typename,id,...TestNamed_named}}fragment TestNamed_named on Named{__isNamed:__typename,name}")
         override val kind = OperationKind.QUERY
@@ -234,7 +235,7 @@ class TestNodeDeferred(val id: String) : QueryOperation<TestNodeDeferred.Data> {
     override fun equals(other: Any?): Boolean = other is TestNodeDeferred && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestNodeDeferred, TestNodeDeferred.Data> {
         override val name = "TestNodeDeferred"
         override val document: Document = Document.Text("query TestNodeDeferred(\$id:ID!){node(id:\$id){__typename,id,...on Character{name},...TestAppearances_character@defer(label:\"TestNodeDeferred\$defer\$TestAppearances_character\")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}")
         override val kind = OperationKind.QUERY
@@ -318,7 +319,7 @@ class TestNodeFields(val id: String) : QueryOperation<TestNodeFields.Data> {
     override fun equals(other: Any?): Boolean = other is TestNodeFields && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestNodeFields, TestNodeFields.Data> {
         override val name = "TestNodeFields"
         override val document: Document = Document.Text("query TestNodeFields(\$id:ID!){node(id:\$id){__typename,id,...on Character{name}}}")
         override val kind = OperationKind.QUERY
@@ -381,7 +382,7 @@ class TestStrictConditions(val id: String, val withStatus: Boolean) : QueryOpera
     override fun equals(other: Any?): Boolean = other is TestStrictConditions && other.id == id && other.withStatus == withStatus
     override fun hashCode(): Int = listOf(id, withStatus).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestStrictConditions, TestStrictConditions.Data> {
         override val name = "TestStrictConditions"
         override val document: Document = Document.Text("query TestStrictConditions(\$id:ID!,\$withStatus:Boolean!){character(id:\$id){name,__typename@include(if:\$withStatus)\n    species@include(if:\$withStatus)\n    status@include(if:\$withStatus)\n    origin@include(if:\$withStatus){name,id},id}}")
         override val kind = OperationKind.QUERY
@@ -502,7 +503,7 @@ class TestTwoSpreads(val id: String, val again: Boolean) : QueryOperation<TestTw
     override fun equals(other: Any?): Boolean = other is TestTwoSpreads && other.id == id && other.again == again
     override fun hashCode(): Int = listOf(id, again).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestTwoSpreads, TestTwoSpreads.Data> {
         override val name = "TestTwoSpreads"
         override val document: Document = Document.Text("query TestTwoSpreads(\$id:ID!,\$again:Boolean!){character(id:\$id){...TestRow_character,...TestRow_character@include(if:\$again),id}}fragment TestRow_character on Character{name,status,image}")
         override val kind = OperationKind.QUERY
@@ -557,7 +558,7 @@ class TestUnion(val name: String) : QueryOperation<TestUnion.Data> {
     override fun equals(other: Any?): Boolean = other is TestUnion && other.name == name
     override fun hashCode(): Int = listOf(name).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestUnion, TestUnion.Data> {
         override val name = "TestUnion"
         override val document: Document = Document.Text("query TestUnion(\$name:String!){search(name:\$name){__typename,...on Character{label:name,status},...on Location{label:dimension,type},...on Episode{air_date},...on Named{__isNamed:__typename,name},...on Node{__isNode:__typename,id}}}")
         override val kind = OperationKind.QUERY

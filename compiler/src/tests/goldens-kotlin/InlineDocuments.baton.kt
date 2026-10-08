@@ -18,6 +18,7 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.QueryType
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
@@ -424,7 +425,7 @@ class TestAssetValuesQuery : QueryOperation<TestAssetValuesQuery.Data> {
     override fun equals(other: Any?): Boolean = other is TestAssetValuesQuery
     override fun hashCode(): Int = 0
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestAssetValuesQuery, TestAssetValuesQuery.Data> {
         override val name = "TestAssetValuesQuery"
         override val document: Document = Document.Text("query TestAssetValuesQuery{assets{...TestAssetValue_asset,id,uuid}}fragment TestAssetValue_asset on Asset{uuid,name,price,listedAt,page,prices,caughtSize:size}")
         override val kind = OperationKind.QUERY
@@ -478,7 +479,7 @@ class TestCaughtValueQuery(val id: String) : QueryOperation<TestCaughtValueQuery
     override fun equals(other: Any?): Boolean = other is TestCaughtValueQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestCaughtValueQuery, TestCaughtValueQuery.Data> {
         override val name = "TestCaughtValueQuery"
         override val document: Document = Document.Text("query TestCaughtValueQuery(\$id:ID!){character(id:\$id){id,...TestCharacterValue_character}}fragment TestCharacterValue_character on Character{id,name,status,origin{...TestOriginValue_location,id},episode{id,name}}fragment TestOriginValue_location on Location{id,name,dimension}")
         override val kind = OperationKind.QUERY
@@ -547,7 +548,7 @@ class TestDeferredValueQuery(val id: String) : QueryOperation<TestDeferredValueQ
     override fun equals(other: Any?): Boolean = other is TestDeferredValueQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestDeferredValueQuery, TestDeferredValueQuery.Data> {
         override val name = "TestDeferredValueQuery"
         override val document: Document = Document.Text("query TestDeferredValueQuery(\$id:ID!){character(id:\$id){id,...TestCharacterValue_character@defer(label:\"TestDeferredValueQuery\$defer\$TestCharacterValue_character\")}}fragment TestCharacterValue_character on Character{id,name,status,origin{...TestOriginValue_location,id},episode{id,name}}fragment TestOriginValue_location on Location{id,name,dimension}")
         override val kind = OperationKind.QUERY
@@ -618,7 +619,7 @@ class TestInlineQuery(val id: String, val withNotes: Boolean) : QueryOperation<T
     override fun equals(other: Any?): Boolean = other is TestInlineQuery && other.id == id && other.withNotes == withNotes
     override fun hashCode(): Int = listOf(id, withNotes).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestInlineQuery, TestInlineQuery.Data> {
         override val name = "TestInlineQuery"
         override val document: Document = Document.Text("query TestInlineQuery(\$id:ID!,\$withNotes:Boolean!){character(id:\$id){...TestCard_character,...TestNotesValue_character_35kO5h@include(if:\$withNotes),id}}fragment TestCard_character on Character{name,...TestCharacterValue_character}fragment TestCharacterValue_character on Character{id,name,status,origin{...TestOriginValue_location,id},episode{id,name}}fragment TestNotesValue_character_35kO5h on Character{notes(first:1){totalCount}}fragment TestOriginValue_location on Location{id,name,dimension}")
         override val kind = OperationKind.QUERY
@@ -694,7 +695,7 @@ class TestResultValuesQuery(val name: String) : QueryOperation<TestResultValuesQ
     override fun equals(other: Any?): Boolean = other is TestResultValuesQuery && other.name == name
     override fun hashCode(): Int = listOf(name).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestResultValuesQuery, TestResultValuesQuery.Data> {
         override val name = "TestResultValuesQuery"
         override val document: Document = Document.Text("query TestResultValuesQuery(\$name:String!){search(name:\$name){__typename,...TestResultValue_searchResult,...on Node{__isNode:__typename,id}}}fragment TestResultValue_searchResult on SearchResult{__isSearchResult:__typename,...on Character{name,status},...on Location{name,dimension}}")
         override val kind = OperationKind.QUERY
@@ -763,7 +764,7 @@ class TestScanningValueQuery(val id: String, val withName: Boolean) : QueryOpera
     override fun equals(other: Any?): Boolean = other is TestScanningValueQuery && other.id == id && other.withName == withName
     override fun hashCode(): Int = listOf(id, withName).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestScanningValueQuery, TestScanningValueQuery.Data> {
         override val name = "TestScanningValueQuery"
         override val document: Document = Document.Text("query TestScanningValueQuery(\$id:ID!,\$withName:Boolean!){character(id:\$id){...TestScanningValue_character_3ODEFE,id}}fragment TestCharacterValue_character on Character{id,name,status,origin{...TestOriginValue_location,id},episode{id,name}}fragment TestNamedValue_character on Character{name}fragment TestNotesValue_character_35kO5h on Character{notes(first:1){totalCount}}fragment TestOriginValue_location on Location{id,name,dimension}fragment TestScanningValue_character_3ODEFE on Character{id,...TestNotesValue_character_35kO5h,...TestNamedValue_character@include(if:\$withName),...TestCharacterValue_character}")
         override val kind = OperationKind.QUERY

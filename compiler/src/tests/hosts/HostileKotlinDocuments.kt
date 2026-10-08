@@ -71,7 +71,7 @@ import baton.Subscription
       FieldError: name FieldErrors: name Generated: name GeneratedEnum: name Guard: name
       InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name Lookup: name
       Members: name MutationAction: name MutationOperation: name OperationHandle: name
-      OperationKind: name OperationType: name Payload: name Plan: name PlanField: name
+      OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name PlanField: name
       QueryOperation: name Refetch: name Registry: name Resolution: name ScalarKind: name
       Selection: name Slot: name StorageKey: name SubscriptionHandle: name
       SubscriptionOperation: name Transient: name TypeID: name Format1: name
@@ -147,7 +147,7 @@ fun KotlinScalars() {}
       InputObject: origin { id } KeyArgument: origin { id } KeyPart: origin { id }
       Lens: origin { id } LensList: origin { id } Lookup: origin { id } Members: origin { id }
       MutationAction: origin { id } MutationOperation: origin { id } OperationHandle: origin { id }
-      OperationKind: origin { id } OperationType: origin { id } Payload: origin { id }
+      OperationKind: origin { id } OperationType: origin { id } QueryType: origin { id } MutationType: origin { id } SubscriptionType: origin { id } Payload: origin { id }
       Plan: origin { id } PlanField: origin { id } QueryOperation: origin { id }
       Refetch: origin { id } Registry: origin { id } Resolution: origin { id }
       ScalarKind: origin { id } Selection: origin { id } Slot: origin { id }
@@ -266,7 +266,7 @@ fun KotlinLinks() {}
       ... @alias(as: "Lookup") { name } ... @alias(as: "Members") { name }
       ... @alias(as: "MutationAction") { name } ... @alias(as: "MutationOperation") { name }
       ... @alias(as: "OperationHandle") { name } ... @alias(as: "OperationKind") { name }
-      ... @alias(as: "OperationType") { name } ... @alias(as: "Payload") { name }
+      ... @alias(as: "OperationType") { name } ... @alias(as: "QueryType") { name } ... @alias(as: "MutationType") { name } ... @alias(as: "SubscriptionType") { name } ... @alias(as: "Payload") { name }
       ... @alias(as: "Plan") { name } ... @alias(as: "PlanField") { name }
       ... @alias(as: "QueryOperation") { name } ... @alias(as: "Refetch") { name }
       ... @alias(as: "Registry") { name } ... @alias(as: "Resolution") { name }
@@ -487,7 +487,7 @@ fun KotlinSpreadTarget() {}
       ... @alias(as: "MutationOperation") { ...KotlinSpreadTarget_character }
       ... @alias(as: "OperationHandle") { ...KotlinSpreadTarget_character }
       ... @alias(as: "OperationKind") { ...KotlinSpreadTarget_character }
-      ... @alias(as: "OperationType") { ...KotlinSpreadTarget_character }
+      ... @alias(as: "OperationType") { ...KotlinSpreadTarget_character } ... @alias(as: "QueryType") { ...KotlinSpreadTarget_character } ... @alias(as: "MutationType") { ...KotlinSpreadTarget_character } ... @alias(as: "SubscriptionType") { ...KotlinSpreadTarget_character }
       ... @alias(as: "Payload") { ...KotlinSpreadTarget_character }
       ... @alias(as: "Plan") { ...KotlinSpreadTarget_character }
       ... @alias(as: "PlanField") { ...KotlinSpreadTarget_character }
@@ -608,7 +608,7 @@ fun KotlinCaughtTarget() {}
       FieldError: name FieldErrors: name Generated: name GeneratedEnum: name Guard: name
       InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name Lookup: name
       Members: name MutationAction: name MutationOperation: name OperationHandle: name
-      OperationKind: name OperationType: name Payload: name Plan: name PlanField: name
+      OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name PlanField: name
       QueryOperation: name Refetch: name Registry: name Resolution: name ScalarKind: name
       Selection: name Slot: name StorageKey: name SubscriptionHandle: name
       SubscriptionOperation: name Transient: name TypeID: name Format1: name
@@ -687,7 +687,7 @@ fun KotlinBodies() {}
           KeyArgument: totalCount KeyPart: totalCount Lens: totalCount LensList: totalCount
           Lookup: totalCount Members: totalCount MutationAction: totalCount
           MutationOperation: totalCount OperationHandle: totalCount OperationKind: totalCount
-          OperationType: totalCount Payload: totalCount Plan: totalCount PlanField: totalCount
+          OperationType: totalCount QueryType: totalCount MutationType: totalCount SubscriptionType: totalCount Payload: totalCount Plan: totalCount PlanField: totalCount
           QueryOperation: totalCount Refetch: totalCount Registry: totalCount Resolution: totalCount
           ScalarKind: totalCount Selection: totalCount Slot: totalCount StorageKey: totalCount
           SubscriptionHandle: totalCount SubscriptionOperation: totalCount Transient: totalCount
@@ -751,7 +751,7 @@ fun KotlinConnection() {}
           ErrorBehavior: name FieldError: name FieldErrors: name Generated: name GeneratedEnum: name
           Guard: name InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name
           Lookup: name Members: name MutationAction: name MutationOperation: name
-          OperationHandle: name OperationKind: name OperationType: name Payload: name Plan: name
+          OperationHandle: name OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name
           PlanField: name QueryOperation: name Refetch: name Registry: name Resolution: name
           ScalarKind: name Selection: name Slot: name StorageKey: name SubscriptionHandle: name
           SubscriptionOperation: name Transient: name TypeID: name Format1: name
@@ -804,7 +804,7 @@ fun KotlinRequired() {}
       ConnectionSlots: id Document: id DynamicKey: id Edit: id ErrorBehavior: id FieldError: id
       FieldErrors: id Generated: id GeneratedEnum: id Guard: id InputObject: id KeyArgument: id
       KeyPart: id Lens: id LensList: id Lookup: id Members: id MutationAction: id
-      MutationOperation: id OperationHandle: id OperationKind: id OperationType: id Payload: id
+      MutationOperation: id OperationHandle: id OperationKind: id OperationType: id QueryType: id MutationType: id SubscriptionType: id Payload: id
       Plan: id PlanField: id QueryOperation: id Refetch: id Registry: id Resolution: id
       ScalarKind: id Selection: id Slot: id StorageKey: id SubscriptionHandle: id
       SubscriptionOperation: id Transient: id TypeID: id Format1: id
@@ -876,7 +876,7 @@ fun KotlinAbstract() {}
       KeyArgument: name @catch KeyPart: name @catch Lens: name @catch LensList: name @catch
       Lookup: name @catch Members: name @catch MutationAction: name @catch
       MutationOperation: name @catch OperationHandle: name @catch OperationKind: name @catch
-      OperationType: name @catch Payload: name @catch Plan: name @catch PlanField: name @catch
+      OperationType: name @catch QueryType: name @catch MutationType: name @catch SubscriptionType: name @catch Payload: name @catch Plan: name @catch PlanField: name @catch
       QueryOperation: name @catch Refetch: name @catch Registry: name @catch Resolution: name @catch
       ScalarKind: name @catch Selection: name @catch Slot: name @catch StorageKey: name @catch
       SubscriptionHandle: name @catch SubscriptionOperation: name @catch Transient: name @catch
@@ -994,7 +994,7 @@ fun KotlinCaught() {}
       Lookup: name @required(action: LOG) Members: name @required(action: LOG)
       MutationAction: name @required(action: LOG) MutationOperation: name @required(action: LOG)
       OperationHandle: name @required(action: LOG) OperationKind: name @required(action: LOG)
-      OperationType: name @required(action: LOG) Payload: name @required(action: LOG)
+      OperationType: name @required(action: LOG) QueryType: name @required(action: LOG) MutationType: name @required(action: LOG) SubscriptionType: name @required(action: LOG) Payload: name @required(action: LOG)
       Plan: name @required(action: LOG) PlanField: name @required(action: LOG)
       QueryOperation: name @required(action: LOG) Refetch: name @required(action: LOG)
       Registry: name @required(action: LOG) Resolution: name @required(action: LOG)
@@ -1065,7 +1065,7 @@ fun KotlinRequiredFields() {}
       $FieldError: ID! $FieldErrors: ID! $Generated: ID! $GeneratedEnum: ID! $Guard: ID!
       $InputObject: ID! $KeyArgument: ID! $KeyPart: ID! $Lens: ID! $LensList: ID! $Lookup: ID!
       $Members: ID! $MutationAction: ID! $MutationOperation: ID! $OperationHandle: ID!
-      $OperationKind: ID! $OperationType: ID! $Payload: ID! $Plan: ID! $PlanField: ID!
+      $OperationKind: ID! $OperationType: ID! $QueryType: ID! $MutationType: ID! $SubscriptionType: ID! $Payload: ID! $Plan: ID! $PlanField: ID!
       $QueryOperation: ID! $Refetch: ID! $Registry: ID! $ScalarKind: ID! $Selection: ID! $Slot: ID!
       $StorageKey: ID! $SubscriptionHandle: ID! $SubscriptionOperation: ID! $Transient: ID!
       $TypeID: ID! $Format1: ID!
@@ -1075,7 +1075,7 @@ fun KotlinRequiredFields() {}
       $run: ID! $let: ID! $takeIf: ID! $map: ID! $lazy: ID! $listOf: ID! $mapOf: ID! $emptyList: ID!
       $emptyMap: ID! $mutableListOf: ID! $getOrThrow: ID! $success: ID! $failure: ID!
     ) @throwOnFieldError {
-      charactersByIds(ids: [$as, $break, $class, $continue, $do, $else, $false, $for, $fun, $if, $in, $interface, $is, $null, $object, $package, $return, $super, $this, $throw, $true, $try, $typealias, $typeof, $val, $var, $when, $while, $_, $by, $catch, $constructor, $delegate, $dynamic, $field, $file, $finally, $get, $import, $init, $param, $property, $receiver, $set, $setparam, $value, $where, $abstract, $actual, $annotation, $companion, $const, $crossinline, $data, $enum, $expect, $external, $final, $infix, $inline, $inner, $internal, $lateinit, $noinline, $open, $operator, $out, $override, $private, $protected, $public, $reified, $sealed, $suspend, $tailrec, $vararg, $context, $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $other, $it, $element, $count, $optimistic, $text, $fields, $name, $document, $kind, $errorBehavior, $cacheExpirationSeconds, $throwsOnFieldError, $bubbles, $hasDeferred, $plan, $selection, $selection0, $Action, $OptimisticResponse, $invoke, $commit, $variable, $payload, $copy, $component1, $component2, $javaClass, $of, $scalarText, $Undeclared, $size, $keys, $values, $entries, $Types, $Slots, $AbstractSlots, $Sites, $Guards, $schemaDigest, $format, $transient, $baton, $MappedScalar, $AbstractSlot, $Anchor, $ArgumentSite, $ConnectionCursor, $ConnectionPlan, $ConnectionSlots, $Document, $DynamicKey, $Edit, $ErrorBehavior, $FieldError, $FieldErrors, $Generated, $GeneratedEnum, $Guard, $InputObject, $KeyArgument, $KeyPart, $Lens, $LensList, $Lookup, $Members, $MutationAction, $MutationOperation, $OperationHandle, $OperationKind, $OperationType, $Payload, $Plan, $PlanField, $QueryOperation, $Refetch, $Registry, $ScalarKind, $Selection, $Slot, $StorageKey, $SubscriptionHandle, $SubscriptionOperation, $Transient, $TypeID, $Format1, $Any, $Boolean, $Double, $Int, $List, $Long, $Map, $Pair, $Result, $String, $Unit, $Stable, $JvmName, $JvmField, $OptIn, $run, $let, $takeIf, $map, $lazy, $listOf, $mapOf, $emptyList, $emptyMap, $mutableListOf, $getOrThrow, $success, $failure]) { id name }
+      charactersByIds(ids: [$as, $break, $class, $continue, $do, $else, $false, $for, $fun, $if, $in, $interface, $is, $null, $object, $package, $return, $super, $this, $throw, $true, $try, $typealias, $typeof, $val, $var, $when, $while, $_, $by, $catch, $constructor, $delegate, $dynamic, $field, $file, $finally, $get, $import, $init, $param, $property, $receiver, $set, $setparam, $value, $where, $abstract, $actual, $annotation, $companion, $const, $crossinline, $data, $enum, $expect, $external, $final, $infix, $inline, $inner, $internal, $lateinit, $noinline, $open, $operator, $out, $override, $private, $protected, $public, $reified, $sealed, $suspend, $tailrec, $vararg, $context, $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $other, $it, $element, $count, $optimistic, $text, $fields, $name, $document, $kind, $errorBehavior, $cacheExpirationSeconds, $throwsOnFieldError, $bubbles, $hasDeferred, $plan, $selection, $selection0, $Action, $OptimisticResponse, $invoke, $commit, $variable, $payload, $copy, $component1, $component2, $javaClass, $of, $scalarText, $Undeclared, $size, $keys, $values, $entries, $Types, $Slots, $AbstractSlots, $Sites, $Guards, $schemaDigest, $format, $transient, $baton, $MappedScalar, $AbstractSlot, $Anchor, $ArgumentSite, $ConnectionCursor, $ConnectionPlan, $ConnectionSlots, $Document, $DynamicKey, $Edit, $ErrorBehavior, $FieldError, $FieldErrors, $Generated, $GeneratedEnum, $Guard, $InputObject, $KeyArgument, $KeyPart, $Lens, $LensList, $Lookup, $Members, $MutationAction, $MutationOperation, $OperationHandle, $OperationKind, $OperationType, $QueryType, $MutationType, $SubscriptionType, $Payload, $Plan, $PlanField, $QueryOperation, $Refetch, $Registry, $ScalarKind, $Selection, $Slot, $StorageKey, $SubscriptionHandle, $SubscriptionOperation, $Transient, $TypeID, $Format1, $Any, $Boolean, $Double, $Int, $List, $Long, $Map, $Pair, $Result, $String, $Unit, $Stable, $JvmName, $JvmField, $OptIn, $run, $let, $takeIf, $map, $lazy, $listOf, $mapOf, $emptyList, $emptyMap, $mutableListOf, $getOrThrow, $success, $failure]) { id name }
     }
     """)
 fun KotlinVariables() {}
@@ -1135,7 +1135,7 @@ fun KotlinVariables() {}
       $Generated: Boolean! $GeneratedEnum: Boolean! $Guard: Boolean! $InputObject: Boolean!
       $KeyArgument: Boolean! $KeyPart: Boolean! $Lens: Boolean! $LensList: Boolean!
       $Lookup: Boolean! $Members: Boolean! $MutationAction: Boolean! $MutationOperation: Boolean!
-      $OperationHandle: Boolean! $OperationKind: Boolean! $OperationType: Boolean!
+      $OperationHandle: Boolean! $OperationKind: Boolean! $OperationType: Boolean! $QueryType: Boolean! $MutationType: Boolean! $SubscriptionType: Boolean!
       $Payload: Boolean! $Plan: Boolean! $PlanField: Boolean! $QueryOperation: Boolean!
       $Refetch: Boolean! $Registry: Boolean! $Resolution: Boolean! $ScalarKind: Boolean!
       $Selection: Boolean! $Slot: Boolean! $StorageKey: Boolean! $SubscriptionHandle: Boolean!
@@ -1248,7 +1248,7 @@ fun KotlinVariables() {}
           ... @include(if: $Lookup) { name } ... @include(if: $Members) { name }
           ... @include(if: $MutationAction) { name } ... @include(if: $MutationOperation) { name }
           ... @include(if: $OperationHandle) { name } ... @include(if: $OperationKind) { name }
-          ... @include(if: $OperationType) { name } ... @include(if: $Payload) { name }
+          ... @include(if: $OperationType) { name } ... @include(if: $QueryType) { name } ... @include(if: $MutationType) { name } ... @include(if: $SubscriptionType) { name } ... @include(if: $Payload) { name }
           ... @include(if: $Plan) { name } ... @include(if: $PlanField) { name }
           ... @include(if: $QueryOperation) { name } ... @include(if: $Refetch) { name }
           ... @include(if: $Registry) { name } ... @include(if: $Resolution) { name }
@@ -1341,7 +1341,7 @@ fun KotlinNamesake() {}
       $Generated: Boolean! $GeneratedEnum: Boolean! $Guard: Boolean! $InputObject: Boolean!
       $KeyArgument: Boolean! $KeyPart: Boolean! $Lens: Boolean! $LensList: Boolean!
       $Lookup: Boolean! $Members: Boolean! $MutationAction: Boolean! $MutationOperation: Boolean!
-      $OperationHandle: Boolean! $OperationKind: Boolean! $OperationType: Boolean!
+      $OperationHandle: Boolean! $OperationKind: Boolean! $OperationType: Boolean! $QueryType: Boolean! $MutationType: Boolean! $SubscriptionType: Boolean!
       $Payload: Boolean! $Plan: Boolean! $PlanField: Boolean! $QueryOperation: Boolean!
       $Refetch: Boolean! $Registry: Boolean! $ScalarKind: Boolean! $Selection: Boolean!
       $Slot: Boolean! $StorageKey: Boolean! $SubscriptionHandle: Boolean!
@@ -1454,7 +1454,7 @@ fun KotlinNamesake() {}
           ... @include(if: $MutationAction) { cursor }
           ... @include(if: $MutationOperation) { cursor }
           ... @include(if: $OperationHandle) { cursor } ... @include(if: $OperationKind) { cursor }
-          ... @include(if: $OperationType) { cursor } ... @include(if: $Payload) { cursor }
+          ... @include(if: $OperationType) { cursor } ... @include(if: $QueryType) { cursor } ... @include(if: $MutationType) { cursor } ... @include(if: $SubscriptionType) { cursor } ... @include(if: $Payload) { cursor }
           ... @include(if: $Plan) { cursor } ... @include(if: $PlanField) { cursor }
           ... @include(if: $QueryOperation) { cursor } ... @include(if: $Refetch) { cursor }
           ... @include(if: $Registry) { cursor } ... @include(if: $ScalarKind) { cursor }
@@ -1610,7 +1610,7 @@ fun KotlinSubscriptionVariables() {}
       MutationOperation: {type: "Boolean", defaultValue: true}
       OperationHandle: {type: "Boolean", defaultValue: true}
       OperationKind: {type: "Boolean", defaultValue: true}
-      OperationType: {type: "Boolean", defaultValue: true}
+      OperationType: {type: "Boolean", defaultValue: true} QueryType: {type: "Boolean", defaultValue: true} MutationType: {type: "Boolean", defaultValue: true} SubscriptionType: {type: "Boolean", defaultValue: true}
       Payload: {type: "Boolean", defaultValue: true} Plan: {type: "Boolean", defaultValue: true}
       PlanField: {type: "Boolean", defaultValue: true}
       QueryOperation: {type: "Boolean", defaultValue: true}
@@ -1736,7 +1736,7 @@ fun KotlinSubscriptionVariables() {}
       ... @include(if: $Lookup) { name } ... @include(if: $Members) { name }
       ... @include(if: $MutationAction) { name } ... @include(if: $MutationOperation) { name }
       ... @include(if: $OperationHandle) { name } ... @include(if: $OperationKind) { name }
-      ... @include(if: $OperationType) { name } ... @include(if: $Payload) { name }
+      ... @include(if: $OperationType) { name } ... @include(if: $QueryType) { name } ... @include(if: $MutationType) { name } ... @include(if: $SubscriptionType) { name } ... @include(if: $Payload) { name }
       ... @include(if: $Plan) { name } ... @include(if: $PlanField) { name }
       ... @include(if: $QueryOperation) { name } ... @include(if: $Refetch) { name }
       ... @include(if: $Registry) { name } ... @include(if: $ScalarKind) { name }
@@ -1809,7 +1809,7 @@ fun KotlinArguments() {}
         ErrorBehavior: false FieldError: false FieldErrors: false Generated: false
         GeneratedEnum: false Guard: false InputObject: false KeyArgument: false KeyPart: false
         Lens: false LensList: false Lookup: false Members: false MutationAction: false
-        MutationOperation: false OperationHandle: false OperationKind: false OperationType: false
+        MutationOperation: false OperationHandle: false OperationKind: false OperationType: false QueryType: false MutationType: false SubscriptionType: false
         Payload: false Plan: false PlanField: false QueryOperation: false Refetch: false
         Registry: false ScalarKind: false Selection: false Slot: false StorageKey: false
         SubscriptionHandle: false SubscriptionOperation: false Transient: false TypeID: false
@@ -1871,7 +1871,7 @@ fun KotlinArgumentSpread() {}
           ErrorBehavior: name FieldError: name FieldErrors: name Generated: name GeneratedEnum: name
           Guard: name InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name
           Lookup: name Members: name MutationAction: name MutationOperation: name
-          OperationHandle: name OperationKind: name OperationType: name Payload: name Plan: name
+          OperationHandle: name OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name
           PlanField: name QueryOperation: name Refetch: name Registry: name Resolution: name
           ScalarKind: name Selection: name Slot: name StorageKey: name SubscriptionHandle: name
           SubscriptionOperation: name Transient: name TypeID: name Format1: name
@@ -1939,7 +1939,7 @@ fun KotlinArgumentSpread() {}
         KeyArgument: note { id } KeyPart: note { id } Lens: note { id } LensList: note { id }
         Lookup: note { id } Members: note { id } MutationAction: note { id }
         MutationOperation: note { id } OperationHandle: note { id } OperationKind: note { id }
-        OperationType: note { id } Payload: note { id } Plan: note { id } PlanField: note { id }
+        OperationType: note { id } QueryType: note { id } MutationType: note { id } SubscriptionType: note { id } Payload: note { id } Plan: note { id } PlanField: note { id }
         QueryOperation: note { id } Refetch: note { id } Registry: note { id }
         Resolution: note { id } ScalarKind: note { id } Selection: note { id } Slot: note { id }
         StorageKey: note { id } SubscriptionHandle: note { id } SubscriptionOperation: note { id }
@@ -2018,7 +2018,7 @@ fun KotlinArgumentSpread() {}
           KeyPart: episode { id } Lens: episode { id } LensList: episode { id }
           Lookup: episode { id } Members: episode { id } MutationAction: episode { id }
           MutationOperation: episode { id } OperationHandle: episode { id }
-          OperationKind: episode { id } OperationType: episode { id } Payload: episode { id }
+          OperationKind: episode { id } OperationType: episode { id } QueryType: episode { id } MutationType: episode { id } SubscriptionType: episode { id } Payload: episode { id }
           Plan: episode { id } PlanField: episode { id } QueryOperation: episode { id }
           Refetch: episode { id } Registry: episode { id } Resolution: episode { id }
           ScalarKind: episode { id } Selection: episode { id } Slot: episode { id }
@@ -2121,7 +2121,7 @@ fun KotlinInlineScalars2Reach() {}
       FieldError: name FieldErrors: name Generated: name GeneratedEnum: name Guard: name
       InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name Lookup: name
       Members: name MutationAction: name MutationOperation: name OperationHandle: name
-      OperationKind: name OperationType: name Payload: name Plan: name PlanField: name
+      OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name PlanField: name
       QueryOperation: name Refetch: name Registry: name Resolution: name ScalarKind: name
       Selection: name Slot: name StorageKey: name SubscriptionHandle: name
       SubscriptionOperation: name Transient: name TypeID: name Format1: name
@@ -2241,7 +2241,7 @@ fun KotlinInlineLinks2Reach() {}
       InputObject: origin { id } KeyArgument: origin { id } KeyPart: origin { id }
       Lens: origin { id } LensList: origin { id } Lookup: origin { id } Members: origin { id }
       MutationAction: origin { id } MutationOperation: origin { id } OperationHandle: origin { id }
-      OperationKind: origin { id } OperationType: origin { id } Payload: origin { id }
+      OperationKind: origin { id } OperationType: origin { id } QueryType: origin { id } MutationType: origin { id } SubscriptionType: origin { id } Payload: origin { id }
       Plan: origin { id } PlanField: origin { id } QueryOperation: origin { id }
       Refetch: origin { id } Registry: origin { id } Resolution: origin { id }
       ScalarKind: origin { id } Selection: origin { id } Slot: origin { id }
@@ -2369,7 +2369,7 @@ fun KotlinInlinePlurals2Reach() {}
       Guard: episode { id } InputObject: episode { id } KeyArgument: episode { id }
       KeyPart: episode { id } Lens: episode { id } LensList: episode { id } Lookup: episode { id }
       Members: episode { id } MutationAction: episode { id } MutationOperation: episode { id }
-      OperationHandle: episode { id } OperationKind: episode { id } OperationType: episode { id }
+      OperationHandle: episode { id } OperationKind: episode { id } OperationType: episode { id } QueryType: episode { id } MutationType: episode { id } SubscriptionType: episode { id }
       Payload: episode { id } Plan: episode { id } PlanField: episode { id }
       QueryOperation: episode { id } Refetch: episode { id } Registry: episode { id }
       Resolution: episode { id } ScalarKind: episode { id } Selection: episode { id }
@@ -2625,7 +2625,7 @@ fun KotlinInlineSpreads2Reach() {}
       ... @alias(as: "MutationOperation") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "OperationHandle") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "OperationKind") { ...KotlinInlineSpreadTarget_character }
-      ... @alias(as: "OperationType") { ...KotlinInlineSpreadTarget_character }
+      ... @alias(as: "OperationType") { ...KotlinInlineSpreadTarget_character } ... @alias(as: "QueryType") { ...KotlinInlineSpreadTarget_character } ... @alias(as: "MutationType") { ...KotlinInlineSpreadTarget_character } ... @alias(as: "SubscriptionType") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "Payload") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "Plan") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "PlanField") { ...KotlinInlineSpreadTarget_character }

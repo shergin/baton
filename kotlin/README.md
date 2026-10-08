@@ -210,7 +210,8 @@ handle, retained while the composable stays and released when it leaves or
 its composition is abandoned, an equal value keeping its handle and a
 changed one resolving anew; outside every provider no handle is made and
 the phase reads `Failed(EnvironmentError.NotInjected)`.
-`rememberMutation(Companion)` returns the mutation's action, and
+`rememberMutation(RenameMutation)` returns the mutation's action, its type
+inferred from the companion, a `MutationType`, and
 `rememberSubscription(operation)` holds a stream open while its composable
 stays. `jvmTest` holds them in a Compose for Desktop composition: loading
 then ready, a write recomposing only the composable that read the slot,

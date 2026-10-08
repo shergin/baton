@@ -17,12 +17,14 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.QueryType
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
 import baton.SubscriptionHandle
 import baton.SubscriptionOperation
+import baton.SubscriptionType
 import baton.Variable
 import baton.Variables
 
@@ -146,7 +148,7 @@ class TestNoteAdded(val characterId: String, val connections: List<String>) : Su
     override fun equals(other: Any?): Boolean = other is TestNoteAdded && other.characterId == characterId && other.connections == connections
     override fun hashCode(): Int = listOf(characterId, connections).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : SubscriptionType<TestNoteAdded, TestNoteAdded.Data> {
         override val name = "TestNoteAdded"
         override val document: Document = Document.Text("subscription TestNoteAdded(\$characterId:ID!){noteAdded(characterId:\$characterId){noteEdge{cursor,node{id,text}}}}")
         override val kind = OperationKind.SUBSCRIPTION
@@ -221,7 +223,7 @@ class TestNullsOnError(val id: String) : QueryOperation<TestNullsOnError.Data> {
     override fun equals(other: Any?): Boolean = other is TestNullsOnError && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestNullsOnError, TestNullsOnError.Data> {
         override val name = "TestNullsOnError"
         override val document: Document = Document.Text("query TestNullsOnError(\$id:ID!){character(id:\$id){name,id}}")
         override val kind = OperationKind.QUERY
@@ -269,7 +271,7 @@ class TestOverlapQuery(val id: String) : QueryOperation<TestOverlapQuery.Data> {
     override fun equals(other: Any?): Boolean = other is TestOverlapQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestOverlapQuery, TestOverlapQuery.Data> {
         override val name = "TestOverlapQuery"
         override val document: Document = Document.Text("query TestOverlapQuery(\$id:ID!){character(id:\$id){name,episode{id},...TestAppearances_character@defer(label:\"TestOverlapQuery\$defer\$TestAppearances_character\"),id}}fragment TestAppearances_character on Character{episode{name,air_date,id}}")
         override val kind = OperationKind.QUERY
@@ -345,7 +347,7 @@ class TestProfileQuery(val id: String) : QueryOperation<TestProfileQuery.Data> {
     override fun equals(other: Any?): Boolean = other is TestProfileQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestProfileQuery, TestProfileQuery.Data> {
         override val name = "TestProfileQuery"
         override val document: Document = Document.Text("query TestProfileQuery(\$id:ID!){character(id:\$id){...TestProfile_character,...TestStrict_character,...TestAppearances_character@defer(label:\"TestProfileQuery\$defer\$TestAppearances_character\"),id}}fragment TestAppearances_character on Character{episode{name,air_date,id}}fragment TestProfile_character on Character{name,origin{name,id},status,image,location{name,dimension,id},gender}fragment TestStrict_character on Character{species,type}")
         override val kind = OperationKind.QUERY
@@ -432,7 +434,7 @@ class TestRosterQuery(val page: Int? = null) : QueryOperation<TestRosterQuery.Da
     override fun equals(other: Any?): Boolean = other is TestRosterQuery && other.page == page
     override fun hashCode(): Int = listOf(page).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestRosterQuery, TestRosterQuery.Data> {
         override val name = "TestRosterQuery"
         override val document: Document = Document.Text("query TestRosterQuery(\$page:Int){characters(page:\$page){results{id,name,status}}}")
         override val kind = OperationKind.QUERY
@@ -503,7 +505,7 @@ class TestStrictDeferred(val id: String) : QueryOperation<TestStrictDeferred.Dat
     override fun equals(other: Any?): Boolean = other is TestStrictDeferred && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestStrictDeferred, TestStrictDeferred.Data> {
         override val name = "TestStrictDeferred"
         override val document: Document = Document.Text("query TestStrictDeferred(\$id:ID!){character(id:\$id){id,name,...TestAppearances_character@defer(label:\"TestStrictDeferred\$defer\$TestAppearances_character\")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}")
         override val kind = OperationKind.QUERY
@@ -601,7 +603,7 @@ class TestStrictQuery(val id: String) : QueryOperation<TestStrictQuery.Data> {
     override fun equals(other: Any?): Boolean = other is TestStrictQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestStrictQuery, TestStrictQuery.Data> {
         override val name = "TestStrictQuery"
         override val document: Document = Document.Text("query TestStrictQuery(\$id:ID!){character(id:\$id){name,species,id}}")
         override val kind = OperationKind.QUERY
@@ -686,7 +688,7 @@ class TestThrowingSpread(val id: String) : QueryOperation<TestThrowingSpread.Dat
     override fun equals(other: Any?): Boolean = other is TestThrowingSpread && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestThrowingSpread, TestThrowingSpread.Data> {
         override val name = "TestThrowingSpread"
         override val document: Document = Document.Text("query TestThrowingSpread(\$id:ID!){character(id:\$id){species,...TestName_character,id}}fragment TestName_character on Character{name}")
         override val kind = OperationKind.QUERY

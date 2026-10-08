@@ -52,7 +52,7 @@ pub const KEYWORDS: [&str; 28] = [
 /// unqualified. A fragment or an operation of one of these names would
 /// conflict with the import in its own file; one the generated code comes to
 /// spell joins the list in the same change.
-pub const RUNTIME_NAMES: [&str; 44] = [
+pub const RUNTIME_NAMES: [&str; 47] = [
     "AbstractSlot",
     "Anchor",
     "ArgumentSite",
@@ -76,6 +76,7 @@ pub const RUNTIME_NAMES: [&str; 44] = [
     "Members",
     "MutationAction",
     "MutationOperation",
+    "MutationType",
     "OperationHandle",
     "OperationKind",
     "OperationType",
@@ -83,6 +84,7 @@ pub const RUNTIME_NAMES: [&str; 44] = [
     "Plan",
     "PlanField",
     "QueryOperation",
+    "QueryType",
     "Refetch",
     "Registry",
     "Resolution",
@@ -92,6 +94,7 @@ pub const RUNTIME_NAMES: [&str; 44] = [
     "StorageKey",
     "SubscriptionHandle",
     "SubscriptionOperation",
+    "SubscriptionType",
     "Transient",
     "TypeID",
     "Variable",

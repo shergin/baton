@@ -15,6 +15,7 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.QueryType
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
@@ -31,7 +32,7 @@ class TestCaughtNames : QueryOperation<TestCaughtNames.Data> {
     override fun equals(other: Any?): Boolean = other is TestCaughtNames
     override fun hashCode(): Int = 0
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestCaughtNames, TestCaughtNames.Data> {
         override val name = "TestCaughtNames"
         override val document: Document = Document.Text("query TestCaughtNames{types{Baton}}")
         override val kind = OperationKind.QUERY
@@ -94,7 +95,7 @@ class TestNames : QueryOperation<TestNames.Data> {
     override fun equals(other: Any?): Boolean = other is TestNames
     override fun hashCode(): Int = 0
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestNames, TestNames.Data> {
         override val name = "TestNames"
         override val document: Document = Document.Text("query TestNames{types{Type,Protocol,Baton,Any}}")
         override val kind = OperationKind.QUERY
@@ -147,7 +148,7 @@ class TestSpellings : QueryOperation<TestSpellings.Data> {
     override fun equals(other: Any?): Boolean = other is TestSpellings
     override fun hashCode(): Int = 0
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestSpellings, TestSpellings.Data> {
         override val name = "TestSpellings"
         override val document: Document = Document.Text("query TestSpellings{spellings{__typename,...on Spelled{__isSpelled:__typename,label},...on Baton{id},...on Type{id},...on Protocol{id},...on Set{id},...on Any{id},...on Node{__isNode:__typename,id}}}")
         override val kind = OperationKind.QUERY

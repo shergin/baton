@@ -14,6 +14,7 @@ import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
+import baton.QueryType
 import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
@@ -60,7 +61,7 @@ class Fixture(val page: Int? = null) : QueryOperation<Fixture.Data> {
     override fun equals(other: Any?): Boolean = other is Fixture && other.page == page
     override fun hashCode(): Int = listOf(page).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<Fixture, Fixture.Data> {
         override val name = "Fixture"
         override val document: Document = Document.Text("query Fixture(\$page:Int){characters(page:\$page){info{count,pages,next,prev},results{id,name,status,species,type,gender,image,created,origin{id,name,type,dimension,created},location{id,name,type,dimension,created},episode{id,name,air_date,episode,created,characters{id,name,image}}}}}")
         override val kind = OperationKind.QUERY
@@ -228,7 +229,7 @@ class TestEpisodesQuery(val id: String) : QueryOperation<TestEpisodesQuery.Data>
     override fun equals(other: Any?): Boolean = other is TestEpisodesQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestEpisodesQuery, TestEpisodesQuery.Data> {
         override val name = "TestEpisodesQuery"
         override val document: Document = Document.Text("query TestEpisodesQuery(\$id:ID!){character(id:\$id){episode{id,name},id}}")
         override val kind = OperationKind.QUERY
@@ -290,7 +291,7 @@ class TestFreshCharacter(val id: String) : QueryOperation<TestFreshCharacter.Dat
     override fun equals(other: Any?): Boolean = other is TestFreshCharacter && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestFreshCharacter, TestFreshCharacter.Data> {
         override val name = "TestFreshCharacter"
         override val document: Document = Document.Text("query TestFreshCharacter(\$id:ID!){character(id:\$id){id,name}}")
         override val kind = OperationKind.QUERY
@@ -340,7 +341,7 @@ class TestHeaderQuery(val id: String) : QueryOperation<TestHeaderQuery.Data> {
     override fun equals(other: Any?): Boolean = other is TestHeaderQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestHeaderQuery, TestHeaderQuery.Data> {
         override val name = "TestHeaderQuery"
         override val document: Document = Document.Text("query TestHeaderQuery(\$id:ID!){character(id:\$id){...TestHeader_character,id}}fragment TestHeader_character on Character{name,status,species,image,origin{name,id}}")
         override val kind = OperationKind.QUERY
@@ -398,7 +399,7 @@ class TestList(val page: Int? = null) : QueryOperation<TestList.Data> {
     override fun equals(other: Any?): Boolean = other is TestList && other.page == page
     override fun hashCode(): Int = listOf(page).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestList, TestList.Data> {
         override val name = "TestList"
         override val document: Document = Document.Text("query TestList(\$page:Int){characters(page:\$page){results{...TestRow_character,...TestHeader_character,id}}}fragment TestHeader_character on Character{name,status,species,image,origin{name,id}}fragment TestRow_character on Character{name,status,image}")
         override val kind = OperationKind.QUERY
@@ -469,7 +470,7 @@ class TestQualifiedQuery(val id: String) : QueryOperation<TestQualifiedQuery.Dat
     override fun equals(other: Any?): Boolean = other is TestQualifiedQuery && other.id == id
     override fun hashCode(): Int = listOf(id).hashCode()
 
-    companion object : OperationType<Data> {
+    companion object : QueryType<TestQualifiedQuery, TestQualifiedQuery.Data> {
         override val name = "TestQualifiedQuery"
         override val document: Document = Document.Text("query TestQualifiedQuery(\$id:ID!){character(id:\$id){id,name}}")
         override val kind = OperationKind.QUERY

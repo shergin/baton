@@ -179,8 +179,12 @@ class ComposeTests {
         var provided: MutationAction<TestRename, TestRename.Data>? = null
         var outside: MutationAction<TestRename, TestRename.Data>? = null
         rule.setContent {
-            Provided(transport) { provided = rememberMutation(TestRename) }
-            outside = rememberMutation(TestRename)
+            Provided(transport) {
+                val rename = rememberMutation(TestRename)
+                provided = rename
+            }
+            val rename = rememberMutation(TestRename)
+            outside = rename
         }
         rule.waitForIdle()
         val name = onStoreThread { checkNotNull(provided).commit(TestRename(id = "1", name = "Rick Prime")).rename?.character?.name }
