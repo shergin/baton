@@ -23,10 +23,7 @@ import baton.Variables
 /** Operation value for `query TestKeys`. */
 class TestKeys(val id: String, val name: String? = null) : QueryOperation<TestKeys.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-            if (name != null) put("name", Variable.of(name))
-        })
+        get() = Variables.of("id" to Variable.of(id), "name" to name?.let { Variable.of(it) })
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -87,10 +84,7 @@ class TestKeys(val id: String, val name: String? = null) : QueryOperation<TestKe
 /** Operation value for `query TestNoteCounts`. */
 class TestNoteCounts(val page: Int? = null, val count: Int? = null) : QueryOperation<TestNoteCounts.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            if (page != null) put("page", Variable.of(page))
-            if (count != null) put("count", Variable.of(count))
-        })
+        get() = Variables.of("page" to page?.let { Variable.of(it) }, "count" to count?.let { Variable.of(it) })
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -135,10 +129,7 @@ class TestNoteCounts(val page: Int? = null, val count: Int? = null) : QueryOpera
 /** Operation value for `query TestSpreadKeys`. */
 class TestSpreadKeys(val id: String, val name: String? = null) : QueryOperation<TestSpreadKeys.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-            if (name != null) put("name", Variable.of(name))
-        })
+        get() = Variables.of("id" to Variable.of(id), "name" to name?.let { Variable.of(it) })
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 

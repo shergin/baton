@@ -24,9 +24,7 @@ import baton.Variables
 /** Operation value for `query TestCaughtEpisodes`. */
 class TestCaughtEpisodes(val id: String) : QueryOperation<TestCaughtEpisodes.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -65,9 +63,7 @@ class TestCaughtEpisodes(val id: String) : QueryOperation<TestCaughtEpisodes.Dat
 /** Operation value for `query TestCaughtPartQuery`. */
 class TestCaughtPartQuery(val id: String) : QueryOperation<TestCaughtPartQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -109,9 +105,7 @@ class TestCaughtPartQuery(val id: String) : QueryOperation<TestCaughtPartQuery.D
 /** Operation value for `query TestCollidingErrors`. */
 class TestCollidingErrors(val id: String) : QueryOperation<TestCollidingErrors.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -151,9 +145,7 @@ class TestCollidingErrors(val id: String) : QueryOperation<TestCollidingErrors.D
 /** Operation value for `query TestCollidingRequired`. */
 class TestCollidingRequired(val id: String) : QueryOperation<TestCollidingRequired.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -193,9 +185,7 @@ class TestCollidingRequired(val id: String) : QueryOperation<TestCollidingRequir
 /** Operation value for `query TestFilteredCharacters`. */
 class TestFilteredCharacters(val filters: List<FilterCharacter>) : QueryOperation<TestFilteredCharacters.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("filters", Variable.List(filters.map { Variable.of(it) }))
-        })
+        get() = Variables.of("filters" to Variable.List(filters.map { Variable.of(it) }))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -228,10 +218,7 @@ class TestFilteredCharacters(val filters: List<FilterCharacter>) : QueryOperatio
 /** Operation value for `query TestKeywordVariables`. */
 class TestKeywordVariables(val where: String, val `in`: String) : QueryOperation<TestKeywordVariables.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("where", Variable.of(where))
-            put("in", Variable.of(`in`))
-        })
+        get() = Variables.of("where" to Variable.of(where), "in" to Variable.of(`in`))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -279,9 +266,7 @@ class TestKeywordVariables(val where: String, val `in`: String) : QueryOperation
 /** Operation value for `query TestLoggedOrigin`. */
 class TestLoggedOrigin(val id: String) : QueryOperation<TestLoggedOrigin.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -321,9 +306,7 @@ class TestLoggedOrigin(val id: String) : QueryOperation<TestLoggedOrigin.Data> {
 /** Operation value for `query TestRequiredOrigin`. */
 class TestRequiredOrigin(val id: String) : QueryOperation<TestRequiredOrigin.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -363,9 +346,7 @@ class TestRequiredOrigin(val id: String) : QueryOperation<TestRequiredOrigin.Dat
 /** Operation value for `query TestReservedNames`. */
 class TestReservedNames(val id: String) : QueryOperation<TestReservedNames.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -432,9 +413,7 @@ class TestReservedNames(val id: String) : QueryOperation<TestReservedNames.Data>
 /** Operation value for `query TestStandaloneFragmentsQuery`. */
 class TestStandaloneFragmentsQuery(val id: String) : QueryOperation<TestStandaloneFragmentsQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -485,9 +464,7 @@ class TestStandaloneFragmentsQuery(val id: String) : QueryOperation<TestStandalo
 /** Operation value for `query TestStrictEpisodes`. */
 class TestStrictEpisodes(val id: String) : QueryOperation<TestStrictEpisodes.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -527,9 +504,7 @@ class TestStrictEpisodes(val id: String) : QueryOperation<TestStrictEpisodes.Dat
 /** Operation value for `query TestStrictOrigin`. */
 class TestStrictOrigin(val id: String) : QueryOperation<TestStrictOrigin.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -569,9 +544,7 @@ class TestStrictOrigin(val id: String) : QueryOperation<TestStrictOrigin.Data> {
 /** Operation value for `query TestSwiftNames`. */
 class TestSwiftNames(val id: String) : QueryOperation<TestSwiftNames.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -638,9 +611,7 @@ class TestSwiftNames(val id: String) : QueryOperation<TestSwiftNames.Data> {
 /** Operation value for `query TestThrowingNode`. */
 class TestThrowingNode(val id: String) : QueryOperation<TestThrowingNode.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -681,9 +652,7 @@ class TestThrowingNode(val id: String) : QueryOperation<TestThrowingNode.Data> {
 /** Operation value for `query TestTwoFieldPartQuery`. */
 class TestTwoFieldPartQuery(val id: String) : QueryOperation<TestTwoFieldPartQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -731,10 +700,7 @@ class TestTwoFieldPartQuery(val id: String) : QueryOperation<TestTwoFieldPartQue
 /** Operation value for `query TestTwoScopes`. */
 class TestTwoScopes(val a: String, val b: String) : QueryOperation<TestTwoScopes.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("a", Variable.of(a))
-            put("b", Variable.of(b))
-        })
+        get() = Variables.of("a" to Variable.of(a), "b" to Variable.of(b))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -802,9 +768,7 @@ class TestTwoScopes(val a: String, val b: String) : QueryOperation<TestTwoScopes
 /** Operation value for `query TestUncaughtPartQuery`. */
 class TestUncaughtPartQuery(val id: String) : QueryOperation<TestUncaughtPartQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 

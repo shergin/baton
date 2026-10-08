@@ -23,9 +23,7 @@ import baton.Variables
 /** Operation value for `query TestAssetNameQuery`. */
 class TestAssetNameQuery(val uuid: String) : QueryOperation<TestAssetNameQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("uuid", Variable.of(uuid))
-        })
+        get() = Variables.of("uuid" to Variable.of(uuid))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -59,9 +57,7 @@ class TestAssetNameQuery(val uuid: String) : QueryOperation<TestAssetNameQuery.D
 /** Operation value for `query TestAssetQuery`. */
 class TestAssetQuery(val uuid: String) : QueryOperation<TestAssetQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("uuid", Variable.of(uuid))
-        })
+        get() = Variables.of("uuid" to Variable.of(uuid))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -137,10 +133,7 @@ class TestAssetsQuery : QueryOperation<TestAssetsQuery.Data> {
 /** Operation value for `query TestQuoteQuery`. */
 class TestQuoteQuery(val base: String, val quote: String) : QueryOperation<TestQuoteQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("base", Variable.of(base))
-            put("quote", Variable.of(quote))
-        })
+        get() = Variables.of("base" to Variable.of(base), "quote" to Variable.of(quote))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 

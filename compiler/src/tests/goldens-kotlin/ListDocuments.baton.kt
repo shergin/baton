@@ -27,11 +27,7 @@ import baton.Variables
 /** Operation value for `mutation TestAddNote`. */
 class TestAddNote(val characterId: String, val text: String, val connections: List<String>) : MutationOperation<TestAddNote.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("characterId", Variable.of(characterId))
-            put("text", Variable.of(text))
-            put("connections", Variable.List(connections.map { Variable.of(it) }))
-        })
+        get() = Variables.of("characterId" to Variable.of(characterId), "text" to Variable.of(text), "connections" to Variable.List(connections.map { Variable.of(it) }))
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestAddNote && other.characterId == characterId && other.text == text && other.connections == connections
@@ -74,11 +70,7 @@ class TestAddNote(val characterId: String, val text: String, val connections: Li
 /** Operation value for `mutation TestAddNoteFirst`. */
 class TestAddNoteFirst(val characterId: String, val text: String, val connections: List<String>) : MutationOperation<TestAddNoteFirst.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("characterId", Variable.of(characterId))
-            put("text", Variable.of(text))
-            put("connections", Variable.List(connections.map { Variable.of(it) }))
-        })
+        get() = Variables.of("characterId" to Variable.of(characterId), "text" to Variable.of(text), "connections" to Variable.List(connections.map { Variable.of(it) }))
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestAddNoteFirst && other.characterId == characterId && other.text == text && other.connections == connections
@@ -121,11 +113,7 @@ class TestAddNoteFirst(val characterId: String, val text: String, val connection
 /** Operation value for `mutation TestAddNoteNode`. */
 class TestAddNoteNode(val characterId: String, val text: String, val connections: List<String>) : MutationOperation<TestAddNoteNode.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("characterId", Variable.of(characterId))
-            put("text", Variable.of(text))
-            put("connections", Variable.List(connections.map { Variable.of(it) }))
-        })
+        get() = Variables.of("characterId" to Variable.of(characterId), "text" to Variable.of(text), "connections" to Variable.List(connections.map { Variable.of(it) }))
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestAddNoteNode && other.characterId == characterId && other.text == text && other.connections == connections
@@ -162,11 +150,7 @@ class TestAddNoteNode(val characterId: String, val text: String, val connections
 /** Operation value for `mutation TestAddNoteNodeFirst`. */
 class TestAddNoteNodeFirst(val characterId: String, val text: String, val connections: List<String>) : MutationOperation<TestAddNoteNodeFirst.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("characterId", Variable.of(characterId))
-            put("text", Variable.of(text))
-            put("connections", Variable.List(connections.map { Variable.of(it) }))
-        })
+        get() = Variables.of("characterId" to Variable.of(characterId), "text" to Variable.of(text), "connections" to Variable.List(connections.map { Variable.of(it) }))
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestAddNoteNodeFirst && other.characterId == characterId && other.text == text && other.connections == connections
@@ -203,11 +187,7 @@ class TestAddNoteNodeFirst(val characterId: String, val text: String, val connec
 /** Operation value for `mutation TestAddNoteNodeOfAnotherType`. */
 class TestAddNoteNodeOfAnotherType(val characterId: String, val text: String, val connections: List<String>) : MutationOperation<TestAddNoteNodeOfAnotherType.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("characterId", Variable.of(characterId))
-            put("text", Variable.of(text))
-            put("connections", Variable.List(connections.map { Variable.of(it) }))
-        })
+        get() = Variables.of("characterId" to Variable.of(characterId), "text" to Variable.of(text), "connections" to Variable.List(connections.map { Variable.of(it) }))
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestAddNoteNodeOfAnotherType && other.characterId == characterId && other.text == text && other.connections == connections
@@ -244,9 +224,7 @@ class TestAddNoteNodeOfAnotherType(val characterId: String, val text: String, va
 /** Operation value for `query TestAliasQuery`. */
 class TestAliasQuery(val id: String) : QueryOperation<TestAliasQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -281,11 +259,7 @@ class TestAliasQuery(val id: String) : QueryOperation<TestAliasQuery.Data> {
 /** Operation value for `query TestAuthorNotesPaginationQuery`. */
 class TestAuthorNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestAuthorNotesPaginationQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("count", if (count == null) Variable.Int(2) else Variable.of(count))
-            if (cursor != null) put("cursor", Variable.of(cursor))
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("count" to (if (count == null) Variable.Int(2) else Variable.of(count)), "cursor" to cursor?.let { Variable.of(it) }, "id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -357,9 +331,7 @@ class TestAuthorNotesPaginationQuery(val count: Int? = null, val cursor: String?
 /** Operation value for `query TestAuthorNotesQuery`. */
 class TestAuthorNotesQuery(val id: String) : QueryOperation<TestAuthorNotesQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -431,11 +403,7 @@ class TestAuthorNotesQuery(val id: String) : QueryOperation<TestAuthorNotesQuery
 /** Operation value for `query TestDeferredNotesPaginationQuery`. */
 class TestDeferredNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestDeferredNotesPaginationQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("count", if (count == null) Variable.Int(2) else Variable.of(count))
-            if (cursor != null) put("cursor", Variable.of(cursor))
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("count" to (if (count == null) Variable.Int(2) else Variable.of(count)), "cursor" to cursor?.let { Variable.of(it) }, "id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -501,9 +469,7 @@ class TestDeferredNotesPaginationQuery(val count: Int? = null, val cursor: Strin
 /** Operation value for `mutation TestDeleteNote`. */
 class TestDeleteNote(val id: String) : MutationOperation<TestDeleteNote.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestDeleteNote && other.id == id
@@ -534,11 +500,7 @@ class TestDeleteNote(val id: String) : MutationOperation<TestDeleteNote.Data> {
 /** Operation value for `query TestHiddenNotesPaginationQuery`. */
 class TestHiddenNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestHiddenNotesPaginationQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("count", if (count == null) Variable.Int(2) else Variable.of(count))
-            if (cursor != null) put("cursor", Variable.of(cursor))
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("count" to (if (count == null) Variable.Int(2) else Variable.of(count)), "cursor" to cursor?.let { Variable.of(it) }, "id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -607,9 +569,7 @@ class TestHiddenNotesPaginationQuery(val count: Int? = null, val cursor: String?
 /** Operation value for `query TestHiddenNotesQuery`. */
 class TestHiddenNotesQuery(val id: String) : QueryOperation<TestHiddenNotesQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -671,11 +631,7 @@ class TestHiddenNotesQuery(val id: String) : QueryOperation<TestHiddenNotesQuery
 /** Operation value for `query TestHiddenRecentNotesPaginationQuery`. */
 class TestHiddenRecentNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestHiddenRecentNotesPaginationQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("count", if (count == null) Variable.Int(2) else Variable.of(count))
-            if (cursor != null) put("cursor", Variable.of(cursor))
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("count" to (if (count == null) Variable.Int(2) else Variable.of(count)), "cursor" to cursor?.let { Variable.of(it) }, "id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -742,9 +698,7 @@ class TestHiddenRecentNotesPaginationQuery(val count: Int? = null, val cursor: S
 /** Operation value for `query TestHiddenRecentNotesQuery`. */
 class TestHiddenRecentNotesQuery(val id: String) : QueryOperation<TestHiddenRecentNotesQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -804,11 +758,7 @@ class TestHiddenRecentNotesQuery(val id: String) : QueryOperation<TestHiddenRece
 /** Operation value for `query TestNotesPaginationQuery`. */
 class TestNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestNotesPaginationQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("count", if (count == null) Variable.Int(2) else Variable.of(count))
-            if (cursor != null) put("cursor", Variable.of(cursor))
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("count" to (if (count == null) Variable.Int(2) else Variable.of(count)), "cursor" to cursor?.let { Variable.of(it) }, "id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -875,9 +825,7 @@ class TestNotesPaginationQuery(val count: Int? = null, val cursor: String? = nul
 /** Operation value for `query TestNotesQuery`. */
 class TestNotesQuery(val id: String) : QueryOperation<TestNotesQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -937,10 +885,7 @@ class TestNotesQuery(val id: String) : QueryOperation<TestNotesQuery.Data> {
 /** Operation value for `query TestNotesSizedQuery`. */
 class TestNotesSizedQuery(val id: String, val size: Int? = null) : QueryOperation<TestNotesSizedQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-            if (this@TestNotesSizedQuery.size != null) put("size", Variable.of(this@TestNotesSizedQuery.size))
-        })
+        get() = Variables.of("id" to Variable.of(id), "size" to size?.let { Variable.of(it) })
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -1000,11 +945,7 @@ class TestNotesSizedQuery(val id: String, val size: Int? = null) : QueryOperatio
 /** Operation value for `query TestRecentNotesPaginationQuery`. */
 class TestRecentNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestRecentNotesPaginationQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("count", if (count == null) Variable.Int(2) else Variable.of(count))
-            if (cursor != null) put("cursor", Variable.of(cursor))
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("count" to (if (count == null) Variable.Int(2) else Variable.of(count)), "cursor" to cursor?.let { Variable.of(it) }, "id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -1069,9 +1010,7 @@ class TestRecentNotesPaginationQuery(val count: Int? = null, val cursor: String?
 /** Operation value for `query TestRecentNotesQuery`. */
 class TestRecentNotesQuery(val id: String) : QueryOperation<TestRecentNotesQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -1129,10 +1068,7 @@ class TestRecentNotesQuery(val id: String) : QueryOperation<TestRecentNotesQuery
 /** Operation value for `mutation TestRemoveNote`. */
 class TestRemoveNote(val id: String, val connections: List<String>) : MutationOperation<TestRemoveNote.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-            put("connections", Variable.List(connections.map { Variable.of(it) }))
-        })
+        get() = Variables.of("id" to Variable.of(id), "connections" to Variable.List(connections.map { Variable.of(it) }))
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestRemoveNote && other.id == id && other.connections == connections
@@ -1164,9 +1100,7 @@ class TestRemoveNote(val id: String, val connections: List<String>) : MutationOp
 /** Operation value for `query TestTwoPagesQuery`. */
 class TestTwoPagesQuery(val id: String) : QueryOperation<TestTwoPagesQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 

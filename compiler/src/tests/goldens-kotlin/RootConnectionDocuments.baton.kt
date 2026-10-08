@@ -24,10 +24,7 @@ import baton.Variables
 /** Operation value for `query TestRootNotesPaginationQuery`. */
 class TestRootNotesPaginationQuery(val count: Int? = null, val cursor: String? = null) : QueryOperation<TestRootNotesPaginationQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("count", if (count == null) Variable.Int(2) else Variable.of(count))
-            if (cursor != null) put("cursor", Variable.of(cursor))
-        })
+        get() = Variables.of("count" to (if (count == null) Variable.Int(2) else Variable.of(count)), "cursor" to cursor?.let { Variable.of(it) })
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 

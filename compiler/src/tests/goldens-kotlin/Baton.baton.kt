@@ -15,6 +15,7 @@ import baton.Slot
 import baton.Transient
 import baton.TypeID
 import baton.Variable
+import baton.Variables
 
 /** Interned schema types used by this module's documents. */
 object Types {
@@ -337,11 +338,5 @@ sealed interface Status : GeneratedEnum {
 /** The schema's input object `FilterCharacter`. A field left null is absent from the request, as GraphQL distinguishes absent from null. */
 data class FilterCharacter(val name: String? = null, val status: String? = null, val species: String? = null, val type: String? = null, val gender: String? = null) : InputObject {
     override val variable: Variable
-        get() = Variable.Object(buildMap {
-            if (name != null) put("name", Variable.of(name))
-            if (status != null) put("status", Variable.of(status))
-            if (species != null) put("species", Variable.of(species))
-            if (type != null) put("type", Variable.of(type))
-            if (gender != null) put("gender", Variable.of(gender))
-        })
+        get() = Variable.Object(Variables.of("name" to name?.let { Variable.of(it) }, "status" to status?.let { Variable.of(it) }, "species" to species?.let { Variable.of(it) }, "type" to type?.let { Variable.of(it) }, "gender" to gender?.let { Variable.of(it) }).values)
 }

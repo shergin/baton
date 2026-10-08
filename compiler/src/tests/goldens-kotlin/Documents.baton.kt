@@ -23,9 +23,7 @@ import baton.Variables
 /** Operation value for `query Fixture`. */
 class Fixture(val page: Int? = null) : QueryOperation<Fixture.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            if (page != null) put("page", Variable.of(page))
-        })
+        get() = Variables.of("page" to page?.let { Variable.of(it) })
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -107,9 +105,7 @@ class Fixture(val page: Int? = null) : QueryOperation<Fixture.Data> {
 /** Operation value for `query TestEpisodesQuery`. */
 class TestEpisodesQuery(val id: String) : QueryOperation<TestEpisodesQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -148,9 +144,7 @@ class TestEpisodesQuery(val id: String) : QueryOperation<TestEpisodesQuery.Data>
 /** Operation value for `query TestFreshCharacter`. */
 class TestFreshCharacter(val id: String) : QueryOperation<TestFreshCharacter.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -184,9 +178,7 @@ class TestFreshCharacter(val id: String) : QueryOperation<TestFreshCharacter.Dat
 /** Operation value for `query TestHeaderQuery`. */
 class TestHeaderQuery(val id: String) : QueryOperation<TestHeaderQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -229,9 +221,7 @@ class TestHeaderQuery(val id: String) : QueryOperation<TestHeaderQuery.Data> {
 /** Operation value for `query TestList`. */
 class TestList(val page: Int? = null) : QueryOperation<TestList.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            if (page != null) put("page", Variable.of(page))
-        })
+        get() = Variables.of("page" to page?.let { Variable.of(it) })
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -279,9 +269,7 @@ class TestList(val page: Int? = null) : QueryOperation<TestList.Data> {
 /** Operation value for `query TestQualifiedQuery`. */
 class TestQualifiedQuery(val id: String) : QueryOperation<TestQualifiedQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 

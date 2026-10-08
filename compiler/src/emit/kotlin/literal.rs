@@ -216,16 +216,25 @@ pub(super) fn jvm_getters(names: &[&str], taken: &[&str]) -> Vec<Option<String>>
         .collect()
 }
 
-/// The names a receiver of a builder's lambda, a `MutableMap`, has as
-/// properties, and the backing field a getter reads as `field`: a value's
-/// property of one of these names is read through its class's `this`.
-const RECEIVER_NAMES: [&str; 6] = ["size", "keys", "values", "entries", "javaClass", "field"];
-
-/// A property of the class `owner`, `property` as Kotlin spells it, read
-/// inside a getter's `buildMap`.
-pub(super) fn property_read(owner: &str, property: &str) -> String {
-    if RECEIVER_NAMES.contains(&property) {
-        return format!("this@{owner}.{property}");
+/// A property of the class, `property` as Kotlin spells it, read inside
+/// one of its getters: through `this` when it is named `field`, which a
+/// getter reads as its own backing field.
+pub(super) fn property_read(property: &str) -> String {
+    if property == "field" {
+        return format!("this.{property}");
     }
     property.to_string()
+}
+
+/// The `Variable` of a value that may be null, `read`, of `shape`: null
+/// when it is, so `Variables.of` leaves the entry out.
+pub(super) fn optional_value_expression(
+    converters: &Converters,
+    read: &str,
+    shape: &ValueShape,
+) -> String {
+    format!(
+        "{read}?.let {{ {} }}",
+        converters.value_expression("it", shape)
+    )
 }

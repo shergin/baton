@@ -25,9 +25,7 @@ import baton.Variables
 /** Operation value for `query TestFavoriteQuery`. */
 class TestFavoriteQuery(val id: String) : QueryOperation<TestFavoriteQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -61,9 +59,7 @@ class TestFavoriteQuery(val id: String) : QueryOperation<TestFavoriteQuery.Data>
 /** Operation value for `query TestNode`. */
 class TestNode(val id: String) : QueryOperation<TestNode.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -103,10 +99,7 @@ class TestNode(val id: String) : QueryOperation<TestNode.Data> {
 /** Operation value for `mutation TestRename`. */
 class TestRename(val id: String, val name: String) : MutationOperation<TestRename.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-            put("name", Variable.of(name))
-        })
+        get() = Variables.of("id" to Variable.of(id), "name" to Variable.of(name))
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestRename && other.id == id && other.name == name
@@ -143,10 +136,7 @@ class TestRename(val id: String, val name: String) : MutationOperation<TestRenam
 /** Operation value for `mutation TestRenameThroughFragment`. */
 class TestRenameThroughFragment(val id: String, val name: String) : MutationOperation<TestRenameThroughFragment.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-            put("name", Variable.of(name))
-        })
+        get() = Variables.of("id" to Variable.of(id), "name" to Variable.of(name))
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestRenameThroughFragment && other.id == id && other.name == name
@@ -183,11 +173,7 @@ class TestRenameThroughFragment(val id: String, val name: String) : MutationOper
 /** Operation value for `mutation TestRenameWithOrigin`. */
 class TestRenameWithOrigin(val id: String, val name: String, val withOrigin: Boolean) : MutationOperation<TestRenameWithOrigin.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-            put("name", Variable.of(name))
-            put("withOrigin", Variable.of(withOrigin))
-        })
+        get() = Variables.of("id" to Variable.of(id), "name" to Variable.of(name), "withOrigin" to Variable.of(withOrigin))
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestRenameWithOrigin && other.id == id && other.name == name && other.withOrigin == withOrigin
@@ -231,9 +217,7 @@ class TestRenameWithOrigin(val id: String, val name: String, val withOrigin: Boo
 /** Operation value for `query TestSearch`. */
 class TestSearch(val name: String) : QueryOperation<TestSearch.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("name", Variable.of(name))
-        })
+        get() = Variables.of("name" to Variable.of(name))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -286,9 +270,7 @@ class TestSearch(val name: String) : QueryOperation<TestSearch.Data> {
 /** Operation value for `query TestSearchOrigins`. */
 class TestSearchOrigins(val name: String) : QueryOperation<TestSearchOrigins.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("name", Variable.of(name))
-        })
+        get() = Variables.of("name" to Variable.of(name))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
@@ -341,10 +323,7 @@ class TestSearchOrigins(val name: String) : QueryOperation<TestSearchOrigins.Dat
 /** Operation value for `mutation TestSetFavorite`. */
 class TestSetFavorite(val id: String, val favorite: Boolean) : MutationOperation<TestSetFavorite.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-            put("favorite", Variable.of(favorite))
-        })
+        get() = Variables.of("id" to Variable.of(id), "favorite" to Variable.of(favorite))
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestSetFavorite && other.id == id && other.favorite == favorite

@@ -70,9 +70,7 @@ class TestDrafts : QueryOperation<TestDrafts.Data> {
 /** Operation value for `query TestPinnedCharacter`. */
 class TestPinnedCharacter(val id: String) : QueryOperation<TestPinnedCharacter.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("id", Variable.of(id))
-        })
+        get() = Variables.of("id" to Variable.of(id))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 

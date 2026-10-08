@@ -7,8 +7,8 @@ use std::collections::BTreeMap;
 
 use super::super::writer::Writer;
 use super::literal::{
-    Base, Converters, ValueShape, jvm_getters, key_parts, property_read, slot_member,
-    string_literal, type_reference,
+    Base, Converters, ValueShape, jvm_getters, key_parts, optional_value_expression, property_read,
+    slot_member, string_literal, type_reference,
 };
 use super::{FORMAT, header};
 use crate::decide::{InputField, ListShape, Shared, SlotRef};
@@ -180,24 +180,26 @@ pub(super) fn shared_text(
                 parameters.join(", ")
             ),
             |writer| {
+                // The pairs are built without a receiver, so a field is read
+                // by its own name, whatever it is named.
+                let entries: Vec<String> = fields
+                    .iter()
+                    .map(|field| {
+                        let shape = field_shape(field);
+                        let read = property_read(&input_field_name(&field.name));
+                        let value = if shape.non_null {
+                            converters.value_expression(&read, &shape)
+                        } else {
+                            optional_value_expression(converters, &read, &shape)
+                        };
+                        format!("{} to {value}", string_literal(&field.name))
+                    })
+                    .collect();
                 writer.line("override val variable: Variable");
-                writer.closed_block(
-                    "    get() = Variable.Object(buildMap {",
-                    "    })",
-                    |writer| {
-                        for field in fields {
-                            let shape = field_shape(field);
-                            let read = property_read(&type_name, &input_field_name(&field.name));
-                            let key = string_literal(&field.name);
-                            let value = converters.value_expression(&read, &shape);
-                            if shape.non_null {
-                                writer.line(format!("    put({key}, {value})"));
-                            } else {
-                                writer.line(format!("    if ({read} != null) put({key}, {value})"));
-                            }
-                        }
-                    },
-                );
+                writer.line(format!(
+                    "    get() = Variable.Object(Variables.of({}).values)",
+                    entries.join(", ")
+                ));
             },
         );
     }

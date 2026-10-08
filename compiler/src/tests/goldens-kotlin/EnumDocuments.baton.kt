@@ -23,10 +23,7 @@ import baton.Variables
 /** Operation value for `query TestCharactersWithStatus`. */
 class TestCharactersWithStatus(val status: Status, val any: List<Status>? = null) : QueryOperation<TestCharactersWithStatus.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("status", Variable.of(status))
-            if (any != null) put("any", Variable.List(any.map { Variable.of(it) }))
-        })
+        get() = Variables.of("status" to Variable.of(status), "any" to any?.let { Variable.List(it.map { Variable.of(it) }) })
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 

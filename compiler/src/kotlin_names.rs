@@ -158,9 +158,10 @@ const SLOTS_SPELLED: [&str; 8] = [
 ];
 
 /// What an input object's data class declares or spells: its own
-/// `variable`, the `copy` a data class has, and the runtime's `Variable` its
-/// body names. A `componentN` is kept as well, by `input_field_name`.
-const INPUT_SPELLED: [&str; 3] = ["variable", "copy", "Variable"];
+/// `variable`, the `copy` a data class has, and the runtime's `Variable` and
+/// `Variables` its body names. A `componentN` is kept as well, by
+/// `input_field_name`.
+const INPUT_SPELLED: [&str; 4] = ["variable", "copy", "Variable", "Variables"];
 
 /// What a generated enum declares or spells: the companion and the types
 /// its members name.
@@ -399,9 +400,9 @@ impl Naming for KotlinNaming {
     /// An operation's class declares its `variables`, its `type`, a query's
     /// and a subscription's `resolution`, the `equals`, `hashCode` and
     /// `toString` every class has, its nested `Data` and its `Companion`,
-    /// and spells the runtime's `Variable` and `Resolution` in expressions,
-    /// where a property of the name would be read instead. Its static data
-    /// lives in the companion, where no variable reaches.
+    /// and spells the runtime's `Variable`, `Variables` and `Resolution` in
+    /// expressions, where a property of the name would be read instead. Its
+    /// static data lives in the companion, where no variable reaches.
     fn value_names(&self, operation: &OperationPlan, _spelled: &BTreeSet<Spelled>) -> ValueNames {
         let mut after = vec![
             Declared::new("variables", Kind::Instance, "the operation's `variables`"),
@@ -419,11 +420,13 @@ impl Naming for KotlinNaming {
                 "the runtime's `Resolution`",
             ));
         }
-        after.push(Declared::new(
-            "Variable",
-            Kind::Type,
-            "the runtime's `Variable`",
-        ));
+        for name in ["Variable", "Variables"] {
+            after.push(Declared::new(
+                name,
+                Kind::Type,
+                format!("the runtime's `{name}`"),
+            ));
+        }
         for name in ["equals", "hashCode", "toString"] {
             after.push(Declared::new(
                 name,

@@ -59,10 +59,7 @@ class TestAssetPricesQuery : QueryOperation<TestAssetPricesQuery.Data> {
 /** Operation value for `query TestPricedAssetsQuery`. */
 class TestPricedAssetsQuery(val price: java.math.BigDecimal, val among: List<java.math.BigDecimal>? = null) : QueryOperation<TestPricedAssetsQuery.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("price", Variable.of(price, baton.scalars.Decimals))
-            if (among != null) put("among", Variable.List(among.map { Variable.of(it, baton.scalars.Decimals) }))
-        })
+        get() = Variables.of("price" to Variable.of(price, baton.scalars.Decimals), "among" to among?.let { Variable.List(it.map { Variable.of(it, baton.scalars.Decimals) }) })
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 

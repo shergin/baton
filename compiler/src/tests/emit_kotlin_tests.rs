@@ -78,7 +78,7 @@ fn file(output: &Output) -> &str {
 }
 
 #[test]
-fn a_nullable_variable_without_a_default_is_put_only_when_set() {
+fn a_nullable_variable_without_a_default_is_left_out_when_unset() {
     let output = emitted(
         "Screen.kt",
         Some("app.generated"),
@@ -86,7 +86,23 @@ fn a_nullable_variable_without_a_default_is_put_only_when_set() {
     );
     let text = file(&output);
     assert!(text.contains("class Probe(val page: Int? = null) : QueryOperation<Probe.Data>"));
-    assert!(text.contains("            if (page != null) put(\"page\", Variable.of(page))\n"));
+    assert!(
+        text.contains("        get() = Variables.of(\"page\" to page?.let { Variable.of(it) })\n")
+    );
+}
+
+#[test]
+fn a_variable_named_like_a_receiver_property_is_read_by_its_own_name() {
+    let output = emitted(
+        "Screen.kt",
+        Some("app.generated"),
+        "query Probe($size: Int, $keys: ID!) { characters(page: $size) { info { count } } character(id: $keys) { id } }",
+    );
+    let text = file(&output);
+    assert!(text.contains(
+        "Variables.of(\"size\" to size?.let { Variable.of(it) }, \"keys\" to Variable.of(keys))"
+    ));
+    assert!(!text.contains("this@"));
 }
 
 #[test]
@@ -97,10 +113,9 @@ fn a_nullable_variable_with_a_default_is_sent_as_its_default_when_null() {
         "query Probe($page: Int = 2, $id: ID!) { characters(page: $page) { info { count } } character(id: $id) { id } }",
     );
     let text = file(&output);
-    assert!(
-        text.contains("put(\"page\", if (page == null) Variable.Int(2) else Variable.of(page))")
-    );
-    assert!(text.contains("            put(\"id\", Variable.of(id))\n"));
+    assert!(text.contains(
+        "Variables.of(\"page\" to (if (page == null) Variable.Int(2) else Variable.of(page)), \"id\" to Variable.of(id))"
+    ));
 }
 
 #[test]
@@ -149,9 +164,9 @@ fn a_mapped_scalar_variable_takes_its_configured_type_and_converter() {
     assert!(text.contains(
         "class Probe(val price: java.math.BigDecimal, val among: List<java.math.BigDecimal>? = null)"
     ));
-    assert!(text.contains("put(\"price\", Variable.of(price, app.Decimals))"));
+    assert!(text.contains("\"price\" to Variable.of(price, app.Decimals)"));
     assert!(text.contains(
-        "if (among != null) put(\"among\", Variable.List(among.map { Variable.of(it, app.Decimals) }))"
+        "\"among\" to among?.let { Variable.List(it.map { Variable.of(it, app.Decimals) }) }"
     ));
 }
 

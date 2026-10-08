@@ -4,7 +4,8 @@
 
 use super::super::writer::Writer;
 use super::literal::{
-    Base, Converters, ValueShape, jvm_getters, property_read, string_literal, variable_literal,
+    Base, Converters, ValueShape, jvm_getters, optional_value_expression, property_read,
+    string_literal, variable_literal,
 };
 use super::plan::PlanSelections;
 use crate::config::OnError;
@@ -61,7 +62,7 @@ pub(super) fn operation_text(
     };
     let head = format!("class {class}{parameters} : {interface}<{class}.Data>");
     writer.block(head, |writer| {
-        variables(writer, operation, &class, converters);
+        variables(writer, operation, converters);
         if let Some(handle) = handle {
             writer.line(format!(
                 "override var resolution: Resolution<{handle}<Data>> = Resolution.Unresolved"
@@ -94,34 +95,34 @@ fn shape(variable: &VariableValue) -> ValueShape<'_> {
 /// The `variables` a value is run with: a variable the caller must give, or
 /// one with a declared default, always, the default sent when the value is
 /// null; any other only when it is set, so the request leaves it absent.
-fn variables(
-    writer: &mut Writer,
-    operation: &OperationValue,
-    class: &str,
-    converters: &Converters,
-) {
+/// The pairs are built without a receiver, so a variable is read by its
+/// own name, whatever it is named.
+fn variables(writer: &mut Writer, operation: &OperationValue, converters: &Converters) {
     writer.line("override val variables: Variables");
     if operation.variables.is_empty() {
         writer.line("    get() = Variables.none");
         return;
     }
-    writer.closed_block("    get() = Variables(buildMap {", "    })", |writer| {
-        for variable in &operation.variables {
+    let entries: Vec<String> = operation
+        .variables
+        .iter()
+        .map(|variable| {
             let shape = shape(variable);
-            let read = property_read(class, &variable.local);
+            let read = property_read(&variable.local);
             let key = string_literal(&variable.name);
-            let value = converters.value_expression(&read, &shape);
-            let line = match (variable.non_null, &variable.default_value) {
-                (true, _) => format!("put({key}, {value})"),
+            let value = match (variable.non_null, &variable.default_value) {
+                (true, _) => converters.value_expression(&read, &shape),
                 (false, Some(default)) => format!(
-                    "put({key}, if ({read} == null) {} else {value})",
-                    variable_literal(default)
+                    "(if ({read} == null) {} else {})",
+                    variable_literal(default),
+                    converters.value_expression(&read, &shape)
                 ),
-                (false, None) => format!("if ({read} != null) put({key}, {value})"),
+                (false, None) => optional_value_expression(converters, &read, &shape),
             };
-            writer.line(format!("    {line}"));
-        }
-    });
+            format!("{key} to {value}")
+        })
+        .collect();
+    writer.line(format!("    get() = Variables.of({})", entries.join(", ")));
 }
 
 /// `equals` and `hashCode`, by the variables alone: two values run with

@@ -63,9 +63,7 @@ class TestCharacterSecret : QueryOperation<TestCharacterSecret.Data> {
 /** Operation value for `query TestSecrets`. */
 class TestSecrets(val code: String) : QueryOperation<TestSecrets.Data> {
     override val variables: Variables
-        get() = Variables(buildMap {
-            put("code", Variable.of(code))
-        })
+        get() = Variables.of("code" to Variable.of(code))
     override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
