@@ -609,7 +609,8 @@ public struct MutationAction<Op: Mutation>: Sendable {
 /// events: not started, or parked while the environment is inactive;
 /// connecting until the first event; open; waiting to reconnect after a
 /// failure, until the instant it tries again; or ended, by the server's
-/// completion or by the environment's end. Not a phase: a subscription has
+/// completion, by a request error or an environment failure, or by the
+/// environment's end. Not a phase: a subscription has
 /// no data of its own to wait for, so it has no loading.
 public enum Stream: Sendable {
     case idle
@@ -619,7 +620,8 @@ public enum Stream: Sendable {
     /// at the instant, by its fixed backoff.
     case waiting(until: ContinuousClock.Instant)
     /// The server completed the stream (`nil`), or a failure ended it for
-    /// good: the handle was not retained, or the environment ended.
+    /// good: a request error, an environment failure, a handle no longer
+    /// retained, or the environment's end.
     case ended(Failure?)
 
     /// Whether the stream is connecting or open.
@@ -758,10 +760,15 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
                 // A failure while the handle is retained is a wait, not an
                 // end: the stream is opened again by the backoff. The server's
                 // completion ends it, and so does a request error, the
-                // server's refusal of the operation as written, which a retry
-                // would only repeat.
-                let refused = if case .ended(.request?) = ending { true } else { false }
-                guard failed, !refused, retainCount > 0, !environment.ended else {
+                // server's refusal of the operation as written, and an
+                // environment failure, such as a missing subscription
+                // transport the environment cannot gain after its creation.
+                // The backoff would only repeat either; a retry may try.
+                let final = switch ending {
+                case .ended(.request?), .ended(.environment?): true
+                default: false
+                }
+                guard failed, !final, retainCount > 0, !environment.ended else {
                     task = nil
                     stream = ending
                     return

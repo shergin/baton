@@ -16,7 +16,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 
-/** A subscription's handle where the `subscriptions` script does not reach: the backoff, a refusal, a release and a missing transport. */
+/** A subscription's handle where the `subscriptions` script does not reach: the backoff, a refusal, a release and a missing transport's end. */
 @OptIn(ExperimentalCoroutinesApi::class)
 class SubscriptionTests {
     private val operation = TestNoteAdded(characterId = "1", connections = emptyList())
@@ -89,13 +89,23 @@ class SubscriptionTests {
     }
 
     @Test
-    fun `an environment without a subscription transport fails the stream with the transport missing`() = runTest {
+    fun `a stream with no subscription transport ends with that environment failure and is not opened again, and a retry fails the same way`() = runTest {
         val environment = environment(subscriptions = null)
         val handle = environment.subscriptionHandle(operation)
         val retention = handle.retain()
         runCurrent()
         assertSame(EnvironmentError.NoSubscriptionTransport, handle.error)
-        assertIs<Stream.Waiting>(handle.stream)
+        val failure = assertIs<Failure.Environment>(assertIs<Stream.Ended>(handle.stream).failure)
+        assertSame(EnvironmentError.NoSubscriptionTransport, failure.environmentError)
+        advanceTimeBy(60.seconds)
+        runCurrent()
+        assertIs<Stream.Ended>(handle.stream, "an environment failure is not reconnected, however many steps pass")
+        assertEquals(0, handle.resumptions)
+        handle.retry()
+        assertEquals(Stream.Connecting, handle.stream)
+        runCurrent()
+        assertSame(EnvironmentError.NoSubscriptionTransport, handle.error)
+        assertIs<Failure.Environment>(assertIs<Stream.Ended>(handle.stream).failure)
         retention.release()
         environment.end()
     }

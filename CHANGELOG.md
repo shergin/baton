@@ -5,6 +5,11 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A subscription's stream that fails on its environment, as one with no
+  subscription transport does, ends with that failure as a request error
+  ends it, in both runtimes, instead of retrying on the backoff forever;
+  `retry()` opens it again. A transport failure still reconnects on the
+  backoff.
 - The Kotlin host's marker is recorded in
   `docs/decisions/the-kotlin-host-marks-a-document-on-the-composable.md`:
   a document is an annotation on the composable that renders, holds or

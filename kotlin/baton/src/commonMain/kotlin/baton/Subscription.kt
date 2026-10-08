@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
  * not started, or parked while the environment is inactive; connecting until
  * the first event; open; waiting to reconnect after a failure, until the
  * instant it tries again; or ended, by the server's completion, by a request
- * error or by the environment's end. Not a phase: a subscription has no data
+ * error or an environment failure, or by the environment's end. Not a phase: a subscription has no data
  * of its own to wait for, so it has no loading. See `spec/runtime.md`,
  * section 8.
  */
@@ -37,7 +37,7 @@ sealed interface Stream {
     /** A failure ended the stream, read in the handle's `error`, and the handle opens it again at [until], by its fixed backoff. */
     data class Waiting(val until: TimeMark) : Stream
 
-    /** The server completed the stream ([failure] null), or a failure ended it for good: a request error, a handle no longer retained, or the environment's end. */
+    /** The server completed the stream ([failure] null), or a failure ended it for good: a request error, an environment failure, a handle no longer retained, or the environment's end. */
     data class Ended(val failure: Failure?) : Stream
 }
 
@@ -176,9 +176,11 @@ class SubscriptionHandle<Data : Lens> internal constructor(
             }
             if (job !== current) return
             // A failure while the handle is retained is a wait, not an end. The server's completion ends the stream, and so
-            // does a request error, the server's refusal of the operation as written, which a retry would only repeat.
-            val refused = (ending as? Stream.Ended)?.failure is Failure.Request
-            if (!failed || refused || retainCount == 0 || environment.ended) {
+            // do a request error, the server's refusal of the operation as written, and an environment failure, such as a
+            // missing subscription transport the environment cannot gain after its creation. The backoff would only repeat
+            // either; a retry may try.
+            val final = (ending as? Stream.Ended)?.failure.let { it is Failure.Request || it is Failure.Environment }
+            if (!failed || final || retainCount == 0 || environment.ended) {
                 job = null
                 stream = ending
                 return

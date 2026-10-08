@@ -677,18 +677,22 @@ script `phase`; a verdict equal to the last is *unheld*.
 **A subscription's handle holds a stream.** The stream is a value: idle, or
 parked while the environment is inactive; connecting until the first
 event; open; waiting until the instant it tries again after a failure;
-ended by the server's completion, by a request error (which a retry would
-repeat), or by the environment's end. Each event is committed at the
+ended by the server's completion, by a request error or an environment
+failure, or by the environment's end. Each event is committed at the
 subscription root through the door, and counted; an event with errors and
-no data is one bad event and the stream goes on. A failure while the
-handle is retained waits and reopens by a fixed backoff: a step doubling
-from one second to thirty, jittered to between half and the whole of it,
+no data is one bad event and the stream goes on. A stream ended by a
+request error or an environment failure (no subscription transport, which
+an environment cannot gain after its creation) is not opened again until a
+retry, which may meet the same failure. A transport failure, or any other
+kind, while the handle is retained waits and reopens by a fixed backoff: a
+step doubling from one second to thirty, jittered to between half and the whole of it,
 reset by an event. The environment's `isActive` parks every retained
 stream while false and resumes them when true; every reopening counts as a
 resumption an owner may observe. Released to no holder, the stream closes
 and the root leaves at once. *Held by* tests/note-added-1 and
 tests/note-added-2 for one event's commit; the states by script
-`subscriptions`; an end by a request error and the backoff are *unheld*.
+`subscriptions`; an end by a request error or an environment failure and
+the backoff are *unheld*.
 
 ## 9. The image
 

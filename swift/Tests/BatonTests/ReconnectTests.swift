@@ -477,4 +477,36 @@ struct ReconnectTests {
             _ = consume retention
         }
     }
+
+    @Test("a stream with no subscription transport ends with that environment failure and is not opened again, and a retry fails the same way")
+    func an_environment_failure_ends_the_stream_and_a_retry_repeats_it() async throws {
+        try await withBase(.milliseconds(20)) {
+            let environment = Environment(transport: SilentTransport())
+            environment.log = nil
+            let live = environment.subscriptionHandle(for: TestNoteAdded(characterId: "reconnect-\(#line)", connections: []))
+            let retention = live.retain()
+            await until { !live.isActive }
+            guard case .ended(.environment(.noSubscriptionTransport)?) = live.stream else {
+                Issue.record("expected the stream ended by the missing transport, got \(live.stream)")
+                return
+            }
+            #expect(live.error as? EnvironmentError == .noSubscriptionTransport)
+            try await Task.sleep(for: .milliseconds(150))
+            guard case .ended(.environment(.noSubscriptionTransport)?) = live.stream else {
+                Issue.record("an environment failure is not reconnected, however many steps pass; got \(live.stream)")
+                return
+            }
+            #expect(live.resumptions == 0)
+
+            live.retry()
+            #expect(isConnecting(live.stream))
+            await until { !live.isActive }
+            guard case .ended(.environment(.noSubscriptionTransport)?) = live.stream else {
+                Issue.record("expected the retried stream ended by the missing transport again, got \(live.stream)")
+                return
+            }
+            #expect(live.error as? EnvironmentError == .noSubscriptionTransport)
+            _ = consume retention
+        }
+    }
 }

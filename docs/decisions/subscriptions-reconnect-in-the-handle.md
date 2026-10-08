@@ -1,6 +1,7 @@
 # A subscription reconnects in its handle, by a fixed backoff
 
-Status: accepted, 2026-10-11. Answers
+Status: accepted, 2026-10-11; amended 2026-10-07, an environment failure
+ends the stream as a request error does. Answers
 [#12](https://github.com/shergin/baton/issues/12)'s reconnection, parking
 and gap handling. Serves
 [The store is the UI's state](../principles/store-is-the-ui-state.md) and
@@ -25,8 +26,11 @@ the environment.
   active is a wait, not an end: the handle opens it again after a backoff.
   The server's completion ends the stream, and so does a request error, the
   server's refusal of the operation as written, which a retry would only
-  repeat every half minute for as long as the handle lived; `retry()` opens
-  an ended or waiting stream again at once. A stream that fails while the
+  repeat every half minute for as long as the handle lived. An environment
+  failure ends the stream likewise: an environment with no subscription
+  transport cannot gain one after its creation, so the backoff would repeat
+  the failure forever. `retry()` opens an ended or waiting stream again at
+  once, and meets the same failure if nothing changed. A stream that fails while the
   environment is inactive, or a handle retained while it is, parks rather
   than waits, so activity opens it.
 - **The backoff is fixed and documented**: a step doubling from one second
