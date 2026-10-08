@@ -58,6 +58,7 @@ principle, the proof belongs here.
 - [The decided architecture is built first, one release a step](the-decided-architecture-is-built-first.md)
 - [Releases are frequent and named for bread](releases-are-frequent-and-named-for-bread.md)
 - [The verdict is the root's, and the phase is derived from it](the-verdict-is-the-roots.md)
+- [A build integration holds no logic of its own](a-build-integration-holds-no-logic.md)
 - [A payload is bytes in a response's shape](a-payload-is-bytes-in-a-responses-shape.md)
 - [A mapped scalar's host type is named per language](a-mapped-scalars-host-type-is-named-per-language.md)
 - [The Kotlin runtime is common first, and a platform is an actual](the-kotlin-runtime-is-common-first.md)
