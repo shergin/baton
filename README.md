@@ -321,8 +321,8 @@ that is quick to generate, easy to review, and hard to get silently wrong.
 
 ## Status
 
-0.9.0 (Krendel). On Swift, reads, writes, lists, errors and persistence run
-through every layer, with tests and benchmarks behind the claims: cached
+0.10.0 (Vatrushka). On Swift, reads, writes, lists, errors and persistence
+run through every layer, with tests and benchmarks behind the claims: cached
 data in the first body, one changed field re-rendering one row, optimistic
 responses that show at once and revert on failure, connections that merge
 their pages in the store, field errors read through Relay's directives,

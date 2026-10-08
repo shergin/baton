@@ -3,7 +3,7 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
-## Unreleased
+## 0.10.0 (Vatrushka) — 2026-10-07
 
 - The macros accept swift-syntax from 602 to 604, where they accepted 602
   alone, so an app that pins swift-syntax to its compiler's release, 603
