@@ -34,9 +34,9 @@ internal class Keys {
         val scanned: Int,
     )
 
-    private class State(val tables: Map<Int, Table>, val adoptions: List<Pair<Slot, Slot>>)
+    private class State(val tables: Map<Int, Table>, val adoptions: List<Pair<Slot, Slot>>, val generation: Int)
 
-    private val state = AtomicReference(State(emptyMap(), emptyList()))
+    private val state = AtomicReference(State(emptyMap(), emptyList(), 0))
 
     /** The slot of a rendered key on [type]: the build's when it names the text, otherwise the store's number for it. */
     fun slot(type: TypeID, text: String): Slot {
@@ -54,10 +54,18 @@ internal class Keys {
             }
             val slot = Slot(type, dense ?: number.inv())
             if (next === current.tables[type.raw] && adoptions.isEmpty()) return slot
-            val updated = State(current.tables + (type.raw to next), current.adoptions + adoptions)
+            val updated = State(current.tables + (type.raw to next), current.adoptions + adoptions, current.generation)
             if (state.compareAndSet(current, updated)) return slot
         }
     }
+
+    /**
+     * How many times numbers were freed or forgotten. A scope that cached
+     * slots under an earlier generation renders its keys again, since a
+     * number it holds may have been freed and taken by another text: Kotlin
+     * has no deinit to tell the keys a scope still holds one.
+     */
+    val generation: Int get() = state.load().generation
 
     /** The text of a slot: the build's for a dense one, the store's for one it numbered. */
     fun text(slot: Slot): String {
@@ -93,7 +101,7 @@ internal class Keys {
                 tables[raw] = Table(numbers, texts, table.constants, table.scanned)
             }
             if (freed.isEmpty()) return freed
-            if (state.compareAndSet(current, State(tables, current.adoptions))) return freed
+            if (state.compareAndSet(current, State(tables, current.adoptions, current.generation + 1))) return freed
         }
     }
 
@@ -101,7 +109,7 @@ internal class Keys {
     fun clear() {
         while (true) {
             val current = state.load()
-            if (state.compareAndSet(current, State(emptyMap(), emptyList()))) return
+            if (state.compareAndSet(current, State(emptyMap(), emptyList(), current.generation + 1))) return
         }
     }
 
@@ -122,7 +130,7 @@ internal class Keys {
                 adoptions = adoptions + fresh
             }
             if (tables === current.tables) return
-            if (state.compareAndSet(current, State(tables, adoptions))) return
+            if (state.compareAndSet(current, State(tables, adoptions, current.generation))) return
         }
     }
 
@@ -131,7 +139,7 @@ internal class Keys {
         while (true) {
             val current = state.load()
             if (current.adoptions.isEmpty()) return emptyList()
-            if (state.compareAndSet(current, State(current.tables, emptyList()))) return current.adoptions
+            if (state.compareAndSet(current, State(current.tables, emptyList(), current.generation))) return current.adoptions
         }
     }
 

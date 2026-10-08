@@ -59,6 +59,24 @@ class Owner private constructor(
     private val bound = ArrayList<Pair<ArgumentSite, Owner>>()
     private var inertOwner: Owner? = null
 
+    /** The keys' generation the cached slots were taken under. */
+    private var generation = keys.generation
+
+    /**
+     * Forgets the cached slots when the keys freed numbers since they were
+     * taken: a number this scope cached may now name another text, and a
+     * text rendered again finds its own, its values gone with the records
+     * the collector swept. A scope a root holds keeps its numbers; this
+     * guards a lens kept past its root.
+     */
+    private fun revalidateSlots() {
+        val current = keys.generation
+        if (current == generation) return
+        generation = current
+        slots.clear()
+        abstractSlots.clear()
+    }
+
     /**
      * The slot a rendered key names under this owner's variables. A text the
      * store has not met is numbered and reads as missing; nothing is written
@@ -67,6 +85,7 @@ class Owner private constructor(
      */
     @Generated
     fun slot(key: DynamicKey): Slot {
+        revalidateSlots()
         for ((cached, slot) in slots) if (cached === key) return slot
         store?.checkThread()
         keys.reconcile()
@@ -79,6 +98,7 @@ class Owner private constructor(
     /** The key's slot under these variables on [type], for a key read on an interface or a union. */
     @Generated
     fun slot(key: DynamicKey, on: TypeID): Slot {
+        revalidateSlots()
         for ((cached, slot) in abstractSlots) if (cached === key) return slot.on(on)
         store?.checkThread()
         keys.reconcile()

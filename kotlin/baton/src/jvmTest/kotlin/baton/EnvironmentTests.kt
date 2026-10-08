@@ -103,6 +103,23 @@ class EnvironmentTests {
     }
 
     @Test
+    fun `a scope kept past the collection that freed its number renders its key again rather than read another text's`() {
+        val store = Store()
+        val query = store.root.type
+        val owner = Owner.reading(Variables(mapOf("id" to Variable.String("1"))), store)
+        val key = DynamicKey(query, "unbuilt", listOf(KeyArgument("id", listOf(KeyPart.Variable("id")))))
+        val first = owner.slot(key)
+        store.local { batch -> store.set(store.root, first, Value.String("Rick"), batch) }
+        store.collect()
+        val other = store.keys.slot(query, "other")
+        assertEquals(first, other, "the freed number went to the next text")
+        val again = owner.slot(key)
+        assertTrue(again != other, "the scope took a number of its own for its text")
+        assertEquals("unbuilt(id:\"1\")", store.keys.text(again))
+        assertEquals(Value.Missing, store.root.peek(again))
+    }
+
+    @Test
     fun `an ended environment fails every later call with the environment gone`() = runTest {
         val environment = environment(ScriptedTransport())
         environment.end()
