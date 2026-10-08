@@ -19,6 +19,29 @@ are expected and listed without apology.
   the list's end, an issue whose composer appends an optimistic comment by
   the viewer through `@appendEdge`, and sign-out that ends the environment
   and removes the image. Its tests run the screens over `ScriptedTransport`.
+- A Kotlin operation's companion is a `QueryType`, `MutationType` or
+  `SubscriptionType` naming the operation's class beside its data, so
+  `val rename = rememberMutation(RenameMutation)` infers its action's type.
+  `OperationType` and the three are application API, outside the
+  `baton.Generated` opt-in that an app's call to `rememberMutation` failed
+  before; what generated code alone calls on them stays inside it.
+- `@Fragment`, `@Query`, `@Mutation` and `@Subscription` repeat in Kotlin,
+  so one composable can host several documents, as a button that stars and
+  unstars hosts two mutations.
+- The Kotlin `Retention` is `Hold` (`handle.retain(): Hold`,
+  `hold.release()`), since `baton.Retention` hid
+  `kotlin.annotation.Retention` from every file that writes
+  `import baton.*`. Swift keeps `Retention`.
+- `Phase`, `Fetch` and `MutationAction` are `@Stable` in Kotlin, so a
+  composable handed a failed phase skips like any other. The Compose
+  compiler's reports, turned on with `-PcomposeReports=true`, show every
+  generated lens and `LensList` stable and every composable of the desktop
+  sample restartable and skippable.
+- `baton-inspector`, the Kotlin store inspector: `StoreInspector(environment)`,
+  a live, searchable Compose view of the store's records by type with their
+  fields, values and field errors, and `StoreExport.text(store)`, the dump.
+  The desktop sample shows it in a third pane from its View menu
+  (Command-I), and follows the system's light or dark appearance.
 
 ## 0.11.0 (Karavai) — 2026-10-07
 
