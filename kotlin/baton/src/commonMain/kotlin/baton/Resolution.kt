@@ -188,6 +188,8 @@ internal class ResolvedSelection(
     memberships: List<Selection.MembershipAnswer>,
     /** The store's keys, for a selection that reads variables; null for one every store shares. */
     private val keys: Keys?,
+    /** Whether the selection reads a transient field: an operation selecting a transient root field leaves no fetch stamp in the image. */
+    val transient: Boolean = false,
 ) {
     private val own = ResolvedVariant(type, key, fields)
     val membershipKeys: List<Pair<ByteArray, TypeID>> = memberships.map { it.responseKey.encodeToByteArray() to it.condition }
@@ -275,6 +277,7 @@ internal class ResolvedSelection(
                 conditions.map { it.first to part(it.second) },
                 membershipKeys.map { Selection.MembershipAnswer(it.first.decodeToString(), it.second) },
                 keys,
+                transient,
             )
         }
         while (true) {
@@ -338,7 +341,7 @@ private class Resolver(private val variables: Variables, private val keys: Keys)
                 listed[concrete] = ResolvedVariant(concrete, variant.key ?: selection.key, fields.map { it.on(concrete, held) })
             }
         }
-        return ResolvedSelection(selection.type, selection.key, selection.isAbstract, others, listed, conditions, selection.memberships, held)
+        return ResolvedSelection(selection.type, selection.key, selection.isAbstract, others, listed, conditions, selection.memberships, held, selection.transient)
     }
 
     private fun field(field: PlanField, type: TypeID): ResolvedField {

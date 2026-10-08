@@ -564,6 +564,12 @@ a deletion a crash interrupts. See
 Swift: `Persistence(url:)` or `Persistence(name:)`, handed to
 `Store(persistence:)`; the version is `version`, the protection class
 `Persistence(protection:)`, and the removal `removeAll()`.
+Kotlin: `Persistence(path)` or `Persistence.named(name)`, handed to
+`Store(persistence)`, with `version`, `sizeLimit`, `flush()`, `close()` and
+`removeAll()` as in Swift and no protection class.
+Kotlin: the image is the same tables and rows written through the AndroidX
+SQLite driver API, on the platform's SQLite, or on the JVM the engine that
+target bundles.
 
 **Hydration.** *Composition: store, plan.* The web's word for filling a
 client's state from stored data.

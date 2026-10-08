@@ -144,8 +144,9 @@ class Environment(
 
     /**
      * Ends the session, once and for good: cancels every fetch the
-     * environment started, drops the roots, clears every record and forgets
-     * the session's keys. A handle still held reads failed with
+     * environment started, drops the roots, clears every record, forgets
+     * the session's keys, and closes the image once it has written what it
+     * was handed. A handle still held reads failed with
      * `EnvironmentError.Gone` and tells its observers; a lens still held
      * finds its records cleared; every later call fails with the same
      * error, and a response that lands later reaches neither the store nor
@@ -159,6 +160,11 @@ class Environment(
         handles.clear()
         for (handle in subscriptionHandles.values.toList()) handle.end()
         subscriptionHandles.clear()
+        // The image writes what it was handed, under the session's keys,
+        // and gives its file back for the next environment before the store
+        // forgets the keys. Nothing commits meanwhile: the environment has
+        // ended.
+        store.persistence?.close()
         store.end()
         scope.cancel()
     }

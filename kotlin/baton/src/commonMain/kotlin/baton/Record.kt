@@ -184,6 +184,38 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
         this.deleted = deleted
     }
 
+    /** Whether the record's row has been read from the image: memory then holds everything the image does of it. */
+    internal var hydrated: Boolean = false
+        private set
+
+    /** Notes that the record's row has been read from the image. */
+    internal fun setHydrated() {
+        hydrated = true
+    }
+
+    /**
+     * Fills a slot the record lacks with a value read from the image, and
+     * its field error with it. A slot that holds a value is left alone:
+     * memory is the truth. Returns whether the slot was filled.
+     */
+    internal fun fill(slot: Slot, value: Value, error: FieldError?): Boolean {
+        if (peek(slot) != Value.Missing) return false
+        if (error != null) setError(slot, error, notifying = false)
+        write(slot, value)
+        return true
+    }
+
+    /** The record as the image stores it: its values, errors and deletion now, staged values among them. */
+    internal fun snapshot(): RecordSnapshot {
+        val slots = ArrayList<Int>()
+        val values = ArrayList<Value>()
+        forEachValue { slot, value ->
+            slots.add(slot.index)
+            values.add(value)
+        }
+        return RecordSnapshot(this, slots.toIntArray(), values.toTypedArray(), errors?.let { HashMap(it) }, deleted, hydrated)
+    }
+
     /** Whether a collection removed the record from its store, or the store ended: a link to it reads nothing more from it. */
     internal var swept: Boolean = false
         private set

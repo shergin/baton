@@ -66,13 +66,23 @@ kotlin {
         // generated code everywhere; generated files opt in per file.
         all { languageSettings.optIn("baton.Generated") }
         commonMain.dependencies {
-            // The runtime depends on the standard library, kotlinx-coroutines
-            // and the Compose runtime, and nothing else; the image's engine
-            // and the transports are each target's actuals. Generated code
-            // names Compose's `Stable`, so the Compose runtime is part of the
-            // runtime's API.
+            // The runtime depends on the standard library, kotlinx-coroutines,
+            // the Compose runtime and the AndroidX SQLite driver API, and
+            // nothing else; the image's engine and the transports are each
+            // target's actuals. Generated code names Compose's `Stable`, so
+            // the Compose runtime is part of the runtime's API. The driver API
+            // is interfaces alone: the image is written against it, and each
+            // target supplies a driver.
             implementation(libs.coroutines.core)
             api(compose.runtime)
+            implementation(libs.sqlite)
+        }
+        jvmMain.dependencies {
+            // The JVM has no SQLite of its own: the image's engine on this
+            // target alone is the bundled one, a native library inside the
+            // artifact. Android will reach the system's through
+            // `AndroidSQLiteDriver`.
+            implementation(libs.sqlite.bundled)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

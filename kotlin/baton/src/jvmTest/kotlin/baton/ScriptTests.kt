@@ -9,6 +9,7 @@ import baton.testing.ScriptedTransport
 import java.math.BigDecimal
 import java.net.URI
 import java.time.Instant
+import java.util.Collections
 import java.util.IdentityHashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
@@ -19,6 +20,7 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
 import kotlin.test.Test
 import kotlin.test.fail
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
@@ -35,17 +37,16 @@ import kotlinx.coroutines.test.runTest
  * the steps answer, under a test dispatcher that is both the environment's
  * main dispatcher and its ingest dispatcher. After each step the store, the
  * handles, the log and the transport are compared with what the script
- * says, as `swift/Tests/BatonTests/ScriptTests.swift` compares them.
- *
- * A step this runtime cannot run yet stops its script, reported as pending
- * rather than failed: the image's (`relaunch`, a check answered from the
- * image). A step before it that fails fails the test.
+ * says, as `swift/Tests/BatonTests/ScriptTests.swift` compares them. A
+ * script with an image runs over a file of its own, and its `relaunch` ends
+ * the environment and makes a new store and environment over the same file,
+ * the clock where it was.
  */
 class ScriptTests {
     @Test
     fun `a script's steps leave the store, the handles and the log as the script says after each step`() {
         val failures = ArrayList<String>()
-        val stops = ArrayList<String>()
+        val passed = ArrayList<String>()
         for (path in Script.paths) {
             val script = Script.load(path)
             if (path != "scripts/${script.name}.json") failures.add("$path: a script is named for its file, not ${script.name}")
@@ -54,11 +55,13 @@ class ScriptTests {
                 runTest(timeout = 60.seconds) { run.run(this) }
             } catch (error: Throwable) {
                 failures.add("${run.context}threw $error")
+            } finally {
+                run.image?.delete()
             }
             failures.addAll(run.failures)
-            run.stopped?.let { stops.add(it) }
+            if (run.failures.isEmpty()) passed.add(script.name)
         }
-        if (stops.isNotEmpty()) println("Scripts pending:\n" + stops.joinToString("\n"))
+        println("Scripts passed whole: ${passed.joinToString(", ")}")
         if (failures.isNotEmpty()) fail("${failures.size} expectations differ:\n" + failures.joinToString("\n"))
     }
 }
@@ -68,7 +71,10 @@ class ScriptTests {
 internal class ScriptRun(private val script: Script) {
     /** Holds every query and mutation until a step answers it, and lets the steps drive every deferred response. */
     private val transport = ScriptedTransport()
-    private val heard = ArrayList<LogEvent>()
+    /** The log's events, the image's aside: the image's writer logs from its own thread. */
+    private val heard: MutableList<LogEvent> = Collections.synchronizedList(ArrayList())
+    /** The script's image, when it has one: a file of its own, which a relaunch opens again. */
+    val image: TemporaryImage? = if (script.image) TemporaryImage() else null
     private lateinit var scope: TestScope
     private lateinit var environment: Environment
     private val handles = HashMap<String, Live>()
@@ -80,9 +86,6 @@ internal class ScriptRun(private val script: Script) {
     var context = "${script.name}: "
         private set
     val failures = ArrayList<String>()
-    /** Why the script stopped before its end, when it did. */
-    var stopped: String? = null
-        private set
 
     private val store: Store get() = environment.store
 
@@ -117,17 +120,9 @@ internal class ScriptRun(private val script: Script) {
 
     suspend fun run(scope: TestScope) {
         this.scope = scope
-        val dispatcher = StandardTestDispatcher(scope.testScheduler)
-        val store = Store(script.expiration?.seconds, script.buffer)
-        environment = Environment(transport, transport, store, dispatcher, dispatcher, debug = true)
-        environment.log = { heard.add(it) }
+        environment = environment(Duration.ZERO)
         for ((index, step) in script.steps.withIndex()) {
             context = "${script.name}, step $index (${step.action.kind}): "
-            val stop = stop(step)
-            if (stop != null) {
-                stopped = "${script.name}: pending at step $index (${step.action.kind}): $stop"
-                break
-            }
             heard.clear()
             Snapshot.sendApplyNotifications()
             val notified = if (step.notified == null) null else observeEverySlot()
@@ -144,13 +139,14 @@ internal class ScriptRun(private val script: Script) {
         scope.runCurrent()
     }
 
-    /** Why a step cannot run in this runtime yet, or null when it can. */
-    private fun stop(step: Script.Step): String? {
-        return when {
-            step.action is Script.Action.Relaunch -> "the image is a later milestone"
-            step.answer == "image" -> "the image is a later milestone"
-            else -> null
-        }
+    /** An environment over a new store, on the image's file when the script has one, its clock at [clockOffset]. */
+    private fun environment(clockOffset: Duration): Environment {
+        val dispatcher = StandardTestDispatcher(scope.testScheduler)
+        val store = Store(image?.let { Persistence(it.path) }, script.expiration?.seconds, script.buffer)
+        store.clockOffset = clockOffset
+        val environment = Environment(transport, transport, store, dispatcher, dispatcher, debug = true)
+        environment.log = { event -> if (!event.isImages) heard.add(event) }
+        return environment
     }
 
     // The steps.
@@ -292,7 +288,9 @@ internal class ScriptRun(private val script: Script) {
                 return null
             }
             Script.Action.Relaunch -> {
-                fail("the step is pending and does not run")
+                val offset = store.clockOffset
+                environment.end()
+                environment = environment(offset)
                 return null
             }
         }
@@ -552,7 +550,7 @@ internal class ScriptRun(private val script: Script) {
         }
 
         step.events?.let { expected ->
-            val actual = heard.map { spelled(it) }
+            val actual = heard.toList().map { spelled(it) }
             val matches = actual.size == expected.size && actual.zip(expected).all { (event, wanted) ->
                 event.name == wanted.name && wanted.fields.all { (key, value) -> event.fields[key] == value }
             }
@@ -634,7 +632,12 @@ internal class ScriptRun(private val script: Script) {
         is LogEvent.AmbiguousIdentity -> Script.Event("ambiguousIdentity", mapOf("id" to event.id, "types" to event.types))
         is LogEvent.RequiredFieldMissing -> Script.Event("requiredFieldMissing", mapOf("type" to event.type, "path" to event.path))
         is LogEvent.PartDropped -> Script.Event("partDropped", mapOf("path" to event.path))
+        LogEvent.ImageOpened, LogEvent.ImageUnavailable, is LogEvent.ImageWritten, LogEvent.ImageWriteFailed -> Script.Event("image", emptyMap())
     }
+
+    /** Whether the event is the image's, which a script does not spell: the writer logs it when it runs. */
+    private val LogEvent.isImages: Boolean
+        get() = this == LogEvent.ImageOpened || this == LogEvent.ImageUnavailable || this is LogEvent.ImageWritten || this == LogEvent.ImageWriteFailed
 
     private companion object {
         val transportFailure = TransportError(503, "the script fails the request")

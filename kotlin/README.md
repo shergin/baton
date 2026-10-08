@@ -21,6 +21,15 @@ goldens/        compiles the Kotlin emitter's goldens, compiler/src/tests/golden
 
 `scripts/check-kotlin-goldens.sh` runs `:goldens:compileKotlinJvm`.
 
+## Dependencies
+
+`commonMain` depends on the Kotlin standard library, kotlinx-coroutines,
+the Compose runtime and the AndroidX SQLite driver API
+(`androidx.sqlite:sqlite`, interfaces the image is written against), and
+nothing else. `jvmMain` adds the bundled SQLite engine
+(`androidx.sqlite:sqlite-bundled`), since the JVM has none of its own;
+Android will reach the system's through `AndroidSQLiteDriver`.
+
 ## Building
 
 A JDK 21 and Gradle 9; the project's `gradle.properties` sets nothing
@@ -129,7 +138,30 @@ on the connection record for the duration; a fragment's `refetch()`
 fetches it again in place. A lens made by hand has no environment and
 throws `EnvironmentError.OutsideEnvironment`.
 
-`Store(cacheExpiration, releaseBufferSize)` is public, and
+The image (`Persistence.kt`, `Disk.kt`, `Row.kt`, `Hydration.kt`). A
+`Persistence(path, version, sizeLimit)`, or `Persistence.named(name)` in
+the user's cache directory, keeps the store's records in one SQLite file
+with the Swift runtime's tables and rows: a row per record, the query
+root a row per field, each operation's fetch time, the memberships
+responses taught and the names the store numbered. Every server batch
+hands the writer a snapshot of what it changed, and the writer, one
+coroutine on a thread of its own, writes the queue in one transaction,
+merging a record memory has not read into its row; a transient type, a
+transient root field, an optimistic layer and a payload under the
+mutation and subscription roots never reach it. The availability check
+answers from memory, then with the image at hand in one read
+transaction, filling what memory lacks as one local batch, and a root
+this launch has not fetched takes the age the image keeps. A file of
+another format or version or a corrupt one starts again; a file over its
+size limit evicts by launch at open; rows a whole launch leaves unread
+age out, and the names no row uses go with them; `removeAll()` deletes
+the file under a marker. The environment's end writes what was handed
+over and closes the file for the next environment. The engine is the
+platform's actual (`Image.kt`): the driver, the file operations, the
+cache directory, the writer's thread and a lock; on the JVM the bundled
+SQLite.
+
+`Store(persistence, cacheExpiration, releaseBufferSize)` is public, and
 `Environment(transport, subscriptions, store, mainDispatcher,
 ingestDispatcher, debug)` takes it; with `debug` it prints the
 missing-data events until a log is set, since common Kotlin has no build
@@ -139,12 +171,16 @@ configuration of its own.
 environment and one store over a `ScriptedTransport`, on a test
 dispatcher, comparing after each step what the Swift harness compares:
 the dump, the reads, the slots notified (through Compose's apply
-observer), the phases, fetches and streams, the log, the bodies sent and
-what the step threw. Every script passes whole but `ages` and `check`,
-which pass to their `relaunch`, which needs the image. Every case with an
+observer), the phases, fetches and streams, the log, the bodies sent, the
+check's answer and what the step threw; a script with an image runs over
+a file of its own, and its `relaunch` makes a new store and environment
+over it. All twelve scripts pass whole. `PersistenceTests` holds the
+image across launches: the fixture read back, another version, the size
+limit, the transient rules, the names swept, the events and the removal.
+Every case with an
 `override` reads the overriding value under its layer and its own records
 after the revert; `PaginationTests` holds loading a page through a lens,
 which the contract leaves unheld, and `SubscriptionTests` the backoff, a
 refusal and a release.
 
-The composables, the image and the HTTP and socket transports follow.
+The composables and the HTTP and socket transports follow.

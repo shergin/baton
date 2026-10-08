@@ -8,7 +8,8 @@ import kotlin.time.Duration
  * app's own logging and metrics: names and counts, never a record, a slot, a
  * value, a variable or a response body, so routing it anywhere logs nothing
  * a user typed. Relay's word; an app sets `Environment.log`. See
- * `spec/runtime.md`, section 10. The image's events come with the image.
+ * `spec/runtime.md`, section 10. The image's events arrive on its writer's
+ * thread, off the store's.
  */
 sealed interface LogEvent {
     /** How a fetch failed, by the kind of its `Failure`. */
@@ -69,6 +70,18 @@ sealed interface LogEvent {
 
     /** A part of a deferred response named a place the store or the plan does not have, and was dropped; [path] is the response path it named. */
     data class PartDropped(val path: String) : LogEvent
+
+    /** The image's file was opened, or taken again. */
+    data object ImageOpened : LogEvent
+
+    /** The image's file could not be opened: locked, foreign, or failing; the writer keeps its work for the next try, and a read meanwhile misses. */
+    data object ImageUnavailable : LogEvent
+
+    /** The writer landed [batches] batches of work in the image. */
+    data class ImageWritten(val batches: Int) : LogEvent
+
+    /** A write to the image failed; its work waits for the next try, or is lost with a file too damaged to keep. */
+    data object ImageWriteFailed : LogEvent
 }
 
 /** The line a debug environment prints for a missing-data event until a log is set; null for every other event. */

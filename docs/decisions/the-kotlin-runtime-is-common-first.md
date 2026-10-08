@@ -1,7 +1,8 @@
 # The Kotlin runtime is common first, and a platform is an actual
 
 Status: accepted, 2026-10-07; amended 2026-10-07, the first actual, and
-the primitives a target supplies. Serves
+the primitives a target supplies; amended 2026-10-07, the platform's
+SQLite reached through the AndroidX SQLite driver API. Serves
 [Two runtimes, one compiler](../principles/two-runtimes-one-compiler.md).
 Answers [#24](https://github.com/shergin/baton/issues/24) and shapes
 [#6](https://github.com/shergin/baton/issues/6). Not built yet. Reopen when
@@ -42,9 +43,17 @@ Kotlin runtime on the platform's equivalents.
 - The platform's equivalents of Foundation, Observation and the system's
   SQLite are the Kotlin standard library, kotlinx-coroutines, the Compose
   runtime and the platform's SQLite, and nothing else: no Ktor, no
-  serialization library, no bundled engine. The JVM has no SQLite of its
-  own; its image actual takes one as a dependency of that target alone,
-  and nothing of it reaches `commonMain` or Android.
+  serialization library, no bundled engine. The platform's SQLite is
+  reached through the AndroidX SQLite driver API (`androidx.sqlite:sqlite`,
+  interfaces alone: `SQLiteDriver`, `SQLiteConnection`, `SQLiteStatement`),
+  which `commonMain` depends on and the image is written against; a target
+  supplies the driver. Android's will be `AndroidSQLiteDriver`, over the
+  system's library. The JVM has no SQLite of its own; its image actual
+  takes `BundledSQLiteDriver` (`androidx.sqlite:sqlite-bundled`) as a
+  dependency of that target alone, and nothing of it reaches `commonMain`
+  or Android. The image's actual is the driver and what SQL cannot do
+  around it: the file operations, the directory the platform keeps cached
+  data in, the writer's thread and a lock, which common Kotlin lacks.
 - The native-runtimes record is not reopened. A Kotlin app on iOS is Kotlin
   reading Kotlin records; a SwiftUI app reads the Swift runtime.
 - A target without SQLite, such as wasmJs, runs without an image or behind
@@ -74,6 +83,17 @@ Kotlin runtime on the platform's equivalents.
   named so it is measured and not assumed: HotSpot's escape analysis
   hides allocations ART charges for, and the desktop JVM has a WebSocket
   client where Android's platform has `HttpURLConnection` alone.
+
+- The amendment of the driver API, 2026-10-07: the image of the Swift
+  runtime is built on it whole, its six tables, its blobs, its
+  transactions, its pragmas and its eviction, and the twelve scripts run
+  through it, `ages` and `check` across a relaunch. Two things the API does
+  not carry are worked around: a failure's result code reaches common code
+  only in the exception's message (`Error code: 26, ...`), which the image
+  reads to tell a file to discard from one to wait for; and the file's size
+  is the database's pages (`page_count` times `page_size`), since common
+  Kotlin has no file system. A protection class has no counterpart on
+  these platforms and the Kotlin image takes none.
 
 ## Not chosen
 

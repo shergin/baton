@@ -1,6 +1,7 @@
 package baton
 
 import androidx.compose.runtime.mutableStateOf
+import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.TimeSource
 
@@ -13,6 +14,12 @@ import kotlin.time.TimeSource
  * and 4.
  */
 class Store(
+    /**
+     * The store's image on disk, when it has one: every server batch is
+     * written behind, and the availability check reads from it what memory
+     * lacks. The store owns it from here on: the environment's end closes it.
+     */
+    val persistence: Persistence? = null,
     /**
      * How old an operation's data may be before it reads as stale, for an
      * operation whose document states no `@cacheExpiration` of its own; null
@@ -41,6 +48,39 @@ class Store(
 
     /** The store's clock, read for every stamp and every staleness: the monotonic clock, run ahead by [clockOffset]. */
     internal val now: TimeSource.Monotonic.ValueTimeMark get() = origin + origin.elapsedNow() + clockOffset
+
+    /** The wall clock the image keeps ages by, in seconds since 1970, run ahead the same way. */
+    internal val wallNow: Double
+        get() = Clock.System.now().toEpochMilliseconds() / 1000.0 + clockOffset.inWholeNanoseconds / 1e9
+
+    /** How many records have been filled from the image; for tests. */
+    internal var hydratedRecords = 0
+
+    /**
+     * The root's fields the image filled, by slot index. The image stores
+     * the root a row per field and the root is never marked hydrated, so
+     * these tell the walk in memory which of its fields came from there.
+     */
+    internal val hydratedRootSlots = HashSet<Int>()
+
+    /** The store's numbers the image's rows were read under: a value a row filled stays under its number for the image's life. */
+    internal val imageSlots = HashSet<Slot>()
+
+    /** What the image was told to forget and has not yet. */
+    private val forgotten = Forgotten()
+
+    /**
+     * What a server batch could not edit in memory: connection keys, and the
+     * bare ids of records `@deleteRecord` named that memory does not hold.
+     * Recorded only while a server's payload applies to a store with an
+     * image.
+     */
+    internal class Forgets {
+        val keys = ArrayList<String>()
+        val ids = ArrayList<String>()
+    }
+
+    internal var forgets: Forgets? = null
 
     /** The roots, by the operation's key: retained, waiting in the release buffer, or a completed mutation's. */
     internal val roots = HashMap<String, Root>()
@@ -90,10 +130,14 @@ class Store(
      * a text and the constant the build named for it afterwards. A write to
      * either lands in both.
      */
-    private val twins = HashMap<Slot, Slot>()
+    internal val twins = HashMap<Slot, Slot>()
 
-    /** The environment's log. */
+    /** The environment's log; the image's writer gets it too, and calls it from its own thread. */
     internal var log: ((LogEvent) -> Unit)? = null
+        set(value) {
+            field = value
+            persistence?.log = value
+        }
 
     /**
      * What an operation's data deserves, by the operation's own policies:
@@ -261,6 +305,21 @@ class Store(
 
     internal fun recordFor(key: String, type: TypeID, idOffset: Int): Record = record(key, type, idOffset).first
 
+    /**
+     * The record a stored link names: the store's, or one made for it. A row
+     * says of a link's target that it is an entity, not where its id starts:
+     * the type's name gives that.
+     */
+    internal fun target(key: String, type: TypeID, entity: Boolean): Record {
+        records[key]?.let { return it }
+        return recordFor(key, type, if (entity) Record.idOffset(type.name) else -1)
+    }
+
+    /** Registers a record a lookup made once the image had its row. */
+    internal fun register(record: Record) {
+        records[record.key] = record
+    }
+
     /** The kinds of batch: the server's, an optimistic response's, and the runtime's own writes (a lookup's link bound, a page's loading flag). */
     internal enum class BatchKind { SERVER, OPTIMISTIC, LOCAL }
 
@@ -273,6 +332,9 @@ class Store(
 
     /** A slot of one record, by the record's identity. */
     private data class SlotKey(val record: Record, val slot: Slot)
+
+    /** A record a server's payload changed, with the slot for the query root, which the image stores a row per field. */
+    internal data class Changed(val record: Record, val slot: Slot?)
 
     /** What a slot held before a netted batch touched it: its error, and whether it counts among the changed, which a twin's write does not. */
     private class Original(val error: FieldError?, val counted: Boolean)
@@ -297,6 +359,19 @@ class Store(
         val undo = ArrayList<Undo>()
         /** Whether steps are kept: by a netted batch that is not the runtime's own, and not while a layer is lifted, whose steps undo an earlier log. */
         var keepsUndo = !direct && kind != BatchKind.LOCAL
+
+        /**
+         * What a server's payload changed, for the image: each record once,
+         * and each of the query root's slots once, in order. Kept only while
+         * a payload applies to a store with an image.
+         */
+        var persisted: LinkedHashSet<Changed>? = null
+
+        /** Notes a change for the image: the query root's by slot, any other record's as the record. */
+        fun persist(record: Record, slot: Slot, root: Record) {
+            val persisted = persisted ?: return
+            persisted.add(if (record === root) Changed(record, slot) else Changed(record, null))
+        }
 
         fun touched(record: Record, slot: Slot, error: FieldError?, twin: Boolean) {
             if (direct) {
@@ -376,15 +451,77 @@ class Store(
         adoptConstants()
         if (replacing == null && optimisticLayers.isEmpty()) {
             val batch = Batch(BatchKind.SERVER, direct = true)
-            apply(changes, batch)
+            applyServer(changes, batch)
             return finish(batch).also { settleVerdictsIfNeeded() }
         }
         val batch = Batch(BatchKind.SERVER, direct = false)
         revertLayers(0, batch)
         if (replacing != null) optimisticLayers.remove(replacing)
-        apply(changes, batch)
+        applyServer(changes, batch)
         reapplyLayers(0, batch)
         return finish(batch).also { settleVerdictsIfNeeded() }
+    }
+
+    /**
+     * Applies a server's payload and hands the image what it changed, and
+     * what it could not change in memory, for the image to forget. Under
+     * optimistic layers it runs while they are lifted, so the image hears the
+     * server's values.
+     */
+    private fun applyServer(changes: ChangeSet, batch: Batch) {
+        val persistence = persistence
+        if (persistence == null) {
+            apply(changes, batch)
+            return
+        }
+        val forgets = Forgets()
+        this.forgets = forgets
+        batch.persisted = LinkedHashSet()
+        apply(changes, batch)
+        this.forgets = null
+        if (forgets.keys.isNotEmpty() || forgets.ids.isNotEmpty()) {
+            persistence.forget(forgets.keys.toList(), forgets.ids.toList())
+            forgotten.note(forgets.keys, forgets.ids)
+        }
+        // The records the payload wrote are the store's again, by their exact
+        // keys; the others with a forgotten id stay unread until the writer
+        // has dropped them.
+        if (!forgotten.isEmpty) {
+            for (index in 0 until changes.recordCount) forgotten.wrote(changes.recordKeys[index], changes.recordIDOffsets[index] >= 0)
+        }
+        persist(batch)
+    }
+
+    /** Whether the image's row of a record is not to be read. Once no forget waits for the writer, the rows are gone and nothing is forgotten. */
+    internal fun forgotten(record: Record): Boolean {
+        if (forgotten.isEmpty) return false
+        if (persistence?.forgetting != true) {
+            forgotten.clear()
+            return false
+        }
+        return forgotten.contains(record)
+    }
+
+    /** Hands the image what a server's payload changed: a snapshot of every changed record, and the changed fields of the root one by one. */
+    private fun persist(batch: Batch) {
+        val persistence = persistence ?: return
+        val changed = batch.persisted ?: return
+        batch.persisted = null
+        if (changed.isEmpty()) return
+        val records = ArrayList<RecordSnapshot>()
+        val fields = ArrayList<RootField>()
+        for (step in changed) {
+            val record = step.record
+            if (record === mutationRoot || record === subscriptionRoot) continue
+            val slot = step.slot
+            if (slot != null) {
+                fields.add(RootField(slot, root.peek(slot), root.peekError(slot)))
+            } else {
+                records.add(record.snapshot())
+            }
+        }
+        if (records.isEmpty() && fields.isEmpty()) return
+        persistence.committed(records, fields, keys)
     }
 
     /** Applies an optimistic response on top of everything else, as a layer a later commit rebases and a failure reverts. */
@@ -509,6 +646,9 @@ class Store(
         records[SUBSCRIPTION_ROOT_KEY] = subscriptionRoot
         placeholders.clear()
         twins.clear()
+        imageSlots.clear()
+        hydratedRootSlots.clear()
+        forgotten.clear()
         keys.clear()
         log = null
     }
@@ -517,6 +657,7 @@ class Store(
     internal fun invalidate() {
         if (ended) return
         invalidationEpoch += 1
+        persistence?.invalidate()
     }
 
     /** Runs a pass on a later turn of the store's thread; several reasons in one turn run one pass. */
@@ -594,6 +735,7 @@ class Store(
         val previous = (if (batch.direct) record.write(slot, value) else record.stage(slot, value)) ?: return
         batch.touched(record, slot, error, twin)
         batch.record(Undo.Write(record, slot, previous))
+        batch.persist(record, slot, root)
         // A local write binds a link or sets a flag; it brings no new null or error into a selection.
         if (batch.kind != BatchKind.LOCAL) noteNulls(previous, value)
     }
@@ -610,6 +752,7 @@ class Store(
         if (!record.setError(slot, error, notifying = batch.direct)) return
         batch.touched(record, slot, previous, twin)
         batch.record(Undo.Error(record, slot, previous))
+        batch.persist(record, slot, root)
         nullsOrErrorsChanged = true
     }
 
@@ -618,6 +761,7 @@ class Store(
         if (record.deleted == deleted) return
         if (!batch.flagged.containsKey(record)) batch.flagged[record] = record.deleted
         batch.record(Undo.Deletion(record, record.deleted))
+        batch.persist(record, Slot(record.type, 0), root)
         record.setDeleted(deleted)
         nullsOrErrorsChanged = true
     }
@@ -655,7 +799,11 @@ class Store(
     }
 
     private fun apply(changes: ChangeSet, batch: Batch) {
-        for ((type, condition) in changes.memberships) Membership.learn(type, condition)
+        // What the response said of types the build did not list; the image keeps it for the next launch.
+        if (changes.memberships.isNotEmpty()) {
+            for ((type, condition) in changes.memberships) Membership.learn(type, condition)
+            persistence?.learned(changes.memberships.map { (type, condition) -> type.name to condition.name })
+        }
         val objects = arrayOfNulls<Record>(changes.recordCount)
         val created = BooleanArray(changes.recordCount)
         for (index in 0 until changes.recordCount) {
@@ -700,9 +848,15 @@ class Store(
                     // Nobody can have read a record this batch made: its slots, and their twins, count among nothing changed.
                     record.write(slot, value)?.let { previous ->
                         batch.record(Undo.Write(record, slot, previous))
+                        batch.persist(record, slot, root)
                         noteNulls(previous, value)
                     }
-                    twins[slot]?.let { twin -> record.write(twin, value)?.let { previous -> batch.record(Undo.Write(record, twin, previous)) } }
+                    twins[slot]?.let { twin ->
+                        record.write(twin, value)?.let { previous ->
+                            batch.record(Undo.Write(record, twin, previous))
+                            batch.persist(record, twin, root)
+                        }
+                    }
                 } else {
                     set(record, slot, value, batch)
                 }
@@ -718,8 +872,9 @@ class Store(
                 is ChangeSet.Edit.DeleteRecord -> {
                     // The directive names a bare id: the record is the one live entity of any type with it.
                     val found = live(edit.id, Registry.typeNames())
+                    // One memory does not hold may be in the image, which forgets every record with the id.
                     when (found.size) {
-                        0 -> Unit
+                        0 -> forgets?.ids?.add(edit.id)
                         1 -> delete(found[0], batch)
                         else -> log?.invoke(LogEvent.AmbiguousIdentity(edit.id, found.map { it.type.name }))
                     }
@@ -761,10 +916,19 @@ class Store(
 
     // Connections: the merge of a page into its connection record and the edge directives' edits, where Relay keeps its connection handler.
 
-    /** The connection an edit may change: in memory, live, and holding something. */
+    /**
+     * The connection an edit may change: in memory, live, and holding what
+     * the image has or more. One the store holds only as an empty record a
+     * link made, or not at all, would be written back with the edit alone or
+     * keep its old edges in the image: the image forgets it instead, so the
+     * next read fetches it.
+     */
     private fun editable(key: String): Pair<Record, ConnectionSlots>? {
-        val connection = records[key] ?: return null
-        if (connection.deleted || connection.isEmpty) return null
+        val connection = records[key]
+        if (connection == null || connection.deleted || (connection.isEmpty && !connection.hydrated)) {
+            forgets?.keys?.add(key)
+            return null
+        }
         val slots = Registry.connection(connection.type) ?: return null
         return connection to slots
     }

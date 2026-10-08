@@ -52,6 +52,15 @@ are expected and listed without apology.
   flag that prints missing data until a log is set. Every script but the
   image's `relaunch` runs whole, and every case's `override` reads under
   its layer.
+- The Kotlin runtime keeps the store's image: `Persistence(path)` or
+  `Persistence.named(name)`, handed to `Store(persistence)`, writes every
+  server batch behind the commit on a thread of its own, and the
+  availability check reads back what memory lacks, so a relaunch draws
+  its first screen from the last launch's data and ages survive it. The
+  schema, the versions, the eviction by launch, the names forgotten with
+  their rows and what never reaches the file are the Swift runtime's; the
+  file is reached through the AndroidX SQLite driver API, with the bundled
+  engine on the JVM alone. All twelve scripts run whole.
 
 ## 0.10.0 (Vatrushka) — 2026-10-07
 

@@ -1,6 +1,7 @@
 package baton
 
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 // What keeps records alive is the store's, since it is a fact about data. A
 // root is an operation's selection and the record it starts from. It lives
@@ -91,15 +92,20 @@ internal fun Store.keepCompleted(root: Store.Root) {
 }
 
 /**
- * Dates a root: the store just committed its operation's response, which
- * makes the data present when the response was complete, whoever asked for
- * it. A query just written that nothing retains waits in the release
- * buffer, as Relay's does; the keys of the roots pushed out are returned.
+ * Dates a root: the store just committed its operation's response, in this
+ * launch, which the image is told, and which makes the data present when the
+ * response was complete, whoever asked for it. A query just written that
+ * nothing retains waits in the release buffer, as Relay's does; the keys of
+ * the roots pushed out are returned.
  */
 internal fun Store.date(root: Store.Root, present: Boolean = true): List<String> {
     root.stamp(now, invalidationEpoch)
     root.fetches += 1
     if (present) root.committed()
+    // An operation selecting a transient root field leaves no stamp: the
+    // stamp carries the operation's variables, which would name what the
+    // field was asked with.
+    if (!root.resolved.transient) persistence?.fetched(root.key, wallNow)
     if (root.record !== this.root || root.holders > 0 || root.key in releaseBuffer) return emptyList()
     return park(root.key)
 }
@@ -115,6 +121,22 @@ internal fun Store.isStale(root: Store.Root, expiration: Duration?): Boolean {
     val limit = expiration ?: cacheExpiration ?: return false
     val fetchTime = root.fetchTime ?: return true
     return fetchTime + limit < now
+}
+
+/**
+ * Gives a root whose operation this launch has not fetched the age the image
+ * knows: the time since an earlier launch fetched it. Data that had to be
+ * read from the image and has no such time is stale.
+ */
+internal fun Store.takeAge(root: Store.Root, hydrated: Boolean) {
+    if (root.fetchTime != null) return
+    val persistence = persistence ?: return
+    val age = persistence.age(root.key, wallNow)
+    if (age != null) {
+        root.stamp(now - age.seconds, invalidationEpoch)
+    } else if (hydrated) {
+        root.stamp(null, invalidationEpoch - 1)
+    }
 }
 
 /**
@@ -142,16 +164,19 @@ internal fun Store.settleVerdicts() {
 }
 
 /**
- * Removes every record no root reaches, through the links the plan follows,
- * the connections' client links among them, then frees every rendered key's
- * number that no live resolution or scope holds. Returns how many records
- * were removed.
+ * Removes every record no retention reaches: the roots, through the links
+ * the plan follows, the connections' client links among them; the records an
+ * optimistic layer wrote; and the records whose rows wait to be written, so
+ * the image, which a read does not write first, is never older than memory.
+ * Then frees every rendered key's number that nothing holds. Returns how
+ * many records were removed.
  */
 internal fun Store.collect(): Int {
     checkThread()
     if (ended) return 0
     val reachable = HashSet<Record>()
     for (root in roots.values) mark(root.resolved, root.record, reachable)
+    persistence?.let { reachable.addAll(it.unwrittenRecords()) }
     // The records an optimistic layer wrote stay while it is applied: its revert writes back into them.
     for (layer in optimisticLayers) {
         for (key in layer.changes.recordKeys) existing(key)?.let { reachable.add(it) }
@@ -175,7 +200,12 @@ private fun mark(selection: ResolvedSelection, record: Record, reachable: Mutabl
     }
 }
 
-/** The numbers a live resolution, a scope, a fetch in flight, a layer or a twin holds, then frees the rest and drops the records' entries under them. */
+/**
+ * The numbers a live resolution, a scope, a fetch in flight, a layer, a twin,
+ * a row waiting for the image or a row read from it holds, then frees the
+ * rest, drops the records' entries under them and has the image forget their
+ * names.
+ */
 private fun Store.freeKeys() {
     val kept = HashSet<Slot>()
     for (root in roots.values) root.renderedSlots(kept)
@@ -183,8 +213,12 @@ private fun Store.freeKeys() {
     for (resolution in inFlight) resolution.renderedSlots(kept)
     for (layer in optimisticLayers) layer.renderedSlots(kept)
     twinSlots(kept)
+    kept.addAll(imageSlots)
+    persistence?.unwrittenSlots(kept)
     val freed = keys.free(kept)
     if (freed.isEmpty()) return
     val set = freed.toSet()
     for (record in recordsByKey().values) record.drop(set)
+    for (slot in freed) if (slot.type == root.type) hydratedRootSlots.remove(slot.index)
+    persistence?.freed(freed)
 }

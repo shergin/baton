@@ -168,11 +168,16 @@ class OperationHandle<Data : Lens> internal constructor(
             fetchUnlessInFlight()
             return
         }
-        val complete = store.check(root.resolved) != Answer.MISS
+        val answer = store.check(root.resolved)
+        val complete = answer != Answer.MISS
         // The deferred parts the store holds half are cleared and fetched; the initial part shows meanwhile.
         val partial = complete && type.hasDeferred && !store.deferredPartsHold(root.resolved)
-        // The data is there, and its verdict is settled on it: a parked handle saw no commit.
-        if (complete) root.found()
+        if (complete) {
+            // Data an earlier launch fetched takes the age the image knows.
+            store.takeAge(root, hydrated = answer == Answer.IMAGE)
+            // The data is there, and its verdict is settled on it: a parked handle saw no commit.
+            root.found()
+        }
         when (policy) {
             FetchPolicy.STORE_ONLY -> if (!complete && !root.present) missingData = true
             FetchPolicy.STORE_OR_NETWORK -> {
