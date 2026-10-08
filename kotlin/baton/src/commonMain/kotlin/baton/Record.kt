@@ -71,6 +71,9 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
     /** Whether the record is an entity, keyed `Type:id`. */
     internal val isEntity: Boolean get() = idOffset >= 0
 
+    /** The id an entity's key carries; null for a record keyed by its path. */
+    internal val entityID: String? get() = if (idOffset >= 0) key.substring(idOffset) else null
+
     /** Whether the record is an entity with this id. */
     internal fun hasID(id: String): Boolean =
         idOffset >= 0 && key.length - idOffset == id.length && key.regionMatches(idOffset, id, 0, id.length)

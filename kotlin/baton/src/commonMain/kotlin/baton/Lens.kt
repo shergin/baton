@@ -542,9 +542,58 @@ class Anchor @Generated constructor(val record: Record, val owner: Owner) {
     @Generated fun hasPrevious(slots: ConnectionSlots): Boolean = flag(pageInfo(slots), slots.hasPreviousPage)
     @Generated fun isLoadingNext(slots: ConnectionSlots): Boolean = flag(record.also { store?.checkThread() }, slots.isLoadingNext)
     @Generated fun isLoadingPrevious(slots: ConnectionSlots): Boolean = flag(record.also { store?.checkThread() }, slots.isLoadingPrevious)
-    @Generated suspend fun loadNext(operation: OperationType<*>, slots: ConnectionSlots, refetch: Refetch, count: Int): Unit = TODO("milestone 3: the environment")
-    @Generated suspend fun loadPrevious(operation: OperationType<*>, slots: ConnectionSlots, refetch: Refetch, count: Int): Unit = TODO("milestone 3: the environment")
-    @Generated suspend fun refetch(operation: OperationType<*>, refetch: Refetch): Unit = TODO("milestone 3: the environment")
+
+    /**
+     * Fetches the next [count] edges with the fragment's refetch query, after
+     * the merged end cursor; the commit appends them. A no-op while a page is
+     * loading or when there is no next page; a lens made by hand, with no
+     * environment, throws `EnvironmentError.OutsideEnvironment`.
+     */
+    @Generated suspend fun loadNext(operation: OperationType<*>, slots: ConnectionSlots, refetch: Refetch, count: Int) {
+        val first = refetch.first ?: return
+        val after = refetch.after ?: return
+        if (!hasNext(slots) || isLoadingNext(slots)) return
+        val cursor = (pageInfo(slots)?.peek(slots.endCursor) as? Value.String)?.value ?: return
+        val values = refetchVariables(refetch, origin ?: record)
+        values[first] = Variable.Int(count.toLong())
+        values[after] = Variable.String(cursor)
+        environment().paginate(operation, Variables(values), record, slots.isLoadingNext)
+    }
+
+    /** Fetches the previous [count] edges before the merged start cursor; the commit prepends them. A no-op while a page is loading or when there is no previous page. */
+    @Generated suspend fun loadPrevious(operation: OperationType<*>, slots: ConnectionSlots, refetch: Refetch, count: Int) {
+        val last = refetch.last ?: return
+        val before = refetch.before ?: return
+        if (!hasPrevious(slots) || isLoadingPrevious(slots)) return
+        val cursor = (pageInfo(slots)?.peek(slots.startCursor) as? Value.String)?.value ?: return
+        val values = refetchVariables(refetch, origin ?: record)
+        values[last] = Variable.Int(count.toLong())
+        values[before] = Variable.String(cursor)
+        environment().paginate(operation, Variables(values), record, slots.isLoadingPrevious)
+    }
+
+    /** Fetches the fragment again with the lens's variables and its record's id; the records update in place. */
+    @Generated suspend fun refetch(operation: OperationType<*>, refetch: Refetch) {
+        environment().fetch(operation, Variables(refetchVariables(refetch, record)))
+    }
+
+    /** The refetch query's variables: the lens's scope filtered to the query's definitions, plus the id of [owner], the fragment's record. */
+    private fun refetchVariables(refetch: Refetch, owner: Record?): HashMap<String, Variable> {
+        val values = HashMap<String, Variable>()
+        for ((name, value) in variables.values) if (name in refetch.variables) values[name] = value
+        val identifier = refetch.identifier ?: return values
+        if (owner == null) return values
+        // The id is read from the slot the query names, where the key was built from; the key's own text is the fallback.
+        when (val id = refetch.identity?.let { owner.peek(it) }) {
+            is Value.String -> values[identifier] = Variable.String(id.value)
+            is Value.Int -> values[identifier] = Variable.Int(id.value)
+            else -> owner.entityID?.let { values[identifier] = Variable.String(it) }
+        }
+        return values
+    }
+
+    /** The environment the lens fetches through: its owner's, which a lens made by hand has none of. */
+    private fun environment(): Environment = owner.environment ?: throw EnvironmentError.OutsideEnvironment
 
     override fun equals(other: Any?): Boolean =
         other is Anchor && other.record === record && other.owner === owner && other.origin === origin

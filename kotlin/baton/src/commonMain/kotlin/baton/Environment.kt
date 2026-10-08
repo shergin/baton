@@ -181,6 +181,28 @@ class Environment(
     }
 
     /**
+     * Fetches an operation by its type and variables and commits the
+     * response: a refetch and a page run this way. No handle comes of it,
+     * and the operation's root, dated by the commit, waits in the release
+     * buffer if nothing retains it.
+     */
+    internal suspend fun fetch(type: OperationType<*>, variables: Variables) {
+        if (ended) throw EnvironmentError.Gone
+        fetch(type, variables, store.resolve(type.plan, variables), null)
+    }
+
+    /** Fetches a page of a connection: the loading flag on the connection record is set for the duration, and the commit merges the page. */
+    internal suspend fun paginate(type: OperationType<*>, variables: Variables, connection: Record, loading: Slot) {
+        if (ended) throw EnvironmentError.Gone
+        store.local { batch -> store.set(connection, loading, Value.True, batch) }
+        try {
+            fetch(type, variables)
+        } finally {
+            if (!ended) store.local { batch -> store.set(connection, loading, Value.False, batch) }
+        }
+    }
+
+    /**
      * Commits a payload for an operation that some other road delivered: a
      * REST response in the operation's shape, a socket's tick, a preview's
      * fixture, a test's seed. It is read by the operation's plan and
