@@ -1,7 +1,11 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.android.multiplatform.library)
 }
 
 /** The repository's root, which holds `spec/` and `compiler/`. */
@@ -59,8 +63,60 @@ val generateSpecKotlin = tasks.register<Exec>("generateSpecKotlin") {
     }
 }
 
+/** Where the compiler writes the benchmark's plan, the Fixture query's alone. */
+val generatedBenchmark: Provider<Directory> = layout.buildDirectory.dir("generated/baton/benchmark")
+
+// The device tests' one operation, `spec/sources/Fixture.graphql`, generated
+// as the specification's sources are: the ingest benchmark and the image's
+// tests on Android run through the plan an app would compile, and need none
+// of the converters the other sources name.
+val generateBenchmarkKotlin = tasks.register<Exec>("generateBenchmarkKotlin") {
+    description = "Generates the Kotlin of spec/sources/Fixture.graphql with batonc."
+    val source = repository.resolve("spec/sources/Fixture.graphql")
+    inputs.file(source)
+    inputs.files(
+        repository.resolve("spec/tests/baton.json"),
+        repository.resolve("spec/tests/schema.graphql"),
+        repository.resolve("spec/tests/extensions.graphql"),
+    )
+    inputs.file(providers.provider { batonCompiler() })
+    outputs.dir(generatedBenchmark)
+    workingDir = repository
+    doFirst {
+        commandLine(
+            batonCompiler().path, "generate", "--language", "kotlin", "--config", "spec/tests/baton.json",
+            "--out", generatedBenchmark.get().asFile.path, source.relativeTo(repository).path,
+        )
+    }
+}
+
 kotlin {
     jvm()
+    android {
+        namespace = "baton"
+        compileSdk = 36
+        // The lowest the dependencies allow: the Compose runtime and the
+        // AndroidX SQLite driver both start at Android 6.
+        minSdk = 23
+        // The common tests run on the host too, against Android's API.
+        withHostTest {}
+        // The ingest benchmark and the image's tests on the system's SQLite
+        // run on a device or an emulator: `connectedAndroidDeviceTest`.
+        withDeviceTest {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
+    }
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+        common {
+            // What the JVM and Android both run: `java.net`, `java.io` and
+            // `java.util.concurrent`, which the two platforms share.
+            group("jvmShared") {
+                withJvm()
+                withCompilations { it.platformType == KotlinPlatformType.androidJvm }
+            }
+        }
+    }
     sourceSets {
         // The runtime is the one module that uses its own contract with
         // generated code everywhere; generated files opt in per file.
@@ -80,13 +136,28 @@ kotlin {
         jvmMain.dependencies {
             // The JVM has no SQLite of its own: the image's engine on this
             // target alone is the bundled one, a native library inside the
-            // artifact. Android will reach the system's through
-            // `AndroidSQLiteDriver`.
+            // artifact.
             implementation(libs.sqlite.bundled)
+        }
+        androidMain.dependencies {
+            // The system's SQLite, through the framework's `SQLiteDatabase`.
+            implementation(libs.sqlite.framework)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.coroutines.test)
+        }
+        getByName("androidDeviceTest") {
+            kotlin.srcDir(generatedBenchmark)
+            // The Fixture response, read as a resource.
+            resources.srcDir(repository.resolve("spec/rickandmorty"))
+            resources.include("characters-page-1.json")
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(libs.coroutines.test)
+                implementation(libs.androidx.test.runner)
+                implementation(libs.androidx.test.junit)
+            }
         }
         jvmTest {
             kotlin.srcDir(generatedSpec)
@@ -108,3 +179,10 @@ kotlin {
 }
 
 tasks.named("compileTestKotlinJvm") { dependsOn(generateSpecKotlin) }
+tasks.named("compileAndroidDeviceTest") { dependsOn(generateBenchmarkKotlin) }
+
+// The runtime has no Compose resources. The Compose plugin, applied for the
+// desktop renderer the JVM tests compose on, would copy the device tests'
+// none into assets through a task the Android library plugin leaves
+// unconfigured.
+tasks.matching { it.name == "copyAndroidDeviceTestComposeResourcesToAndroidAssets" }.configureEach { enabled = false }

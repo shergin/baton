@@ -402,7 +402,9 @@ class Persistence(
          * elsewhere, `%LOCALAPPDATA%` on Windows), in a `Baton` directory. A
          * desktop process has no app identity to keep two apps' images apart
          * by, so two apps that both name theirs `"Main"` pass a directory of
-         * their own.
+         * their own. On Android the runtime holds no `Context`, so the app
+         * passes [directory], its `context.cacheDir.path`; without one the
+         * call throws `IllegalArgumentException`.
          */
         fun named(name: String, directory: String? = null, version: String = "", sizeLimit: Int = 64 shl 20): Persistence {
             val base = (directory ?: imageDirectory()).trimEnd('/', '\\')

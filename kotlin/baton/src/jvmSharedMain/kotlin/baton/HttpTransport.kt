@@ -18,8 +18,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
-// The HTTP transport uses `java.net` alone, which the JVM and Android share,
-// so it moves into a source set the two share when Android's actual comes.
+// The HTTP transport uses `java.net` alone, which the JVM and Android share.
 
 /**
  * POSTs operations as JSON to one endpoint over `HttpURLConnection`. An
@@ -90,7 +89,7 @@ class HttpTransport(
         val status = connection.responseCode
         val contentType = connection.contentType ?: ""
         if (status !in 200..299) {
-            val refused = (connection.errorStream ?: InputStream.nullInputStream()).use { it.readBytes() }
+            val refused = connection.errorStream?.use { it.readBytes() } ?: ByteArray(0)
             // A server of the GraphQL-over-HTTP media type answers a request error, a response without data, with a 4xx or 5xx
             // status: its errors are the request kind of failure, not the transport's.
             if (answersInGraphQLResponse(contentType)) requestErrors(refused)?.let { throw it }

@@ -216,13 +216,17 @@ internal class Disk(private val path: String, private val version: String, priva
         // Whose file it is comes first: nothing is changed in a database that is not an image.
         val application = integer("PRAGMA application_id")
         val format = integer("PRAGMA user_version")
-        val tables = integer("SELECT count(*) FROM sqlite_master")
+        // Android's framework adds a table of its own, `android_metadata`, to
+        // every database it opens, so a new file there already holds one.
+        val tables = integer("SELECT count(*) FROM sqlite_master WHERE name != 'android_metadata'")
         val fresh = application == 0L && format == 0L && tables == 0L
         if (!fresh && application != APPLICATION_ID) throw Failure(Kind.FOREIGN)
         if (!fresh && format != FORMAT) throw Failure(Kind.UNREADABLE)
         // Cache-grade durability: a commit does not wait for the disk. A
-        // crash loses the last moments; the file stays consistent.
-        integer("PRAGMA journal_mode=WAL")
+        // crash loses the last moments; the file stays consistent. The mode
+        // is set in one step: the statement answers with a row, and Android's
+        // driver fails a step past it.
+        exec("PRAGMA journal_mode=WAL")
         exec("PRAGMA synchronous=NORMAL")
         // An image that outgrew its limit evicts before it starts over: the
         // rows no launch has used since the one before last go first, as the
