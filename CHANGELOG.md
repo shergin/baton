@@ -5,6 +5,17 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- Baton and Apollo Kotlin end to end on a phone: `kotlin/samples/apollo-android`,
+  the Android sample's twin over Apollo Kotlin 5.2.0 and its memory and SQL
+  caches, and `kotlin/benchmarks/macro`, a Macrobenchmark module that drives
+  both release builds against a fixed server in each app's process. On a
+  Google Pixel 9, a cold start over the data on disk shows the list in
+  240 ms, in the first frame, against Apollo's 272 ms after a spinner; a
+  tap to a detail takes 22 ms against 33 ms; scrolling is the same in both.
+  From the response's first byte to the list's frame Apollo is faster,
+  42 ms against 58 ms. The Android sample's release build is signed with
+  the debug key, its screens report their first draws, and a launch can
+  ask for the fixed server.
 - Apollo Kotlin measured beside Baton, `kotlin/benchmarks/apollo-comparison`:
   the same operation and graph through Apollo Kotlin 5.2.0 and its
   normalized cache 1.0.9, configured as documented, on the JVM and on a

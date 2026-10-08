@@ -41,7 +41,7 @@ shape Baton while it is young.
 Two head-to-heads against the maintained native clients, on the same
 data: the Rick and Morty page, 686 KB and 899 records. Same machine, same
 day, Apollo configured as its documentation says, both harnesses in this
-repository. Every number is in [`BENCHMARKS.md`](BENCHMARKS.md) with the
+repository; on Android, the same two apps measured end to end as well. Every number is in [`BENCHMARKS.md`](BENCHMARKS.md) with the
 device, the OS and the date.
 
 **Swift against Apollo iOS 2.4**, Apple M1 Pro, 2 October 2026:
@@ -68,8 +68,23 @@ it on the main thread, and the screen reads its fields from there. From
 the last byte to a list a screen can render, Baton is 6.4 ms; Apollo
 Kotlin is 44.6 ms with its default cache write before the response is
 emitted, or about 12 ms to a first render with the write deferred and
-32 ms of work after it. End-to-end numbers on the device, from the response
-to the frame, are being measured next.
+32 ms of work after it.
+
+**End to end on the same phone**, the Android sample and its Apollo Kotlin
+twin, the same screens over the same fixed bytes, release builds,
+Macrobenchmark medians of fifteen runs, 8 October 2026:
+
+| | Baton | Apollo Kotlin | Faster |
+|---|---|---|---|
+| Cold start, data on disk: launch to the list on screen | 240 ms, in the first frame | 272 ms, after a spinner frame | **1.14×** |
+| Tap a row to its detail, header from the store | 22 ms | 33 ms | **1.5×** |
+| Scrolling the list: frame CPU time, P50 / P90; janky frames | 3.1 / 7.3 ms; 0.74% | 3.1 / 7.3 ms; 0.75% | the same |
+
+A cold start with nothing on disk shows the list in 271 ms against 314 ms.
+Apollo wins one mark: from the response's first byte to the list's frame
+it takes 42 ms against Baton's 58 ms on the sample's list query, which
+selects twenty rows out of the page. Baton's response starts 59 ms sooner
+after launch, so its list still lands first.
 
 Also measured: an optimistic write shows at once and the whole cycle costs
 0.4 ms; forty-two pages of scrolling plateau near five megabytes, since

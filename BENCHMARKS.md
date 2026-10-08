@@ -167,6 +167,161 @@ adb shell am instrument -w -e class baton.comparison.ComparisonBenchmark \
   baton.comparison.android.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
+## Unreleased, end to end on a phone — 2026-10-08
+
+Revision: `1ad451a`. What a user feels, from launch or a tap or a response
+to the frame that shows it, for Baton and Apollo Kotlin on the same phone
+with the same bytes: `kotlin/benchmarks/macro`, a Macrobenchmark module
+(`androidx.benchmark:benchmark-macro-junit4` 1.5.0, UiAutomator 2.4.0),
+driving the Baton sample (`kotlin/samples/android`, `baton.sample.android`)
+and its Apollo Kotlin twin (`kotlin/samples/apollo-android`,
+`baton.sample.apollo`) on a Google Pixel 9 (Tensor G4, Android 17, API 37,
+build CP3A.260905.009, 120 Hz display), 8 October 2026, both apps in one
+run, one after the other.
+
+The apps. The same two screens, the characters a page at a time and a
+character's detail on tap, with the same Compose layout (Compose 1.12.1,
+Material 3 1.9.0), each over its own client: Baton through `rememberQuery`
+with its default fetch policy, store or network, and a store that keeps
+its image (`Persistence.named`); Apollo Kotlin 5.2.0 with the normalized
+cache 1.0.9, the memory cache chained in front of the SQL cache
+(`MemoryCacheFactory(10 MB).chain(SqlNormalizedCacheFactory(context,
+"rickandmorty.db"))`) through the `cache` extension its compiler plugin
+generates, `@typePolicy(keyFields: "id")` on the three entity types,
+`@fieldPolicy(forField: "character", keyArgs: "id")` so a detail's header
+is read from the cache, and each query read through `watch()` collected as
+Compose state, its default fetch policy cache first. Neither app asks the
+network for data its store holds, which is what makes the warm start a
+start from the store. Both are release builds, signed with the debug key,
+not minified, `profileable`; `adb shell dumpsys package` shows
+`pkgFlags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP KILL_AFTER_RESTORE ]`
+for both, no `DEBUGGABLE`. Both are compiled with `CompilationMode.Full()`.
+
+The server. A launch whose intent carries `baton.macro.fixedServer`
+starts `kotlin/benchmarks/macro/server`'s HTTP server on `127.0.0.1` in
+the app's own process and fetches everything from it, so no run touches
+the network and the same request gets the same bytes every run. Each
+client gets the text recorded for its own query, as the store-level
+comparison above reads them: the first page is
+`spec/rickandmorty/characters-page-1.json` for Baton (686,254 bytes) and
+`benchmarks/apollo-comparison/fixture-apollo.json` for Apollo (849,101
+bytes); the second page (165,777 and 204,674 bytes), character 9's
+episodes (125 and 173 bytes) and one avatar (39,323 bytes, served for
+every character) were recorded once from the live API on 7 October and
+are the server's assets. The sample's list query selects less than the
+Fixture text answers, so both clients skip the rest of each page.
+
+The marks. Both apps emit the same asynchronous trace sections
+(`Sections`), read with `TraceSectionMetric`: the list's from the
+response's first byte, as the server starts writing it, and from its last
+byte, once the write returns, to the first draw of the list; the detail's
+from the tap's click handler to the first draw of the header; the page
+turn's from the tap on Next to the first draw of the second page's list;
+and the client's construction on the main thread. A first draw is a
+`drawWithContent` modifier on the list or the header, which also reports
+the activity fully drawn at the first list, so `timeToFullDisplayMs` is
+the time from launch to the frame with the list.
+
+The scenarios, fifteen iterations each: a cold start with the app's data
+cleared (`pm clear`); a cold start over the store a priming launch left on
+disk; a tap on the ninth row, Agency Director, in a process that has just
+shown the first page from an empty store; a tap on Next in the same state;
+and the first page, from the warm store with its avatars loaded, flung
+down and up twice (`FrameTimingMetric` and `FrameTimingGfxInfoMetric`).
+Each cell is the median, then the minimum and maximum of the fifteen;
+the ratio is Apollo Kotlin's median over Baton's, so above 1 Baton is
+faster.
+
+| Scenario, metric | Baton | Apollo Kotlin | Ratio |
+|---|---|---|---|
+| Cold start, empty store: first frame (`timeToInitialDisplayMs`) | 231.0 ms (212.1–238.9) | 207.5 ms (199.5–220.1) | 0.90× |
+| Cold start, empty store: the list on screen (`timeToFullDisplayMs`) | 271.2 ms (260.5–281.8) | 314.2 ms (293.7–338.7) | 1.16× |
+| Cold start, empty store: response's first byte to the list's frame | 57.9 ms (48.1–69.8) | 42.3 ms (27.4–52.5) | 0.73× |
+| Cold start, empty store: response's last byte to the list's frame | 57.5 ms (47.6–68.1) | 42.0 ms (24.2–51.7) | 0.73× |
+| Cold start, empty store: client construction | 2.18 ms (2.14–2.29) | 1.76 ms (1.68–2.07) | 0.81× |
+| Cold start, warm store: first frame (`timeToInitialDisplayMs`) | 239.6 ms (226.4–266.6) | 209.3 ms (201.2–221.6) | 0.87× |
+| Cold start, warm store: the list on screen (`timeToFullDisplayMs`) | 239.6 ms (226.4–266.6), the first frame | 272.1 ms (260.3–287.1) | 1.14× |
+| Cold start, warm store: client construction | 2.10 ms (2.03–2.54) | 1.76 ms (1.71–2.50) | 0.84× |
+| Tap a row to the detail's first frame, header from the store | 22.1 ms (12.3–27.5) | 33.2 ms (17.8–52.7) | 1.50× |
+| Tap Next to the second page's first frame | 40.1 ms (19.0–44.4) | 56.1 ms (37.2–68.2) | 1.40× |
+
+| Scrolling the list | Baton | Apollo Kotlin |
+|---|---|---|
+| Frame duration, CPU, P50 / P90 / P95 / P99 | 3.09 / 7.31 / 8.02 / 13.05 ms | 3.07 / 7.32 / 7.94 / 12.21 ms |
+| Frame overrun, P50 / P90 / P95 / P99 | −10.38 / −6.38 / −5.43 / −1.72 ms | −10.37 / −6.17 / −5.36 / −2.80 ms |
+| Frames per iteration (`frameCount`) | 135 (132–136) | 133 (130–136) |
+| Janky frames (`gfxFrameJankPercent`) | 0.74% (0–0.75%), about one frame of 135 | 0.75% (0–1.47%), about one frame of 134 |
+| gfxinfo frame time, 50th / 90th / 95th / 99th percentile | 5 / 10 / 11 / 13 ms | 6 / 10 / 11 / 12 ms |
+| gfxinfo frames (`gfxFrameTotalCount`) | 135 (133–137) | 134 (131–137) |
+
+An earlier run the same morning, from the build before `1ad451a`, which
+timed the list from the response's last byte only, gave the same shape:
+the list on screen from an empty store in 279.8 ms and 318.0 ms, from the
+warm store in 241.1 ms (the first frame) and 271.2 ms, the response's last
+byte to the list in 59.1 ms and 45.7 ms, the tap to the detail in 16.8 ms
+and 33.8 ms, the page turn in 32.5 ms and 44.9 ms, and the scrolled
+frames 3.10 and 2.96 ms at P50 and 7.33 and 7.41 ms at P90, Baton first
+each time.
+
+What each difference comes from, as far as these marks show:
+
+- **The list from a warm store.** Baton's list is in the first frame: the
+  handle's availability check reads what memory lacks from the image on
+  the main thread before the first composition. Apollo's first frame is
+  the spinner, since its cache is read off the main thread and the
+  collected `watch()` starts at `null`; its list follows 63 ms later. The
+  user sees the list 32 ms sooner with Baton.
+- **The first frame.** Baton's first frame comes later in both cold
+  starts, 23 ms with an empty store and 30 ms with a warm one. The
+  construction of the environment and store is 2.2 ms against Apollo's
+  1.8 ms, so that is not it; with an empty store the image holds nothing
+  to read, so if the rest is the same, the image's read is the 7 ms
+  between the two. The rest is not traced apart in this run.
+- **The list from an empty store.** Baton's list is on screen 43 ms sooner
+  from launch, although Apollo's first frame comes 23 ms sooner and Apollo
+  goes from the response to the list's frame 16 ms faster. Launch to
+  the response's first byte is 213 ms for Baton and 272 ms for Apollo:
+  Apollo's request reaches the server about 59 ms later. These marks do
+  not say where those 59 ms go; a cache-first query that asks the SQL
+  cache before the network is the candidate, and the traces are kept.
+- **The response to the frame.** Apollo turns the response into the
+  list's frame in 42 ms, Baton in 58 ms. This is not the transfer: on the
+  loopback interface the first-byte and last-byte sections differ by
+  under a millisecond for both clients. It is also not what the
+  store-level bench above would predict (6.4 ms against 44.6 ms into the
+  store), since the sample's list query selects twenty characters' rows
+  and headers out of the page, so neither client builds or normalizes the
+  899-record graph here. Where Baton's 58 ms go in a cold process, between
+  its ingest, its commit, the image's first write on its own thread and
+  the first composition of the list, is not traced apart in this run.
+- **Tap to the detail.** Both read the header from the store. Baton's
+  header query resolves against the record the list already holds in
+  the detail's first composition, so the header is in the detail's first
+  frame, 22 ms after the tap. Apollo's collected `watch()` starts at
+  `null`, so the detail's first frame is a spinner and the header follows
+  once the cache read on a coroutine emits, 33 ms after the tap.
+- **The page turn.** The second page's response, 166 KB and 205 KB, goes
+  through each client as the first page's does; Baton is 16 ms ahead.
+- **Scrolling.** The same. The rows are the same composables over data
+  already read, and neither client is on the scroll path: the CPU time of
+  a frame is 3.1 ms at the median and 7.3 ms at P90 for both, no frame
+  misses its deadline at P99, and each run has about one janky frame of
+  135.
+
+Caveats: one device, one day, fifteen iterations; the server is in the
+measured process and shares its CPU; the list query is the sample's, not
+the Fixture's, so the store-level gap above does not appear here at its
+size; a fling's end is not an accessibility event Compose sends, so each
+scroll iteration waits out UiAutomator's 5 s timeout, idle time that adds
+no frames. To run it again, on a phone with both apps and the test
+installed (`gradle :samples:android:installRelease
+:samples:apollo-android:installRelease :benchmarks:macro:installBenchmark`):
+
+```bash
+adb shell am instrument -w -r -e tests_regex '.*' \
+  baton.macro/androidx.test.runner.AndroidJUnitRunner
+```
+
 ## Unreleased, the verdict on the root — 2026-10-07
 
 Revision: the working tree of the verdict change on top of `039aa2d`,
