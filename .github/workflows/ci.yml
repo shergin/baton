@@ -89,6 +89,11 @@ jobs:
           disk-cache: ${{ github.workflow }}
           repository-cache: true
       - run: scripts/check-bazel.sh
+      # The same target as an adopter builds it: no BATON_COMPILER, so the
+      # extension downloads the release's bundle and the Linux variant it
+      # lists runs on this host.
+      - run: bazel build //:screens
+        working-directory: bazel/examples/rickandmorty
 
   # The Kotlin runtime: the common module built and tested on the JVM, the
   # development target, and the Kotlin emitter's goldens compiled against it.
