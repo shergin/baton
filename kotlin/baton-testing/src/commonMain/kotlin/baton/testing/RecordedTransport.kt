@@ -12,8 +12,7 @@ import kotlinx.coroutines.flow.flow
  * Serves recorded responses by operation name, or through a responder that
  * sees the whole request; for tests, previews and benchmarks. An operation
  * with nothing recorded fails with a `TransportError` of status 0 that says
- * so. A request is recorded when its flow is collected, which is when it is
- * sent.
+ * so. A request is recorded when `send` is called.
  */
 @OptIn(ExperimentalAtomicApi::class)
 class RecordedTransport private constructor(
@@ -42,14 +41,16 @@ class RecordedTransport private constructor(
 
     val requestCount: Int get() = sent.load().size
 
-    override fun send(request: Request): Flow<ByteArray> = flow {
+    override fun send(request: Request): Flow<ByteArray> {
         while (true) {
             val current = sent.load()
             if (sent.compareAndSet(current, current + request)) break
         }
-        val data = responder?.invoke(request)
-            ?: responses.load()[request.operationName]
-            ?: throw TransportError(0, "no recorded response for ${request.operationName}")
-        emit(data)
+        return flow {
+            val data = responder?.invoke(request)
+                ?: responses.load()[request.operationName]
+                ?: throw TransportError(0, "no recorded response for ${request.operationName}")
+            emit(data)
+        }
     }
 }

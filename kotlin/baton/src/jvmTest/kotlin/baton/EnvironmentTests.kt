@@ -2,6 +2,7 @@ package baton
 
 import baton.spec.TestHeaderQuery
 import baton.spec.TestRename
+import baton.testing.RecordedTransport
 import baton.testing.ScriptedTransport
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -128,5 +129,18 @@ class EnvironmentTests {
         val handle = environment.handle(TestHeaderQuery(id = "5"))
         assertEquals(Phase.Failed(EnvironmentError.Gone), handle.phase)
         assertFailsWith<EnvironmentError> { handle.refetch() }
+    }
+
+    @Test
+    fun `the test transports record a request when it is sent, before anything collects its flow`() {
+        val request = Request("TestHeaderQuery", OperationKind.QUERY, Document.Id("header"), Variables.none)
+        val scripted = ScriptedTransport()
+        scripted.hold("TestHeaderQuery")
+        scripted.send(request)
+        assertEquals(1, scripted.requestCount)
+        assertEquals(1, scripted.held.size, "a held request waits for the test from its send")
+        val recorded = RecordedTransport()
+        recorded.send(request)
+        assertEquals(1, recorded.requestCount)
     }
 }

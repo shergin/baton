@@ -6,10 +6,11 @@ import baton.Transport
 import baton.TransportError
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 
 /**
  * A transport an app's tests script: it answers operations by name or
@@ -21,8 +22,9 @@ import kotlinx.coroutines.flow.channelFlow
  * An operation with no answer scripted fails with a `TransportError` of
  * status 0 that says so; a mutation with none is held instead, since a test
  * usually wants the window between an optimistic apply and the server's
- * answer. A request is recorded when its flow is collected, which is when
- * it is sent.
+ * answer. A request is recorded, and held or driven, when `send` is
+ * called; its flow delivers what the test answers once it is collected, and
+ * a held or driven request leaves the lists when its flow ends.
  */
 @OptIn(ExperimentalAtomicApi::class)
 class ScriptedTransport(
@@ -130,8 +132,9 @@ class ScriptedTransport(
         data object Refuse : Decision
     }
 
-    override fun send(request: Request): Flow<ByteArray> = channelFlow {
-        val channel = this
+    override fun send(request: Request): Flow<ByteArray> {
+        // The test's answers wait here until the flow is collected; an unlimited buffer never refuses one.
+        val channel = Channel<ByteArray>(Channel.UNLIMITED)
         val decision = update { current ->
             val token = current.tokens + 1
             val sent = current.copy(sent = current.sent + request, tokens = token)
@@ -152,11 +155,20 @@ class ScriptedTransport(
                 }
             }
         }
-        when (decision) {
-            is Decision.Answer -> send(decision.data)
-            is Decision.Drive -> awaitClose { update { it.copy(driven = it.driven.filter { driven -> driven.token != decision.token }) to Unit } }
-            is Decision.Hold -> awaitClose { update { it.copy(held = it.held.filter { held -> held.token != decision.token }) to Unit } }
-            Decision.Refuse -> throw TransportError(0, "no answer scripted for ${request.operationName}")
+        return when (decision) {
+            is Decision.Answer -> flowOf(decision.data)
+            is Decision.Drive -> delivering(channel) { update { it.copy(driven = it.driven.filter { driven -> driven.token != decision.token }) to Unit } }
+            is Decision.Hold -> delivering(channel) { update { it.copy(held = it.held.filter { held -> held.token != decision.token }) to Unit } }
+            Decision.Refuse -> flow { throw TransportError(0, "no answer scripted for ${request.operationName}") }
+        }
+    }
+
+    /** A flow of what the test sends into [channel], ending as the test ends it; [forget] runs when the flow ends, however it ends. */
+    private fun delivering(channel: Channel<ByteArray>, forget: () -> Unit): Flow<ByteArray> = flow {
+        try {
+            for (payload in channel) emit(payload)
+        } finally {
+            forget()
         }
     }
 }
