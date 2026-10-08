@@ -15,8 +15,18 @@ detail fetches.
 - The `generateBaton` task runs `batonc generate --language kotlin` over
   the hosts into `build/generated/baton`, which the sample compiles beside
   its sources, as an app's build would.
-- `Main.kt` makes the environment, `Environment(url)`, in the composition
-  and provides it with `CompositionLocalProvider(LocalBaton provides …)`.
+- `Main.kt` makes the environment in the composition, over a store whose
+  image lives in the user's cache directory under the schema's digest
+  (`Persistence.named("RickAndMorty", version = Types.schemaDigest)`), and
+  provides it with `CompositionLocalProvider(LocalBaton provides …)`; the
+  second launch shows the characters before the network answers.
+- `Screenshot.kt` draws both screens to PNG files without a window, through
+  `ImageComposeScene`, for the README and for a machine with no screen:
+  `gradle :samples:desktop:screenshot` writes `build/screenshots/`.
+
+The public API rate-limits a burst (HTTP 429, Cloudflare's code 1015): a
+page the API refused shows the failure under the page bar with a retry,
+and avatars are fetched once per address and kept for the process.
 
 Build the compiler first (`cargo build --release` in `compiler/`), then,
 from `kotlin/`:

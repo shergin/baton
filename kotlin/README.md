@@ -219,7 +219,10 @@ event thread and commits there through the main dispatcher, which
 
 `samples/desktop` is the first sample: the characters of the Rick and
 Morty API a page at a time, and a character's detail, through
-`rememberQuery` and the phase's three cases; see its README.
+`rememberQuery` and the phase's three cases, over a store that keeps its
+image, so a relaunch shows the list before the network answers; a
+`screenshot` task draws its screens to PNG files without a window. See its
+README.
 
 Android follows: the system's SQLite through `AndroidSQLiteDriver`, the
 HTTP transport in a source set the JVM and Android share, the sample on a

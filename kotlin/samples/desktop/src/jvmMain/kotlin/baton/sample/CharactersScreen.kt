@@ -2,7 +2,6 @@ package baton.sample
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import baton.Fragment
+import baton.Phase
 import baton.Query
 import baton.isRefreshing
 import baton.phase
@@ -76,20 +76,20 @@ fun CharacterRow(character: CharacterRow_character, onClick: () -> Unit) {
 @Composable
 fun CharactersScreen(page: Int, onPage: (Int) -> Unit, onSelect: (String) -> Unit, modifier: Modifier = Modifier) {
     val characters = rememberQuery(CharactersScreenQuery(page = page))
-    Box(modifier) {
+    // The bar reads the page's info when the page is ready and stays through
+    // a failure, so a page the API refused can be left.
+    val info = (characters.phase as? Phase.Ready)?.data?.characters?.info
+    Column(modifier) {
+        Row(modifier = Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            TextButton(onClick = { onPage(info?.prev ?: (page - 1)) }, enabled = page > 1) { Text("Previous") }
+            Text("Page $page of ${info?.pages ?: "…"}", modifier = Modifier.weight(1f), style = MaterialTheme.typography.labelLarge)
+            TextButton(onClick = { info?.next?.let(onPage) }, enabled = info?.next != null) { Text("Next") }
+        }
+        if (characters.isRefreshing) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         PhaseView(characters.phase, retry = { characters.retry() }) { data ->
-            val info = data.characters?.info
-            Column {
-                Row(modifier = Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    TextButton(onClick = { info?.prev?.let(onPage) }, enabled = info?.prev != null) { Text("Previous") }
-                    Text("Page $page of ${info?.pages ?: "?"}", modifier = Modifier.weight(1f), style = MaterialTheme.typography.labelLarge)
-                    TextButton(onClick = { info?.next?.let(onPage) }, enabled = info?.next != null) { Text("Next") }
-                }
-                if (characters.isRefreshing) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                LazyColumn {
-                    items(data.characters?.results.orEmpty(), key = { it.id ?: it.anchor.hashCode().toString() }) { character ->
-                        CharacterRow(character.characterRow, onClick = { character.id?.let(onSelect) })
-                    }
+            LazyColumn {
+                items(data.characters?.results.orEmpty(), key = { it.recordID.key }) { character ->
+                    CharacterRow(character.characterRow, onClick = { character.id?.let(onSelect) })
                 }
             }
         }

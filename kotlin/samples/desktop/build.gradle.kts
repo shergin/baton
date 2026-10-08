@@ -72,3 +72,15 @@ compose.desktop {
         mainClass = "baton.sample.MainKt"
     }
 }
+
+// The screens drawn to PNG files without a window, for the README and for a
+// machine with no screen; see `Screenshot.kt`.
+tasks.register<JavaExec>("screenshot") {
+    description = "Renders the sample's screens to build/screenshots over the live API."
+    group = "application"
+    val main = kotlin.jvm().compilations.getByName("main")
+    dependsOn(main.compileTaskProvider)
+    mainClass.set("baton.sample.ScreenshotKt")
+    classpath = main.output.allOutputs + main.runtimeDependencyFiles!!
+    args(layout.buildDirectory.dir("screenshots").get().asFile.path)
+}

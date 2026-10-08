@@ -47,15 +47,21 @@ fun <Data> PhaseView(phase: Phase<Data>, retry: () -> Unit, content: @Composable
     }
 }
 
-/** A character's picture, fetched off the event thread; a plain square until it arrives. */
+/**
+ * A character's picture, fetched once per address off the event thread and
+ * kept for the process, so a scroll back does not fetch it again; a plain
+ * square until it arrives. The cache is read and written on the event
+ * thread, where compositions run.
+ */
 @Composable
 fun Avatar(url: String?, size: Int) {
-    val image by produceState<ImageBitmap?>(null, url) {
-        value = url?.let { address ->
-            withContext(Dispatchers.IO) {
-                runCatching { SkiaImage.makeFromEncoded(URI(address).toURL().readBytes()).toComposeImageBitmap() }.getOrNull()
-            }
+    val image by produceState(url?.let(avatars::get), url) {
+        if (value != null || url == null) return@produceState
+        val fetched = withContext(Dispatchers.IO) {
+            runCatching { SkiaImage.makeFromEncoded(URI(url).toURL().readBytes()).toComposeImageBitmap() }.getOrNull()
         }
+        if (fetched != null) avatars[url] = fetched
+        value = fetched
     }
     val shape = RoundedCornerShape((size / 5).dp)
     val modifier = Modifier.size(size.dp).clip(shape).background(MaterialTheme.colorScheme.surfaceVariant)
@@ -66,3 +72,5 @@ fun Avatar(url: String?, size: Int) {
         Image(loaded, contentDescription = null, modifier = modifier, contentScale = ContentScale.Crop)
     }
 }
+
+private val avatars = HashMap<String, ImageBitmap>()
