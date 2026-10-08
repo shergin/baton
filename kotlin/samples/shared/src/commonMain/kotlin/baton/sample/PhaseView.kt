@@ -20,14 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import baton.Phase
-import java.net.URI
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.jetbrains.skia.Image as SkiaImage
 
 /** Loading, failure and ready, the same everywhere: the phase's three cases. */
 @Composable
@@ -48,18 +43,16 @@ fun <Data> PhaseView(phase: Phase<Data>, retry: () -> Unit, content: @Composable
 }
 
 /**
- * A character's picture, fetched once per address off the event thread and
+ * A character's picture, fetched once per address off the main thread and
  * kept for the process, so a scroll back does not fetch it again; a plain
- * square until it arrives. The cache is read and written on the event
+ * square until it arrives. The cache is read and written on the main
  * thread, where compositions run.
  */
 @Composable
 fun Avatar(url: String?, size: Int) {
     val image by produceState(url?.let(avatars::get), url) {
         if (value != null || url == null) return@produceState
-        val fetched = withContext(Dispatchers.IO) {
-            runCatching { SkiaImage.makeFromEncoded(URI(url).toURL().readBytes()).toComposeImageBitmap() }.getOrNull()
-        }
+        val fetched = fetchImage(url)
         if (fetched != null) avatars[url] = fetched
         value = fetched
     }
@@ -74,3 +67,6 @@ fun Avatar(url: String?, size: Int) {
 }
 
 private val avatars = HashMap<String, ImageBitmap>()
+
+/** The image at [url], fetched and decoded off the main thread; null when either fails. */
+internal expect suspend fun fetchImage(url: String): ImageBitmap?
