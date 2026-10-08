@@ -37,7 +37,7 @@ fun batonCompiler(): File {
 // The specification's sources, generated as the Kotlin target writes them,
 // are the test source set's lenses and plans: the harness runs the
 // manifest's cases through the code an app would compile.
-val generateSpecKotlin by tasks.registering(Exec::class) {
+val generateSpecKotlin = tasks.register<Exec>("generateSpecKotlin") {
     description = "Generates the Kotlin of spec/sources with batonc."
     val sources = repository.resolve("spec/sources")
     inputs.dir(sources)
@@ -74,7 +74,7 @@ kotlin {
             // is interfaces alone: the image is written against it, and each
             // target supplies a driver.
             implementation(libs.coroutines.core)
-            api(compose.runtime)
+            api(libs.compose.runtime)
             implementation(libs.sqlite)
         }
         jvmMain.dependencies {
@@ -97,7 +97,7 @@ kotlin {
                 // The scripts run through the scripted transport an app's tests use.
                 implementation(project(":baton-testing"))
                 // The composables are tested in a composition, on the desktop's renderer, its main dispatcher the event thread.
-                implementation(compose.desktop.uiTestJUnit4)
+                implementation(libs.compose.ui.test.junit4)
                 implementation(compose.desktop.currentOs)
                 implementation(libs.coroutines.swing)
             }

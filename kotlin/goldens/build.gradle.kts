@@ -20,7 +20,7 @@ kotlin {
 // What the goldens compile against, the runtime and what it depends on, as
 // one path: `scripts/hostile-name-sweep-kotlin.py` compiles its probes with
 // `kotlinc` against it.
-val printCompileClasspath by tasks.registering {
+tasks.register("printCompileClasspath") {
     description = "Prints the classpath the goldens compile against."
     val classpath = kotlin.jvm().compilations["main"].compileDependencyFiles
     dependsOn(classpath)
