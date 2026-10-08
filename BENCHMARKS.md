@@ -31,9 +31,9 @@ baton.test/androidx.test.runner.AndroidJUnitRunner` and read from
 899 records) tokenized by the generated plan into a change set, then
 committed into an empty store; the medians of 300 runs after 200 warm-up
 runs, twice. The device test APK is a debuggable build, which is how the
-Android Gradle plugin builds a device test; a number from a build that is
-not debuggable is owed. The JVM row is `IngestTiming` in `jvmTest`, not a
-benchmark, for scale.
+Android Gradle plugin builds a device test; the number from a build that
+is not debuggable is the second table. The JVM row is `IngestTiming` in
+`jvmTest`, not a benchmark, for scale.
 
 | Where | Ingest, off the main thread | Commit, on the main thread |
 |---|---|---|
@@ -48,6 +48,30 @@ the commit, where the JVM's escape analysis hides allocations ART charges
 for; the tokenizer's and the change set's allocations are the first thing
 to look at, before any remedy outside Kotlin is weighed
 (`docs/decisions/native-runtimes.md`).
+
+The same benchmark from a build that is not debuggable, revision
+`5a2a0af`: `kotlin/benchmarks/android`, an application built with the
+release build type (signed with the debug key, not minified) whose
+instrumented test is `IngestBenchmark`, run with
+`adb shell am instrument -w -e class baton.IngestBenchmark
+baton.benchmarks.test/androidx.test.runner.AndroidJUnitRunner`;
+`adb shell dumpsys package baton.benchmarks` shows no `DEBUGGABLE` flag.
+The same device, the same day, the same 300 runs after 200; the
+debuggable rows are the table above, and the debuggable build run again
+beside the release one gave 19.11 ms and 6.73 ms on the Pixel 9.
+
+| Where | Build | Ingest, off the main thread | Commit, on the main thread |
+|---|---|---|---|
+| Google Pixel 9, Tensor G4, Android 17 (API 37) | debuggable device test | 19.03 ms, 19.18 ms | 6.82 ms, 6.68 ms |
+| Google Pixel 9, Tensor G4, Android 17 (API 37) | release, not debuggable | 5.11 ms, 5.18 ms | 1.32 ms, 1.30 ms |
+| The `baton` emulator, arm64 Android 16 image on an M1 Pro | debuggable device test | 12.16 ms, 12.57 ms | 4.36 ms, 5.61 ms |
+| The `baton` emulator, arm64 Android 16 image on an M1 Pro | release, not debuggable | 4.33 ms | 1.10 ms |
+
+Most of the gap to the JVM was the debuggable build: on the Pixel 9 the
+release build ingests 3.7 times as fast as the debuggable one and commits
+5.2 times as fast, which leaves the device three times the JVM on the
+ingest and four times on the commit. The commit takes a sixth of a 120 Hz
+frame.
 
 ## Unreleased, the verdict on the root — 2026-10-07
 

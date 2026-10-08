@@ -30,8 +30,9 @@ code.
   frame; the ingest runs off the frame. The JVM does the same in 1.7 ms
   and 0.3 ms, so ART's allocation cost is what the Kotlin tokenizer and
   change set pay, and that is the first thing to measure and trim before
-  the remedy this record names is weighed. A number from a build that is
-  not debuggable is owed.
+  the remedy this record names is weighed. A release build that is not
+  debuggable (`kotlin/benchmarks/android`), the same device and day,
+  takes 5.1 ms and 1.3 ms, three and four times the JVM.
 
 - A native lens read measured 6.5 ns on an M1 Pro (spike, 2026-10-02). A read
   across a foreign-function boundary returns a string that must be copied
