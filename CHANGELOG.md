@@ -3,6 +3,21 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
+## Unreleased
+
+- The Kotlin runtime on Maven Central: `com.shergin.baton:baton`,
+  `baton-testing` and `baton-inspector`, Kotlin Multiplatform artifacts for
+  the JVM and Android, versioned with the release; and the Gradle plugin
+  `com.shergin.baton`, `kotlin/baton-gradle`, the command's contract spelled
+  in Gradle: a `BatonGenerate` task that runs `batonc generate` with the
+  hosts, the configuration and the files it names declared as inputs and
+  the generated Kotlin and the report as outputs, over the compiler
+  `BATON_COMPILER` names or the release's artifact bundle, fetched once into
+  the Gradle user home and checked against the checksum the release stamps
+  into `kotlin/release.properties`. The checkout's own modules generate
+  through it. The release workflow publishes the artifacts and the plugin
+  from the tag, and `docs/recipes/gradle.md` is the page.
+
 ## 0.12.0 (Palianytsia) — 2026-10-08
 
 - Baton and Apollo Kotlin end to end on a phone: `kotlin/samples/apollo-android`,

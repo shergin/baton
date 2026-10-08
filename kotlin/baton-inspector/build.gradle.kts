@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.maven.publish)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.multiplatform.library)
@@ -35,4 +36,10 @@ kotlin {
             implementation(libs.coroutines.swing)
         }
     }
+}
+
+mavenPublishing {
+    // Signing needs the key the release workflow holds; a local publication
+    // goes unsigned.
+    if (providers.gradleProperty("signingInMemoryKey").isPresent) signAllPublications()
 }

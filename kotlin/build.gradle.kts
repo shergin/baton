@@ -1,4 +1,5 @@
 import baton.gradle.BatonExtension
+import java.util.Properties
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
 plugins {
@@ -10,7 +11,18 @@ plugins {
     alias(libs.plugins.compose) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.apollo) apply false
+    alias(libs.plugins.maven.publish) apply false
     id("com.shergin.baton") apply false
+}
+
+/** The release the artifacts are versioned with: `release.properties`, which the release commit stamps. */
+val release: Properties = Properties().also { properties ->
+    rootDir.resolve("release.properties").inputStream().use(properties::load)
+}
+
+allprojects {
+    group = "com.shergin.baton"
+    version = release.getProperty("version")
 }
 
 /**

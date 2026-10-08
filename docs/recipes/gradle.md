@@ -1,0 +1,135 @@
+# Gradle: the runtime from Maven Central, and the compiler as a task
+
+`com.shergin.baton` is [the command's contract](batonc.md) spelled in
+Gradle: a task that runs `batonc generate` with every input and output
+declared and yields the generated Kotlin for the source set the adopter
+already has, over a compiler the plugin fetches from the release's artifact
+bundle. It lives under `kotlin/baton-gradle` in this repository and is
+versioned with Baton, so the plugin 0.13.0 fetches the bundle 0.13.0
+published and writes the format the runtime 0.13.0 reads. It holds no logic
+of its own: which source writes which output, the header for a source
+without GraphQL, the shared file, staleness and diagnostics are the
+compiler's ([the decision](../decisions/a-build-integration-holds-no-logic.md)).
+
+## The runtime
+
+The Kotlin runtime is on Maven Central from 0.13.0, as Kotlin Multiplatform
+artifacts with a JVM and an Android target, so one coordinate resolves to
+the variant a module compiles against:
+
+| Coordinate | What | Targets |
+|---|---|---|
+| `com.shergin.baton:baton` | the runtime: the store, the lenses, the environment, the transports, the image | JVM, Android |
+| `com.shergin.baton:baton-testing` | `ScriptedTransport`, `RecordedTransport`, `SilentTransport` and `wait`, for an app's tests | JVM |
+| `com.shergin.baton:baton-inspector` | `StoreInspector`, a live Compose view of a store for a debug pane, and `StoreExport` | JVM, Android |
+
+The runtime depends on the Compose runtime, which generated code names
+(`@Stable`), kotlinx-coroutines and the AndroidX SQLite driver API; Compose
+UI is the app's own. On Android it starts at API 23.
+
+## The plugin
+
+The plugin is on Maven Central beside the runtime, not on the Gradle plugin
+portal, so the settings name that repository for plugins once:
+
+```kotlin
+// settings.gradle.kts
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+```
+
+The module that holds the screens applies it, names its hosts, and adds the
+task's output to the source set that compiles them:
+
+```kotlin
+// build.gradle.kts
+import baton.gradle.BatonGenerate
+
+plugins {
+    id("com.shergin.baton") version "0.13.0"
+}
+
+// The hosts: every Kotlin file the compiler scans for `@Fragment`, `@Query`,
+// `@Mutation` and `@Subscription`, and any `.graphql` document beside them.
+val generateBaton = tasks.named<BatonGenerate>("generateBaton") {
+    hosts.from(fileTree("src/commonMain/kotlin") { include("**/*.kt") })
+}
+
+kotlin {
+    sourceSets {
+        commonMain {
+            kotlin.srcDir(generateBaton.flatMap { it.outputDirectory })
+            dependencies {
+                implementation("com.shergin.baton:baton:0.13.0")
+            }
+        }
+    }
+}
+```
+
+An Android application module adds the directory through the variant API
+instead, which is how `kotlin/benchmarks/android` does it:
+
+```kotlin
+androidComponents {
+    onVariants { variant ->
+        variant.sources.kotlin?.addGeneratedSourceDirectory(generateBaton, BatonGenerate::outputDirectory)
+    }
+}
+```
+
+`baton.json` is read from the module's directory by convention, with the
+schema and the lookups as [the compiler's recipe](batonc.md) describes, and
+`"kotlin": {"package": "<package>"}` for the shared file.
+
+The compiler is the release's: on first use the plugin downloads
+`batonc.artifactbundle.zip` of the release it is versioned with, the one
+file SwiftPM and Bazel download, checks it against the checksum the release
+wrote into `kotlin/release.properties`, unpacks it whole into
+`~/.gradle/caches/baton/<version>/`, once per machine, and runs the variant
+its `info.json` lists for the host, macOS or Linux, x86_64 or aarch64. A checkout that
+builds its own compiler names it instead, as `Package.swift` and the Bazel
+extension take `BATON_COMPILER`, a `batonc` binary or a bundle directory
+holding an `info.json`:
+
+```bash
+BATON_COMPILER=/path/to/batonc gradle build
+```
+
+or, for every task of a project, `baton { compiler.set(file("...")) }`. An
+offline build with no bundle cached fails and says so.
+
+## `BatonGenerate`
+
+The plugin registers one, `generateBaton`; a module with documents against
+two schemas registers a second with the task type.
+
+| Property | What | Convention |
+|---|---|---|
+| `hosts` | the sources the compiler reads: `.kt` hosts and `.graphql` documents | none; the task fails without them |
+| `configuration` | `baton.json` | the module's own |
+| `schema` | a schema in place of the configuration's, passed as `--schema`, for one that is a build's output | unset |
+| `workingDirectory` | where the compiler runs; a host under it is passed by its relative path | the module's directory |
+| `outputDirectory` | the generated Kotlin, one file per host and the shared `Baton.baton.kt` | `build/generated/baton/<task>` |
+| `report` | what the run compiled, as `--report` writes it | `build/baton/<task>/report.json` |
+| `persisted` | the persisted documents file under `persistConfig`, as `--persisted` places it | unset, so it goes under the output directory |
+
+- **Every input declared:** the hosts, the configuration, and the schema
+  and the `schemaExtensions` the configuration names, which the plugin reads
+  from its text through a provider Gradle tracks, so an edit to the schema
+  regenerates and the adopter names nothing twice; the compiler binary when
+  `BATON_COMPILER` names one, and the release's version and checksum when it
+  does not. The task is cacheable and runs under the configuration cache.
+- **One output per source,** named as the SwiftPM plugin and the Bazel rule
+  name it: the host's path relative to the working directory, each separator
+  an underscore, `.baton.kt` in place of `.kt` and after any other extension
+  (`src/commonMain/kotlin/app/Screen.kt` writes
+  `src_commonMain_kotlin_app_Screen.baton.kt`); a renamed source leaves
+  nothing behind, since the compiler removes what it did not write.
+- **Diagnostics** are `path:line:column: error: message`, pointing into the
+  GraphQL text in the host file, which Gradle and the IDE show at the line;
+  a document with an error fails the task with nothing written.

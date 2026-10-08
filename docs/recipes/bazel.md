@@ -20,8 +20,9 @@ it and the macros as a compiler plugin target. The SwiftPM build-tool
 plugin and the compiler's binary target are skipped by design, since
 `rules_swift_package_manager` runs no plugin; this module is what runs the
 compiler instead. On the Kotlin side, `language = "kotlin"` writes
-`.baton.kt` for a `kt_jvm_library` or a `kt_android_library`, for when the
-Kotlin runtime is published.
+`.baton.kt` for a `kt_jvm_library` or a `kt_android_library` over the
+runtime's Maven artifact, `com.shergin.baton:baton`
+([the Gradle recipe](gradle.md) names them).
 
 ## The module
 

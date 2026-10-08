@@ -386,8 +386,10 @@ The Kotlin runtime runs on the JVM and on Android, held to the same
 compiler and the same fixtures under `spec/`: every case and every script
 of the specification passes through code the compiler generates, with a
 Compose for Desktop sample, an Android sample and a head-to-head against
-Apollo Kotlin behind it. The API will break freely until 1.0; each release
-is in [`CHANGELOG.md`](CHANGELOG.md).
+Apollo Kotlin behind it. From 0.13.0 it is on Maven Central as
+`com.shergin.baton:baton`, with a Gradle plugin, `com.shergin.baton`, that
+runs the compiler ([the recipe](docs/recipes/gradle.md)). The API will
+break freely until 1.0; each release is in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Works with your server
 

@@ -829,7 +829,7 @@ GraphQL over HTTP working group's proposal. See
 [the contract](../spec/runtime.md#10-the-environment-and-the-wire) and
 [the decision](decisions/an-operation-is-sent-as-text-or-id.md).
 Swift: the build plugin is SwiftPM's; the operation's document is
-`document`.
+`document`. Kotlin: the build plugin is Gradle's, `com.shergin.baton`.
 
 **Artifact.** *Composition: document, lens, plan.*
 Here: everything the compiler emits for one source file: lens types, plans,
@@ -866,7 +866,7 @@ persisted documents file is a second view of the same facts, and a
 dependent target's compilation is what the fragment's definition is there
 for; see
 [the decision](decisions/the-report-is-what-a-dependent-target-reads.md).
-Swift: the build plugin is SwiftPM's.
+Swift: the build plugin is SwiftPM's. Kotlin: Gradle's, `com.shergin.baton`.
 
 ## Runtime
 

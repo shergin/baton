@@ -1,10 +1,11 @@
 # Cuts a release from master: builds the compiler bundle for both Mac
 # architectures and both Linux ones, writes the release commit (the version
 # into the compiler's manifest, the bundle's checksum into Package.swift,
-# the Bazel module and the Kotlin build), tags it, and publishes the GitHub
-# release with the bundle and the changelog's section. The version and the name are read
-# from the changelog's first released heading, `## <version> (<name>)`,
-# which is written beforehand, as for every release.
+# the Bazel module and the Kotlin build), tags it, publishes the GitHub
+# release with the bundle and the changelog's section, and publishes the
+# Kotlin artifacts and the Gradle plugin to Maven Central from the tag. The
+# version and the name are read from the changelog's first released heading,
+# `## <version> (<name>)`, which is written beforehand, as for every release.
 name: release
 
 on:
@@ -47,6 +48,8 @@ jobs:
   release:
     needs: linux
     runs-on: macos-26
+    outputs:
+      version: ${{ steps.heading.outputs.version }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -55,6 +58,7 @@ jobs:
         with:
           targets: aarch64-apple-darwin, x86_64-apple-darwin
       - name: Read the version and the name from the changelog
+        id: heading
         run: |
           heading="$(grep -m 1 -E '^## [0-9]+\.[0-9]+\.[0-9]+ \([A-Za-z][A-Za-z -]*\)' CHANGELOG.md)"
           version="$(sed -E 's/^## ([0-9.]+) .*/\1/' <<< "$heading")"
@@ -70,6 +74,7 @@ jobs:
           fi
           echo "VERSION=$version" >> "$GITHUB_ENV"
           echo "NAME=$name" >> "$GITHUB_ENV"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
       - name: Set the version
         run: |
           sed -i '' "1,/^version = /s/^version = \".*\"/version = \"$VERSION\"/" compiler/Cargo.toml
@@ -113,3 +118,46 @@ jobs:
         run: |
           awk -v heading="## $VERSION ($NAME)" 'index($0, heading) == 1 { found = 1; next } found && /^## / { exit } found' CHANGELOG.md > notes.md
           gh release create "v$VERSION" compiler/dist/release/batonc.artifactbundle.zip --title "$VERSION $NAME" --notes-file notes.md
+
+  # The Kotlin artifacts and the Gradle plugin, from the tagged commit, to
+  # Maven Central: the runtime, the testing transports and the inspector in
+  # one deployment, the plugin, an included build, in another; the portal
+  # validates each and the plugin releases it. A missing secret fails the
+  # job before anything is uploaded, so a release without the secrets is a
+  # GitHub release alone, and the job is run again once they are there.
+  kotlin:
+    needs: release
+    runs-on: ubuntu-latest
+    env:
+      ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+      ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+      ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+    steps:
+      - name: Check the secrets
+        run: |
+          missing=""
+          [[ -n "$ORG_GRADLE_PROJECT_mavenCentralUsername" ]] || missing="$missing MAVEN_CENTRAL_USERNAME"
+          [[ -n "$ORG_GRADLE_PROJECT_mavenCentralPassword" ]] || missing="$missing MAVEN_CENTRAL_PASSWORD"
+          [[ -n "$ORG_GRADLE_PROJECT_signingInMemoryKey" ]] || missing="$missing SIGNING_KEY"
+          [[ -n "$ORG_GRADLE_PROJECT_signingInMemoryKeyPassword" ]] || missing="$missing SIGNING_PASSWORD"
+          if [[ -n "$missing" ]]; then
+            echo "the repository lacks the secrets$missing; add them and run this job again" >&2
+            exit 1
+          fi
+      - uses: actions/checkout@v7
+        with:
+          ref: v${{ needs.release.outputs.version }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.8.0"
+      # The runtime's Android variant compiles against a platform the Android
+      # Gradle plugin installs into the runner's SDK, as CI's kotlin job has it.
+      - run: gradle --no-daemon publishToMavenCentral
+        working-directory: kotlin
+      - run: gradle --no-daemon publishToMavenCentral
+        working-directory: kotlin/baton-gradle

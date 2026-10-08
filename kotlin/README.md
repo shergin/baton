@@ -11,6 +11,17 @@ What a runtime does is `spec/runtime.md`; what it is held to is the
 manifest, the sources, the cases and the scripts under `spec/`. The host
 API is designed in the private notes before it is built.
 
+## Using it
+
+From 0.13.0 the runtime is on Maven Central, `com.shergin.baton:baton`
+(JVM and Android), with `baton-testing` (JVM) and `baton-inspector` (JVM
+and Android) beside it, and the Gradle plugin `com.shergin.baton` runs the
+compiler over a module's hosts with every input and output declared,
+fetching the release's compiler bundle on first use.
+[`docs/recipes/gradle.md`](../docs/recipes/gradle.md) is the page; the
+modules here generate through the same plugin, applied from the included
+build `baton-gradle`.
+
 ## Layout
 
 ```
@@ -49,6 +60,12 @@ and the same graph, each step's median and best printed, with the record
 in `BENCHMARKS.md`.
 
 `scripts/check-kotlin-goldens.sh` runs `:goldens:compileKotlinJvm`.
+
+`baton`, `baton-testing`, `baton-inspector` and `baton-gradle` publish
+through `com.vanniktech.maven.publish`: `gradle publishToMavenLocal`, here
+and in `baton-gradle`, puts them in `~/.m2` for a project to try, unsigned;
+the release workflow publishes them to Maven Central from the tag, signed
+with the key its secrets hold.
 
 ## Dependencies
 

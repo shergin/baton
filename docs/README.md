@@ -21,7 +21,8 @@ What to read when.
   deadline over the transport's one verb, [`batonc`](recipes/batonc.md),
   the compiler's command line for a build outside SwiftPM,
   [Bazel](recipes/bazel.md), the compiler as a toolchain and one rule over
-  its command, and
+  its command, [Gradle](recipes/gradle.md), the Kotlin runtime from Maven
+  Central and the compiler as a task, and
   [previews and tests](recipes/testing.md), a store without a server,
   [UIKit and AppKit](recipes/uikit.md), a handle held by a controller, and
   [porting from Relay](recipes/porting-from-relay.md), Relay's words beside

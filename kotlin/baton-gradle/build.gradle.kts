@@ -2,6 +2,7 @@ import java.util.Properties
 
 plugins {
     `kotlin-dsl`
+    alias(libs.plugins.maven.publish)
 }
 
 /**
@@ -57,4 +58,10 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+mavenPublishing {
+    // Signing needs the key the release workflow holds; a local publication
+    // goes unsigned.
+    if (providers.gradleProperty("signingInMemoryKey").isPresent) signAllPublications()
 }

@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.multiplatform.library)
+    alias(libs.plugins.maven.publish)
     id("com.shergin.baton")
 }
 
@@ -132,3 +133,9 @@ kotlin {
 // none into assets through a task the Android library plugin leaves
 // unconfigured.
 tasks.matching { it.name == "copyAndroidDeviceTestComposeResourcesToAndroidAssets" }.configureEach { enabled = false }
+
+mavenPublishing {
+    // Signing needs the key the release workflow holds; a local publication
+    // goes unsigned.
+    if (providers.gradleProperty("signingInMemoryKey").isPresent) signAllPublications()
+}

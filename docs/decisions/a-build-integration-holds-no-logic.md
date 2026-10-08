@@ -77,6 +77,17 @@ Kotlin runtime is heading for Gradle on Linux, a third shell.
   screens in the sandbox, and the check test passes over fresh output and
   fails over a stale one; without `BATON_COMPILER` the extension downloads
   the release's bundle and the same target builds with it.
+- The amendment, 2026-10-08: the Gradle plugin, `com.shergin.baton` under
+  `kotlin/baton-gradle`, with the runtime on Maven Central from 0.13.0.
+  The same shape: a task that declares the hosts, the configuration and the
+  files it names as inputs, the generated directory and the report as
+  outputs, and runs `batonc generate`; the compiler from `BATON_COMPILER`
+  or from the release's bundle, fetched by the version and the checksum the
+  release commit stamps into `kotlin/release.properties`. What a rule could
+  not do, declaring the schema without reading `baton.json`, a task can:
+  it reads the configuration through a provider Gradle tracks, so an
+  adopter names the hosts and the configuration alone. The checkout's own
+  modules generate through it. `docs/recipes/gradle.md` is the page.
 
 ## Not chosen
 
