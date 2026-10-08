@@ -39,8 +39,7 @@ import kotlinx.coroutines.test.runTest
  *
  * A step this runtime cannot run yet stops its script, reported as pending
  * rather than failed: the image's (`relaunch`, a check answered from the
- * image), and the subscriptions' (`event`, `active`, a subscription's
- * handle, a stream). A step before it that fails fails the test.
+ * image). A step before it that fails fails the test.
  */
 class ScriptTests {
     @Test
@@ -87,8 +86,17 @@ internal class ScriptRun(private val script: Script) {
 
     private val store: Store get() = environment.store
 
-    /** A query's handle a step named, and the retention its attach made. */
-    private class Live(val operation: Bound, val handle: OperationHandle<*>, var retention: Retention?)
+    /** A handle a step named, of a query or of a subscription, and the retention its attach made. */
+    private class Live(val operation: Bound, private val query: OperationHandle<*>?, val subscription: SubscriptionHandle<*>?, var retention: Retention?) {
+        constructor(operation: Bound, handle: OperationHandle<*>, retention: Retention) : this(operation, handle, null, retention)
+        constructor(operation: Bound, handle: SubscriptionHandle<*>, retention: Retention) : this(operation, null, handle, retention)
+
+        /** The query's handle, for the steps and the expectations only a query has. */
+        val handle: OperationHandle<*> get() = query ?: error("${operation.name} is a subscription, whose handle has no phase or fetch")
+
+        /** What changes when a stream takes a delivery: its events, its state and whether its last event failed. */
+        val signature: String get() = subscription?.let { "${it.events} ${it.stream} ${it.error == null}" } ?: ""
+    }
 
     /** A mutation in flight under its optimistic response. */
     private class Layer(val operation: Bound, val task: Deferred<Throwable?>)
@@ -141,9 +149,6 @@ internal class ScriptRun(private val script: Script) {
         return when {
             step.action is Script.Action.Relaunch -> "the image is a later milestone"
             step.answer == "image" -> "the image is a later milestone"
-            step.action is Script.Action.Event || step.action is Script.Action.Active -> "subscriptions are the next milestone"
-            step.streams.isNotEmpty() -> "subscriptions are the next milestone"
-            step.action is Script.Action.Attach && kind(step.action.operation) == OperationKind.SUBSCRIPTION -> "subscriptions are the next milestone"
             else -> null
         }
     }
@@ -191,6 +196,12 @@ internal class ScriptRun(private val script: Script) {
             }
             is Script.Action.Attach -> {
                 val operation = bind(action.operation) ?: return null
+                (operation.value as? SubscriptionOperation<*>)?.let { subscription ->
+                    val handle = environment.subscriptionHandle(subscription)
+                    handles[action.name] = Live(operation, handle, handle.retain())
+                    if (action.reply != null) fail("a subscription's events are delivered by an event step, not an attach's reply")
+                    return null
+                }
                 val query = operation.value as? QueryOperation<*> ?: return null.also { fail("${operation.name} is a mutation, which has no handle") }
                 val handle = environment.handle(query, action.policy)
                 val live = Live(operation, handle, handle.retain())
@@ -255,7 +266,32 @@ internal class ScriptRun(private val script: Script) {
                 environment.end()
                 return null
             }
-            Script.Action.Relaunch, is Script.Action.Event, is Script.Action.Active -> {
+            is Script.Action.Event -> {
+                val live = handle(action.handle) ?: return null
+                val subscription = live.subscription ?: return null.also { fail("${action.handle} is not a subscription's handle") }
+                // The stream the handle holds now: one opened per connection, the first and each resumption.
+                until { requests(live.operation) > subscription.resumptions }
+                val stream = transport.driven.lastOrNull { live.operation.sent(it.request) }
+                    ?: return null.also { fail("${action.handle} holds no open stream to deliver to") }
+                val before = live.signature
+                when (val delivery = action.delivery) {
+                    is Script.Delivery.Response -> stream.send(Spec.bytes(delivery.path))
+                    is Script.Delivery.Failure -> when (delivery.kind) {
+                        Script.FailureKind.TRANSPORT -> stream.fail(transportFailure)
+                        Script.FailureKind.REQUEST -> stream.fail(GraphQLErrors(listOf("the script refuses the subscription")))
+                        Script.FailureKind.MALFORMED -> stream.send(malformedResponse)
+                    }
+                    Script.Delivery.Complete -> stream.complete()
+                }
+                // The test dispatcher's clock stands still, so a stream that failed is compared before its backoff opens it again.
+                until { live.signature != before }
+                return null
+            }
+            is Script.Action.Active -> {
+                environment.isActive = action.value
+                return null
+            }
+            Script.Action.Relaunch -> {
                 fail("the step is pending and does not run")
                 return null
             }
@@ -500,6 +536,21 @@ internal class ScriptRun(private val script: Script) {
             if (fetch != expected.fetch) fail("fetch: ${expected.handle}'s fetch is $fetch where the script has ${expected.fetch}")
         }
 
+        for (expected in step.streams) {
+            val live = handle(expected.handle) ?: continue
+            val subscription = live.subscription ?: continue.also { fail("stream: ${expected.handle} is not a subscription's handle") }
+            val stream = stream(subscription.stream)
+            if (stream != expected.stream) fail("stream: ${expected.handle}'s stream is $stream where the script has ${expected.stream}")
+            expected.events?.let { events ->
+                if (subscription.events.toLong() != events) fail("stream: ${expected.handle} counted ${subscription.events} events where the script has $events")
+            }
+            expected.resumptions?.let { resumptions ->
+                if (subscription.resumptions.toLong() != resumptions) {
+                    fail("stream: ${expected.handle} counted ${subscription.resumptions} resumptions where the script has $resumptions")
+                }
+            }
+        }
+
         step.events?.let { expected ->
             val actual = heard.map { spelled(it) }
             val matches = actual.size == expected.size && actual.zip(expected).all { (event, wanted) ->
@@ -527,9 +578,14 @@ internal class ScriptRun(private val script: Script) {
         val name: String
         if (row.handle != null) {
             val live = handle(row.handle) ?: return
-            val phase = live.handle.phase
-            if (phase !is Phase.Ready) return fail("reads: ${row.handle} has no data to read ${row.path} from: it reads ${phase(live.handle)}")
-            data = phase.data
+            val subscription = live.subscription
+            if (subscription != null) {
+                data = subscription.latest ?: return fail("reads: ${row.handle} has no event to read ${row.path} from")
+            } else {
+                val phase = live.handle.phase
+                if (phase !is Phase.Ready) return fail("reads: ${row.handle} has no data to read ${row.path} from: it reads ${phase(live.handle)}")
+                data = phase.data
+            }
             name = live.operation.name
         } else if (row.operation != null) {
             val bound = bind(Script.Operation(row.operation, row.variables)) ?: return
@@ -550,6 +606,14 @@ internal class ScriptRun(private val script: Script) {
         Phase.Loading -> Script.State("loading")
         is Phase.Ready -> Script.State("ready")
         is Phase.Failed -> Script.State("failed", kind(phase.error), tagged = true)
+    }
+
+    private fun stream(stream: Stream): Script.State = when (stream) {
+        Stream.Idle -> Script.State("idle")
+        Stream.Connecting -> Script.State("connecting")
+        Stream.Open -> Script.State("open")
+        is Stream.Waiting -> Script.State("waiting")
+        is Stream.Ended -> Script.State("ended", stream.failure?.let { kind(it) }, tagged = true)
     }
 
     private fun fetch(fetch: Fetch): Script.State = when (fetch) {

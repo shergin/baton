@@ -191,6 +191,3 @@ class MutationAction<Op : MutationOperation<Data>, Data : Lens> internal constru
         }
     }
 }
-
-/** A subscription's handle: its events, its latest data and its stream. Defined with the environment. */
-class SubscriptionHandle<Data : Lens> internal constructor()

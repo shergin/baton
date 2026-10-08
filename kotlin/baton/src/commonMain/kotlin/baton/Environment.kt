@@ -10,7 +10,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -67,17 +69,30 @@ class Environment(
     /** The handles, by the operation's key, for as long as their roots are the store's: equal operation values share one. */
     private val handles = HashMap<String, OperationHandle<*>>()
 
+    /** The subscriptions' handles, by the operation's key, while retained, or made and not yet retained: equal operation values share one. */
+    private val subscriptionHandles = HashMap<String, SubscriptionHandle<*>>()
+
     /** Whether the session has ended: every later call fails with `EnvironmentError.Gone`, and what is still held says so. */
     var ended: Boolean = false
         private set
 
     /**
-     * Whether the app is active, set by the app and by hand in tests; true
-     * until set. Subscriptions' streams park while it is false, when
-     * subscriptions come; queries read nothing of it: `revalidate()` is the
-     * app's call on return.
+     * Whether the app is active, set by the app from its lifecycle and by
+     * hand in tests; true until set. While inactive every retained
+     * subscription's stream is closed and its retention kept; activity opens
+     * the streams again, each counted as a resumption. Queries read nothing
+     * of it: `revalidate()` is the app's call on return.
      */
     var isActive: Boolean = true
+        set(value) {
+            if (field == value) return
+            field = value
+            if (ended) return
+            for (handle in subscriptionHandles.values.toList()) {
+                if (handle.retainCount == 0) continue
+                if (value) handle.resume() else handle.park()
+            }
+        }
 
     /** The handle for an operation value, shared by every holder of an equal value. The policy is applied on every attach. */
     fun <Data : Lens> handle(operation: QueryOperation<Data>, fetchPolicy: FetchPolicy = FetchPolicy.Default): OperationHandle<Data> {
@@ -89,6 +104,17 @@ class Environment(
             if (!ended) handles[key] = it
         }
         handle.apply(fetchPolicy)
+        return handle
+    }
+
+    /** The handle for a subscription value, shared by equal values; its first retention opens the stream, and its root lives while it is retained. */
+    fun <Data : Lens> subscriptionHandle(operation: SubscriptionOperation<Data>): SubscriptionHandle<Data> {
+        store.checkThread()
+        val key = Store.rootKey(operation.type.name, operation.variables)
+        @Suppress("UNCHECKED_CAST")
+        (subscriptionHandles[key] as SubscriptionHandle<Data>?)?.let { return it }
+        val handle = SubscriptionHandle(operation, key, this)
+        if (!ended) subscriptionHandles[key] = handle
         return handle
     }
 
@@ -131,6 +157,8 @@ class Environment(
         ended = true
         for (handle in handles.values.toList()) handle.end()
         handles.clear()
+        for (handle in subscriptionHandles.values.toList()) handle.end()
+        subscriptionHandles.clear()
         store.end()
         scope.cancel()
     }
@@ -247,6 +275,25 @@ class Environment(
         }
     }
 
+    /**
+     * The events of a subscription, as its transport delivers them: a flow
+     * that fails with `EnvironmentError.NoSubscriptionTransport` when the
+     * environment has none, and with `EnvironmentError.Gone` after the end.
+     */
+    internal fun subscribe(type: OperationType<*>, variables: Variables): Flow<ByteArray> {
+        val subscriptions = subscriptions
+        if (ended || subscriptions == null) {
+            val failure = if (ended) EnvironmentError.Gone else EnvironmentError.NoSubscriptionTransport
+            return flow { throw failure }
+        }
+        return subscriptions.send(request(type, variables))
+    }
+
+    /** Commits one event of a subscription through the door, at the subscription root; the door checks the stream's cancellation first. */
+    internal suspend fun commitEvent(payload: ByteArray, root: Store.Root) {
+        commit(payload, root.resolved, root)
+    }
+
     /** Logs an event, unless the session has ended: a response that lands after the end reaches neither the store nor the log. */
     private fun log(event: LogEvent) {
         if (ended) return
@@ -345,6 +392,17 @@ class Environment(
     internal fun didRetain(handle: OperationHandle<*>) {
         if (ended) return
         if (handles[handle.key] == null) handles[handle.key] = handle
+    }
+
+    /** A subscription retained: it is among the environment's again if its last release had let it go. */
+    internal fun didRetain(handle: SubscriptionHandle<*>) {
+        if (ended) return
+        if (subscriptionHandles[handle.key] == null) subscriptionHandles[handle.key] = handle
+    }
+
+    /** A subscription released to no holder: its stream closed and its root left the store at once. */
+    internal fun didEnd(handle: SubscriptionHandle<*>) {
+        if (subscriptionHandles[handle.key] === handle) subscriptionHandles.remove(handle.key)
     }
 
     /** Drops the handles of roots the store pushed out, with the fetches they had in flight. */
