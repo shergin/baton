@@ -1,2 +1,4 @@
 /bazel-*
 /Generated/
+# Records the release the extension fetched, so it would go stale at every release commit.
+/MODULE.bazel.lock
