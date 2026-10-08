@@ -5,6 +5,14 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- Apollo Kotlin measured beside Baton, `kotlin/benchmarks/apollo-comparison`:
+  the same operation and graph through Apollo Kotlin 5.2.0 and its
+  normalized cache 1.0.9, configured as documented, on the JVM and on a
+  Google Pixel 9 in a release build. On the phone the response is in
+  Baton's store in 6.5 ms and in Apollo's in 44.6 ms, and Apollo's read of
+  the query back takes 25 ms where Baton's availability check takes 1.2 ms;
+  a field of Apollo's read model costs 2 ns against 43 ns for a lens read.
+  `docs/comparison.md` quotes these in place of Apollo's own bench.
 - The Kotlin runtime's first numbers on a device, in `BENCHMARKS.md`: on a
   Google Pixel 9 running Android 17, the 899-record fixture tokenizes in
   19.0 ms off the main thread and commits in 6.7 ms on it, a debuggable

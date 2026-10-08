@@ -13,7 +13,7 @@ in [BENCHMARKS.md](../BENCHMARKS.md), with the machine, the OS and the date.
 Numbers below that are not in that file are someone else's, and they say so.
 Versions are current as of October 2026: Baton 0.6.0, Apollo iOS 2.4.0
 (20 August 2026), Apollo Kotlin 5.2.0 (16 September 2026) with normalized
-cache 1.0.9.
+cache 1.0.9 (28 September 2026), the versions both comparisons measured.
 
 ## At a glance
 
@@ -24,8 +24,8 @@ cache 1.0.9.
 | What a child receives | A lens over the record. Fields it did not declare have no accessor | A struct over the parent's dictionary, so the parent sees the child's fields too | A nested model class. The parent can read through it | An opaque fragment reference. The child reads it with `useFragment` |
 | A warm cache, first frame | The data. The read is synchronous on the main actor | Loading. Every store read is `async` | Loading. Store calls are documented to stay off the main thread, and the Compose helper starts at `null` | The snapshot, when the query is already in the store or was preloaded. Otherwise Suspense |
 | A changed field | The views that read it. Twenty observed rows and one changed field invalidate that row | The whole query, rebuilt into a new model tree, with no equality check | The whole query, rebuilt into a new model tree | The fragments whose seen records overlap the change. Unchanged snapshots are suppressed. Field granularity is a flag, off by default |
-| Response into the store | 3.4 ms for 686 KB, 899 records | 318 ms for the same data | Models are normalized into records. Their bench: ~800 ms to write ~6,000 records, JSON excluded | A publish into a flat record map. No published store bench |
-| Read it back | A slot load, 26 ns. Inside a body, ~0.5 µs | 228 ms to rebuild the query, then 296 ns a field | ~530 ms to rebuild ~6,000 records from memory, their bench | A re-read of the fragment snapshot |
+| Response into the store | 3.4 ms for 686 KB, 899 records | 318 ms for the same data | 44.6 ms for the same data on a Pixel 9, release build, of which 30 ms normalize the model tree into records; 8.9 ms on the JVM ([BENCHMARKS.md](../BENCHMARKS.md)) | A publish into a flat record map. No published store bench |
+| Read it back | A slot load, 26 ns. Inside a body, ~0.5 µs | 228 ms to rebuild the query, then 296 ns a field | 25 ms to rebuild the query on a Pixel 9, then 2 ns a field; 7.4 ms and 4 ns on the JVM ([BENCHMARKS.md](../BENCHMARKS.md)) | A re-read of the fragment snapshot |
 | Memory | A release buffer. Forty-two pages plateau near +5 MB | Every record stays. Eviction has been the most-upvoted open issue since 2017 | A GC call you schedule, plus TTL and trimming | Retained operations, release buffer of 10, a sweep from each root |
 | Lists | `@connection`. Pages merge into one list. One notification per page | A separate package. One query watcher per page, concatenated for display | `@connection` in the new cache. Pages merge | `@connection`. Pages merge. Edge directives edit the list |
 | Optimistic write | A typed response, ingested like a server payload, rebased under later commits. The cycle is 0.4 ms | `perform` takes no optimistic response. A local-cache-mutation model can write the store by hand | Opt-in, off by default. Watchers are notified and re-run | An overlay the publish queue rebases onto every server payload |
@@ -91,6 +91,9 @@ read. A flat list of 10,000 records is the same order.
 It is not a ratio against the 3.4 ms. It is the same bill, itemized by the
 people who pay it: the model tree is built on the way in and again on the
 way out.
+Our own measurement of Apollo Kotlin, the same operation and graph on a
+Pixel 9 and on the JVM, is in [BENCHMARKS.md](../BENCHMARKS.md), section
+"Apollo Kotlin 5.2.0, same operation, same graph".
 
 Three more of Baton's benches, same machine, from the 0.5.0 entry:
 

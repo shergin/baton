@@ -73,6 +73,100 @@ release build ingests 3.7 times as fast as the debuggable one and commits
 ingest and four times on the commit. The commit takes a sixth of a 120 Hz
 frame.
 
+### Apollo Kotlin 5.2.0, same operation, same graph
+
+Revision: `194a104`. Measured with `kotlin/benchmarks/apollo-comparison`,
+which runs both clients in one process, one after the other, on one
+thread: on the JVM with `gradle :benchmarks:apollo-comparison:runComparison`
+(OpenJDK 21.0.12.1, Apple M1 Pro, macOS 26.5.2), and on the Pixel 9
+(Tensor G4, Android 17, API 37) as the instrumented test of
+`kotlin/benchmarks/apollo-comparison/android`, an application built with
+the release build type, signed with the debug key and not minified, with
+`adb shell am instrument -w -e class baton.comparison.ComparisonBenchmark
+baton.comparison.android.test/androidx.test.runner.AndroidJUnitRunner`;
+`adb shell dumpsys package baton.comparison.android` shows no
+`DEBUGGABLE` flag. Every number is a median of 300 runs after 200 warm-up
+runs; each machine ran the whole bench twice, and a cell gives both runs.
+Same machine, same day as each other: 7 October 2026.
+
+Apollo Kotlin 5.2.0 with the normalized cache 1.0.9 (`com.apollographql.cache`),
+the latest stable releases on Maven Central that day, configured as their
+documentation says: the Gradle plugin compiles the same query text as the
+Apollo iOS comparison (`benchmarks/apollo-comparison/operations`) against
+`spec/rickandmorty/schema.graphql`, the cache's compiler plugin reads
+`@typePolicy(keyFields: "id")` on `Character`, `Location` and `Episode`
+from `extra.graphqls`, and the client is
+`ApolloClient.Builder().cache(MemoryCacheFactory(maxSizeBytes = 10 MB))`
+through the extension that plugin generates, the store
+`apolloClient.apolloStore`, the memory cache, no SQL. The cache's compiler
+plugin adds `__typename` first to every selection set below the root, which
+is what `benchmarks/apollo-comparison/fixture-apollo.json` holds: 849,101
+bytes against Baton's 686,254, the same data, every one of its 6,535
+objects with `__typename` first and nothing else different. Baton's side
+is the plan `batonc` generates from `spec/sources/Fixture.graphql`.
+
+Apollo's write is timed in the pieces `ApolloStore.writeOperation` is made
+of, since the store exposes them: the bytes parsed into the generated
+`Operation.Data` by `parseResponse` over its own `JsonReader` (the call its
+HTTP transport makes); the data written back to a map
+(`withErrors`) and normalized into records (`ApolloStore.normalize`); and
+the records merged into an empty `MemoryCache` (`accessCache { merge }`
+with the `DefaultRecordMerger` the store uses). `writeOperation` whole
+into an empty cache, normalization and merge together, took 6.34 and
+6.33 ms on the JVM and 32.67 and 32.38 ms on the Pixel 9, the sum of its
+pieces. We found no path from bytes to records that skips the model:
+`writeToCacheAsynchronously` moves the write after the response is
+emitted and does not shorten it. Apollo's normalizer keys the eleven
+locations whose `id` is null as one record, `Location:null`, so its store
+holds 889 records where Baton's holds 899, those eleven keyed by their path.
+
+| Step | Baton, JVM | Apollo Kotlin, JVM | Ratio | Baton, Pixel 9 | Apollo Kotlin, Pixel 9 | Ratio |
+|---|---|---|---|---|---|---|
+| Response bytes → change set / records | 1.41, 1.44 ms | 8.20, 8.16 ms (parse 2.53, 2.49 + normalize 5.67, 5.67) | 5.7× | 5.11, 5.25 ms | 42.3, 42.1 ms (parse 11.86, 11.75 + normalize 30.41, 30.38) | 8.1× |
+| Commit / merge into an empty store | 204, 212 µs | 679, 671 µs (`MemoryCache`) | 3.2× | 1.28, 1.37 ms | 2.21, 2.24 ms | 1.7× |
+| Bytes → data in the store, in one run | 1.64, 1.67 ms | 8.92, 8.90 ms | 5.4× | 6.38, 6.62 ms | 44.62, 44.64 ms | 6.9× |
+| Same payload again, nothing changes | 164, 169 µs | 262, 263 µs (the records merged again) | 1.6× | 356, 375 µs | 1.12, 1.11 ms | 3.1× |
+| From the store to readable data | 0 (lenses read slots) + 205, 209 µs availability check | 7.22, 7.49 ms (`readOperation`, the whole query into models) | — | 0 + 1.20, 1.22 ms | 25.11, 24.92 ms | — |
+| One field read, per field | 20.4, 20.3 ns (lens, untracked) | 4.19, 4.38 ns (a property of the read `Data`) | 0.21× | 43.2, 43.8 ns | 1.95, 1.65 ns | 0.04× |
+| Apollo's `JsonReader` alone, every token read, for scale | 1.80, 1.78 ms (686 KB) | 2.20, 2.24 ms (849 KB) | — | 8.25, 8.18 ms | 10.55, 10.47 ms | — |
+
+The same data written again through `writeOperation`, which normalizes
+before it merges, took 6.12 and 6.11 ms on the JVM and 32.22 and 31.86 ms
+on the Pixel 9; the row above is the merge alone, as Baton's is the commit
+alone.
+
+Apollo Kotlin is not Apollo iOS: on the same data its write is 8.9 ms on
+the JVM against Apollo iOS's 318 ms on the same Mac (the 0.1.0 entry), and its cache merge is
+within a few times Baton's commit. The shape is the same. Apollo builds
+the model tree from the bytes, writes it back to a map and normalizes the
+map, and the normalization is the larger part: 30 ms of the 44 on the
+phone, more than three frames at 120 Hz, off the main thread as its
+documentation asks. Reading the query back rebuilds the model tree, 25 ms
+on the phone, and only then is a field a property load, 2 ns, faster than
+Baton's lens read by twenty-odd times on the phone and five on the JVM. Baton materializes nothing a view did
+not read: the response is in the store in 6.5 ms, the availability check
+answers in 1.2 ms, and a lens pays 43 ns for each field a view reads, so a
+screen that reads every field of the twenty rows, 160 reads, pays 7 µs
+against the 25 ms read that comes first on Apollo's side. Where a field
+is read many times from data already read, Apollo's model is the faster
+thing to hold.
+
+Caveats: one fixture; the memory cache only; both clients called directly,
+with no network, no interceptor chain and no watcher; Apollo's suspend
+calls run in `runBlocking` on the calling thread, where its memory cache
+does not switch threads; Apollo's response is 24% larger by construction.
+The harness is in the repository beside the Swift one so anyone can rerun
+or correct it:
+
+```bash
+cd kotlin
+gradle :benchmarks:apollo-comparison:runComparison
+gradle :benchmarks:apollo-comparison:android:installRelease \
+  :benchmarks:apollo-comparison:android:installReleaseAndroidTest
+adb shell am instrument -w -e class baton.comparison.ComparisonBenchmark \
+  baton.comparison.android.test/androidx.test.runner.AndroidJUnitRunner
+```
+
 ## Unreleased, the verdict on the root — 2026-10-07
 
 Revision: the working tree of the verdict change on top of `039aa2d`,
