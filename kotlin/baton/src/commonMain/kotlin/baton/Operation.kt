@@ -1,5 +1,6 @@
 package baton
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
@@ -129,7 +130,13 @@ sealed interface Resolution<out Handle : Any> {
     data class Resolved<Handle : Any>(override val handle: Handle) : Resolution<Handle>
 }
 
-/** What a query's data deserves: loading, ready with its lens, or failed with the error that says why. */
+/**
+ * What a query's data deserves: loading, ready with its lens, or failed with
+ * the error that says why. Stable: a value never changes, a lens is stable,
+ * and an error is compared as the same object, so a composable handed an
+ * equal phase skips, a failed one among them.
+ */
+@Stable
 sealed interface Phase<out Data> {
     data object Loading : Phase<Nothing>
     data class Ready<Data>(val data: Data) : Phase<Data>
@@ -141,8 +148,9 @@ sealed interface Phase<out Data> {
  * flight, or failed with its failure and when it failed. Not a phase: the
  * phase is what the data deserves and the fetch is what the network did, so
  * a fetch that fails behind data is read here while the phase stays ready.
- * The handle's next response replaces it.
+ * The handle's next response replaces it. Stable as the phase is.
  */
+@Stable
 sealed interface Fetch {
     /** The failure, when the last fetch failed. */
     val failure: Failure? get() = null
@@ -192,8 +200,10 @@ fun QueryOperation<*>.retry() {
  * one argument per variable and an optional optimistic response, which
  * commits the mutation through the environment and returns its data. An
  * action outside every environment throws `EnvironmentError.NotInjected`
- * rather than commit into a store that stands in.
+ * rather than commit into a store that stands in. Stable: equal as the same
+ * object, and whether it is in flight is snapshot state.
  */
+@Stable
 class MutationAction<Op : MutationOperation<Data>, Data : Lens> internal constructor(private val environment: Environment?) {
     private var inFlight by mutableIntStateOf(0)
 
