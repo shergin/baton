@@ -20,9 +20,13 @@ detail fetches.
   (`Persistence.named("RickAndMorty", version = Types.schemaDigest)`), and
   provides it with `CompositionLocalProvider(LocalBaton provides …)`; the
   second launch shows the characters before the network answers.
+- The View menu's Store Inspector, or Command-I (Control-I off a Mac),
+  shows `baton-inspector`'s `StoreInspector` in a third pane: the
+  store's records by type, searchable, each opening onto its fields, live.
 - `Screenshot.kt` draws both screens to PNG files without a window, through
   `ImageComposeScene`, for the README and for a machine with no screen:
-  `gradle :samples:desktop:screenshot` writes `build/screenshots/`.
+  `gradle :samples:desktop:screenshot` writes `build/screenshots/`, the
+  inspector's pane among them.
 
 The public API rate-limits a burst (HTTP 429, Cloudflare's code 1015): a
 page the API refused shows the failure under the page bar with a retry,

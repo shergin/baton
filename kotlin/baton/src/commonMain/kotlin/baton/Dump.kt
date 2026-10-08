@@ -6,14 +6,25 @@ package baton
  * `{"__refs": [key]}`), the record's type as `__typename`, field errors
  * under `__errors`, a deleted record as `null`. Keys are sorted by code
  * point and each record is one line, so a change to identity or layout is a
- * reviewable diff. See `spec/README.md`, the manifest's `records`.
+ * reviewable diff, and an inspector's export can become a fixture. See
+ * `spec/README.md`, the manifest's `records`.
  */
-internal fun Store.dump(): String {
+@Generated
+fun Store.dump(): String {
     val lines = recordsByKey().entries.sortedWith { left, right -> compareCodePoints(left.key, right.key) }.map { (key, record) ->
         "  " + Dump.quote(key) + ": " + (if (record.deleted) "null" else Dump.record(this, record))
     }
     return "{\n" + lines.joinToString(",\n") + "\n}\n"
 }
+
+/**
+ * Every value a record holds, by storage key, as the dump writes it, with
+ * its error; for an inspector. The values are read through the record's
+ * cells, so a read in composition registers them.
+ */
+@Generated
+fun Store.fieldTexts(record: Record): List<Triple<String, String, FieldError?>> =
+    storedFields(record).map { (key, value, error) -> Triple(key, Dump.json(value), error) }
 
 private object Dump {
     fun record(store: Store, record: Record): String {

@@ -1,5 +1,6 @@
 package baton
 
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import kotlin.time.Clock
 import kotlin.time.Duration
@@ -89,8 +90,43 @@ class Store(
     /** Completed mutations' roots' keys, oldest first, apart from the buffer. */
     internal val completedMutations = ArrayList<String>()
     internal var collectionScheduled = false
-    /** How many collections have run; for tests. */
-    internal var collections = 0
+    /** How many collections have run; for the tests and the inspector. */
+    @Generated
+    var collections = 0
+        internal set
+
+    /** How many roots the store keeps: retained, in the release buffer, or a completed mutation's; for the inspector. */
+    @Generated
+    val rootCount: Int get() = roots.size
+
+    /** How many optimistic responses are applied; for the inspector. */
+    @Generated
+    val optimisticLayerCount: Int get() = optimisticLayers.size
+
+    /**
+     * A number that moves with every batch, collection and end, as snapshot
+     * state: read in composition, it recomposes on any change to the store,
+     * a record made or removed among them. Only an inspector reads it; a
+     * lens reads its slots' cells and is told of those alone.
+     */
+    @Generated
+    val revision: Int get() = revisionState.intValue
+
+    private val revisionState = mutableIntStateOf(0)
+
+    /**
+     * The revision's count, kept apart from its state: a batch may finish in
+     * composition, a lookup's binding among them, and a `+=` on the state
+     * would read it there and register the composable to recompose with
+     * every later batch.
+     */
+    private var revisions = 0
+
+    /** Moves the revision, writing its state without reading it. */
+    private fun advanceRevision() {
+        revisions += 1
+        revisionState.intValue = revisions
+    }
 
     /**
      * Runs a pass on a later turn of the store's thread; the environment
@@ -266,12 +302,15 @@ class Store(
         return plan.resolve(variables, keys)
     }
 
-    internal val count: Int get() = records.size
+    /** How many records the store holds, the three roots among them. */
+    @Generated
+    val count: Int get() = records.size
 
     internal fun existing(key: String): Record? = records[key]
 
     /** Every record the store holds, by key. */
-    internal fun recordsByKey(): Map<String, Record> {
+    @Generated
+    fun recordsByKey(): Map<String, Record> {
         checkThread()
         return records
     }
@@ -592,6 +631,7 @@ class Store(
      * what the server and the app wrote. Returns how many slots changed.
      */
     private fun finish(batch: Batch): Int {
+        advanceRevision()
         if (linkDropped) {
             linkDropped = false
             scheduleCollection()
@@ -651,6 +691,7 @@ class Store(
         forgotten.clear()
         keys.clear()
         log = null
+        advanceRevision()
     }
 
     /** Marks everything fetched so far as stale; `Environment.invalidate()` is the public way, which also refetches. */
@@ -692,6 +733,7 @@ class Store(
      * them. Returns how many records were removed.
      */
     internal fun sweep(reachable: Set<Record>): Int {
+        advanceRevision()
         val unreachable = ArrayList<String>()
         for ((key, record) in records) {
             if (key == ROOT_KEY || key == MUTATION_ROOT_KEY || key == SUBSCRIPTION_ROOT_KEY || record in reachable) continue

@@ -50,7 +50,8 @@ internal sealed interface Value {
  */
 class Record internal constructor(val type: TypeID, val key: String, internal val idOffset: Int = -1) {
     /** Whether `@deleteRecord` removed it: links to it read as null and lists skip it, until a payload names it again. */
-    internal var deleted: Boolean = false
+    @Generated
+    var deleted: Boolean = false
         private set
 
     private var cells: Array<MutableState<Value>?> = arrayOfNulls(Registry.slotCount(type))

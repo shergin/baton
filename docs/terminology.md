@@ -993,6 +993,10 @@ action that evicts. It lives in a product of its own, so a release build
 need not link it.
 Swift: `StoreInspector`, in the product `BatonInspector`; the export is
 `StoreExport.text(of:)`.
+Kotlin: the composable `StoreInspector(environment)`, in the module
+`baton-inspector`; the export is `StoreExport.text(store)`. It is live: it
+reads the store's revision, snapshot state that moves with every batch and
+collection, and the records' cells, so a commit recomposes it.
 
 **Recorded transport, scripted transport.** *Concept: transport.* Baton's
 words.

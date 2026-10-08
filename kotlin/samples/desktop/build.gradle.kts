@@ -55,6 +55,8 @@ kotlin {
             kotlin.srcDir(generated)
             dependencies {
                 implementation(project(":baton"))
+                // The store inspector, the window's third pane.
+                implementation(project(":baton-inspector"))
                 implementation(compose.desktop.currentOs)
                 implementation(libs.compose.foundation)
                 implementation(libs.compose.material3)

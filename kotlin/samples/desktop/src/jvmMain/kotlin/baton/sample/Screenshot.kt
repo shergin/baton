@@ -24,7 +24,8 @@ import org.jetbrains.skia.Image
  * README and for a machine with no screen: the composition the app shows,
  * over the live API, drawn by Skia into an image once the data has
  * arrived. `gradle :samples:desktop:screenshot` writes
- * `build/screenshots/characters.png` and `detail.png`.
+ * `build/screenshots/characters.png`, `detail.png` and `inspector.png`, the
+ * last with the store inspector's pane.
  */
 fun main(arguments: Array<String>) {
     val directory = File(arguments.firstOrNull() ?: "build/screenshots").apply { mkdirs() }
@@ -34,12 +35,13 @@ fun main(arguments: Array<String>) {
     runBlocking(Dispatchers.Swing) {
         val environment = Environment("https://rickandmortyapi.com/graphql")
         val selection = mutableStateOf<String?>(null)
-        ImageComposeScene(width = 960, height = 720, density = Density(1f), coroutineContext = coroutineContext).use { scene ->
+        val inspected = mutableStateOf<Environment?>(null)
+        ImageComposeScene(width = 1280, height = 720, density = Density(1f), coroutineContext = coroutineContext).use { scene ->
             scene.setContent {
                 MaterialTheme {
                     Surface(modifier = Modifier.fillMaxSize()) {
                         CompositionLocalProvider(LocalBaton provides environment) {
-                            Characters(initialSelection = selection.value)
+                            Characters(initialSelection = selection.value, inspected = inspected.value)
                         }
                     }
                 }
@@ -52,9 +54,12 @@ fun main(arguments: Array<String>) {
             selection.value = "1"
             repeat(60) { scene.render(); delay(100) }
             write(scene.render(), File(directory, "detail.png"))
+            inspected.value = environment
+            repeat(10) { scene.render(); delay(100) }
+            write(scene.render(), File(directory, "inspector.png"))
         }
         environment.end()
-        println("wrote ${File(directory, "characters.png")} and ${File(directory, "detail.png")}")
+        println("wrote characters.png, detail.png and inspector.png in $directory")
     }
 }
 
