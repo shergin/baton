@@ -3,6 +3,16 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
+## Unreleased
+
+- A second Kotlin sample, `kotlin/samples/github`, the Compose for Desktop
+  twin of `examples/GitHubTriage`: sign-in with a token kept in memory, a
+  repository with a star toggle whose optimistic response flips the star and
+  the count, its open issues as a connection that loads the next page at
+  the list's end, an issue whose composer appends an optimistic comment by
+  the viewer through `@appendEdge`, and sign-out that ends the environment
+  and removes the image. Its tests run the screens over `ScriptedTransport`.
+
 ## 0.11.0 (Karavai) — 2026-10-07
 
 - `rules_baton`, a Bazel module under `bazel/`, versioned with Baton: a
