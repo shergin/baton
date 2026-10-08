@@ -48,7 +48,9 @@ jobs:
 
   # The Kotlin runtime: the common module built and tested on the JVM, the
   # development target, and the Kotlin emitter's goldens compiled against it.
-  # On Linux, since nothing in it is Apple's.
+  # The tests run the specification through the code the compiler generates
+  # from it, so the compiler is built from the same checkout first. On
+  # Linux, since nothing in it is Apple's.
   kotlin:
     runs-on: ubuntu-latest
     steps:

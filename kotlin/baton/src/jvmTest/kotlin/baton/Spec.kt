@@ -31,7 +31,10 @@ internal object Spec {
         val records: String,
         val reads: List<Read>,
     ) {
-        val plan: Plan? get() = TestPlans.byOperation[operation]?.invoke()
+        /** The generated operation the case runs, from `spec/sources`. */
+        val type: OperationType<*>? get() = operation(operation)
+
+        val plan: Plan? get() = type?.plan
 
         /**
          * Commits the responses into [store] under the case's root: one
@@ -89,6 +92,20 @@ internal object Spec {
     }
 
     fun case(name: String): Case = cases.first { it.name == name }
+
+    /**
+     * The operation [name] as the compiler generated it from `spec/sources`
+     * into the package `baton.spec`: its class's companion, which holds the
+     * plan and builds the root lens; null when no source declares it.
+     */
+    fun operation(name: String): OperationType<*>? {
+        val type = try {
+            Class.forName("baton.spec.$name")
+        } catch (_: ClassNotFoundException) {
+            return null
+        }
+        return type.getField("Companion").get(null) as OperationType<*>
+    }
 
     /** The first line where [actual] differs from [expected], saying where, or null when they are the same text. */
     fun difference(actual: String, expected: String, name: String): String? {

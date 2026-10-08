@@ -16,14 +16,29 @@
   },
   "customScalarTypes": {
     "Decimal": {
-      "swift": "Foundation.Decimal"
+      "swift": "Foundation.Decimal",
+      "kotlin": {
+        "type": "java.math.BigDecimal",
+        "converter": "baton.spec.Decimals"
+      }
     },
     "DateTime": {
-      "swift": "Foundation.Date"
+      "swift": "Foundation.Date",
+      "kotlin": {
+        "type": "java.time.Instant",
+        "converter": "baton.spec.DateTimes"
+      }
     },
     "Url": {
-      "swift": "Foundation.URL"
+      "swift": "Foundation.URL",
+      "kotlin": {
+        "type": "java.net.URI",
+        "converter": "baton.spec.Urls"
+      }
     }
+  },
+  "kotlin": {
+    "package": "baton.spec"
   },
   "transient": {
     "types": [

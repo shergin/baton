@@ -91,7 +91,7 @@ class OracleTests {
     fun `responses that are not well formed fail with their byte offset, and odd escapes read as the spec says`() {
         @Suppress("UNCHECKED_CAST")
         val entries = Json.parse(Spec.text("tokenizer/malformed.json")) as List<Map<String, Any?>>
-        val plan = checkNotNull(TestPlans.byOperation["TestTokenizerQuery"]).invoke()
+        val plan = checkNotNull(Spec.operation("TestTokenizerQuery")).plan
         for (entry in entries) {
             val response = Spec.bytes("tokenizer/" + entry["response"])
             val store = Store()

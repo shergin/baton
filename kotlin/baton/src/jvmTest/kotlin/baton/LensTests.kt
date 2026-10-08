@@ -1,6 +1,14 @@
 package baton
 
 import androidx.compose.runtime.snapshots.Snapshot
+import baton.spec.Slots
+import baton.spec.Status
+import baton.spec.TestNotesQuery
+import baton.spec.TestProfileQuery
+import baton.spec.TestProfile_character
+import baton.spec.TestSetStatuses
+import baton.spec.TestStrictQuery
+import baton.spec.Types
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -190,11 +198,9 @@ class LensTests {
     }
 
     /** A note read by hand over a plain list of notes. */
-    private class Note(anchor: Anchor) : TestLens(anchor) {
+    private class Note(override val anchor: Anchor) : Lens {
         val id: String? get() = anchor.string(Slots.Note.id)
         val text: String? get() = anchor.string(Slots.Note.text)
-
-        override fun field(key: String): Any? = unknown(key)
     }
 
     /** Commits [notes] as a root field `kotlinNotes`, a plural link to notes keyed by id, and returns its slot. */
