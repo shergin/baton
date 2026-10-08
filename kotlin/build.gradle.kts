@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.compose) apply false
     alias(libs.plugins.compose.compiler) apply false
+    alias(libs.plugins.apollo) apply false
 }
 
 // The Compose compiler's reports, which say whether a class is stable and a

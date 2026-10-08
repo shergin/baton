@@ -1,0 +1,7 @@
+# Apollo keys the three entity types by `id`, as Baton does, so both stores
+# hold the same records for the Fixture response.
+extend schema @link(url: "https://specs.apollo.dev/cache/v0.4", import: ["@typePolicy"])
+
+extend type Character @typePolicy(keyFields: "id")
+extend type Location @typePolicy(keyFields: "id")
+extend type Episode @typePolicy(keyFields: "id")

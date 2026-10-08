@@ -129,6 +129,8 @@ jobs:
           :goldens:compileKotlinJvm :samples:shared:build :samples:desktop:build
           :samples:github:build :samples:android:assembleDebug
           :benchmarks:android:build :benchmarks:android:assembleReleaseAndroidTest
+          :benchmarks:apollo-comparison:build :benchmarks:apollo-comparison:android:build
+          :benchmarks:apollo-comparison:android:assembleReleaseAndroidTest
         working-directory: kotlin
 
   # The package on the current Xcode. Every target builds with warnings as

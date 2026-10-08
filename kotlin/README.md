@@ -27,7 +27,16 @@ samples/android/  the Android app over them, for a phone
 samples/github/   a Compose for Desktop app over GitHub's API, with writes: the twin of examples/GitHubTriage
 benchmarks/android/
                   the ingest benchmark, an instrumented test of a release build that is not debuggable
+benchmarks/apollo-comparison/
+                  Baton and Apollo Kotlin side by side on the Fixture operation, on the JVM (runComparison)
+                  and, through its android/ application, on a device in a process that is not debuggable
 ```
+
+`benchmarks/apollo-comparison` is the Kotlin twin of the repository's
+`benchmarks/apollo-comparison`: Apollo Kotlin and its normalized cache,
+configured as their documentation says, against Baton on the same query
+and the same graph, each step's median and best printed, with the record
+in `BENCHMARKS.md`.
 
 `scripts/check-kotlin-goldens.sh` runs `:goldens:compileKotlinJvm`.
 
