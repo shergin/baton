@@ -1,11 +1,5 @@
 package baton
 
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.WebSocket
-import java.nio.ByteBuffer
-import java.util.UUID
-import java.util.concurrent.CompletionStage
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,15 +8,47 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
-// The socket transport is the JVM's alone: `java.net.http.WebSocket` is the
-// desktop JVM's, and Android's platform has no WebSocket client, so there an
-// app brings its own transport.
+/**
+ * A WebSocket client a platform or an edge supplies, which the socket
+ * transport speaks `graphql-transport-ws` over: it opens a socket to a url,
+ * offering one subprotocol and headers, hands whole text frames and the
+ * socket's end to a listener, sends text and closes. The JVM's is
+ * `JdkWebSocketClient`, over `java.net.http`; Android's platform has none,
+ * and an app brings one, `OkHttpWebSocketClient` of `baton-okhttp` for one.
+ */
+interface WebSocketClient {
+    /**
+     * Opens a socket to [url] offering [protocol] with [headers], whose
+     * frames go to [listener]; throws a `TransportError` of status 0 saying
+     * why it could not.
+     */
+    suspend fun open(url: String, protocol: String, headers: Map<String, String>, listener: WebSocketListener): WebSocketConnection
+}
+
+/** What an open socket delivers: whole text frames, then its end, once. */
+interface WebSocketListener {
+    fun text(frame: String)
+
+    /** The socket ended, closed by the server or failed; nothing follows. */
+    fun closed(failure: TransportError)
+}
+
+/** An open socket: it sends text frames and closes. */
+interface WebSocketConnection {
+    /** Sends one text frame, or throws a `TransportError` of status 0 when the socket cannot. */
+    suspend fun send(text: String)
+
+    /** Closes the socket with the closing handshake; nothing more is sent on it. */
+    fun close()
+
+    /** Drops the socket at once, without the handshake. */
+    fun abort()
+}
 
 /**
  * Operations over `graphql-transport-ws`: one WebSocket per transport, opened
@@ -35,7 +61,8 @@ import kotlinx.coroutines.withContext
  * socket that fails ends every stream on it with a `TransportError` of status
  * 0. An `error` frame ends its stream with the operation's `GraphQLErrors`.
  * Credentials are read when a connection is opened, after the fixed headers.
- * See `spec/runtime.md`, section 10.
+ * The socket itself is the [client]'s; the protocol over it is this. See
+ * `spec/runtime.md`, section 10.
  */
 class GraphQLTransportWebSocket(
     val url: String,
@@ -45,9 +72,9 @@ class GraphQLTransportWebSocket(
     val encoding: Encoding = Encoding.standard,
     /** The `payload` of `connection_init`, for authentication. */
     val connectionParams: Variable? = null,
+    /** What opens the sockets. */
+    val client: WebSocketClient,
 ) : Transport {
-    private val client: HttpClient = HttpClient.newHttpClient()
-
     /**
      * Where the transport's state is read and written, one task at a time,
      * as the Swift transport's actor does; a task that suspends lets another
@@ -67,9 +94,12 @@ class GraphQLTransportWebSocket(
     /** The streams on the connection, by id. */
     private val subscribers = HashMap<String, Channel<ByteArray>>()
 
-    /** One socket: its acknowledgement, the frames it delivered, and its sends, one at a time as `WebSocket` requires. */
+    /** The id the next stream takes: numbered under [confined], unique for the transport's life. */
+    private var nextID = 0L
+
+    /** One socket: its acknowledgement, the frames it delivered, and its sends, one at a time. */
     private class Connection {
-        var socket: WebSocket? = null
+        var socket: WebSocketConnection? = null
         val acknowledged = CompletableDeferred<Unit>()
         val frames = Channel<Delivery>(Channel.UNLIMITED)
         val sending = Mutex()
@@ -84,13 +114,16 @@ class GraphQLTransportWebSocket(
     override fun send(request: Request): Flow<ByteArray> = flow {
         // Every stream is a subscription of its own, under its own id: equal requests must not stand in for one another
         // when one of them ends.
-        val id = UUID.randomUUID().toString()
         val events = Channel<ByteArray>(Channel.UNLIMITED)
+        var id: String? = null
         try {
-            withContext(confined) { start(id, request, events) }
+            withContext(confined) {
+                id = (nextID++).toString()
+                start(id, request, events)
+            }
             for (payload in events) emit(payload)
         } finally {
-            withContext(NonCancellable + confined) { stop(id) }
+            id?.let { withContext(NonCancellable + confined) { stop(it) } }
         }
     }
 
@@ -150,13 +183,7 @@ class GraphQLTransportWebSocket(
     /** Opens the socket of [current] and sends `connection_init`; its frames are read from here on. */
     private suspend fun open(current: Connection) {
         val read = credentials()
-        val builder = client.newWebSocketBuilder().subprotocols("graphql-transport-ws")
-        for ((name, value) in headers + read) builder.header(name, value)
-        val socket = try {
-            builder.buildAsync(URI(url), Listener(current.frames)).await()
-        } catch (failure: Exception) {
-            throw TransportError(0, "the socket could not be opened: ${failure.cause?.message ?: failure.message}")
-        }
+        val socket = client.open(url, "graphql-transport-ws", headers + read, Listener(current.frames))
         // While it opened, every stream on it may have gone; then it is not this transport's to keep.
         if (connection !== current) {
             socket.abort()
@@ -171,9 +198,11 @@ class GraphQLTransportWebSocket(
         val socket = current.socket ?: throw TransportError(0, "the socket is closed")
         current.sending.withLock {
             try {
-                socket.sendText(text, true).await()
+                socket.send(text)
+            } catch (failure: TransportError) {
+                throw failure
             } catch (failure: Exception) {
-                throw TransportError(0, "the socket could not send: ${failure.cause?.message ?: failure.message}")
+                throw TransportError(0, "the socket could not send: ${failure.message ?: failure}")
             }
         }
     }
@@ -238,7 +267,7 @@ class GraphQLTransportWebSocket(
         connection = null
         current.frames.close()
         current.acknowledged.completeExceptionally(TransportError(0, "the socket is closed"))
-        current.socket?.sendClose(WebSocket.NORMAL_CLOSURE, "")?.whenComplete { _, _ -> current.socket?.abort() }
+        current.socket?.close()
     }
 
     /** Ends every stream on [current] and the connection; the next request opens another. */
@@ -253,36 +282,14 @@ class GraphQLTransportWebSocket(
         current.socket?.abort()
     }
 
-    /** Hands a socket's whole text frames and its end to [frames], asking for one message at a time. */
-    private class Listener(private val frames: Channel<Delivery>) : WebSocket.Listener {
-        private val text = StringBuilder()
-
-        override fun onOpen(webSocket: WebSocket) {
-            webSocket.request(1)
+    /** Hands a socket's text frames and its end to [frames]. */
+    private class Listener(private val frames: Channel<Delivery>) : WebSocketListener {
+        override fun text(frame: String) {
+            frames.trySend(Delivery.Text(frame))
         }
 
-        override fun onText(webSocket: WebSocket, data: CharSequence, last: Boolean): CompletionStage<*>? {
-            text.append(data)
-            if (last) {
-                frames.trySend(Delivery.Text(text.toString()))
-                text.setLength(0)
-            }
-            webSocket.request(1)
-            return null
-        }
-
-        override fun onBinary(webSocket: WebSocket, data: ByteBuffer, last: Boolean): CompletionStage<*>? {
-            webSocket.request(1)
-            return null
-        }
-
-        override fun onClose(webSocket: WebSocket, statusCode: Int, reason: String): CompletionStage<*>? {
-            frames.trySend(Delivery.Closed(TransportError(0, "the socket closed with $statusCode${if (reason.isEmpty()) "" else ": $reason"}")))
-            return null
-        }
-
-        override fun onError(webSocket: WebSocket, error: Throwable) {
-            frames.trySend(Delivery.Closed(TransportError(0, "the socket failed: ${error.message ?: error}")))
+        override fun closed(failure: TransportError) {
+            frames.trySend(Delivery.Closed(failure))
         }
     }
 }

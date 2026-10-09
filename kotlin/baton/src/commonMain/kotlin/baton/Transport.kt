@@ -59,6 +59,19 @@ interface Transport {
     fun send(request: Request): Flow<ByteArray>
 }
 
+/**
+ * What a request accepts of a server, as the built-in HTTP transport sends
+ * in `Accept` and a transport over another client should: an event stream
+ * for a subscription, `multipart/mixed` for a deferred operation, one
+ * response otherwise, the GraphQL-over-HTTP media type before plain JSON.
+ */
+val Request.accept: String
+    get() = when {
+        kind == OperationKind.SUBSCRIPTION -> "text/event-stream, application/graphql-response+json, application/json"
+        incremental -> "multipart/mixed; deferSpec=20220824, application/graphql-response+json, application/json"
+        else -> "application/graphql-response+json, application/json"
+    }
+
 /** The one payload of a request that answers once: the flow's first, or the failure a flow that delivers none is. */
 suspend fun Transport.payload(request: Request): ByteArray =
     send(request).firstOrNull() ?: throw TransportError(0, "the transport delivered no payload for ${request.operationName}")

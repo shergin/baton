@@ -56,7 +56,7 @@ class HttpTransport(
         connection.doOutput = true
         connection.useCaches = false
         connection.setRequestProperty("Content-Type", "application/json")
-        connection.setRequestProperty("Accept", accept(request))
+        connection.setRequestProperty("Accept", request.accept)
         for ((name, value) in headers) connection.setRequestProperty(name, value)
         for ((name, value) in credentials) connection.setRequestProperty(name, value)
         coroutineScope {
@@ -120,15 +120,6 @@ class HttpTransport(
             val count = input.read(buffer)
             if (count < 0) return
             if (count > 0) chunk(buffer, count)
-        }
-    }
-
-    private companion object {
-        /** What a request accepts: an event stream for a subscription, multipart for a deferred operation, one response otherwise. */
-        fun accept(request: Request): String = when {
-            request.kind == OperationKind.SUBSCRIPTION -> "text/event-stream, application/graphql-response+json, application/json"
-            request.incremental -> "multipart/mixed; deferSpec=20220824, application/graphql-response+json, application/json"
-            else -> "application/graphql-response+json, application/json"
         }
     }
 }

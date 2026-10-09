@@ -285,9 +285,10 @@ internal fun requestErrors(errors: List<ResponseError>): GraphQLErrors =
 /**
  * The errors of a body that is a GraphQL response with errors and no data,
  * or with null data, as a server answers a request error; null for any
- * other body, a malformed one among them.
+ * other body, a malformed one among them. Public for a transport over
+ * another HTTP client, which reads a response as the built-in one does.
  */
-internal fun requestErrors(body: ByteArray): GraphQLErrors? {
+fun requestErrors(body: ByteArray): GraphQLErrors? {
     if (body.isEmpty()) return null
     var errors: List<ResponseError> = emptyList()
     var hasData = false
@@ -310,6 +311,10 @@ internal fun requestErrors(body: ByteArray): GraphQLErrors? {
     return requestErrors(errors)
 }
 
-/** Whether a content type's media type is `application/graphql-response+json`, whose body is a GraphQL response whatever the status. */
-internal fun answersInGraphQLResponse(contentType: String): Boolean =
+/**
+ * Whether a content type's media type is `application/graphql-response+json`,
+ * whose body is a GraphQL response whatever the status. Public for a
+ * transport over another HTTP client.
+ */
+fun answersInGraphQLResponse(contentType: String): Boolean =
     contentType.substringBefore(';').trim().lowercase() == "application/graphql-response+json"
