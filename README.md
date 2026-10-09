@@ -56,20 +56,20 @@ device, the OS and the date.
 | A screen whose data is already in the store | the first body has it, after a 115 µs check | 228 ms to rebuild the query | |
 
 **Kotlin against Apollo Kotlin 5.2**, a Google Pixel 9 on Android 17,
-release builds, 8 October 2026:
+release builds, 9 October 2026:
 
 | | Baton | Apollo Kotlin | Faster |
 |---|---|---|---|
-| The response into the store | 6.3 ms | 44.6 ms | **7.1×** |
-| The same payload again | 0.31 ms | 1.1 ms | **3.6×** |
-| A screen whose data is already in the store | a 0.74 ms check | 25 ms to rebuild the query | **33×** |
+| The response into the store | 5.3 ms | 44.7 ms | **8.4×** |
+| The same payload again | 0.30 ms | 1.1 ms | **3.8×** |
+| A screen whose data is already in the store | a 0.75 ms check | 25 ms to rebuild the query | **33×** |
 
 The difference is the model tree Apollo builds from the bytes and rebuilds
 on every read. Baton materializes nothing a view did not read: on the phone
 the whole response is in the store in less than a 120 Hz frame, 1.0 ms of
 it on the main thread, and the screen reads its fields from there. From
-the last byte to a list a screen can render, Baton is 6.3 ms; Apollo
-Kotlin is 44.6 ms with its default cache write before the response is
+the last byte to a list a screen can render, Baton is 5.3 ms; Apollo
+Kotlin is 44.7 ms with its default cache write before the response is
 emitted, or about 12 ms to a first render with the write deferred and
 32 ms of work after it.
 
@@ -77,7 +77,7 @@ Also measured: an optimistic write shows at once and the whole cycle costs
 0.4 ms; forty-two pages of scrolling plateau near five megabytes, since
 the store releases what no view holds; a launch with the image already
 open reads the page back in 1.78 ms before any request; on the JVM, the
-Kotlin runtime ingests the same page in 1.7 ms.
+Kotlin runtime ingests the same page in 1.1 ms.
 
 ## What it is, and will be
 
@@ -426,10 +426,10 @@ cached data. A changed field re-renders the view that read it.
 Apollo Kotlin is far quicker than Apollo iOS on the same data, and its
 cache merge is within twice Baton's commit: the store is not where its
 time goes. The time goes to building the model tree from the bytes and
-normalizing it, 30 of its 44.6 ms on the Pixel 9, and to rebuilding that
+normalizing it, 30 of its 44.7 ms on the Pixel 9, and to rebuilding that
 tree on every read, 25 ms there. Once the tree exists, a field is a
-property load, 2 ns against Baton's 43 ns lens read; a screen that reads
-every field of twenty rows pays Baton about 7.5 µs after a 0.74 ms check.
+property load, 2 ns against Baton's 47 ns lens read; a screen that reads
+every field of twenty rows pays Baton about 7.5 µs after a 0.75 ms check.
 Apollo Kotlin also keys the eleven locations whose `id` is null as one
 record, so it holds 889 records where Baton holds 899.
 
@@ -446,8 +446,8 @@ Kotlin's is documented to stay off the main thread.
 | A child view receives | A lens: the fields it declared | A snapshot of the parent's dictionary | A nested model the parent can also read |
 | Warm cache, first frame | The data | Loading. The read is `async` | Loading. The read stays off the main thread |
 | One field changes | The view that read it | The whole query, rebuilt into a new tree | The whole query, rebuilt into a new tree |
-| Bytes into the store | 4.1 ms on an M1 Pro (Swift); 6.3 ms on a Pixel 9 (Kotlin) | 318 ms | 44.6 ms on the same Pixel 9; 9.5 ms on the JVM |
-| Read it back | 28 ns a field, 0.54 µs a field in a view body (Swift); 43 ns a field (Kotlin, Pixel 9) | 228 ms to rebuild, then 296 ns a field | 25 ms to rebuild on the Pixel 9, then 2 ns a field |
+| Bytes into the store | 4.1 ms on an M1 Pro (Swift); 5.3 ms on a Pixel 9 (Kotlin) | 318 ms | 44.7 ms on the same Pixel 9; 8.8 ms on the JVM |
+| Read it back | 28 ns a field, 0.54 µs a field in a view body (Swift); 47 ns a field (Kotlin, Pixel 9) | 228 ms to rebuild, then 296 ns a field | 25 ms to rebuild on the Pixel 9, then 2 ns a field |
 | Memory while scrolling | Plateaus. 42 pages stay near +5 MB | Keeps every record. No eviction | You call GC. TTL and trimming exist |
 | A list | Pages merged in the store, one update per page | One watcher per page, concatenated in the pager | Pages merged in the store |
 | An optimistic write | A typed response, rebased, 0.4 ms for the cycle | A separate mutable model you write into the cache | Opt-in. Watchers then re-run the query |

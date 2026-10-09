@@ -69,6 +69,16 @@ package struct ChangeSet: Sendable {
     /// no field it selected: nothing in the store holds them.
     package internal(set) var unplacedErrors: [FieldError] = []
     var index: [String: Int32] = [:]
+    /// The records whose entity key came from one unescaped key field, by
+    /// the type and the field's bytes, in front of `index`: an entity a
+    /// response names many times, as every episode of a character names its
+    /// characters, is found by its bytes, and its key string is made once,
+    /// on first sight. Open addressing over four words a slot: the record,
+    /// where the bytes start and end, and their hash; `index` stays the
+    /// record of truth, so a spelling this table does not hold still finds
+    /// its record there.
+    var spans: ContiguousArray<Int32>
+    var spanCount = 0
 
     /// Reserves by the response's size: the Rick and Morty fixture writes an
     /// entry per 33 bytes, a record per 760 and a list element per 250, and
@@ -76,6 +86,7 @@ package struct ChangeSet: Sendable {
     init(bytes: [UInt8]) {
         self.bytes = bytes
         let records = bytes.count / 512 + 4
+        spans = ContiguousArray(repeating: -1, count: ChangeSet.spanCapacity(records) * 4)
         index.reserveCapacity(records)
         recordKeys.reserveCapacity(records)
         recordTypes.reserveCapacity(records)
@@ -184,6 +195,73 @@ package struct ChangeSet: Sendable {
         recordIDOffsets.append(idOffset)
         index[key] = id
         return id
+    }
+
+    /// The record of an entity of `type` keyed by the one unescaped key
+    /// field at `bytes[start..<end]`, added on first sight under the key
+    /// `typeName:text`, as `record(for:)` adds it.
+    mutating func entityRecord(typeName: String, type: TypeID, start: Int, end: Int) -> Int32 {
+        let hash = spanHash(type, start, end)
+        let mask = spans.count / 4 - 1
+        var slot = Int(UInt32(bitPattern: hash)) & mask
+        while true {
+            let base = slot * 4
+            let record = spans[base]
+            if record < 0 { break }
+            if spans[base + 3] == hash, Int(spans[base + 2] - spans[base + 1]) == end - start,
+               recordTypes[Int(record)] == type, sameBytes(Int(spans[base + 1]), start, end - start) {
+                return record
+            }
+            slot = (slot + 1) & mask
+        }
+        let key = Record.entityKey(typeName, string(Int32(start), Int32(end), escaped: false))
+        let record = self.record(for: key, type: type, idOffset: Record.idOffset(ofType: typeName))
+        if (spanCount + 1) * 2 > spans.count / 4 { growSpans() }
+        insertSpan(record, Int32(start), Int32(end), hash)
+        return record
+    }
+
+    private func spanHash(_ type: TypeID, _ start: Int, _ end: Int) -> Int32 {
+        bytes.withUnsafeBufferPointer { buffer in
+            var hash = type.raw &* -0x61c88647
+            for position in start..<end { hash = (hash ^ Int32(buffer[position])) &* 16777619 }
+            return hash ^ Int32(bitPattern: UInt32(bitPattern: hash) >> 16)
+        }
+    }
+
+    private func sameBytes(_ first: Int, _ second: Int, _ length: Int) -> Bool {
+        bytes.withUnsafeBufferPointer { buffer in
+            for offset in 0..<length where buffer[first + offset] != buffer[second + offset] { return false }
+            return true
+        }
+    }
+
+    private mutating func insertSpan(_ record: Int32, _ start: Int32, _ end: Int32, _ hash: Int32) {
+        let mask = spans.count / 4 - 1
+        var slot = Int(UInt32(bitPattern: hash)) & mask
+        while spans[slot * 4] >= 0 { slot = (slot + 1) & mask }
+        let base = slot * 4
+        spans[base] = record
+        spans[base + 1] = start
+        spans[base + 2] = end
+        spans[base + 3] = hash
+        spanCount += 1
+    }
+
+    private mutating func growSpans() {
+        let old = spans
+        spans = ContiguousArray(repeating: -1, count: old.count * 2)
+        spanCount = 0
+        for base in stride(from: 0, to: old.count, by: 4) where old[base] >= 0 {
+            insertSpan(old[base], old[base + 1], old[base + 2], old[base + 3])
+        }
+    }
+
+    /// Slots for the expected records at half load, a power of two.
+    private static func spanCapacity(_ expected: Int) -> Int {
+        var capacity = 16
+        while capacity < expected * 2 { capacity *= 2 }
+        return capacity
     }
 
     /// Decodes a string value from the response bytes.
@@ -950,6 +1028,7 @@ package enum Ingest {
             let parts = keyParts[depth]
             let key: String
             if parts.count == 1, let (start, end, escaped) = parts[0] {
+                if !escaped { return changes.entityRecord(typeName: typeName, type: type, start: start, end: end) }
                 key = Record.entityKey(typeName, Ingest.materialize(base: base, start, end, escaped))
             } else {
                 key = Record.entityKey(typeName, parts: parts.map { part in

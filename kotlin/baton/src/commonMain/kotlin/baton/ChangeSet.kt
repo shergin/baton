@@ -74,6 +74,19 @@ internal class ChangeSet(val bytes: ByteArray) {
     val recordIDOffsets = ArrayList<Int>(bytes.size / 512 + 4)
     private val index = HashMap<String, Int>(bytes.size / 512 + 4)
 
+    /**
+     * The records whose entity key came from one unescaped key field, by the
+     * type and the field's bytes, in front of [index]: an entity a response
+     * names many times, as every episode of a character names its
+     * characters, is found by its bytes, and its key string is made once, on
+     * first sight. Open addressing over four ints a slot: the record, where
+     * the bytes start and end, and their hash; the string index stays the
+     * record of truth, so a spelling this table does not hold still finds
+     * its record there.
+     */
+    private var spans = IntArray(spanCapacity(bytes.size / 512 + 4) * 4) { -1 }
+    private var spanCount = 0
+
     /** What the response said of types the plan did not list: records of the type are members of the condition. */
     val memberships = ArrayList<Pair<TypeID, TypeID>>()
 
@@ -109,6 +122,62 @@ internal class ChangeSet(val bytes: ByteArray) {
         recordIDOffsets.add(idOffset)
         index[key] = id
         return id
+    }
+
+    /**
+     * The record of an entity of `type` keyed by the one unescaped key field
+     * at `bytes[start, end)`, added on first sight under the key
+     * `typeName:text`, as [record] adds it.
+     */
+    fun entityRecord(typeName: String, type: TypeID, start: Int, end: Int): Int {
+        val hash = spanHash(type, start, end)
+        val mask = spans.size / 4 - 1
+        var slot = hash and mask
+        while (true) {
+            val base = slot * 4
+            val record = spans[base]
+            if (record < 0) break
+            if (spans[base + 3] == hash && spans[base + 2] - spans[base + 1] == end - start && recordTypes[record] == type && sameBytes(spans[base + 1], start, end - start)) return record
+            slot = (slot + 1) and mask
+        }
+        val record = record(Record.entityKey(typeName, Text.materialize(bytes, start, end, false)), type, Record.idOffset(typeName))
+        if ((spanCount + 1) * 2 > spans.size / 4) {
+            growSpans()
+        }
+        insertSpan(record, start, end, hash)
+        return record
+    }
+
+    private fun spanHash(type: TypeID, start: Int, end: Int): Int {
+        var hash = type.raw * -0x61c88647
+        for (position in start until end) hash = (hash xor (bytes[position].toInt() and 0xFF)) * 16777619
+        return hash xor (hash ushr 16)
+    }
+
+    private fun sameBytes(first: Int, second: Int, length: Int): Boolean {
+        for (offset in 0 until length) if (bytes[first + offset] != bytes[second + offset]) return false
+        return true
+    }
+
+    private fun insertSpan(record: Int, start: Int, end: Int, hash: Int) {
+        val mask = spans.size / 4 - 1
+        var slot = hash and mask
+        while (spans[slot * 4] >= 0) slot = (slot + 1) and mask
+        val base = slot * 4
+        spans[base] = record
+        spans[base + 1] = start
+        spans[base + 2] = end
+        spans[base + 3] = hash
+        spanCount += 1
+    }
+
+    private fun growSpans() {
+        val old = spans
+        spans = IntArray(old.size * 2) { -1 }
+        spanCount = 0
+        for (base in old.indices step 4) {
+            if (old[base] >= 0) insertSpan(old[base], old[base + 1], old[base + 2], old[base + 3])
+        }
     }
 
     fun addEntry(record: Int, slotIndex: Int, kind: Byte, first: Long, second: Int) {
@@ -221,6 +290,15 @@ internal class ChangeSet(val bytes: ByteArray) {
 
     /** A string value of the response. */
     fun string(start: Int, end: Int, escaped: Boolean): String = Text.materialize(bytes, start, end, escaped)
+
+    private companion object {
+        /** Slots for the expected records at half load, a power of two. */
+        fun spanCapacity(expected: Int): Int {
+            var capacity = 16
+            while (capacity < expected * 2) capacity *= 2
+            return capacity
+        }
+    }
 
     /** Whether the string at the range equals [other], without making a string when the bytes are ASCII. */
     fun stringEquals(start: Int, end: Int, escaped: Boolean, other: String): Boolean {

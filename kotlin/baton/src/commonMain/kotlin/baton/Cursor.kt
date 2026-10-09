@@ -469,6 +469,7 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
     /** The record of an entity whose key fields were all given, keyed by their values in the key's order. */
     private fun entity(typeName: String, type: TypeID, frame: Frame): Int {
         val count = frame.found
+        if (count == 1 && !frame.keyEscaped[0]) return changes.entityRecord(typeName, type, frame.keyStarts[0], frame.keyEnds[0])
         val value = if (count == 1) {
             Text.materialize(bytes, frame.keyStarts[0], frame.keyEnds[0], frame.keyEscaped[0])
         } else {

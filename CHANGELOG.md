@@ -53,6 +53,16 @@ are expected and listed without apology.
   (`BENCHMARKS.md`). The benchmark app is profileable from the shell, so
   `simpleperf` can record it on a device.
 
+- The change set finds an entity a response names again by the bytes of
+  its key field, through a table in front of its string index, so the
+  record's key is built once per record and not once per occurrence; the
+  fixture names 6,533 entities for 899 records. A profile of the Kotlin
+  ingest on the Pixel 9 put the decoding, the concatenation and the
+  hashing of those keys at a fifth of its time. The Pixel 9 ingest takes
+  4.3 ms where it took 5.2, allocating 250 KB less, and the response is in
+  the store in 5.3 ms against Apollo Kotlin's 44.7; on an M1 Pro the Swift
+  ingest takes 1.73 ms where it took 2.06 (`BENCHMARKS.md`).
+
 ## 0.13.0 (Bublik) — 2026-10-09
 
 - The Kotlin runtime on Maven Central: `com.shergin.baton:baton`,

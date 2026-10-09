@@ -21,6 +21,107 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the entity key once per record, by the profile — 2026-10-09
+
+Revision: the working tree on top of `419e08e`, in both runtimes. The
+Kotlin ingest was profiled on the Pixel 9 (Tensor G4, Android 17, API 37)
+before anything was built: the benchmark application made `profileable`
+from the shell, `simpleperf record --app baton.benchmarks -f 4000
+--call-graph fp` over the `IngestBenchmark` run of the entry below, 10,580
+samples, 88% of them on the benchmark's thread, 11% on ART's
+`HeapTaskDaemon` and 1% on the JIT; the medians under the profiler were
+5.27 ms ingest and 0.98 ms commit. Self time by symbol, of all samples:
+
+| Share | Where |
+|---|---|
+| 12.3% | `Scanner.scanString`, the string scan |
+| 11.7% | `Cursor.objectAt`, the object walk |
+| 6.1% | `madvise`, the collector returning the change set's large arrays, on its own thread |
+| 4.4%, 4.1% | `ChangeSet.group`, `ChangeSet.addEntry` |
+| 4.2%, 1.5%, 1.3% | `Scanner.skipWhitespace`, `expect`, `peek` |
+| 8.2% inclusive | UTF-8 bytes into a `String` (`StringFactory`, the allocation of its chars) |
+| 5.8% inclusive | `StringBuilder` appends and their allocations |
+| 1.4%, 1.4% | `String.hashCode`, `HashMap.getNode` |
+| 1.7%, 1.5%, 1.5% | `Cursor.scalarValue`, `Store.apply`, `Cursor.entity` |
+
+The fixture names 6,533 entities for its 899 records, since every episode
+of a character names the episode's characters, and the ingest built the
+record key `Type:id` once per occurrence: the id decoded into a string,
+the concatenation, the hash and the probe of the change set's index, for
+a record it had seen six times before. The strings, the builders and the
+hashing above were mostly that. A table keyed by the bytes now stands in
+front of the change set's string index, in both runtimes: open addressing
+over four ints a slot, the record, where the key field's bytes start and
+end, and their hash, with the string index as the record of truth, so a
+key is built once per record and a spelling the table does not hold, an
+escaped id, a key of several fields, still finds its record through the
+string. The commit is untouched, and the Kotlin store's count of strings
+is the same, since the record's key is made at first sight either way.
+
+The Kotlin `IngestBenchmark`, three runs of 300 after 200 warm-ups on the
+Pixel 9, against the entry of 2026-10-08 on the same device:
+
+| Runtime | Ingest | Commit | Ingest allocates | Commit allocates |
+|---|---|---|---|---|
+| `86ca4c2`, the 8 October rows | 5.21, 5.19 ms | 0.97, 0.97 ms | 1,856 KB | 424 KB |
+| The entity table | 4.32, 4.32, 4.33 ms | 0.97, 0.97, 0.98 ms | 1,604 KB | 448 KB |
+
+The Swift suite on the Apple M1 Pro, macOS 26.5.2, three runs in one
+sitting, the first without the change for today's baseline, since the
+machine was not the quiet one of the 8 October entry (an Android emulator
+idling and other sessions building); best, with the median in
+parentheses:
+
+| Measurement | Today without the table | With the table, two runs |
+|---|---|---|
+| Response bytes into a change set | 2.09 ms (2.24) | 1.73 ms (1.80), 1.72 ms (1.86) |
+| Commit into an empty store, 899 records | 499 µs (536) | 470 µs (505), 471 µs (499) |
+| Commit of the same payload again | 115 µs (120) | 113 µs (118), 114 µs (115) |
+| Commit with one field changed, 20 rows observing | 117 µs (123) | 116 µs (116), 116 µs (119) |
+| The check of the fixture plan against the store | 129 µs (131) | 127 µs (127), 128 µs (131) |
+| Hydration of 898 rows | 1.78 ms (1.89) | 1.79 ms (1.84), 1.78 ms (1.94) |
+| A pass over one root reaching 50,004 records | 1.60 ms (1.77) | 1.56 ms (1.93), 1.55 ms (1.77) |
+| Untracked lens read, per field | 20.7 ns | 20.3 ns, 20.3 ns |
+
+The ingest: 1.73 ms from 2.09 today, and from the 2.06 ms the 8 October
+entry recorded on the quiet machine; the rows the change does not touch
+are within the day's noise of that entry, the commit's 499 against its
+468 to 472 among them.
+
+The Apollo Kotlin comparison run again the way the entry of 2026-10-08
+describes, the device three times and the JVM (OpenJDK 27, Homebrew, on
+the same Mac under load averages of 5 to 7) three times, all three runs
+in a cell. Apollo's device rows are within two percent of that entry, the
+device standing still; its JVM `JsonReader` control ran 22% faster than
+there on the same JDK, so the JVM columns compare within this entry only.
+
+| Step | Baton, JVM | Apollo Kotlin, JVM | Baton, Pixel 9 | Apollo Kotlin, Pixel 9 | Ratio, Pixel 9 |
+|---|---|---|---|---|---|
+| Response bytes → change set / records | 1.12, 1.10, 1.08 ms | 8.06, 8.10, 8.33 ms (parse 2.24, 2.14, 2.13 + normalize 5.82, 5.96, 6.20) | 4.35, 4.36, 4.34 ms | 41.4, 42.2, 42.4 ms (parse 11.83, 12.08, 12.01 + normalize 29.55, 30.13, 30.36) | 9.7× |
+| Commit / merge into an empty store | 168, 167, 162 µs | 636, 671, 662 µs (`MemoryCache`) | 989, 988, 987 µs | 2.24, 2.30, 2.28 ms | 2.3× |
+| Bytes → data in the store, in one run | 1.29, 1.27, 1.24 ms | 8.76, 8.80, 9.01 ms | 5.34, 5.35, 5.32 ms | 43.74, 44.65, 44.69 ms | 8.4× |
+| Same payload again, nothing changes | 178, 183, 176 µs | 295, 420, 292 µs (the records merged again) | 303, 307, 300 µs | 1.12, 1.17, 1.14 ms | 3.8× |
+| From the store to readable data | 0 + 134, 133, 129 µs availability check | 6.03, 6.38, 5.88 ms (`readOperation`) | 0 + 747, 894, 748 µs | 24.90, 25.02, 25.25 ms | — |
+| One field read, per field | 21.8, 22.6, 22.0 ns (lens, untracked) | 5.59, 5.66, 5.49 ns | 47.2, 47.6, 46.9 ns | 1.67, 1.68, 2.44 ns | 0.04× |
+| Apollo's `JsonReader` alone, every token read, for scale | 1.50, 1.46, 1.49 ms (686 KB) | 1.89, 1.83, 1.83 ms (849 KB) | 8.41, 8.37, 8.35 ms | 10.75, 10.70, 10.69 ms | — |
+
+`writeOperation` whole into an empty cache took 6.47, 6.68 and 6.85 ms on
+the JVM and 31.38, 31.97 and 31.95 ms on the Pixel 9; the same data
+written again through it 5.90, 6.26 and 6.39 ms, and 31.39, 31.90 and
+31.75 ms. On Baton's side the phone moved where the table is: the ingest
+4.34 to 4.36 ms where it was 5.28 and 5.26, and so the response into the
+store 5.32 to 5.35 ms where it was 6.27 and 6.22; the commit, the same
+payload again and the check stand where they were, the check's 894 µs
+being one run's outlier against two of 747 and 748.
+
+What the profile says next, not built: the scanner's loops read and write
+the position field per byte where a local would do; the collector's share
+is the change set's arrays, sized by the response's bytes and returned
+each ingest; and the commit's main-thread time is a third the decoding of
+the strings that changed, which the ingest could do off the main thread
+at the cost of decoding strings a warm store compares away without one,
+a trade the refetch case has to be benched for before it is taken.
+
 ## Unreleased, the store's heap, measured without the change set — 2026-10-09
 
 Revision: the working tree on top of `7f81f7b`, with the change set's
