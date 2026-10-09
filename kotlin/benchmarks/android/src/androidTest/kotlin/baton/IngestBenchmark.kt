@@ -74,16 +74,29 @@ class IngestBenchmark {
     /**
      * What one store holds after the commit, in kilobytes: the heap in use
      * after a collection with the store alive, less the heap in use after a
-     * collection before it was made. One measurement, good to what else the
-     * process leaves behind.
+     * collection before it was made. The ingest and the commit happen in a
+     * frame of their own, [committedStore], so the change set does not
+     * count: this function runs once and so is interpreted, and an
+     * interpreted frame keeps alive whatever its registers still hold. One
+     * measurement, good to what else the process leaves behind.
      */
     private fun storeHeapKilobytes(response: ByteArray, operation: Fixture): Long {
         val before = heapInUse()
-        val store = Store()
-        store.commit(Ingest.normalize(response, store.resolve(Fixture.plan, operation.variables), Store.ROOT_KEY))
+        val store = committedStore(response, operation)
         val after = heapInUse()
         assertEquals(901, store.count)
         return (after - before) / 1024
+    }
+
+    /**
+     * A new store with the Fixture response committed into it. The change
+     * set is a temporary of this frame alone, unreachable once it returns,
+     * which is why this is a call and not code in its caller.
+     */
+    private fun committedStore(response: ByteArray, operation: Fixture): Store {
+        val store = Store()
+        store.commit(Ingest.normalize(response, store.resolve(Fixture.plan, operation.variables), Store.ROOT_KEY))
+        return store
     }
 
     private fun heapInUse(): Long {

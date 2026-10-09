@@ -46,6 +46,13 @@ are expected and listed without apology.
   documents among the hosts, and say where `baton.json`'s entries are
   defined.
 
+- The Android ingest benchmark measures what a store holds with the
+  change set out of the measuring frame, which had kept it alive: the
+  figures 0.13.0's notes give for a store after the commit, 1,100, 896 and
+  884 KB, were the store and the change set together; a store holds 328 KB
+  (`BENCHMARKS.md`). The benchmark app is profileable from the shell, so
+  `simpleperf` can record it on a device.
+
 ## 0.13.0 (Bublik) — 2026-10-09
 
 - The Kotlin runtime on Maven Central: `com.shergin.baton:baton`,

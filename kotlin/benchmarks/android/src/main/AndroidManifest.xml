@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <application android:label="Baton benchmarks" />
+    <!-- Profileable from the shell: `simpleperf` on the device can record
+         the release process the benchmark runs in, which is how the ingest
+         is profiled (`BENCHMARKS.md`). ART compiles it as it does any app. -->
+    <application android:label="Baton benchmarks">
+        <profileable android:shell="true" />
+    </application>
 
 </manifest>

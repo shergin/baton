@@ -21,6 +21,46 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the store's heap, measured without the change set — 2026-10-09
+
+Revision: the working tree on top of `7f81f7b`, with the change set's
+entity table the entry above describes. The Kotlin `IngestBenchmark`'s
+"a store holds" figure is the heap in use after a collection with the
+store alive, less the heap in use after a collection before the store was
+made. Until today the ingest and the commit ran in the measuring frame
+itself, `store.commit(Ingest.normalize(...))`, which runs once and so is
+interpreted, and an interpreted frame keeps alive whatever its registers
+still hold: the change set counted as the store's. The commit now happens
+in a frame of its own, `committedStore`, gone before the heap is read;
+`dexdump` of the test APK shows the call is not inlined and the measuring
+frame holds the store alone afterwards. One diagnostic build measured the
+four ways in one process on the Pixel 9, Android 17 (API 37), twice:
+
+| Measured | Run 1 | Run 2 |
+|---|---|---|
+| A store, the commit in its own frame | 328 KB | 328 KB |
+| The old measuring frame, store and change set | 956 KB | 956 KB |
+| An uncommitted change set alone | 652 KB | 656 KB |
+| A store again, the commit in its own frame | 328 KB | 328 KB |
+
+So a store holds 328 KB after the commit of the fixture, and the column
+"A store holds" of the entry of 2026-10-08 on the record's channels and
+sizing, 1,100, 896 and 884 KB, was the store and a change set of about
+560 KB, 64 KB smaller then than today's with its entity table. None of
+the changes between those rows touched the change set, so the row-to-row
+differences there were the store's own; the rows were not re-measured.
+The three runs of the benchmark after the fix:
+
+| Run | Ingest | Commit | Ingest allocates | Commit allocates | A store holds |
+|---|---|---|---|---|---|
+| 1 | 4.32 ms | 0.97 ms | 1,604 KB | 448 KB | 328 KB |
+| 2 | 4.32 ms | 0.97 ms | 1,604 KB | 448 KB | 328 KB |
+| 3 | 4.33 ms | 0.98 ms | 1,604 KB | 448 KB | 328 KB |
+
+The benchmark app's manifest declares it `profileable` from the shell, so
+`simpleperf` on the device can record the release process the benchmark
+runs in; ART compiles it as it does any app, and the medians did not move.
+
 ## Unreleased, the ingest and the commit, by the profile — 2026-10-08
 
 Revision: the working tree on top of `bb93aff`. A time profile of the
