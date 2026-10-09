@@ -220,7 +220,9 @@ them under each module's `build/compose-reports`.
 The plan model generated code constructs (`Plan.kt`, `Registry.kt`), the
 wire's values (`Value.kt`), the operation interfaces (`Operation.kt`), the
 host markers (`Markers.kt`), the generated-code marker and the format
-(`Generated.kt`), and the public errors (`Errors.kt`).
+(`Generated.kt`), and the public errors (`Errors.kt`). The registry numbers
+types and slots by name for the whole process: one schema family per
+process, shared by every environment in it.
 
 The store and the ingest, to the dump. A record's cells are plain values,
 and a slot that was read has a channel beside its cell, Compose snapshot

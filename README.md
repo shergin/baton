@@ -386,7 +386,9 @@ Apollo Router, GraphQL Yoga, Hive Gateway, Hasura and any other
 spec-compliant server answer it as they are, with no plugin or adapter.
 Point the compiler at the schema, wherever it comes from, and build.
 `@defer`, subscriptions and persisted operations follow each server's own
-conventions, and a federated graph looks like any other server.
+conventions, and a federated graph looks like any other server. A process
+holds one schema family: two environments may share it, and two schemas
+in one process must not give two types one name.
 
 Baton strives to support each backend's own features wherever they fit the
 design and make sense for a client. If yours does something Baton does not

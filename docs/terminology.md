@@ -685,7 +685,11 @@ Swift: the events are `missing` and `unexpected`.
 **Schema.** *Concept: schema.* GraphQL: the SDL.
 Here: a checked-in file, named in `baton.json`, with the
 [identity](#store) configured beside it; the compiler has no introspection
-command, and the file is downloaded by the app's own tooling.
+command, and the file is downloaded by the app's own tooling. One schema
+family per process: the registry numbers types and slots by name for the
+whole process, so two environments over one schema share them, and two
+schemas in one process must not give two types one name
+([the decision](decisions/slots-are-numbered-by-the-process.md)).
 
 **Client schema extension, client field.** *Concept: schema.* Relay:
 `schemaExtensions`, files that give server types client fields or declare

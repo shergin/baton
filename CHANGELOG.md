@@ -109,6 +109,11 @@ are expected and listed without apology.
   else under the same shape.
 
 
+- The vocabulary and both READMEs say that a process holds one schema
+  family: the registry numbers types and slots by name for the whole
+  process, so two environments over one schema share them, and two
+  schemas in one process must not give two types one name.
+
 ## 0.13.0 (Bublik) — 2026-10-09
 
 - The Kotlin runtime on Maven Central: `com.shergin.baton:baton`,
