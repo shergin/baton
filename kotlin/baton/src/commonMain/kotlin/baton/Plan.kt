@@ -243,6 +243,14 @@ class PlanField private constructor(
             linked.connection?.readsVariables == true
     }
 
+    /**
+     * Whether reading the field records an edit for the commit, a
+     * connection's merge or an edge directive, here or below it: an object
+     * under such a field is read in full, since a repeated edit is not a
+     * repeated value.
+     */
+    internal val edits: Boolean = edit != null || (kind as? Kind.Linked)?.let { it.connection != null || it.selection.edits } == true
+
     /** Whether the field is selected under [variables]: no guards, or one conjunction of guards that all hold. */
     internal fun selected(variables: Variables): Boolean =
         guards.isEmpty() || guards.any { conjunction -> conjunction.all { it.holds(variables) } }
@@ -304,4 +312,6 @@ class Selection(
 
     internal val readsVariables: Boolean = variants.any { variant -> variant.fields.any { it.readsVariables } }
     internal val transient: Boolean = variants.any { variant -> variant.fields.any { it.transient } }
+    /** Whether a field of the selection, or of one below it, records an edit when read: a connection's merge or an edge directive. */
+    internal val edits: Boolean = variants.any { variant -> variant.fields.any { it.edits } }
 }

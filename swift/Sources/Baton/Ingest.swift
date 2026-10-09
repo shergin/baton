@@ -68,6 +68,10 @@ package struct ChangeSet: Sendable {
     /// Errors the response carried without a path, or with one that names
     /// no field it selected: nothing in the store holds them.
     package internal(set) var unplacedErrors: [FieldError] = []
+    /// How many objects were read as repeats of an earlier object, by a
+    /// compare of their bytes rather than a parse; for the tests and the
+    /// benchmarks.
+    package internal(set) var repeats = 0
     var index: [String: Int32] = [:]
     /// The records whose entity key came from one unescaped key field, by
     /// the type and the field's bytes, in front of `index`: an entity a
@@ -599,10 +603,29 @@ package enum Ingest {
         static let depthLimit = 24
         /// The response's `errors`, as read; resolved against the plan at the end.
         var rawErrors: [ResponseError] = []
+        /// The entity objects read so far, by their selection and a hash of
+        /// their first bytes: a later object under the same selection with
+        /// the same bytes is read as the same record, without a parse. Open
+        /// addressing at half load; one printing per key, the first.
+        var printings: ContiguousArray<Printing>
+        var printingCount = 0
+
+        /// One entity object read, where it lies in the response: its
+        /// selection, a hash of its first bytes, its span and its record.
+        struct Printing {
+            var selection: UInt
+            var hash: Int32
+            var start: Int32
+            var length: Int32
+            var record: Int32
+
+            static let none = Printing(selection: 0, hash: 0, start: 0, length: 0, record: -1)
+        }
 
         init(base: UnsafePointer<UInt8>, count: Int, changes: ChangeSet) {
             scanner = Scanner(base: base, count: count)
             self.changes = changes
+            printings = ContiguousArray(repeating: Printing.none, count: Cursor.printingCapacity(count / 512 + 4))
         }
 
         var base: UnsafePointer<UInt8> { scanner.base }
@@ -737,9 +760,15 @@ package enum Ingest {
         /// is read with: its fields and their slots. Relay prints `__typename`
         /// first, so settling it reads one key. The `id` may arrive anywhere:
         /// Relay prints the `id` it adds last, and an optimistic response
-        /// sorts its keys.
+        /// sorts its keys. An entity object printed before under the same
+        /// selection, byte for byte, is read as that record without a parse.
         mutating func object(plan: ResolvedSelection, parent: Int32, storageKey: String?, listIndex: Int?, depth: Int, fixedRecord: Int32?) throws -> Int32 {
             let opening = position
+            // An entity object printed before under this selection, byte for
+            // byte, is that record, and nothing below it can differ; unless a
+            // field below records an edit, which must not be made twice.
+            let repeatable = fixedRecord == nil && !plan.edits && !plan.key.isEmpty
+            if repeatable, let record = printed(plan, at: opening) { return record }
             try expect(0x7B)
             guard depth < Cursor.depthLimit else { throw IngestError(offset: position, message: "selection nested deeper than 24 levels") }
             if depth == scratch.count {
@@ -906,7 +935,86 @@ package enum Ingest {
             for (_, slot, value) in extra[depth] {
                 changes.entries.append(ChangeSet.Entry(record: record, slot: slot, value: value))
             }
+            if repeatable, changes.recordIsEntity[Int(record)] { notePrinting(plan, from: opening, record: record) }
             return record
+        }
+
+        /// How many of an object's first bytes are hashed to find an earlier
+        /// printing of it: enough to reach the key of most objects, wherever
+        /// the server puts it.
+        static let prefix = 64
+
+        /// A hash of the first `prefix` bytes at `start` under the selection,
+        /// eight words mixed, or nil when fewer bytes remain. Equal bytes
+        /// hash alike; the compare decides the rest.
+        @inline(__always)
+        func prefixHash(of plan: ResolvedSelection, at start: Int) -> Int32? {
+            guard start + Cursor.prefix <= scanner.count else { return nil }
+            var hash = UInt64(UInt(bitPattern: ObjectIdentifier(plan))) &* 0x9E37_79B9_7F4A_7C15
+            let raw = UnsafeRawPointer(base + start)
+            for offset in stride(from: 0, to: Cursor.prefix, by: 8) {
+                hash = (hash ^ raw.loadUnaligned(fromByteOffset: offset, as: UInt64.self)) &* 0x1_0000_0001_B3
+            }
+            return Int32(truncatingIfNeeded: hash ^ (hash >> 32))
+        }
+
+        /// The record of an earlier object under the selection whose bytes
+        /// are the bytes at `start`, the cursor moved past them; nil when
+        /// there is none. Equal bytes under one selection normalize to the
+        /// same entries, which the first printing already emitted.
+        mutating func printed(_ plan: ResolvedSelection, at start: Int) -> Int32? {
+            guard let hash = prefixHash(of: plan, at: start) else { return nil }
+            let selection = UInt(bitPattern: ObjectIdentifier(plan))
+            let mask = printings.count - 1
+            var slot = Int(UInt32(bitPattern: hash)) & mask
+            while true {
+                let printing = printings[slot]
+                if printing.record < 0 { return nil }
+                if printing.hash == hash, printing.selection == selection {
+                    let length = Int(printing.length)
+                    guard start + length <= scanner.count, memcmp(base + start, base + Int(printing.start), length) == 0 else { return nil }
+                    position = start + length
+                    changes.repeats += 1
+                    return printing.record
+                }
+                slot = (slot + 1) & mask
+            }
+        }
+
+        /// Keeps the object just read under the selection, from `start` to
+        /// the cursor, as the printing a later equal object is read as. The
+        /// first printing under a key stays; a later object with the same
+        /// first bytes that is not a repeat is recorded nowhere.
+        mutating func notePrinting(_ plan: ResolvedSelection, from start: Int, record: Int32) {
+            guard let hash = prefixHash(of: plan, at: start) else { return }
+            let selection = UInt(bitPattern: ObjectIdentifier(plan))
+            if (printingCount + 1) * 2 > printings.count { growPrintings() }
+            let mask = printings.count - 1
+            var slot = Int(UInt32(bitPattern: hash)) & mask
+            while printings[slot].record >= 0 {
+                if printings[slot].hash == hash, printings[slot].selection == selection { return }
+                slot = (slot + 1) & mask
+            }
+            printings[slot] = Printing(selection: selection, hash: hash, start: Int32(start), length: Int32(position - start), record: record)
+            printingCount += 1
+        }
+
+        private mutating func growPrintings() {
+            let old = printings
+            printings = ContiguousArray(repeating: Printing.none, count: old.count * 2)
+            let mask = printings.count - 1
+            for printing in old where printing.record >= 0 {
+                var slot = Int(UInt32(bitPattern: printing.hash)) & mask
+                while printings[slot].record >= 0 { slot = (slot + 1) & mask }
+                printings[slot] = printing
+            }
+        }
+
+        /// Slots for the expected printings at half load, a power of two.
+        private static func printingCapacity(_ expected: Int) -> Int {
+            var capacity = 16
+            while capacity < expected * 2 { capacity *= 2 }
+            return capacity
         }
 
         /// Records the edit an edge directive asks for on a linked field's record.

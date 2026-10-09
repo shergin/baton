@@ -19,6 +19,17 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
 
     private val frames = ArrayList<Frame>()
 
+    /**
+     * The entity objects read so far, by their selection and a hash of their
+     * first bytes: a later object under the same selection with the same
+     * bytes is read as the same record, without a parse. Open addressing at
+     * half load over four ints a slot, the hash, the start, the length and
+     * the record, with the selection beside; one printing per key, the first.
+     */
+    private var printings = IntArray(printingCapacity(bytes.size / 512 + 4) * 4) { -1 }
+    private var printingSelections = arrayOfNulls<ResolvedSelection>(printings.size / 4)
+    private var printingCount = 0
+
     /** The value the last scalar read gave, in the raw encoding. */
     private var valueKind: Byte = Raw.NULL
     private var valueFirst = 0L
@@ -154,11 +165,19 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
      * its record. Under an interface or union the record's type is the
      * payload's `__typename`, settled before any member is matched, since it
      * picks the variant. The key fields may arrive anywhere: Relay prints the
-     * `id` it adds last, and an optimistic response sorts its keys.
+     * `id` it adds last, and an optimistic response sorts its keys. An
+     * entity object printed before under the same selection, byte for byte,
+     * is read as that record without a parse.
      * [listIndex] and [fixedRecord] are -1 when there is none.
      */
     fun objectAt(plan: ResolvedSelection, parent: Int, storageKey: String?, listIndex: Int, depth: Int, fixedRecord: Int): Int {
         val opening = scanner.position
+        // An entity object printed before under this selection, byte for byte, is that record, and nothing below it can differ; unless a field below records an edit, which must not be made twice.
+        val repeatable = fixedRecord < 0 && !plan.edits && plan.key.isNotEmpty()
+        if (repeatable) {
+            val printed = printed(plan, opening)
+            if (printed >= 0) return printed
+        }
         scanner.expect('{')
         if (depth >= DEPTH_LIMIT) throw IngestError(scanner.position, "selection nested deeper than $DEPTH_LIMIT levels")
         if (depth == frames.size) frames.add(Frame())
@@ -354,7 +373,86 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
         for (position in 0 until frame.extraSlots.size) {
             changes.addEntry(record, frame.extraSlots.values[position], frame.extraValues.kinds[position], frame.extraValues.first[position], frame.extraValues.second[position])
         }
+        if (repeatable && changes.recordIDOffsets[record] >= 0) notePrinting(plan, opening, record)
         return record
+    }
+
+    /** A hash of the first [PREFIX] bytes at [start] under the selection, which the caller has checked are there. Equal bytes hash alike; the compare decides the rest. */
+    private fun prefixHash(plan: ResolvedSelection, start: Int): Int {
+        var hash = plan.hashCode() * -0x61c88647
+        for (position in start until start + PREFIX) hash = (hash xor (bytes[position].toInt() and 0xFF)) * 16777619
+        return hash xor (hash ushr 16)
+    }
+
+    /**
+     * The record of an earlier object under the selection whose bytes are the
+     * bytes at [start], the scanner moved past them; -1 when there is none.
+     * Equal bytes under one selection normalize to the same entries, which
+     * the first printing already emitted.
+     */
+    private fun printed(plan: ResolvedSelection, start: Int): Int {
+        if (start + PREFIX > bytes.size) return -1
+        val hash = prefixHash(plan, start)
+        val mask = printings.size / 4 - 1
+        var slot = hash and mask
+        while (true) {
+            val base = slot * 4
+            val record = printings[base + 3]
+            if (record < 0) return -1
+            if (printings[base] == hash && printingSelections[slot] === plan) {
+                val length = printings[base + 2]
+                if (start + length > bytes.size || !sameBytes(start, printings[base + 1], length)) return -1
+                scanner.position = start + length
+                changes.repeats += 1
+                return record
+            }
+            slot = (slot + 1) and mask
+        }
+    }
+
+    /**
+     * Keeps the object just read under the selection, from [start] to the
+     * scanner, as the printing a later equal object is read as. The first
+     * printing under a key stays; a later object with the same first bytes
+     * that is not a repeat is recorded nowhere.
+     */
+    private fun notePrinting(plan: ResolvedSelection, start: Int, record: Int) {
+        if (start + PREFIX > bytes.size) return
+        val hash = prefixHash(plan, start)
+        if ((printingCount + 1) * 2 > printings.size / 4) growPrintings()
+        val mask = printings.size / 4 - 1
+        var slot = hash and mask
+        while (printings[slot * 4 + 3] >= 0) {
+            if (printings[slot * 4] == hash && printingSelections[slot] === plan) return
+            slot = (slot + 1) and mask
+        }
+        val base = slot * 4
+        printings[base] = hash
+        printings[base + 1] = start
+        printings[base + 2] = scanner.position - start
+        printings[base + 3] = record
+        printingSelections[slot] = plan
+        printingCount += 1
+    }
+
+    private fun growPrintings() {
+        val old = printings
+        val oldSelections = printingSelections
+        printings = IntArray(old.size * 2) { -1 }
+        printingSelections = arrayOfNulls(printings.size / 4)
+        val mask = printings.size / 4 - 1
+        for (from in 0 until old.size / 4) {
+            if (old[from * 4 + 3] < 0) continue
+            var slot = old[from * 4] and mask
+            while (printings[slot * 4 + 3] >= 0) slot = (slot + 1) and mask
+            old.copyInto(printings, slot * 4, from * 4, from * 4 + 4)
+            printingSelections[slot] = oldSelections[from]
+        }
+    }
+
+    private fun sameBytes(first: Int, second: Int, length: Int): Boolean {
+        for (offset in 0 until length) if (bytes[first + offset] != bytes[second + offset]) return false
+        return true
     }
 
     private fun giveKey(frame: Frame, index: Int, start: Int, end: Int, escaped: Boolean) {
@@ -536,6 +634,16 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
     private companion object {
         /** How deep a selection may nest. */
         const val DEPTH_LIMIT = 24
+
+        /** How many of an object's first bytes are hashed to find an earlier printing of it: enough to reach the key of most objects, wherever the server puts it. */
+        const val PREFIX = 64
+
+        /** Slots for the expected printings at half load, a power of two. */
+        fun printingCapacity(expected: Int): Int {
+            var capacity = 16
+            while (capacity < expected * 2) capacity *= 2
+            return capacity
+        }
         const val UNDERSCORE: Byte = 0x5F
         val TYPENAME = "__typename".encodeToByteArray()
     }

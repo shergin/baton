@@ -109,6 +109,8 @@ internal class ChangeSet(val bytes: ByteArray) {
     val fieldErrors = ArrayList<FieldErrorEntry>()
     /** Errors without a path, or with one that names no field the operation selected: nothing in the store holds them. */
     val unplacedErrors = ArrayList<FieldError>()
+    /** How many objects were read as repeats of an earlier object, by a compare of their bytes rather than a parse; for the tests and the benchmarks. */
+    var repeats = 0
 
     val recordCount: Int get() = recordKeys.size
     val entryCount: Int get() = values.size
