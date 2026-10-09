@@ -52,7 +52,7 @@ pub const KEYWORDS: [&str; 28] = [
 /// unqualified. A fragment or an operation of one of these names would
 /// conflict with the import in its own file; one the generated code comes to
 /// spell joins the list in the same change.
-pub const RUNTIME_NAMES: [&str; 47] = [
+pub const RUNTIME_NAMES: [&str; 43] = [
     "AbstractSlot",
     "Anchor",
     "ArgumentSite",
@@ -77,7 +77,6 @@ pub const RUNTIME_NAMES: [&str; 47] = [
     "MutationAction",
     "MutationOperation",
     "MutationType",
-    "OperationHandle",
     "OperationKind",
     "OperationType",
     "Payload",
@@ -87,24 +86,22 @@ pub const RUNTIME_NAMES: [&str; 47] = [
     "QueryType",
     "Refetch",
     "Registry",
-    "Resolution",
     "ScalarKind",
     "Selection",
     "Slot",
     "StorageKey",
-    "SubscriptionHandle",
     "SubscriptionOperation",
     "SubscriptionType",
     "Transient",
     "TypeID",
     "Variable",
     "Variables",
-    "Format1",
 ];
 
 /// Compose's annotation every lens carries, imported by its full name: a
 /// lens is equal by its anchor, and a read registers what it reads.
 pub const STABLE: &str = "androidx.compose.runtime.Stable";
+pub const IMMUTABLE: &str = "androidx.compose.runtime.Immutable";
 
 /// Kotlin's soft keywords that start a type, `suspend () -> Unit`,
 /// `List<out T>`, `dynamic`: a name spelled like one of them is written in
@@ -467,6 +464,7 @@ impl Naming for KotlinNaming {
             names.push((name, format!("the runtime's `{name}`")));
         }
         names.push(("Stable", "Compose's `Stable`".to_string()));
+        names.push(("Immutable", "Compose's `Immutable`".to_string()));
         for (name, what) in MEMBER_NAMES {
             names.push((name, what.to_string()));
         }
@@ -503,29 +501,17 @@ impl Naming for KotlinNaming {
         self.converters.get(scalar).map(String::as_str)
     }
 
-    /// An operation's class declares its `variables`, its `type`, a query's
-    /// and a subscription's `resolution`, the `equals`, `hashCode` and
-    /// `toString` every class has, its nested `Data` and its `Companion`,
-    /// and spells the runtime's `Variable`, `Variables` and `Resolution` in
-    /// expressions, where a property of the name would be read instead. Its
-    /// static data lives in the companion, where no variable reaches.
+    /// An operation's class declares its `variables`, its `type`, the
+    /// `equals`, `hashCode` and `toString` every class has, its nested
+    /// `Data` and its `Companion`, and spells the runtime's `Variable` and
+    /// `Variables` in expressions, where a property of the name would be
+    /// read instead. Its static data lives in the companion, where no
+    /// variable reaches.
     fn value_names(&self, operation: &OperationPlan, _spelled: &BTreeSet<Spelled>) -> ValueNames {
         let mut after = vec![
             Declared::new("variables", Kind::Instance, "the operation's `variables`"),
             Declared::new("type", Kind::Instance, "the operation's `type`"),
         ];
-        if operation.kind != OperationKind::Mutation {
-            after.push(Declared::new(
-                "resolution",
-                Kind::Instance,
-                "the operation's `resolution`",
-            ));
-            after.push(Declared::new(
-                "Resolution",
-                Kind::Type,
-                "the runtime's `Resolution`",
-            ));
-        }
         for name in ["Variable", "Variables"] {
             after.push(Declared::new(
                 name,

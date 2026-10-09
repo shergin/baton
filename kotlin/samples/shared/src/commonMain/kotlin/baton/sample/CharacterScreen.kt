@@ -18,9 +18,7 @@ import androidx.compose.ui.unit.dp
 import baton.Fragment
 import baton.Phase
 import baton.Query
-import baton.phase
 import baton.rememberQuery
-import baton.retry
 
 /** The header a detail shows at once: the list fetched these fields, so the lookup by id finds them in the store. */
 @Fragment(

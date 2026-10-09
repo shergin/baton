@@ -3,20 +3,19 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
 import baton.FieldError
 import baton.FieldErrors
 import baton.Lens
-import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
 import baton.QueryType
-import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
@@ -77,10 +76,10 @@ class TestThrowingPrices_asset(override val anchor: Anchor) : Lens {
 }
 
 /** Operation value for `query TestAssetPricesQuery`. */
+@Immutable
 class TestAssetPricesQuery : QueryOperation<TestAssetPricesQuery.Data> {
     override val variables: Variables
         get() = Variables.none
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestAssetPricesQuery
@@ -133,10 +132,10 @@ private object `TestAssetPricesQuery-plan` {
 }
 
 /** Operation value for `query TestPricedAssetsQuery`. */
+@Immutable
 class TestPricedAssetsQuery(val price: java.math.BigDecimal, val among: List<java.math.BigDecimal>? = null) : QueryOperation<TestPricedAssetsQuery.Data> {
     override val variables: Variables
         get() = Variables.of("price" to Variable.of(price, baton.scalars.Decimals), "among" to among?.let { Variable.List(it.map { Variable.of(it, baton.scalars.Decimals) }) })
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestPricedAssetsQuery && other.price == price && other.among == among

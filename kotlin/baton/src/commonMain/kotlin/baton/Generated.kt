@@ -24,4 +24,9 @@ annotation class Generated
  * format has its own numbers, per the decision that a format is per emitter.
  */
 @Generated
+object Format2
+
+/** The marker before: generated code that names it is of an earlier compiler, and does not compile. */
+@Deprecated("this generated code is of format 1 and the runtime reads format 2; rebuild with the compiler of this release", level = DeprecationLevel.ERROR)
+@Generated
 object Format1

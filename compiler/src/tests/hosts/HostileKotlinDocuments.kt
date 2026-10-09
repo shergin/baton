@@ -55,7 +55,7 @@ import baton.Subscription
       bound: name errors: name child: name missing: name other: name it: name element: name
       count: name optimistic: name text: name fields: name
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
-      variables: name type: name resolution: name name: name document: name kind: name
+      variables: name type: name name: name document: name kind: name
       errorBehavior: name cacheExpirationSeconds: name throwsOnFieldError: name bubbles: name
       hasDeferred: name plan: name selection: name selection0: name Data: name Action: name
       OptimisticResponse: name invoke: name commit: name variable: name payload: name
@@ -70,14 +70,15 @@ import baton.Subscription
       ConnectionSlots: name Document: name DynamicKey: name Edit: name ErrorBehavior: name
       FieldError: name FieldErrors: name Generated: name GeneratedEnum: name Guard: name
       InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name Lookup: name
-      Members: name MutationAction: name MutationOperation: name OperationHandle: name
+      Members: name MutationAction: name MutationOperation: name
       OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name PlanField: name
-      QueryOperation: name Refetch: name Registry: name Resolution: name ScalarKind: name
-      Selection: name Slot: name StorageKey: name SubscriptionHandle: name
-      SubscriptionOperation: name Transient: name TypeID: name Format1: name
+      QueryOperation: name Refetch: name Registry: name ScalarKind: name
+      Selection: name Slot: name StorageKey: name
+      SubscriptionOperation: name Transient: name TypeID: name
       # What generated code spells from the standard library and Compose.
       Any: name Boolean: name Double: name Int: name List: name Long: name Map: name Pair: name
-      Result: name String: name Unit: name Stable: name JvmName: name JvmField: name OptIn: name
+      Result: name String: name Unit: name Stable: name Immutable: name JvmName: name JvmField: name
+      OptIn: name
       run: name let: name takeIf: name map: name lazy: name listOf: name mapOf: name emptyList: name
       emptyMap: name mutableListOf: name getOrThrow: name success: name failure: name
     }
@@ -123,7 +124,7 @@ fun KotlinScalars() {}
       other: origin { id } it: origin { id } element: origin { id } count: origin { id }
       optimistic: origin { id } text: origin { id } fields: origin { id }
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
-      variables: origin { id } type: origin { id } resolution: origin { id } name: origin { id }
+      variables: origin { id } type: origin { id } name: origin { id }
       document: origin { id } kind: origin { id } errorBehavior: origin { id }
       cacheExpirationSeconds: origin { id } throwsOnFieldError: origin { id } bubbles: origin { id }
       hasDeferred: origin { id } plan: origin { id } selection: origin { id }
@@ -146,18 +147,18 @@ fun KotlinScalars() {}
       Generated: origin { id } GeneratedEnum: origin { id } Guard: origin { id }
       InputObject: origin { id } KeyArgument: origin { id } KeyPart: origin { id }
       Lens: origin { id } LensList: origin { id } Lookup: origin { id } Members: origin { id }
-      MutationAction: origin { id } MutationOperation: origin { id } OperationHandle: origin { id }
+      MutationAction: origin { id } MutationOperation: origin { id }
       OperationKind: origin { id } OperationType: origin { id } QueryType: origin { id } MutationType: origin { id } SubscriptionType: origin { id } Payload: origin { id }
       Plan: origin { id } PlanField: origin { id } QueryOperation: origin { id }
-      Refetch: origin { id } Registry: origin { id } Resolution: origin { id }
+      Refetch: origin { id } Registry: origin { id }
       ScalarKind: origin { id } Selection: origin { id } Slot: origin { id }
-      StorageKey: origin { id } SubscriptionHandle: origin { id }
+      StorageKey: origin { id }
       SubscriptionOperation: origin { id } Transient: origin { id } TypeID: origin { id }
-      Format1: origin { id }
       # What generated code spells from the standard library and Compose.
       Any: origin { id } Boolean: origin { id } Double: origin { id } Int: origin { id }
       List: origin { id } Long: origin { id } Map: origin { id } Pair: origin { id }
       Result: origin { id } String: origin { id } Unit: origin { id } Stable: origin { id }
+      Immutable: origin { id }
       JvmName: origin { id } JvmField: origin { id } OptIn: origin { id } run: origin { id }
       let: origin { id } takeIf: origin { id } map: origin { id } lazy: origin { id }
       listOf: origin { id } mapOf: origin { id } emptyList: origin { id } emptyMap: origin { id }
@@ -229,7 +230,7 @@ fun KotlinLinks() {}
       ... @alias(as: "fields") { name }
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
       ... @alias(as: "variables") { name } ... @alias(as: "type") { name }
-      ... @alias(as: "resolution") { name } ... @alias(as: "name") { name }
+      ... @alias(as: "name") { name }
       ... @alias(as: "document") { name } ... @alias(as: "kind") { name }
       ... @alias(as: "errorBehavior") { name } ... @alias(as: "cacheExpirationSeconds") { name }
       ... @alias(as: "throwsOnFieldError") { name } ... @alias(as: "bubbles") { name }
@@ -265,23 +266,23 @@ fun KotlinLinks() {}
       ... @alias(as: "Lens") { name } ... @alias(as: "LensList") { name }
       ... @alias(as: "Lookup") { name } ... @alias(as: "Members") { name }
       ... @alias(as: "MutationAction") { name } ... @alias(as: "MutationOperation") { name }
-      ... @alias(as: "OperationHandle") { name } ... @alias(as: "OperationKind") { name }
+      ... @alias(as: "OperationKind") { name }
       ... @alias(as: "OperationType") { name } ... @alias(as: "QueryType") { name } ... @alias(as: "MutationType") { name } ... @alias(as: "SubscriptionType") { name } ... @alias(as: "Payload") { name }
       ... @alias(as: "Plan") { name } ... @alias(as: "PlanField") { name }
       ... @alias(as: "QueryOperation") { name } ... @alias(as: "Refetch") { name }
-      ... @alias(as: "Registry") { name } ... @alias(as: "Resolution") { name }
+      ... @alias(as: "Registry") { name }
       ... @alias(as: "ScalarKind") { name } ... @alias(as: "Selection") { name }
       ... @alias(as: "Slot") { name } ... @alias(as: "StorageKey") { name }
-      ... @alias(as: "SubscriptionHandle") { name } ... @alias(as: "SubscriptionOperation") { name }
+      ... @alias(as: "SubscriptionOperation") { name }
       ... @alias(as: "Transient") { name } ... @alias(as: "TypeID") { name }
-      ... @alias(as: "Format1") { name }
       # What generated code spells from the standard library and Compose.
       ... @alias(as: "Any") { name } ... @alias(as: "Boolean") { name }
       ... @alias(as: "Double") { name } ... @alias(as: "Int") { name }
       ... @alias(as: "List") { name } ... @alias(as: "Long") { name } ... @alias(as: "Map") { name }
       ... @alias(as: "Pair") { name } ... @alias(as: "Result") { name }
       ... @alias(as: "String") { name } ... @alias(as: "Unit") { name }
-      ... @alias(as: "Stable") { name } ... @alias(as: "JvmName") { name }
+      ... @alias(as: "Stable") { name } ... @alias(as: "Immutable") { name }
+      ... @alias(as: "JvmName") { name }
       ... @alias(as: "JvmField") { name } ... @alias(as: "OptIn") { name }
       ... @alias(as: "run") { name } ... @alias(as: "let") { name }
       ... @alias(as: "takeIf") { name } ... @alias(as: "map") { name }
@@ -418,7 +419,6 @@ fun KotlinSpreadTarget() {}
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
       ... @alias(as: "variables") { ...KotlinSpreadTarget_character }
       ... @alias(as: "type") { ...KotlinSpreadTarget_character }
-      ... @alias(as: "resolution") { ...KotlinSpreadTarget_character }
       ... @alias(as: "name") { ...KotlinSpreadTarget_character }
       ... @alias(as: "document") { ...KotlinSpreadTarget_character }
       ... @alias(as: "kind") { ...KotlinSpreadTarget_character }
@@ -485,7 +485,6 @@ fun KotlinSpreadTarget() {}
       ... @alias(as: "Members") { ...KotlinSpreadTarget_character }
       ... @alias(as: "MutationAction") { ...KotlinSpreadTarget_character }
       ... @alias(as: "MutationOperation") { ...KotlinSpreadTarget_character }
-      ... @alias(as: "OperationHandle") { ...KotlinSpreadTarget_character }
       ... @alias(as: "OperationKind") { ...KotlinSpreadTarget_character }
       ... @alias(as: "OperationType") { ...KotlinSpreadTarget_character } ... @alias(as: "QueryType") { ...KotlinSpreadTarget_character } ... @alias(as: "MutationType") { ...KotlinSpreadTarget_character } ... @alias(as: "SubscriptionType") { ...KotlinSpreadTarget_character }
       ... @alias(as: "Payload") { ...KotlinSpreadTarget_character }
@@ -494,16 +493,13 @@ fun KotlinSpreadTarget() {}
       ... @alias(as: "QueryOperation") { ...KotlinSpreadTarget_character }
       ... @alias(as: "Refetch") { ...KotlinSpreadTarget_character }
       ... @alias(as: "Registry") { ...KotlinSpreadTarget_character }
-      ... @alias(as: "Resolution") { ...KotlinSpreadTarget_character }
       ... @alias(as: "ScalarKind") { ...KotlinSpreadTarget_character }
       ... @alias(as: "Selection") { ...KotlinSpreadTarget_character }
       ... @alias(as: "Slot") { ...KotlinSpreadTarget_character }
       ... @alias(as: "StorageKey") { ...KotlinSpreadTarget_character }
-      ... @alias(as: "SubscriptionHandle") { ...KotlinSpreadTarget_character }
       ... @alias(as: "SubscriptionOperation") { ...KotlinSpreadTarget_character }
       ... @alias(as: "Transient") { ...KotlinSpreadTarget_character }
       ... @alias(as: "TypeID") { ...KotlinSpreadTarget_character }
-      ... @alias(as: "Format1") { ...KotlinSpreadTarget_character }
       # What generated code spells from the standard library and Compose.
       ... @alias(as: "Any") { ...KotlinSpreadTarget_character }
       ... @alias(as: "Boolean") { ...KotlinSpreadTarget_character }
@@ -517,6 +513,7 @@ fun KotlinSpreadTarget() {}
       ... @alias(as: "String") { ...KotlinSpreadTarget_character }
       ... @alias(as: "Unit") { ...KotlinSpreadTarget_character }
       ... @alias(as: "Stable") { ...KotlinSpreadTarget_character }
+      ... @alias(as: "Immutable") { ...KotlinSpreadTarget_character }
       ... @alias(as: "JvmName") { ...KotlinSpreadTarget_character }
       ... @alias(as: "JvmField") { ...KotlinSpreadTarget_character }
       ... @alias(as: "OptIn") { ...KotlinSpreadTarget_character }
@@ -592,7 +589,7 @@ fun KotlinCaughtTarget() {}
       bound: name errors: name child: name missing: name other: name it: name element: name
       count: name optimistic: name text: name fields: name
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
-      variables: name type: name resolution: name name: name document: name kind: name
+      variables: name type: name name: name document: name kind: name
       errorBehavior: name cacheExpirationSeconds: name throwsOnFieldError: name bubbles: name
       hasDeferred: name plan: name selection: name selection0: name Data: name Action: name
       OptimisticResponse: name invoke: name commit: name variable: name payload: name
@@ -607,14 +604,15 @@ fun KotlinCaughtTarget() {}
       ConnectionSlots: name Document: name DynamicKey: name Edit: name ErrorBehavior: name
       FieldError: name FieldErrors: name Generated: name GeneratedEnum: name Guard: name
       InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name Lookup: name
-      Members: name MutationAction: name MutationOperation: name OperationHandle: name
+      Members: name MutationAction: name MutationOperation: name
       OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name PlanField: name
-      QueryOperation: name Refetch: name Registry: name Resolution: name ScalarKind: name
-      Selection: name Slot: name StorageKey: name SubscriptionHandle: name
-      SubscriptionOperation: name Transient: name TypeID: name Format1: name
+      QueryOperation: name Refetch: name Registry: name ScalarKind: name
+      Selection: name Slot: name StorageKey: name
+      SubscriptionOperation: name Transient: name TypeID: name
       # What generated code spells from the standard library and Compose.
       Any: name Boolean: name Double: name Int: name List: name Long: name Map: name Pair: name
-      Result: name String: name Unit: name Stable: name JvmName: name JvmField: name OptIn: name
+      Result: name String: name Unit: name Stable: name Immutable: name JvmName: name JvmField: name
+      OptIn: name
       run: name let: name takeIf: name map: name lazy: name listOf: name mapOf: name emptyList: name
       emptyMap: name mutableListOf: name getOrThrow: name success: name failure: name
       # What gives the lens its bodies.
@@ -665,7 +663,7 @@ fun KotlinBodies() {}
           other: totalCount it: totalCount element: totalCount count: totalCount
           optimistic: totalCount text: totalCount fields: totalCount
           # What an operation value, its companion, a mutation's action and its optimistic response declare.
-          variables: totalCount type: totalCount resolution: totalCount name: totalCount
+          variables: totalCount type: totalCount name: totalCount
           document: totalCount kind: totalCount errorBehavior: totalCount
           cacheExpirationSeconds: totalCount throwsOnFieldError: totalCount bubbles: totalCount
           hasDeferred: totalCount plan: totalCount selection: totalCount selection0: totalCount
@@ -686,16 +684,17 @@ fun KotlinBodies() {}
           GeneratedEnum: totalCount Guard: totalCount InputObject: totalCount
           KeyArgument: totalCount KeyPart: totalCount Lens: totalCount LensList: totalCount
           Lookup: totalCount Members: totalCount MutationAction: totalCount
-          MutationOperation: totalCount OperationHandle: totalCount OperationKind: totalCount
+          MutationOperation: totalCount OperationKind: totalCount
           OperationType: totalCount QueryType: totalCount MutationType: totalCount SubscriptionType: totalCount Payload: totalCount Plan: totalCount PlanField: totalCount
-          QueryOperation: totalCount Refetch: totalCount Registry: totalCount Resolution: totalCount
+          QueryOperation: totalCount Refetch: totalCount Registry: totalCount
           ScalarKind: totalCount Selection: totalCount Slot: totalCount StorageKey: totalCount
-          SubscriptionHandle: totalCount SubscriptionOperation: totalCount Transient: totalCount
-          TypeID: totalCount Format1: totalCount
+          SubscriptionOperation: totalCount Transient: totalCount
+          TypeID: totalCount
           # What generated code spells from the standard library and Compose.
           Any: totalCount Boolean: totalCount Double: totalCount Int: totalCount List: totalCount
           Long: totalCount Map: totalCount Pair: totalCount Result: totalCount String: totalCount
-          Unit: totalCount Stable: totalCount JvmName: totalCount JvmField: totalCount
+          Unit: totalCount Stable: totalCount Immutable: totalCount JvmName: totalCount
+          JvmField: totalCount
           OptIn: totalCount run: totalCount let: totalCount takeIf: totalCount map: totalCount
           lazy: totalCount listOf: totalCount mapOf: totalCount emptyList: totalCount
           emptyMap: totalCount mutableListOf: totalCount getOrThrow: totalCount success: totalCount
@@ -735,7 +734,7 @@ fun KotlinConnection() {}
           bound: name errors: name child: name missing: name other: name it: name element: name
           count: name optimistic: name text: name fields: name
           # What an operation value, its companion, a mutation's action and its optimistic response declare.
-          variables: name type: name resolution: name name: name document: name kind: name
+          variables: name type: name name: name document: name kind: name
           errorBehavior: name cacheExpirationSeconds: name throwsOnFieldError: name bubbles: name
           hasDeferred: name plan: name selection: name selection0: name Data: name Action: name
           OptimisticResponse: name invoke: name commit: name variable: name payload: name
@@ -751,13 +750,14 @@ fun KotlinConnection() {}
           ErrorBehavior: name FieldError: name FieldErrors: name Generated: name GeneratedEnum: name
           Guard: name InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name
           Lookup: name Members: name MutationAction: name MutationOperation: name
-          OperationHandle: name OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name
-          PlanField: name QueryOperation: name Refetch: name Registry: name Resolution: name
-          ScalarKind: name Selection: name Slot: name StorageKey: name SubscriptionHandle: name
-          SubscriptionOperation: name Transient: name TypeID: name Format1: name
+          OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name
+          PlanField: name QueryOperation: name Refetch: name Registry: name
+          ScalarKind: name Selection: name Slot: name StorageKey: name
+          SubscriptionOperation: name Transient: name TypeID: name
           # What generated code spells from the standard library and Compose.
           Any: name Boolean: name Double: name Int: name List: name Long: name Map: name Pair: name
-          Result: name String: name Unit: name Stable: name JvmName: name JvmField: name OptIn: name
+          Result: name String: name Unit: name Stable: name Immutable: name JvmName: name
+          JvmField: name OptIn: name
           run: name let: name takeIf: name map: name lazy: name listOf: name mapOf: name
           emptyList: name emptyMap: name mutableListOf: name getOrThrow: name success: name
           failure: name
@@ -790,7 +790,7 @@ fun KotlinRequired() {}
       bound: id errors: id child: id missing: id other: id it: id element: id count: id
       optimistic: id text: id fields: id
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
-      variables: id type: id resolution: id name: id document: id kind: id errorBehavior: id
+      variables: id type: id name: id document: id kind: id errorBehavior: id
       cacheExpirationSeconds: id throwsOnFieldError: id bubbles: id hasDeferred: id plan: id
       selection: id selection0: id Data: id Action: id OptimisticResponse: id invoke: id commit: id
       variable: id payload: id
@@ -804,13 +804,14 @@ fun KotlinRequired() {}
       ConnectionSlots: id Document: id DynamicKey: id Edit: id ErrorBehavior: id FieldError: id
       FieldErrors: id Generated: id GeneratedEnum: id Guard: id InputObject: id KeyArgument: id
       KeyPart: id Lens: id LensList: id Lookup: id Members: id MutationAction: id
-      MutationOperation: id OperationHandle: id OperationKind: id OperationType: id QueryType: id MutationType: id SubscriptionType: id Payload: id
-      Plan: id PlanField: id QueryOperation: id Refetch: id Registry: id Resolution: id
-      ScalarKind: id Selection: id Slot: id StorageKey: id SubscriptionHandle: id
-      SubscriptionOperation: id Transient: id TypeID: id Format1: id
+      MutationOperation: id OperationKind: id OperationType: id QueryType: id MutationType: id SubscriptionType: id Payload: id
+      Plan: id PlanField: id QueryOperation: id Refetch: id Registry: id
+      ScalarKind: id Selection: id Slot: id StorageKey: id
+      SubscriptionOperation: id Transient: id TypeID: id
       # What generated code spells from the standard library and Compose.
       Any: id Boolean: id Double: id Int: id List: id Long: id Map: id Pair: id Result: id
-      String: id Unit: id Stable: id JvmName: id JvmField: id OptIn: id run: id let: id takeIf: id
+      String: id Unit: id Stable: id Immutable: id JvmName: id JvmField: id OptIn: id run: id
+      let: id takeIf: id
       map: id lazy: id listOf: id mapOf: id emptyList: id emptyMap: id mutableListOf: id
       getOrThrow: id success: id failure: id
       ... on Character { status }
@@ -853,7 +854,7 @@ fun KotlinAbstract() {}
       other: name @catch it: name @catch element: name @catch count: name @catch
       optimistic: name @catch text: name @catch fields: name @catch
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
-      variables: name @catch type: name @catch resolution: name @catch name: name @catch
+      variables: name @catch type: name @catch name: name @catch
       document: name @catch kind: name @catch errorBehavior: name @catch
       cacheExpirationSeconds: name @catch throwsOnFieldError: name @catch bubbles: name @catch
       hasDeferred: name @catch plan: name @catch selection: name @catch selection0: name @catch
@@ -875,16 +876,17 @@ fun KotlinAbstract() {}
       GeneratedEnum: name @catch Guard: name @catch InputObject: name @catch
       KeyArgument: name @catch KeyPart: name @catch Lens: name @catch LensList: name @catch
       Lookup: name @catch Members: name @catch MutationAction: name @catch
-      MutationOperation: name @catch OperationHandle: name @catch OperationKind: name @catch
+      MutationOperation: name @catch OperationKind: name @catch
       OperationType: name @catch QueryType: name @catch MutationType: name @catch SubscriptionType: name @catch Payload: name @catch Plan: name @catch PlanField: name @catch
-      QueryOperation: name @catch Refetch: name @catch Registry: name @catch Resolution: name @catch
+      QueryOperation: name @catch Refetch: name @catch Registry: name @catch
       ScalarKind: name @catch Selection: name @catch Slot: name @catch StorageKey: name @catch
-      SubscriptionHandle: name @catch SubscriptionOperation: name @catch Transient: name @catch
-      TypeID: name @catch Format1: name @catch
+      SubscriptionOperation: name @catch Transient: name @catch
+      TypeID: name @catch
       # What generated code spells from the standard library and Compose.
       Any: name @catch Boolean: name @catch Double: name @catch Int: name @catch List: name @catch
       Long: name @catch Map: name @catch Pair: name @catch Result: name @catch String: name @catch
-      Unit: name @catch Stable: name @catch JvmName: name @catch JvmField: name @catch
+      Unit: name @catch Stable: name @catch Immutable: name @catch JvmName: name @catch
+      JvmField: name @catch
       OptIn: name @catch run: name @catch let: name @catch takeIf: name @catch map: name @catch
       lazy: name @catch listOf: name @catch mapOf: name @catch emptyList: name @catch
       emptyMap: name @catch mutableListOf: name @catch getOrThrow: name @catch success: name @catch
@@ -957,7 +959,7 @@ fun KotlinCaught() {}
       fields: name @required(action: LOG)
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
       variables: name @required(action: LOG) type: name @required(action: LOG)
-      resolution: name @required(action: LOG) name: name @required(action: LOG)
+      name: name @required(action: LOG)
       document: name @required(action: LOG) kind: name @required(action: LOG)
       errorBehavior: name @required(action: LOG) cacheExpirationSeconds: name @required(action: LOG)
       throwsOnFieldError: name @required(action: LOG) bubbles: name @required(action: LOG)
@@ -993,16 +995,15 @@ fun KotlinCaught() {}
       Lens: name @required(action: LOG) LensList: name @required(action: LOG)
       Lookup: name @required(action: LOG) Members: name @required(action: LOG)
       MutationAction: name @required(action: LOG) MutationOperation: name @required(action: LOG)
-      OperationHandle: name @required(action: LOG) OperationKind: name @required(action: LOG)
+      OperationKind: name @required(action: LOG)
       OperationType: name @required(action: LOG) QueryType: name @required(action: LOG) MutationType: name @required(action: LOG) SubscriptionType: name @required(action: LOG) Payload: name @required(action: LOG)
       Plan: name @required(action: LOG) PlanField: name @required(action: LOG)
       QueryOperation: name @required(action: LOG) Refetch: name @required(action: LOG)
-      Registry: name @required(action: LOG) Resolution: name @required(action: LOG)
+      Registry: name @required(action: LOG)
       ScalarKind: name @required(action: LOG) Selection: name @required(action: LOG)
       Slot: name @required(action: LOG) StorageKey: name @required(action: LOG)
-      SubscriptionHandle: name @required(action: LOG)
       SubscriptionOperation: name @required(action: LOG) Transient: name @required(action: LOG)
-      TypeID: name @required(action: LOG) Format1: name @required(action: LOG)
+      TypeID: name @required(action: LOG)
       # What generated code spells from the standard library and Compose.
       Any: name @required(action: LOG) Boolean: name @required(action: LOG)
       Double: name @required(action: LOG) Int: name @required(action: LOG)
@@ -1010,6 +1011,7 @@ fun KotlinCaught() {}
       Map: name @required(action: LOG) Pair: name @required(action: LOG)
       Result: name @required(action: LOG) String: name @required(action: LOG)
       Unit: name @required(action: LOG) Stable: name @required(action: LOG)
+      Immutable: name @required(action: LOG)
       JvmName: name @required(action: LOG) JvmField: name @required(action: LOG)
       OptIn: name @required(action: LOG) run: name @required(action: LOG)
       let: name @required(action: LOG) takeIf: name @required(action: LOG)
@@ -1064,18 +1066,19 @@ fun KotlinRequiredFields() {}
       $ConnectionSlots: ID! $Document: ID! $DynamicKey: ID! $Edit: ID! $ErrorBehavior: ID!
       $FieldError: ID! $FieldErrors: ID! $Generated: ID! $GeneratedEnum: ID! $Guard: ID!
       $InputObject: ID! $KeyArgument: ID! $KeyPart: ID! $Lens: ID! $LensList: ID! $Lookup: ID!
-      $Members: ID! $MutationAction: ID! $MutationOperation: ID! $OperationHandle: ID!
+      $Members: ID! $MutationAction: ID! $MutationOperation: ID!
       $OperationKind: ID! $OperationType: ID! $QueryType: ID! $MutationType: ID! $SubscriptionType: ID! $Payload: ID! $Plan: ID! $PlanField: ID!
       $QueryOperation: ID! $Refetch: ID! $Registry: ID! $ScalarKind: ID! $Selection: ID! $Slot: ID!
-      $StorageKey: ID! $SubscriptionHandle: ID! $SubscriptionOperation: ID! $Transient: ID!
-      $TypeID: ID! $Format1: ID!
+      $StorageKey: ID! $SubscriptionOperation: ID! $Transient: ID!
+      $TypeID: ID!
       # What generated code spells from the standard library and Compose.
       $Any: ID! $Boolean: ID! $Double: ID! $Int: ID! $List: ID! $Long: ID! $Map: ID! $Pair: ID!
-      $Result: ID! $String: ID! $Unit: ID! $Stable: ID! $JvmName: ID! $JvmField: ID! $OptIn: ID!
+      $Result: ID! $String: ID! $Unit: ID! $Stable: ID! $Immutable: ID! $JvmName: ID! $JvmField: ID!
+      $OptIn: ID!
       $run: ID! $let: ID! $takeIf: ID! $map: ID! $lazy: ID! $listOf: ID! $mapOf: ID! $emptyList: ID!
       $emptyMap: ID! $mutableListOf: ID! $getOrThrow: ID! $success: ID! $failure: ID!
     ) @throwOnFieldError {
-      charactersByIds(ids: [$as, $break, $class, $continue, $do, $else, $false, $for, $fun, $if, $in, $interface, $is, $null, $object, $package, $return, $super, $this, $throw, $true, $try, $typealias, $typeof, $val, $var, $when, $while, $_, $by, $catch, $constructor, $delegate, $dynamic, $field, $file, $finally, $get, $import, $init, $param, $property, $receiver, $set, $setparam, $value, $where, $abstract, $actual, $annotation, $companion, $const, $crossinline, $data, $enum, $expect, $external, $final, $infix, $inline, $inner, $internal, $lateinit, $noinline, $open, $operator, $out, $override, $private, $protected, $public, $reified, $sealed, $suspend, $tailrec, $vararg, $context, $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $other, $it, $element, $count, $optimistic, $text, $fields, $name, $document, $kind, $errorBehavior, $cacheExpirationSeconds, $throwsOnFieldError, $bubbles, $hasDeferred, $plan, $selection, $selection0, $Action, $OptimisticResponse, $invoke, $commit, $variable, $payload, $copy, $component1, $component2, $javaClass, $of, $scalarText, $Undeclared, $size, $keys, $values, $entries, $Types, $Slots, $AbstractSlots, $Sites, $Guards, $schemaDigest, $format, $transient, $baton, $MappedScalar, $AbstractSlot, $Anchor, $ArgumentSite, $ConnectionCursor, $ConnectionPlan, $ConnectionSlots, $Document, $DynamicKey, $Edit, $ErrorBehavior, $FieldError, $FieldErrors, $Generated, $GeneratedEnum, $Guard, $InputObject, $KeyArgument, $KeyPart, $Lens, $LensList, $Lookup, $Members, $MutationAction, $MutationOperation, $OperationHandle, $OperationKind, $OperationType, $QueryType, $MutationType, $SubscriptionType, $Payload, $Plan, $PlanField, $QueryOperation, $Refetch, $Registry, $ScalarKind, $Selection, $Slot, $StorageKey, $SubscriptionHandle, $SubscriptionOperation, $Transient, $TypeID, $Format1, $Any, $Boolean, $Double, $Int, $List, $Long, $Map, $Pair, $Result, $String, $Unit, $Stable, $JvmName, $JvmField, $OptIn, $run, $let, $takeIf, $map, $lazy, $listOf, $mapOf, $emptyList, $emptyMap, $mutableListOf, $getOrThrow, $success, $failure]) { id name }
+      charactersByIds(ids: [$as, $break, $class, $continue, $do, $else, $false, $for, $fun, $if, $in, $interface, $is, $null, $object, $package, $return, $super, $this, $throw, $true, $try, $typealias, $typeof, $val, $var, $when, $while, $_, $by, $catch, $constructor, $delegate, $dynamic, $field, $file, $finally, $get, $import, $init, $param, $property, $receiver, $set, $setparam, $value, $where, $abstract, $actual, $annotation, $companion, $const, $crossinline, $data, $enum, $expect, $external, $final, $infix, $inline, $inner, $internal, $lateinit, $noinline, $open, $operator, $out, $override, $private, $protected, $public, $reified, $sealed, $suspend, $tailrec, $vararg, $context, $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $other, $it, $element, $count, $optimistic, $text, $fields, $name, $document, $kind, $errorBehavior, $cacheExpirationSeconds, $throwsOnFieldError, $bubbles, $hasDeferred, $plan, $selection, $selection0, $Action, $OptimisticResponse, $invoke, $commit, $variable, $payload, $copy, $component1, $component2, $javaClass, $of, $scalarText, $Undeclared, $size, $keys, $values, $entries, $Types, $Slots, $AbstractSlots, $Sites, $Guards, $schemaDigest, $format, $transient, $baton, $MappedScalar, $AbstractSlot, $Anchor, $ArgumentSite, $ConnectionCursor, $ConnectionPlan, $ConnectionSlots, $Document, $DynamicKey, $Edit, $ErrorBehavior, $FieldError, $FieldErrors, $Generated, $GeneratedEnum, $Guard, $InputObject, $KeyArgument, $KeyPart, $Lens, $LensList, $Lookup, $Members, $MutationAction, $MutationOperation, $OperationKind, $OperationType, $QueryType, $MutationType, $SubscriptionType, $Payload, $Plan, $PlanField, $QueryOperation, $Refetch, $Registry, $ScalarKind, $Selection, $Slot, $StorageKey, $SubscriptionOperation, $Transient, $TypeID, $Any, $Boolean, $Double, $Int, $List, $Long, $Map, $Pair, $Result, $String, $Unit, $Stable, $Immutable, $JvmName, $JvmField, $OptIn, $run, $let, $takeIf, $map, $lazy, $listOf, $mapOf, $emptyList, $emptyMap, $mutableListOf, $getOrThrow, $success, $failure]) { id name }
     }
     """)
 fun KotlinVariables() {}
@@ -1115,7 +1118,7 @@ fun KotlinVariables() {}
       $it: Boolean! $element: Boolean! $count: Boolean! $optimistic: Boolean! $text: Boolean!
       $fields: Boolean!
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
-      $resolution: Boolean! $name: Boolean! $document: Boolean! $kind: Boolean!
+      $name: Boolean! $document: Boolean! $kind: Boolean!
       $errorBehavior: Boolean! $cacheExpirationSeconds: Boolean! $throwsOnFieldError: Boolean!
       $bubbles: Boolean! $hasDeferred: Boolean! $plan: Boolean! $selection: Boolean!
       $selection0: Boolean! $Action: Boolean! $invoke: Boolean! $commit: Boolean!
@@ -1135,15 +1138,16 @@ fun KotlinVariables() {}
       $Generated: Boolean! $GeneratedEnum: Boolean! $Guard: Boolean! $InputObject: Boolean!
       $KeyArgument: Boolean! $KeyPart: Boolean! $Lens: Boolean! $LensList: Boolean!
       $Lookup: Boolean! $Members: Boolean! $MutationAction: Boolean! $MutationOperation: Boolean!
-      $OperationHandle: Boolean! $OperationKind: Boolean! $OperationType: Boolean! $QueryType: Boolean! $MutationType: Boolean! $SubscriptionType: Boolean!
+      $OperationKind: Boolean! $OperationType: Boolean! $QueryType: Boolean! $MutationType: Boolean! $SubscriptionType: Boolean!
       $Payload: Boolean! $Plan: Boolean! $PlanField: Boolean! $QueryOperation: Boolean!
-      $Refetch: Boolean! $Registry: Boolean! $Resolution: Boolean! $ScalarKind: Boolean!
-      $Selection: Boolean! $Slot: Boolean! $StorageKey: Boolean! $SubscriptionHandle: Boolean!
-      $SubscriptionOperation: Boolean! $Transient: Boolean! $TypeID: Boolean! $Format1: Boolean!
+      $Refetch: Boolean! $Registry: Boolean! $ScalarKind: Boolean!
+      $Selection: Boolean! $Slot: Boolean! $StorageKey: Boolean!
+      $SubscriptionOperation: Boolean! $Transient: Boolean! $TypeID: Boolean!
       # What generated code spells from the standard library and Compose.
       $Any: Boolean! $Boolean: Boolean! $Double: Boolean! $Int: Boolean! $List: Boolean!
       $Long: Boolean! $Map: Boolean! $Pair: Boolean! $Result: Boolean! $String: Boolean!
-      $Unit: Boolean! $Stable: Boolean! $JvmName: Boolean! $JvmField: Boolean! $OptIn: Boolean!
+      $Unit: Boolean! $Stable: Boolean! $Immutable: Boolean! $JvmName: Boolean! $JvmField: Boolean!
+      $OptIn: Boolean!
       $run: Boolean! $let: Boolean! $takeIf: Boolean! $map: Boolean! $lazy: Boolean!
       $listOf: Boolean! $mapOf: Boolean! $emptyList: Boolean! $emptyMap: Boolean!
       $mutableListOf: Boolean! $getOrThrow: Boolean! $success: Boolean! $failure: Boolean!
@@ -1211,7 +1215,7 @@ fun KotlinVariables() {}
           ... @include(if: $optimistic) { name } ... @include(if: $text) { name }
           ... @include(if: $fields) { name }
           # What an operation value, its companion, a mutation's action and its optimistic response declare.
-          ... @include(if: $resolution) { name } ... @include(if: $name) { name }
+          ... @include(if: $name) { name }
           ... @include(if: $document) { name } ... @include(if: $kind) { name }
           ... @include(if: $errorBehavior) { name }
           ... @include(if: $cacheExpirationSeconds) { name }
@@ -1247,16 +1251,15 @@ fun KotlinVariables() {}
           ... @include(if: $Lens) { name } ... @include(if: $LensList) { name }
           ... @include(if: $Lookup) { name } ... @include(if: $Members) { name }
           ... @include(if: $MutationAction) { name } ... @include(if: $MutationOperation) { name }
-          ... @include(if: $OperationHandle) { name } ... @include(if: $OperationKind) { name }
+          ... @include(if: $OperationKind) { name }
           ... @include(if: $OperationType) { name } ... @include(if: $QueryType) { name } ... @include(if: $MutationType) { name } ... @include(if: $SubscriptionType) { name } ... @include(if: $Payload) { name }
           ... @include(if: $Plan) { name } ... @include(if: $PlanField) { name }
           ... @include(if: $QueryOperation) { name } ... @include(if: $Refetch) { name }
-          ... @include(if: $Registry) { name } ... @include(if: $Resolution) { name }
+          ... @include(if: $Registry) { name }
           ... @include(if: $ScalarKind) { name } ... @include(if: $Selection) { name }
           ... @include(if: $Slot) { name } ... @include(if: $StorageKey) { name }
-          ... @include(if: $SubscriptionHandle) { name }
           ... @include(if: $SubscriptionOperation) { name } ... @include(if: $Transient) { name }
-          ... @include(if: $TypeID) { name } ... @include(if: $Format1) { name }
+          ... @include(if: $TypeID) { name }
           # What generated code spells from the standard library and Compose.
           ... @include(if: $Any) { name } ... @include(if: $Boolean) { name }
           ... @include(if: $Double) { name } ... @include(if: $Int) { name }
@@ -1264,6 +1267,7 @@ fun KotlinVariables() {}
           ... @include(if: $Map) { name } ... @include(if: $Pair) { name }
           ... @include(if: $Result) { name } ... @include(if: $String) { name }
           ... @include(if: $Unit) { name } ... @include(if: $Stable) { name }
+          ... @include(if: $Immutable) { name }
           ... @include(if: $JvmName) { name } ... @include(if: $JvmField) { name }
           ... @include(if: $OptIn) { name } ... @include(if: $run) { name }
           ... @include(if: $let) { name } ... @include(if: $takeIf) { name }
@@ -1341,15 +1345,16 @@ fun KotlinNamesake() {}
       $Generated: Boolean! $GeneratedEnum: Boolean! $Guard: Boolean! $InputObject: Boolean!
       $KeyArgument: Boolean! $KeyPart: Boolean! $Lens: Boolean! $LensList: Boolean!
       $Lookup: Boolean! $Members: Boolean! $MutationAction: Boolean! $MutationOperation: Boolean!
-      $OperationHandle: Boolean! $OperationKind: Boolean! $OperationType: Boolean! $QueryType: Boolean! $MutationType: Boolean! $SubscriptionType: Boolean!
+      $OperationKind: Boolean! $OperationType: Boolean! $QueryType: Boolean! $MutationType: Boolean! $SubscriptionType: Boolean!
       $Payload: Boolean! $Plan: Boolean! $PlanField: Boolean! $QueryOperation: Boolean!
       $Refetch: Boolean! $Registry: Boolean! $ScalarKind: Boolean! $Selection: Boolean!
-      $Slot: Boolean! $StorageKey: Boolean! $SubscriptionHandle: Boolean!
-      $SubscriptionOperation: Boolean! $Transient: Boolean! $TypeID: Boolean! $Format1: Boolean!
+      $Slot: Boolean! $StorageKey: Boolean!
+      $SubscriptionOperation: Boolean! $Transient: Boolean! $TypeID: Boolean!
       # What generated code spells from the standard library and Compose.
       $Any: Boolean! $Boolean: Boolean! $Double: Boolean! $Int: Boolean! $List: Boolean!
       $Long: Boolean! $Map: Boolean! $Pair: Boolean! $Result: Boolean! $String: Boolean!
-      $Unit: Boolean! $Stable: Boolean! $JvmName: Boolean! $JvmField: Boolean! $OptIn: Boolean!
+      $Unit: Boolean! $Stable: Boolean! $Immutable: Boolean! $JvmName: Boolean! $JvmField: Boolean!
+      $OptIn: Boolean!
       $run: Boolean! $let: Boolean! $takeIf: Boolean! $map: Boolean! $lazy: Boolean!
       $listOf: Boolean! $mapOf: Boolean! $emptyList: Boolean! $emptyMap: Boolean!
       $mutableListOf: Boolean! $getOrThrow: Boolean! $success: Boolean! $failure: Boolean!
@@ -1453,16 +1458,15 @@ fun KotlinNamesake() {}
           ... @include(if: $Lookup) { cursor } ... @include(if: $Members) { cursor }
           ... @include(if: $MutationAction) { cursor }
           ... @include(if: $MutationOperation) { cursor }
-          ... @include(if: $OperationHandle) { cursor } ... @include(if: $OperationKind) { cursor }
+          ... @include(if: $OperationKind) { cursor }
           ... @include(if: $OperationType) { cursor } ... @include(if: $QueryType) { cursor } ... @include(if: $MutationType) { cursor } ... @include(if: $SubscriptionType) { cursor } ... @include(if: $Payload) { cursor }
           ... @include(if: $Plan) { cursor } ... @include(if: $PlanField) { cursor }
           ... @include(if: $QueryOperation) { cursor } ... @include(if: $Refetch) { cursor }
           ... @include(if: $Registry) { cursor } ... @include(if: $ScalarKind) { cursor }
           ... @include(if: $Selection) { cursor } ... @include(if: $Slot) { cursor }
-          ... @include(if: $StorageKey) { cursor } ... @include(if: $SubscriptionHandle) { cursor }
+          ... @include(if: $StorageKey) { cursor }
           ... @include(if: $SubscriptionOperation) { cursor }
           ... @include(if: $Transient) { cursor } ... @include(if: $TypeID) { cursor }
-          ... @include(if: $Format1) { cursor }
           # What generated code spells from the standard library and Compose.
           ... @include(if: $Any) { cursor } ... @include(if: $Boolean) { cursor }
           ... @include(if: $Double) { cursor } ... @include(if: $Int) { cursor }
@@ -1470,6 +1474,7 @@ fun KotlinNamesake() {}
           ... @include(if: $Map) { cursor } ... @include(if: $Pair) { cursor }
           ... @include(if: $Result) { cursor } ... @include(if: $String) { cursor }
           ... @include(if: $Unit) { cursor } ... @include(if: $Stable) { cursor }
+          ... @include(if: $Immutable) { cursor }
           ... @include(if: $JvmName) { cursor } ... @include(if: $JvmField) { cursor }
           ... @include(if: $OptIn) { cursor } ... @include(if: $run) { cursor }
           ... @include(if: $let) { cursor } ... @include(if: $takeIf) { cursor }
@@ -1608,7 +1613,6 @@ fun KotlinSubscriptionVariables() {}
       Members: {type: "Boolean", defaultValue: true}
       MutationAction: {type: "Boolean", defaultValue: true}
       MutationOperation: {type: "Boolean", defaultValue: true}
-      OperationHandle: {type: "Boolean", defaultValue: true}
       OperationKind: {type: "Boolean", defaultValue: true}
       OperationType: {type: "Boolean", defaultValue: true} QueryType: {type: "Boolean", defaultValue: true} MutationType: {type: "Boolean", defaultValue: true} SubscriptionType: {type: "Boolean", defaultValue: true}
       Payload: {type: "Boolean", defaultValue: true} Plan: {type: "Boolean", defaultValue: true}
@@ -1618,10 +1622,8 @@ fun KotlinSubscriptionVariables() {}
       ScalarKind: {type: "Boolean", defaultValue: true}
       Selection: {type: "Boolean", defaultValue: true} Slot: {type: "Boolean", defaultValue: true}
       StorageKey: {type: "Boolean", defaultValue: true}
-      SubscriptionHandle: {type: "Boolean", defaultValue: true}
       SubscriptionOperation: {type: "Boolean", defaultValue: true}
       Transient: {type: "Boolean", defaultValue: true} TypeID: {type: "Boolean", defaultValue: true}
-      Format1: {type: "Boolean", defaultValue: true}
       # What generated code spells from the standard library and Compose.
       Any: {type: "Boolean", defaultValue: true} Boolean: {type: "Boolean", defaultValue: true}
       Double: {type: "Boolean", defaultValue: true} Int: {type: "Boolean", defaultValue: true}
@@ -1629,6 +1631,7 @@ fun KotlinSubscriptionVariables() {}
       Map: {type: "Boolean", defaultValue: true} Pair: {type: "Boolean", defaultValue: true}
       Result: {type: "Boolean", defaultValue: true} String: {type: "Boolean", defaultValue: true}
       Unit: {type: "Boolean", defaultValue: true} Stable: {type: "Boolean", defaultValue: true}
+      Immutable: {type: "Boolean", defaultValue: true}
       JvmName: {type: "Boolean", defaultValue: true} JvmField: {type: "Boolean", defaultValue: true}
       OptIn: {type: "Boolean", defaultValue: true} run: {type: "Boolean", defaultValue: true}
       let: {type: "Boolean", defaultValue: true} takeIf: {type: "Boolean", defaultValue: true}
@@ -1735,15 +1738,15 @@ fun KotlinSubscriptionVariables() {}
       ... @include(if: $Lens) { name } ... @include(if: $LensList) { name }
       ... @include(if: $Lookup) { name } ... @include(if: $Members) { name }
       ... @include(if: $MutationAction) { name } ... @include(if: $MutationOperation) { name }
-      ... @include(if: $OperationHandle) { name } ... @include(if: $OperationKind) { name }
+      ... @include(if: $OperationKind) { name }
       ... @include(if: $OperationType) { name } ... @include(if: $QueryType) { name } ... @include(if: $MutationType) { name } ... @include(if: $SubscriptionType) { name } ... @include(if: $Payload) { name }
       ... @include(if: $Plan) { name } ... @include(if: $PlanField) { name }
       ... @include(if: $QueryOperation) { name } ... @include(if: $Refetch) { name }
       ... @include(if: $Registry) { name } ... @include(if: $ScalarKind) { name }
       ... @include(if: $Selection) { name } ... @include(if: $Slot) { name }
-      ... @include(if: $StorageKey) { name } ... @include(if: $SubscriptionHandle) { name }
+      ... @include(if: $StorageKey) { name }
       ... @include(if: $SubscriptionOperation) { name } ... @include(if: $Transient) { name }
-      ... @include(if: $TypeID) { name } ... @include(if: $Format1) { name }
+      ... @include(if: $TypeID) { name }
       # What generated code spells from the standard library and Compose.
       ... @include(if: $Any) { name } ... @include(if: $Boolean) { name }
       ... @include(if: $Double) { name } ... @include(if: $Int) { name }
@@ -1751,6 +1754,7 @@ fun KotlinSubscriptionVariables() {}
       ... @include(if: $Map) { name } ... @include(if: $Pair) { name }
       ... @include(if: $Result) { name } ... @include(if: $String) { name }
       ... @include(if: $Unit) { name } ... @include(if: $Stable) { name }
+      ... @include(if: $Immutable) { name }
       ... @include(if: $JvmName) { name } ... @include(if: $JvmField) { name }
       ... @include(if: $OptIn) { name } ... @include(if: $run) { name }
       ... @include(if: $let) { name } ... @include(if: $takeIf) { name }
@@ -1809,14 +1813,14 @@ fun KotlinArguments() {}
         ErrorBehavior: false FieldError: false FieldErrors: false Generated: false
         GeneratedEnum: false Guard: false InputObject: false KeyArgument: false KeyPart: false
         Lens: false LensList: false Lookup: false Members: false MutationAction: false
-        MutationOperation: false OperationHandle: false OperationKind: false OperationType: false QueryType: false MutationType: false SubscriptionType: false
+        MutationOperation: false OperationKind: false OperationType: false QueryType: false MutationType: false SubscriptionType: false
         Payload: false Plan: false PlanField: false QueryOperation: false Refetch: false
         Registry: false ScalarKind: false Selection: false Slot: false StorageKey: false
-        SubscriptionHandle: false SubscriptionOperation: false Transient: false TypeID: false
-        Format1: false
+        SubscriptionOperation: false Transient: false TypeID: false
         # What generated code spells from the standard library and Compose.
         Any: false Boolean: false Double: false Int: false List: false Long: false Map: false
-        Pair: false Result: false String: false Unit: false Stable: false JvmName: false
+        Pair: false Result: false String: false Unit: false Stable: false Immutable: false
+        JvmName: false
         JvmField: false OptIn: false run: false let: false takeIf: false map: false lazy: false
         listOf: false mapOf: false emptyList: false emptyMap: false mutableListOf: false
         getOrThrow: false success: false failure: false
@@ -1855,7 +1859,7 @@ fun KotlinArgumentSpread() {}
           bound: name errors: name child: name missing: name other: name it: name element: name
           count: name optimistic: name text: name fields: name
           # What an operation value, its companion, a mutation's action and its optimistic response declare.
-          variables: name type: name resolution: name name: name document: name kind: name
+          variables: name type: name name: name document: name kind: name
           errorBehavior: name cacheExpirationSeconds: name throwsOnFieldError: name bubbles: name
           hasDeferred: name plan: name selection: name selection0: name Data: name Action: name
           OptimisticResponse: name invoke: name commit: name payload: name
@@ -1871,13 +1875,14 @@ fun KotlinArgumentSpread() {}
           ErrorBehavior: name FieldError: name FieldErrors: name Generated: name GeneratedEnum: name
           Guard: name InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name
           Lookup: name Members: name MutationAction: name MutationOperation: name
-          OperationHandle: name OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name
-          PlanField: name QueryOperation: name Refetch: name Registry: name Resolution: name
-          ScalarKind: name Selection: name Slot: name StorageKey: name SubscriptionHandle: name
-          SubscriptionOperation: name Transient: name TypeID: name Format1: name
+          OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name
+          PlanField: name QueryOperation: name Refetch: name Registry: name
+          ScalarKind: name Selection: name Slot: name StorageKey: name
+          SubscriptionOperation: name Transient: name TypeID: name
           # What generated code spells from the standard library and Compose.
           Any: name Boolean: name Double: name Int: name List: name Long: name Map: name Pair: name
-          Result: name String: name Unit: name Stable: name JvmName: name JvmField: name OptIn: name
+          Result: name String: name Unit: name Stable: name Immutable: name JvmName: name
+          JvmField: name OptIn: name
           run: name let: name takeIf: name map: name lazy: name listOf: name mapOf: name
           emptyList: name emptyMap: name mutableListOf: name getOrThrow: name success: name
           failure: name
@@ -1916,7 +1921,7 @@ fun KotlinArgumentSpread() {}
         other: note { id } it: note { id } element: note { id } count: note { id }
         optimistic: note { id } text: note { id } fields: note { id }
         # What an operation value, its companion, a mutation's action and its optimistic response declare.
-        variables: note { id } type: note { id } resolution: note { id } name: note { id }
+        variables: note { id } type: note { id } name: note { id }
         document: note { id } kind: note { id } errorBehavior: note { id }
         cacheExpirationSeconds: note { id } throwsOnFieldError: note { id } bubbles: note { id }
         hasDeferred: note { id } plan: note { id } selection: note { id } selection0: note { id }
@@ -1938,16 +1943,17 @@ fun KotlinArgumentSpread() {}
         GeneratedEnum: note { id } Guard: note { id } InputObject: note { id }
         KeyArgument: note { id } KeyPart: note { id } Lens: note { id } LensList: note { id }
         Lookup: note { id } Members: note { id } MutationAction: note { id }
-        MutationOperation: note { id } OperationHandle: note { id } OperationKind: note { id }
+        MutationOperation: note { id } OperationKind: note { id }
         OperationType: note { id } QueryType: note { id } MutationType: note { id } SubscriptionType: note { id } Payload: note { id } Plan: note { id } PlanField: note { id }
         QueryOperation: note { id } Refetch: note { id } Registry: note { id }
-        Resolution: note { id } ScalarKind: note { id } Selection: note { id } Slot: note { id }
-        StorageKey: note { id } SubscriptionHandle: note { id } SubscriptionOperation: note { id }
-        Transient: note { id } TypeID: note { id } Format1: note { id }
+        ScalarKind: note { id } Selection: note { id } Slot: note { id }
+        StorageKey: note { id } SubscriptionOperation: note { id }
+        Transient: note { id } TypeID: note { id }
         # What generated code spells from the standard library and Compose.
         Any: note { id } Boolean: note { id } Double: note { id } Int: note { id } List: note { id }
         Long: note { id } Map: note { id } Pair: note { id } Result: note { id } String: note { id }
-        Unit: note { id } Stable: note { id } JvmName: note { id } JvmField: note { id }
+        Unit: note { id } Stable: note { id } Immutable: note { id } JvmName: note { id }
+        JvmField: note { id }
         OptIn: note { id } run: note { id } let: note { id } takeIf: note { id } map: note { id }
         lazy: note { id } listOf: note { id } mapOf: note { id } emptyList: note { id }
         emptyMap: note { id } mutableListOf: note { id } getOrThrow: note { id }
@@ -1992,7 +1998,7 @@ fun KotlinArgumentSpread() {}
           other: episode { id } it: episode { id } element: episode { id } count: episode { id }
           optimistic: episode { id } text: episode { id } fields: episode { id }
           # What an operation value, its companion, a mutation's action and its optimistic response declare.
-          variables: episode { id } type: episode { id } resolution: episode { id }
+          variables: episode { id } type: episode { id }
           name: episode { id } document: episode { id } kind: episode { id }
           errorBehavior: episode { id } cacheExpirationSeconds: episode { id }
           throwsOnFieldError: episode { id } bubbles: episode { id } hasDeferred: episode { id }
@@ -2017,18 +2023,18 @@ fun KotlinArgumentSpread() {}
           Guard: episode { id } InputObject: episode { id } KeyArgument: episode { id }
           KeyPart: episode { id } Lens: episode { id } LensList: episode { id }
           Lookup: episode { id } Members: episode { id } MutationAction: episode { id }
-          MutationOperation: episode { id } OperationHandle: episode { id }
+          MutationOperation: episode { id }
           OperationKind: episode { id } OperationType: episode { id } QueryType: episode { id } MutationType: episode { id } SubscriptionType: episode { id } Payload: episode { id }
           Plan: episode { id } PlanField: episode { id } QueryOperation: episode { id }
-          Refetch: episode { id } Registry: episode { id } Resolution: episode { id }
+          Refetch: episode { id } Registry: episode { id }
           ScalarKind: episode { id } Selection: episode { id } Slot: episode { id }
-          StorageKey: episode { id } SubscriptionHandle: episode { id }
+          StorageKey: episode { id }
           SubscriptionOperation: episode { id } Transient: episode { id } TypeID: episode { id }
-          Format1: episode { id }
           # What generated code spells from the standard library and Compose.
           Any: episode { id } Boolean: episode { id } Double: episode { id } Int: episode { id }
           List: episode { id } Long: episode { id } Map: episode { id } Pair: episode { id }
           Result: episode { id } String: episode { id } Unit: episode { id } Stable: episode { id }
+          Immutable: episode { id }
           JvmName: episode { id } JvmField: episode { id } OptIn: episode { id } run: episode { id }
           let: episode { id } takeIf: episode { id } map: episode { id } lazy: episode { id }
           listOf: episode { id } mapOf: episode { id } emptyList: episode { id }
@@ -2089,7 +2095,7 @@ fun KotlinInlineScalarsReach() {}
       bound: name errors: name child: name missing: name other: name it: name element: name
       count: name optimistic: name text: name fields: name
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
-      variables: name type: name resolution: name name: name document: name kind: name
+      variables: name type: name name: name document: name kind: name
       errorBehavior: name cacheExpirationSeconds: name throwsOnFieldError: name bubbles: name
       hasDeferred: name plan: name selection: name selection0: name Data: name Action: name
       OptimisticResponse: name invoke: name commit: name variable: name payload: name
@@ -2120,14 +2126,15 @@ fun KotlinInlineScalars2Reach() {}
       ConnectionSlots: name Document: name DynamicKey: name Edit: name ErrorBehavior: name
       FieldError: name FieldErrors: name Generated: name GeneratedEnum: name Guard: name
       InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name Lookup: name
-      Members: name MutationAction: name MutationOperation: name OperationHandle: name
+      Members: name MutationAction: name MutationOperation: name
       OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name PlanField: name
-      QueryOperation: name Refetch: name Registry: name Resolution: name ScalarKind: name
-      Selection: name Slot: name StorageKey: name SubscriptionHandle: name
-      SubscriptionOperation: name Transient: name TypeID: name Format1: name
+      QueryOperation: name Refetch: name Registry: name ScalarKind: name
+      Selection: name Slot: name StorageKey: name
+      SubscriptionOperation: name Transient: name TypeID: name
       # What generated code spells from the standard library and Compose.
       Any: name Boolean: name Double: name Int: name List: name Long: name Map: name Pair: name
-      Result: name String: name Unit: name Stable: name JvmName: name JvmField: name OptIn: name
+      Result: name String: name Unit: name Stable: name Immutable: name JvmName: name JvmField: name
+      OptIn: name
       run: name let: name takeIf: name map: name lazy: name listOf: name mapOf: name emptyList: name
       emptyMap: name mutableListOf: name getOrThrow: name success: name failure: name
     }
@@ -2201,7 +2208,7 @@ fun KotlinInlineLinksReach() {}
       other: origin { id } it: origin { id } element: origin { id } count: origin { id }
       optimistic: origin { id } text: origin { id } fields: origin { id }
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
-      variables: origin { id } type: origin { id } resolution: origin { id } name: origin { id }
+      variables: origin { id } type: origin { id } name: origin { id }
       document: origin { id } kind: origin { id } errorBehavior: origin { id }
       cacheExpirationSeconds: origin { id } throwsOnFieldError: origin { id } bubbles: origin { id }
       hasDeferred: origin { id } plan: origin { id } selection: origin { id }
@@ -2240,18 +2247,18 @@ fun KotlinInlineLinks2Reach() {}
       Generated: origin { id } GeneratedEnum: origin { id } Guard: origin { id }
       InputObject: origin { id } KeyArgument: origin { id } KeyPart: origin { id }
       Lens: origin { id } LensList: origin { id } Lookup: origin { id } Members: origin { id }
-      MutationAction: origin { id } MutationOperation: origin { id } OperationHandle: origin { id }
+      MutationAction: origin { id } MutationOperation: origin { id }
       OperationKind: origin { id } OperationType: origin { id } QueryType: origin { id } MutationType: origin { id } SubscriptionType: origin { id } Payload: origin { id }
       Plan: origin { id } PlanField: origin { id } QueryOperation: origin { id }
-      Refetch: origin { id } Registry: origin { id } Resolution: origin { id }
+      Refetch: origin { id } Registry: origin { id }
       ScalarKind: origin { id } Selection: origin { id } Slot: origin { id }
-      StorageKey: origin { id } SubscriptionHandle: origin { id }
+      StorageKey: origin { id }
       SubscriptionOperation: origin { id } Transient: origin { id } TypeID: origin { id }
-      Format1: origin { id }
       # What generated code spells from the standard library and Compose.
       Any: origin { id } Boolean: origin { id } Double: origin { id } Int: origin { id }
       List: origin { id } Long: origin { id } Map: origin { id } Pair: origin { id }
       Result: origin { id } String: origin { id } Unit: origin { id } Stable: origin { id }
+      Immutable: origin { id }
       JvmName: origin { id } JvmField: origin { id } OptIn: origin { id } run: origin { id }
       let: origin { id } takeIf: origin { id } map: origin { id } lazy: origin { id }
       listOf: origin { id } mapOf: origin { id } emptyList: origin { id } emptyMap: origin { id }
@@ -2328,7 +2335,7 @@ fun KotlinInlinePluralsReach() {}
       other: episode { id } it: episode { id } element: episode { id } count: episode { id }
       optimistic: episode { id } text: episode { id } fields: episode { id }
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
-      variables: episode { id } type: episode { id } resolution: episode { id } name: episode { id }
+      variables: episode { id } type: episode { id } name: episode { id }
       document: episode { id } kind: episode { id } errorBehavior: episode { id }
       cacheExpirationSeconds: episode { id } throwsOnFieldError: episode { id }
       bubbles: episode { id } hasDeferred: episode { id } plan: episode { id }
@@ -2369,17 +2376,17 @@ fun KotlinInlinePlurals2Reach() {}
       Guard: episode { id } InputObject: episode { id } KeyArgument: episode { id }
       KeyPart: episode { id } Lens: episode { id } LensList: episode { id } Lookup: episode { id }
       Members: episode { id } MutationAction: episode { id } MutationOperation: episode { id }
-      OperationHandle: episode { id } OperationKind: episode { id } OperationType: episode { id } QueryType: episode { id } MutationType: episode { id } SubscriptionType: episode { id }
+      OperationKind: episode { id } OperationType: episode { id } QueryType: episode { id } MutationType: episode { id } SubscriptionType: episode { id }
       Payload: episode { id } Plan: episode { id } PlanField: episode { id }
       QueryOperation: episode { id } Refetch: episode { id } Registry: episode { id }
-      Resolution: episode { id } ScalarKind: episode { id } Selection: episode { id }
-      Slot: episode { id } StorageKey: episode { id } SubscriptionHandle: episode { id }
+      ScalarKind: episode { id } Selection: episode { id }
+      Slot: episode { id } StorageKey: episode { id }
       SubscriptionOperation: episode { id } Transient: episode { id } TypeID: episode { id }
-      Format1: episode { id }
       # What generated code spells from the standard library and Compose.
       Any: episode { id } Boolean: episode { id } Double: episode { id } Int: episode { id }
       List: episode { id } Long: episode { id } Map: episode { id } Pair: episode { id }
       Result: episode { id } String: episode { id } Unit: episode { id } Stable: episode { id }
+      Immutable: episode { id }
       JvmName: episode { id } JvmField: episode { id } OptIn: episode { id } run: episode { id }
       let: episode { id } takeIf: episode { id } map: episode { id } lazy: episode { id }
       listOf: episode { id } mapOf: episode { id } emptyList: episode { id }
@@ -2540,7 +2547,6 @@ fun KotlinInlineSpreadsReach() {}
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
       ... @alias(as: "variables") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "type") { ...KotlinInlineSpreadTarget_character }
-      ... @alias(as: "resolution") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "name") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "document") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "kind") { ...KotlinInlineSpreadTarget_character }
@@ -2623,7 +2629,6 @@ fun KotlinInlineSpreads2Reach() {}
       ... @alias(as: "Members") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "MutationAction") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "MutationOperation") { ...KotlinInlineSpreadTarget_character }
-      ... @alias(as: "OperationHandle") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "OperationKind") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "OperationType") { ...KotlinInlineSpreadTarget_character } ... @alias(as: "QueryType") { ...KotlinInlineSpreadTarget_character } ... @alias(as: "MutationType") { ...KotlinInlineSpreadTarget_character } ... @alias(as: "SubscriptionType") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "Payload") { ...KotlinInlineSpreadTarget_character }
@@ -2632,16 +2637,13 @@ fun KotlinInlineSpreads2Reach() {}
       ... @alias(as: "QueryOperation") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "Refetch") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "Registry") { ...KotlinInlineSpreadTarget_character }
-      ... @alias(as: "Resolution") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "ScalarKind") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "Selection") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "Slot") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "StorageKey") { ...KotlinInlineSpreadTarget_character }
-      ... @alias(as: "SubscriptionHandle") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "SubscriptionOperation") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "Transient") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "TypeID") { ...KotlinInlineSpreadTarget_character }
-      ... @alias(as: "Format1") { ...KotlinInlineSpreadTarget_character }
       # What generated code spells from the standard library and Compose.
       ... @alias(as: "Any") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "Boolean") { ...KotlinInlineSpreadTarget_character }
@@ -2655,6 +2657,7 @@ fun KotlinInlineSpreads2Reach() {}
       ... @alias(as: "String") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "Unit") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "Stable") { ...KotlinInlineSpreadTarget_character }
+      ... @alias(as: "Immutable") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "JvmName") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "JvmField") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "OptIn") { ...KotlinInlineSpreadTarget_character }

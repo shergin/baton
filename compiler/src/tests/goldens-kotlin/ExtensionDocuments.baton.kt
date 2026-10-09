@@ -3,19 +3,18 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
 import baton.Lens
 import baton.Lookup
-import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
 import baton.QueryType
-import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
@@ -23,10 +22,10 @@ import baton.Variable
 import baton.Variables
 
 /** Operation value for `query TestDrafts`. */
+@Immutable
 class TestDrafts : QueryOperation<TestDrafts.Data> {
     override val variables: Variables
         get() = Variables.none
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestDrafts
@@ -104,10 +103,10 @@ private object `TestDrafts-plan` {
 }
 
 /** Operation value for `query TestPinnedCharacter`. */
+@Immutable
 class TestPinnedCharacter(val id: String) : QueryOperation<TestPinnedCharacter.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestPinnedCharacter && other.id == id

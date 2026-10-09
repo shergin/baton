@@ -105,7 +105,7 @@ fn a_nullable_variable_with_a_default_is_sent_as_its_default_when_null() {
 }
 
 #[test]
-fn equality_and_hash_read_the_variables_and_never_the_resolution() {
+fn equality_and_hash_read_the_variables_and_nothing_else() {
     let output = emitted(
         "Screen.kt",
         Some("app.generated"),
@@ -119,24 +119,39 @@ fn equality_and_hash_read_the_variables_and_never_the_resolution() {
 }
 
 #[test]
-fn a_mutation_carries_no_resolution_and_a_subscription_its_own_handle() {
-    let mutation = emitted(
-        "Screen.kt",
-        Some("app.generated"),
-        "mutation Probe($id: ID!) { setFavorite(id: $id, favorite: true) { character { id } } }",
-    );
-    let text = file(&mutation);
-    assert!(text.contains(": MutationOperation<Probe.Data>"));
-    assert!(!text.contains("resolution"));
-    assert!(text.contains("override val kind = OperationKind.MUTATION"));
-    let subscription = emitted(
-        "Screen.kt",
-        Some("app.generated"),
-        "subscription Probe($id: ID!) { noteAdded(characterId: $id) { character { id } } }",
-    );
-    assert!(file(&subscription).contains(
-        "override var resolution: Resolution<SubscriptionHandle<Data>> = Resolution.Unresolved"
-    ));
+fn every_kind_of_operation_value_is_immutable_and_carries_no_resolution() {
+    let kinds = [
+        (
+            "query Probe($id: ID!) { character(id: $id) { id } }",
+            "QueryOperation",
+        ),
+        (
+            "mutation Probe($id: ID!) { setFavorite(id: $id, favorite: true) { character { id } } }",
+            "MutationOperation",
+        ),
+        (
+            "subscription Probe($id: ID!) { noteAdded(characterId: $id) { character { id } } }",
+            "SubscriptionOperation",
+        ),
+    ];
+    for (document, interface) in kinds {
+        let output = emitted("Screen.kt", Some("app.generated"), document);
+        let text = file(&output);
+        assert!(
+            text.contains(&format!(
+                "\n@Immutable\nclass Probe(val id: String) : {interface}<Probe.Data> {{\n"
+            )),
+            "{text}"
+        );
+        assert!(
+            text.contains("\nimport androidx.compose.runtime.Immutable\n"),
+            "{text}"
+        );
+        assert!(
+            !text.contains("resolution") && !text.contains("Resolution"),
+            "{text}"
+        );
+    }
 }
 
 #[test]

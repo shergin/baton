@@ -50,6 +50,20 @@ are expected and listed without apology.
   benchmark's process holds one document, so there the commit allocates
   24 KB less and a store holds 12 KB less, for a time within 0.02 ms; the
   gain is for a process with many documents on a type.
+- A Kotlin query's state in a composition is a `QueryState`: `rememberQuery`
+  returns one, holding the operation value and the handle it resolved the
+  value to, with the `phase`, `fetch`, `isRefreshing`, `isStale`, `retry()`
+  and `refetch()` that read the handle; `rememberSubscription` returns the
+  subscription's handle, or null outside every provider. An operation
+  value carries nothing of the live side any more: `resolution` is gone
+  from the generated classes, which are `@Immutable`, and `Resolution`
+  from the runtime, so the value a composable passes is never written to,
+  and a composable that gains or loses the provider, or passes another
+  policy, resolves anew. The three derived failures, `FieldErrors`,
+  `RequiredFieldError` and `MissingDataError`, are equal by what they hold,
+  so a failed phase that did not change compares equal, and a handle makes
+  its root's lens once. The Kotlin format is 2; code generated for format 1
+  fails to compile against this runtime with a message to rebuild.
 
 ## 0.12.0 (Palianytsia) — 2026-10-08
 

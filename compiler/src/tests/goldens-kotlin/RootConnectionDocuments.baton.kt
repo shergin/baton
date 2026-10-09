@@ -3,6 +3,7 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.ConnectionCursor
@@ -10,7 +11,6 @@ import baton.ConnectionPlan
 import baton.Document
 import baton.Generated
 import baton.Lens
-import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
 import baton.Plan
@@ -18,7 +18,6 @@ import baton.PlanField
 import baton.QueryOperation
 import baton.QueryType
 import baton.Refetch
-import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
@@ -86,10 +85,10 @@ class TestRootNotes_query(override val anchor: Anchor) : Lens {
 }
 
 /** Operation value for `query TestRootNotesPaginationQuery`. */
+@Immutable
 class TestRootNotesPaginationQuery(val count: Int? = null, val cursor: String? = null) : QueryOperation<TestRootNotesPaginationQuery.Data> {
     override val variables: Variables
         get() = Variables.of("count" to (if (count == null) Variable.Int(2) else Variable.of(count)), "cursor" to cursor?.let { Variable.of(it) })
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestRootNotesPaginationQuery && other.count == count && other.cursor == cursor
@@ -151,10 +150,10 @@ private object `TestRootNotesPaginationQuery-plan` {
 }
 
 /** Operation value for `query TestRootNotesQuery`. */
+@Immutable
 class TestRootNotesQuery : QueryOperation<TestRootNotesQuery.Data> {
     override val variables: Variables
         get() = Variables.none
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestRootNotesQuery

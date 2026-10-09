@@ -220,7 +220,6 @@ const TO_STRING: (&str, &str) = ("toString", "the `toString` every class has");
 const LENS_COMPANION: (&str, &str) = ("Companion", "the lens's companion object `Companion`");
 const RUNTIME_VARIABLE: (&str, &str) = ("Variable", "the runtime's `Variable`");
 const RUNTIME_VARIABLES: (&str, &str) = ("Variables", "the runtime's `Variables`");
-const RUNTIME_RESOLUTION: (&str, &str) = ("Resolution", "the runtime's `Resolution`");
 const TYPES: (&str, &str) = ("Types", "the shared object `Types`");
 const SLOTS: (&str, &str) = ("Slots", "the shared object `Slots`");
 const SITES: (&str, &str) = ("Sites", "the shared object `Sites`");
@@ -229,7 +228,6 @@ const ABSTRACT_SLOTS: (&str, &str) = ("AbstractSlots", "the shared object `Abstr
 const VARIABLE: (&str, &str) = ("variable", "the optimistic response's `variable`");
 const VARIABLES: (&str, &str) = ("variables", "the operation's `variables`");
 const TYPE: (&str, &str) = ("type", "the operation's `type`");
-const RESOLUTION: (&str, &str) = ("resolution", "the operation's `resolution`");
 const DATA: (&str, &str) = ("Data", "the operation's root lens `Data`");
 const OPTIMISTIC_RESPONSE: (&str, &str) =
     ("OptimisticResponse", "the mutation's `OptimisticResponse`");
@@ -414,7 +412,7 @@ fn positions() -> Vec<Position> {
             query_variable_names,
             "query Probe($HOSTILE: ID!) @throwOnFieldError { charactersByIds(ids: [$HOSTILE]) { id } }",
             "$HOSTILE",
-            [&OPERATION[..], &[RESOLUTION, RUNTIME_RESOLUTION]].concat(),
+            OPERATION.to_vec(),
         ),
         variable(
             MUTATION_VARIABLE,
@@ -428,14 +426,14 @@ fn positions() -> Vec<Position> {
             subscription_variable_names,
             r#"subscription Probe($HOSTILE: Boolean!) { noteAdded(characterId: "1") @catch { noteEdge { node { id } ... @include(if: $HOSTILE) { cursor } } } }"#,
             "$HOSTILE",
-            [&OPERATION[..], &[RESOLUTION, RUNTIME_RESOLUTION]].concat(),
+            OPERATION.to_vec(),
         ),
         variable(
             FRAGMENT_ARGUMENT,
             fragment_argument_names,
             r#"fragment Probe_character on Character @argumentDefinitions(HOSTILE: {type: "Boolean", defaultValue: true}) @refetchable(queryName: "ProbeRefetchQuery") { ... @include(if: $HOSTILE) { name } }"#,
             "HOSTILE:",
-            [&OPERATION[..], &[RESOLUTION, RUNTIME_RESOLUTION]].concat(),
+            OPERATION.to_vec(),
         ),
         // An argument a spread passes is one the spread fragment defines,
         // so it is refused where it is defined.
@@ -444,7 +442,7 @@ fn positions() -> Vec<Position> {
             spread_argument_names,
             r#"fragment ProbeTarget_character on Character @argumentDefinitions(HOSTILE: {type: "Boolean", defaultValue: true}) @refetchable(queryName: "ProbeRefetchQuery") { ... @include(if: $HOSTILE) { name } } fragment Probe_character on Character { ...ProbeTarget_character @arguments(HOSTILE: false) }"#,
             "HOSTILE:",
-            [&OPERATION[..], &[RESOLUTION, RUNTIME_RESOLUTION]].concat(),
+            OPERATION.to_vec(),
         ),
         field(
             PAYLOAD_SCALAR,
@@ -1246,7 +1244,6 @@ fn the_kotlin_names_read_from_the_rules_are_the_ones_the_rules_apply() {
         "Companion",
         "Data",
         "variables",
-        "resolution",
         "anchor",
         "recordID",
     ] {
@@ -1411,7 +1408,6 @@ fn every_name_the_generated_kotlin_declares_or_binds_is_a_hostile_name() {
         "variables",
         "variable",
         "payload",
-        "resolution",
         "type",
         "name",
         "document",

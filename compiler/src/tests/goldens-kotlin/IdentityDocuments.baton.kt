@@ -3,19 +3,18 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
 import baton.Lens
 import baton.Lookup
-import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
 import baton.QueryType
-import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
@@ -23,10 +22,10 @@ import baton.Variable
 import baton.Variables
 
 /** Operation value for `query TestAssetNameQuery`. */
+@Immutable
 class TestAssetNameQuery(val uuid: String) : QueryOperation<TestAssetNameQuery.Data> {
     override val variables: Variables
         get() = Variables.of("uuid" to Variable.of(uuid))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestAssetNameQuery && other.uuid == uuid
@@ -72,10 +71,10 @@ private object `TestAssetNameQuery-plan` {
 }
 
 /** Operation value for `query TestAssetQuery`. */
+@Immutable
 class TestAssetQuery(val uuid: String) : QueryOperation<TestAssetQuery.Data> {
     override val variables: Variables
         get() = Variables.of("uuid" to Variable.of(uuid))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestAssetQuery && other.uuid == uuid
@@ -137,10 +136,10 @@ private object `TestAssetQuery-plan` {
 }
 
 /** Operation value for `query TestAssetsQuery`. */
+@Immutable
 class TestAssetsQuery : QueryOperation<TestAssetsQuery.Data> {
     override val variables: Variables
         get() = Variables.none
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestAssetsQuery
@@ -188,10 +187,10 @@ private object `TestAssetsQuery-plan` {
 }
 
 /** Operation value for `query TestQuoteQuery`. */
+@Immutable
 class TestQuoteQuery(val base: String, val quote: String) : QueryOperation<TestQuoteQuery.Data> {
     override val variables: Variables
         get() = Variables.of("base" to Variable.of(base), "quote" to Variable.of(quote))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestQuoteQuery && other.base == base && other.quote == quote
@@ -239,10 +238,10 @@ private object `TestQuoteQuery-plan` {
 }
 
 /** Operation value for `query TestQuotesQuery`. */
+@Immutable
 class TestQuotesQuery : QueryOperation<TestQuotesQuery.Data> {
     override val variables: Variables
         get() = Variables.none
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestQuotesQuery

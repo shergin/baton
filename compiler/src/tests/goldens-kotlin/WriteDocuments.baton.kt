@@ -3,6 +3,7 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
@@ -13,7 +14,6 @@ import baton.Lookup
 import baton.MutationAction
 import baton.MutationOperation
 import baton.MutationType
-import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
 import baton.Payload
@@ -21,7 +21,6 @@ import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
 import baton.QueryType
-import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
@@ -62,10 +61,10 @@ class TestRenamePayload_mutation(override val anchor: Anchor) : Lens {
 }
 
 /** Operation value for `query TestFavoriteQuery`. */
+@Immutable
 class TestFavoriteQuery(val id: String) : QueryOperation<TestFavoriteQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestFavoriteQuery && other.id == id
@@ -112,10 +111,10 @@ private object `TestFavoriteQuery-plan` {
 }
 
 /** Operation value for `query TestNode`. */
+@Immutable
 class TestNode(val id: String) : QueryOperation<TestNode.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestNode && other.id == id
@@ -184,6 +183,7 @@ private object `TestNode-plan` {
 }
 
 /** Operation value for `mutation TestRename`. */
+@Immutable
 class TestRename(val id: String, val name: String) : MutationOperation<TestRename.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id), "name" to Variable.of(name))
@@ -273,6 +273,7 @@ private object `TestRename-plan` {
 suspend operator fun MutationAction<TestRename, TestRename.Data>.invoke(id: String, name: String, optimistic: TestRename.OptimisticResponse? = null): TestRename.Data = this.commit(TestRename(id, name), optimistic?.payload)
 
 /** Operation value for `mutation TestRenameThroughFragment`. */
+@Immutable
 class TestRenameThroughFragment(val id: String, val name: String) : MutationOperation<TestRenameThroughFragment.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id), "name" to Variable.of(name))
@@ -347,6 +348,7 @@ private object `TestRenameThroughFragment-plan` {
 suspend operator fun MutationAction<TestRenameThroughFragment, TestRenameThroughFragment.Data>.invoke(id: String, name: String, optimistic: TestRenameThroughFragment.OptimisticResponse? = null): TestRenameThroughFragment.Data = this.commit(TestRenameThroughFragment(id, name), optimistic?.payload)
 
 /** Operation value for `mutation TestRenameWithOrigin`. */
+@Immutable
 class TestRenameWithOrigin(val id: String, val name: String, val withOrigin: Boolean) : MutationOperation<TestRenameWithOrigin.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id), "name" to Variable.of(name), "withOrigin" to Variable.of(withOrigin))
@@ -460,10 +462,10 @@ private object `TestRenameWithOrigin-plan` {
 suspend operator fun MutationAction<TestRenameWithOrigin, TestRenameWithOrigin.Data>.invoke(id: String, name: String, withOrigin: Boolean, optimistic: TestRenameWithOrigin.OptimisticResponse? = null): TestRenameWithOrigin.Data = this.commit(TestRenameWithOrigin(id, name, withOrigin), optimistic?.payload)
 
 /** Operation value for `query TestSearch`. */
+@Immutable
 class TestSearch(val name: String) : QueryOperation<TestSearch.Data> {
     override val variables: Variables
         get() = Variables.of("name" to Variable.of(name))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestSearch && other.name == name
@@ -546,10 +548,10 @@ private object `TestSearch-plan` {
 }
 
 /** Operation value for `query TestSearchOrigins`. */
+@Immutable
 class TestSearchOrigins(val name: String) : QueryOperation<TestSearchOrigins.Data> {
     override val variables: Variables
         get() = Variables.of("name" to Variable.of(name))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestSearchOrigins && other.name == name
@@ -628,6 +630,7 @@ private object `TestSearchOrigins-plan` {
 }
 
 /** Operation value for `mutation TestSetFavorite`. */
+@Immutable
 class TestSetFavorite(val id: String, val favorite: Boolean) : MutationOperation<TestSetFavorite.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id), "favorite" to Variable.of(favorite))

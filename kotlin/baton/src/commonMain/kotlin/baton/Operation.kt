@@ -90,9 +90,12 @@ interface SubscriptionType<Op : SubscriptionOperation<Data>, Data : Lens> : Oper
 
 /**
  * An operation value: the variables it is run with, equal by them, and the
- * type that knows everything else about it. The host markers `@Query`,
- * `@Mutation` and `@Subscription` keep the short names; a generated value
- * implements `QueryOperation`, `MutationOperation` or `SubscriptionOperation`.
+ * type that knows everything else about it. It carries nothing of the live
+ * side, which the handle holds, so a generated value is immutable and a
+ * composable is handed the same one for as long as its variables are the
+ * same. The host markers `@Query`, `@Mutation` and `@Subscription` keep the
+ * short names; a generated value implements `QueryOperation`,
+ * `MutationOperation` or `SubscriptionOperation`.
  */
 interface Operation<Data : Lens> {
     val variables: Variables
@@ -101,40 +104,20 @@ interface Operation<Data : Lens> {
     val type: OperationType<Data>
 }
 
-interface QueryOperation<Data : Lens> : Operation<Data> {
-    /** Where the value stands: unresolved, resolved to its handle, or not injected. */
-    @Generated
-    var resolution: Resolution<OperationHandle<Data>>
-}
+/** A query's value: `rememberQuery` resolves it to its handle in a composition, `Environment.handle` outside one. */
+interface QueryOperation<Data : Lens> : Operation<Data>
 
+/** A mutation's value, committed through its action or `Environment.mutate`. */
 interface MutationOperation<Data : Lens> : Operation<Data>
 
-interface SubscriptionOperation<Data : Lens> : Operation<Data> {
-    @Generated
-    var resolution: Resolution<SubscriptionHandle<Data>>
-}
-
-/** An operation value's standing in a composable: declared only, resolved to its handle, or outside every environment. */
-sealed interface Resolution<out Handle : Any> {
-    /** The handle, when resolved. */
-    val handle: Handle?
-
-    data object Unresolved : Resolution<Nothing> {
-        override val handle: Nothing? get() = null
-    }
-
-    data object NotInjected : Resolution<Nothing> {
-        override val handle: Nothing? get() = null
-    }
-
-    data class Resolved<Handle : Any>(override val handle: Handle) : Resolution<Handle>
-}
+/** A subscription's value: `rememberSubscription` opens its stream in a composition, `Environment.subscriptionHandle` outside one. */
+interface SubscriptionOperation<Data : Lens> : Operation<Data>
 
 /**
  * What a query's data deserves: loading, ready with its lens, or failed with
- * the error that says why. Stable: a value never changes, a lens is stable,
- * and an error is compared as the same object, so a composable handed an
- * equal phase skips, a failed one among them.
+ * the error that says why. Stable: a value never changes, a lens is equal
+ * by its anchor, and a failure is equal by what it holds, so a composable
+ * handed an equal phase skips, a failed one among them.
  */
 @Stable
 sealed interface Phase<out Data> {
@@ -160,39 +143,49 @@ sealed interface Fetch {
     data class Failed(override val failure: Failure, val at: TimeMark) : Fetch
 }
 
-/** Loading until resolved in a composable; failed with `EnvironmentError.NotInjected` outside every environment. */
-val <Data : Lens> QueryOperation<Data>.phase: Phase<Data>
-    get() = when (val resolution = resolution) {
-        Resolution.Unresolved -> Phase.Loading
-        Resolution.NotInjected -> Phase.Failed(EnvironmentError.NotInjected)
-        is Resolution.Resolved -> resolution.handle.phase
-    }
-
-/** The last fetch: idle, in flight, or failed with its failure and when; idle where no environment could make one. */
-val QueryOperation<*>.fetch: Fetch get() = resolution.handle?.fetch ?: Fetch.Idle
-
-/** Whether a fetch is running while earlier data stays visible. */
-val QueryOperation<*>.isRefreshing: Boolean get() = resolution.handle?.isRefreshing ?: false
-
-/** Whether the data predates an invalidation or the cache expiration. */
-val QueryOperation<*>.isStale: Boolean get() = resolution.handle?.isStale ?: false
-
 /**
- * Fetches again and commits; the data stays visible meanwhile, and a failure
- * is thrown here rather than shown in place of it. Outside every environment
- * it throws `EnvironmentError.NotInjected`.
+ * A query's state in a composition, as `rememberQuery` returns it: the value
+ * it was given and the handle it resolved the value to in the environment
+ * `LocalBaton` provides, or no handle outside every provider. What it reads
+ * of the handle is snapshot state, so a composable that reads the phase, the
+ * fetch or the staleness recomposes when they move. Stable: one per value,
+ * environment and policy, remembered for the composable's life.
  */
-suspend fun QueryOperation<*>.refetch() {
-    when (val resolution = resolution) {
-        Resolution.Unresolved -> return
-        Resolution.NotInjected -> throw EnvironmentError.NotInjected
-        is Resolution.Resolved -> resolution.handle.refetch()
-    }
-}
+@Stable
+class QueryState<Op : QueryOperation<Data>, Data : Lens> internal constructor(
+    val operation: Op,
+    /** The handle, shared by every holder of an equal value; null outside every environment. */
+    val handle: OperationHandle<Data>?,
+) {
+    /** Loading, ready with its lens, or failed with the error that says why; failed with `EnvironmentError.NotInjected` outside every environment. */
+    val phase: Phase<Data> get() = handle?.phase ?: NOT_INJECTED
 
-/** After a failure, fetches again: a failure with data behind it keeps the data visible meanwhile; any other shows loading. */
-fun QueryOperation<*>.retry() {
-    resolution.handle?.retry()
+    /** The last fetch: idle, in flight, or failed with its failure and when; idle where no environment could make one. */
+    val fetch: Fetch get() = handle?.fetch ?: Fetch.Idle
+
+    /** Whether a fetch is running while earlier data stays visible. */
+    val isRefreshing: Boolean get() = handle?.isRefreshing ?: false
+
+    /** Whether the data predates an invalidation or the cache expiration. */
+    val isStale: Boolean get() = handle?.isStale ?: false
+
+    /**
+     * Fetches again and commits; the data stays visible meanwhile, and a
+     * failure is thrown here rather than shown in place of it. Outside every
+     * environment it throws `EnvironmentError.NotInjected`.
+     */
+    suspend fun refetch() {
+        (handle ?: throw EnvironmentError.NotInjected).refetch()
+    }
+
+    /** After a failure, fetches again: a failure with data behind it keeps the data visible meanwhile; any other shows loading. */
+    fun retry() {
+        handle?.retry()
+    }
+
+    private companion object {
+        val NOT_INJECTED: Phase<Nothing> = Phase.Failed(EnvironmentError.NotInjected)
+    }
 }
 
 /**

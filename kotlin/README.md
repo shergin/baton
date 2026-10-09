@@ -370,15 +370,18 @@ against a `com.sun.net.httpserver` server and a `graphql-transport-ws`
 server on plain sockets, both on the loopback interface.
 
 The composables (`Compose.kt`). `LocalBaton` provides the environment;
-`rememberQuery(operation, fetchPolicy)` resolves a query value to its
-handle, retained while the composable stays and released when it leaves or
-its composition is abandoned, an equal value keeping its handle and a
-changed one resolving anew; outside every provider no handle is made and
-the phase reads `Failed(EnvironmentError.NotInjected)`.
-`rememberMutation(RenameMutation)` returns the mutation's action, its type
-inferred from the companion, a `MutationType`, and
-`rememberSubscription(operation)` holds a stream open while its composable
-stays. `jvmTest` holds them in a Compose for Desktop composition: loading
+`rememberQuery(operation, fetchPolicy)` returns a `QueryState`, the
+query's state in the composition: the handle it resolved the value to,
+retained while the composable stays and released when it leaves or its
+composition is abandoned, and the `phase`, `fetch`, `isRefreshing`,
+`isStale`, `retry()` and `refetch()` that read it; an equal value under the
+same policy keeps its handle, a changed value or another policy resolves
+anew, and outside every provider there is no handle and the phase reads
+`Failed(EnvironmentError.NotInjected)`. The value given is never written
+to. `rememberMutation(RenameMutation)` returns the mutation's action, its
+type inferred from the companion, a `MutationType`, and
+`rememberSubscription(operation)` returns the subscription's handle, its
+stream open while the composable stays, or null outside every provider. `jvmTest` holds them in a Compose for Desktop composition: loading
 then ready, a write recomposing only the composable that read the slot,
 and the releases. A composition's environment is made on the desktop's
 event thread and commits there through the main dispatcher, which
@@ -386,16 +389,16 @@ event thread and commits there through the main dispatcher, which
 
 Skipping, as the Compose compiler reports it: every generated lens
 (`stable class baton.sample.CharacterRow_character`), `LensList`, `Phase`,
-`Fetch` and `MutationAction` are stable, and every composable of the
+`Fetch`, `QueryState` and `MutationAction` are stable, a generated operation
+value is `@Immutable`, equal by its variables, and every composable of the
 sample, `CharacterRow` and `PhaseView` among them, is `restartable
-skippable` with every parameter stable; an operation value is not stable,
-since `rememberQuery` sets its resolution, and is passed to no composable.
+skippable` with every parameter stable.
 
 The inspector (`baton-inspector`). `StoreInspector(environment)` lists the
 store's records by type, searchable by key or type, each opening onto its
 fields, values and field errors, with the store's counts above; it reads
 the store's `revision`, snapshot state every batch, collection and end
-moves, and the records' cells, so a commit recomposes it. `StoreExport.text`
+moves, so each recomposes it. `StoreExport.text`
 is `Store.dump()`. It reads the store through the opt-in to the runtime's
 contract with generated code, as Swift's `BatonInspector` reads it through
 `@_spi(Generated)`. `jvmTest` holds it in a composition: a record listed

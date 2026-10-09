@@ -70,7 +70,9 @@ class OperationHandle<Data : Lens> internal constructor(
     private var lastPolicy = FetchPolicy.Default
 
     init {
-        // An operation with a policy judges its root's data.
+        // An operation with a policy judges its root's data. The handle is
+        // the judge; it is given as an object made once here, since a public
+        // class cannot implement the store's internal interface.
         if (type.throwsOnFieldError || type.bubbles) root.judge = Store.Judge { judge() }
     }
 
@@ -132,9 +134,10 @@ class OperationHandle<Data : Lens> internal constructor(
     /** Whether the phase shows data: the store holds it and the handle shows it, ready or failed on what the data deserves. */
     private val showsData: Boolean get() = root.present && !awaitsOwnResponse && !ended
 
-    private val anchor: Anchor get() = Anchor(store.root, owner)
+    private val anchor: Anchor = Anchor(store.root, owner)
 
-    private val data: Data get() = type.data(anchor)
+    /** The root's lens, made once: it holds nothing and reads the store at every access, so the ready phase is equal across reads. */
+    private val data: Data = type.data(anchor)
 
     /**
      * Whether the data predates `Environment.invalidate()` or is older than

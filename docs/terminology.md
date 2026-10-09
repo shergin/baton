@@ -322,8 +322,8 @@ Swift: `OperationHandle`, with `isRefreshing` and `fetchTime`;
 `SubscriptionHandle`, whose stream is `stream`.
 Kotlin: `OperationHandle<Data>`, whose `phase` and `fetch` are read through
 Compose snapshot state, with `isRefreshing`, `isStale`, `fetchTime`, the
-suspending `refetch()` and `retry()`; a query value reads the same through
-its `resolution`.
+suspending `refetch()` and `retry()`; a composable reads the same through
+the `QueryState` that `rememberQuery` returns.
 
 **Phase.** *Concept: phase.* Named after `AsyncImagePhase`, the platform's
 own word for the same shape.
@@ -849,7 +849,7 @@ runtime declares it as a marker type; an app's own files import `Baton`.
 Kotlin: an artifact opens with `@file:OptIn(baton.Generated::class)`, which
 is that interface; the Kotlin format has numbers of its own, starting at 1,
 and the shared file names it as `Types.format`, the runtime's marker object
-`baton.Format1`.
+`baton.Format2`.
 
 **Report.** *Composition: document, schema.* Baton's word.
 Here: what the compiler compiled for one target, written by

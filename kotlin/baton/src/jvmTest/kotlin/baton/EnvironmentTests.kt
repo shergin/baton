@@ -3,6 +3,8 @@ package baton
 import baton.spec.Slots
 import baton.spec.TestHeaderQuery
 import baton.spec.TestRename
+import baton.spec.TestRequiredOrigin
+import baton.spec.TestStrictQuery
 import baton.testing.RecordedTransport
 import baton.testing.ScriptedTransport
 import kotlin.test.Test
@@ -11,6 +13,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -35,13 +38,44 @@ class EnvironmentTests {
     }
 
     @Test
-    fun `a value outside every environment reads failed with the environment missing and its refetch throws it`() = runTest {
-        val operation = TestHeaderQuery(id = "5")
-        assertEquals(Phase.Loading, operation.phase, "a value no composable resolved reads as loading")
-        operation.resolution = Resolution.NotInjected
-        assertEquals(Phase.Failed(EnvironmentError.NotInjected), operation.phase)
-        assertEquals(Fetch.Idle, operation.fetch)
-        assertFailsWith<EnvironmentError> { operation.refetch() }
+    fun `a query state outside every environment reads failed with the environment missing and its refetch throws it`() = runTest {
+        val state = QueryState(TestHeaderQuery(id = "5"), null)
+        assertNull(state.handle)
+        assertEquals(Phase.Failed(EnvironmentError.NotInjected), state.phase)
+        assertEquals(Fetch.Idle, state.fetch)
+        assertFalse(state.isRefreshing)
+        assertFalse(state.isStale)
+        assertFailsWith<EnvironmentError.NotInjected> { state.refetch() }
+    }
+
+    @Test
+    fun `a failed phase that did not change compares equal across reads, as a ready one does`() = runTest {
+        val transport = ScriptedTransport(
+            mapOf(
+                "TestStrictQuery" to Spec.bytes("tests/character-name-hidden.json"),
+                "TestRequiredOrigin" to Spec.bytes("tests/required-origin-1-null.json"),
+                "TestHeaderQuery" to Spec.bytes("tests/character-header-5.json"),
+            ),
+        )
+        val environment = environment(transport)
+        val fieldErrors = environment.handle(TestStrictQuery(id = "1"))
+        val requiredNull = environment.handle(TestRequiredOrigin(id = "1"))
+        val missingData = environment.handle(TestHeaderQuery(id = "999"), FetchPolicy.STORE_ONLY)
+        val ready = environment.handle(TestHeaderQuery(id = "5"))
+        val handles = listOf(fieldErrors, requiredNull, missingData, ready)
+        val holds = handles.map { it.retain() }
+        runCurrent()
+        assertIs<FieldErrors>(assertIs<Phase.Failed>(fieldErrors.phase).error)
+        assertIs<RequiredFieldError>(assertIs<Phase.Failed>(requiredNull.phase).error)
+        assertIs<MissingDataError>(assertIs<Phase.Failed>(missingData.phase).error)
+        assertIs<Phase.Ready<*>>(ready.phase)
+        for (handle in handles) {
+            val first = handle.phase
+            val second = handle.phase
+            assertEquals(first, second, "${handle.key} reads an equal phase twice")
+        }
+        for (hold in holds) hold.release()
+        environment.end()
     }
 
     @Test

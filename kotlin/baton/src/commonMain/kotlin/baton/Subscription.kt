@@ -266,6 +266,3 @@ class SubscriptionHandle<Data : Lens> internal constructor(
         stream = Stream.Idle
     }
 }
-
-/** The live side of a subscription value, which the composable that resolved it holds; null outside a composable, and outside every environment. */
-val <Data : Lens> SubscriptionOperation<Data>.subscription: SubscriptionHandle<Data>? get() = resolution.handle

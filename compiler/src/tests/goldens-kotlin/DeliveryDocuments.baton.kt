@@ -3,6 +3,7 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
@@ -11,18 +12,15 @@ import baton.FieldError
 import baton.FieldErrors
 import baton.Lens
 import baton.Lookup
-import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
 import baton.QueryType
-import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
-import baton.SubscriptionHandle
 import baton.SubscriptionOperation
 import baton.SubscriptionType
 import baton.Variable
@@ -139,10 +137,10 @@ class TestStrict_character(override val anchor: Anchor) : Lens {
 }
 
 /** Operation value for `subscription TestNoteAdded`. */
+@Immutable
 class TestNoteAdded(val characterId: String, val connections: List<String>) : SubscriptionOperation<TestNoteAdded.Data> {
     override val variables: Variables
         get() = Variables.of("characterId" to Variable.of(characterId), "connections" to Variable.List(connections.map { Variable.of(it) }))
-    override var resolution: Resolution<SubscriptionHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestNoteAdded && other.characterId == characterId && other.connections == connections
@@ -214,10 +212,10 @@ private object `TestNoteAdded-plan` {
 }
 
 /** Operation value for `query TestNullsOnError`. */
+@Immutable
 class TestNullsOnError(val id: String) : QueryOperation<TestNullsOnError.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestNullsOnError && other.id == id
@@ -262,10 +260,10 @@ private object `TestNullsOnError-plan` {
 }
 
 /** Operation value for `query TestOverlapQuery`. */
+@Immutable
 class TestOverlapQuery(val id: String) : QueryOperation<TestOverlapQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestOverlapQuery && other.id == id
@@ -338,10 +336,10 @@ private object `TestOverlapQuery-plan` {
 }
 
 /** Operation value for `query TestProfileQuery`. */
+@Immutable
 class TestProfileQuery(val id: String) : QueryOperation<TestProfileQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestProfileQuery && other.id == id
@@ -425,10 +423,10 @@ private object `TestProfileQuery-plan` {
 }
 
 /** Operation value for `query TestRosterQuery`. */
+@Immutable
 class TestRosterQuery(val page: Int? = null) : QueryOperation<TestRosterQuery.Data> {
     override val variables: Variables
         get() = Variables.of("page" to page?.let { Variable.of(it) })
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestRosterQuery && other.page == page
@@ -496,10 +494,10 @@ private object `TestRosterQuery-plan` {
 }
 
 /** Operation value for `query TestStrictDeferred`. */
+@Immutable
 class TestStrictDeferred(val id: String) : QueryOperation<TestStrictDeferred.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestStrictDeferred && other.id == id
@@ -594,10 +592,10 @@ private object `TestStrictDeferred-plan` {
 }
 
 /** Operation value for `query TestStrictQuery`. */
+@Immutable
 class TestStrictQuery(val id: String) : QueryOperation<TestStrictQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestStrictQuery && other.id == id
@@ -679,10 +677,10 @@ private object `TestStrictQuery-plan` {
 }
 
 /** Operation value for `query TestThrowingSpread`. */
+@Immutable
 class TestThrowingSpread(val id: String) : QueryOperation<TestThrowingSpread.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestThrowingSpread && other.id == id

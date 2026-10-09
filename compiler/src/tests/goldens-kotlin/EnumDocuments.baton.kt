@@ -3,6 +3,7 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
@@ -11,7 +12,6 @@ import baton.Lens
 import baton.MutationAction
 import baton.MutationOperation
 import baton.MutationType
-import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
 import baton.Payload
@@ -19,7 +19,6 @@ import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
 import baton.QueryType
-import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
@@ -27,10 +26,10 @@ import baton.Variable
 import baton.Variables
 
 /** Operation value for `query TestCharactersWithStatus`. */
+@Immutable
 class TestCharactersWithStatus(val status: Status, val any: List<Status>? = null) : QueryOperation<TestCharactersWithStatus.Data> {
     override val variables: Variables
         get() = Variables.of("status" to Variable.of(status), "any" to any?.let { Variable.List(it.map { Variable.of(it) }) })
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestCharactersWithStatus && other.status == status && other.any == any
@@ -75,6 +74,7 @@ private object `TestCharactersWithStatus-plan` {
 }
 
 /** Operation value for `mutation TestSetStatuses`. */
+@Immutable
 class TestSetStatuses : MutationOperation<TestSetStatuses.Data> {
     override val variables: Variables
         get() = Variables.none

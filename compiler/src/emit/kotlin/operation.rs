@@ -27,20 +27,20 @@ pub(super) fn operation_text(operation: &OperationValue, lenses: &Lenses) -> Str
         "/** Operation value for `{} {}`. */",
         operation.kind, operation.name
     ));
-    // Each kind is its own interface: a query's and a subscription's value
-    // carry the handle a composable resolves them to, a mutation's is
-    // committed.
-    let (interface, handle) = match operation.kind {
-        OperationKind::Query => ("QueryOperation", Some("OperationHandle")),
-        OperationKind::Mutation => ("MutationOperation", None),
-        OperationKind::Subscription => ("SubscriptionOperation", Some("SubscriptionHandle")),
+    // Each kind is its own interface: a composable resolves a query's value
+    // to a handle, opens a subscription's stream, commits a mutation's. The
+    // value carries nothing of that, and is immutable.
+    let interface = match operation.kind {
+        OperationKind::Query => "QueryOperation",
+        OperationKind::Mutation => "MutationOperation",
+        OperationKind::Subscription => "SubscriptionOperation",
     };
     let names: Vec<&str> = operation
         .variables
         .iter()
         .map(|variable| variable.name.as_str())
         .collect();
-    let getters = jvm_getters(&names, &["getVariables", "getType", "getResolution"]);
+    let getters = jvm_getters(&names, &["getVariables", "getType"]);
     let parameters: Vec<String> = operation
         .variables
         .iter()
@@ -64,13 +64,9 @@ pub(super) fn operation_text(operation: &OperationValue, lenses: &Lenses) -> Str
     };
     let head = format!("class {class}{parameters} : {interface}<{class}.Data>");
     let plan = plan_object_name(operation);
+    writer.line("@Immutable");
     writer.block(head, |writer| {
         variables(writer, operation, converters);
-        if let Some(handle) = handle {
-            writer.line(format!(
-                "override var resolution: Resolution<{handle}<Data>> = Resolution.Unresolved"
-            ));
-        }
         writer.line("override val type: OperationType<Data> get() = Companion");
         writer.blank();
         equality(writer, operation, &class);

@@ -3,6 +3,7 @@
 
 package baton.goldens.wide
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
@@ -11,14 +12,12 @@ import baton.FieldErrors
 import baton.Generated
 import baton.Lens
 import baton.Lookup
-import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
 import baton.QueryType
-import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
@@ -7491,10 +7490,10 @@ data class WideValue_character(
 }
 
 /** Operation value for `query WideValueQuery`. */
+@Immutable
 class WideValueQuery : QueryOperation<WideValueQuery.Data> {
     override val variables: Variables
         get() = Variables.none
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is WideValueQuery

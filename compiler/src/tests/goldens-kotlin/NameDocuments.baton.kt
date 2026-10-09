@@ -3,30 +3,29 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
 import baton.FieldError
 import baton.FieldErrors
 import baton.Lens
-import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
 import baton.QueryType
-import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
 import baton.Variables
 
 /** Operation value for `query TestCaughtNames`. */
+@Immutable
 class TestCaughtNames : QueryOperation<TestCaughtNames.Data> {
     override val variables: Variables
         get() = Variables.none
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestCaughtNames
@@ -86,10 +85,10 @@ private object `TestCaughtNames-plan` {
 }
 
 /** Operation value for `query TestNames`. */
+@Immutable
 class TestNames : QueryOperation<TestNames.Data> {
     override val variables: Variables
         get() = Variables.none
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestNames
@@ -139,10 +138,10 @@ private object `TestNames-plan` {
 }
 
 /** Operation value for `query TestSpellings`. */
+@Immutable
 class TestSpellings : QueryOperation<TestSpellings.Data> {
     override val variables: Variables
         get() = Variables.none
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestSpellings

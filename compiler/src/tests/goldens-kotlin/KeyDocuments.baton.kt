@@ -3,19 +3,18 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
 import baton.Lens
 import baton.Lookup
-import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
 import baton.QueryType
-import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
@@ -53,10 +52,10 @@ class TestKeyArguments_query(override val anchor: Anchor) : Lens {
 }
 
 /** Operation value for `query TestKeys`. */
+@Immutable
 class TestKeys(val id: String, val name: String? = null) : QueryOperation<TestKeys.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id), "name" to name?.let { Variable.of(it) })
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestKeys && other.id == id && other.name == name
@@ -159,10 +158,10 @@ private object `TestKeys-plan` {
 }
 
 /** Operation value for `query TestNoteCounts`. */
+@Immutable
 class TestNoteCounts(val page: Int? = null, val count: Int? = null) : QueryOperation<TestNoteCounts.Data> {
     override val variables: Variables
         get() = Variables.of("page" to page?.let { Variable.of(it) }, "count" to count?.let { Variable.of(it) })
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestNoteCounts && other.page == page && other.count == count
@@ -243,10 +242,10 @@ private object `TestNoteCounts-plan` {
 }
 
 /** Operation value for `query TestSpreadKeys`. */
+@Immutable
 class TestSpreadKeys(val id: String, val name: String? = null) : QueryOperation<TestSpreadKeys.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id), "name" to name?.let { Variable.of(it) })
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestSpreadKeys && other.id == id && other.name == name

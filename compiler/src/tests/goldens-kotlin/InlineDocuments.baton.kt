@@ -3,6 +3,7 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.Document
@@ -12,14 +13,12 @@ import baton.Generated
 import baton.Guard
 import baton.Lens
 import baton.Lookup
-import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
 import baton.Plan
 import baton.PlanField
 import baton.QueryOperation
 import baton.QueryType
-import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
@@ -416,10 +415,10 @@ data class TestScanningValue_character(
 }
 
 /** Operation value for `query TestAssetValuesQuery`. */
+@Immutable
 class TestAssetValuesQuery : QueryOperation<TestAssetValuesQuery.Data> {
     override val variables: Variables
         get() = Variables.none
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestAssetValuesQuery
@@ -470,10 +469,10 @@ private object `TestAssetValuesQuery-plan` {
 }
 
 /** Operation value for `query TestCaughtValueQuery`. */
+@Immutable
 class TestCaughtValueQuery(val id: String) : QueryOperation<TestCaughtValueQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestCaughtValueQuery && other.id == id
@@ -539,10 +538,10 @@ private object `TestCaughtValueQuery-plan` {
 }
 
 /** Operation value for `query TestDeferredValueQuery`. */
+@Immutable
 class TestDeferredValueQuery(val id: String) : QueryOperation<TestDeferredValueQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestDeferredValueQuery && other.id == id
@@ -610,10 +609,10 @@ private object `TestDeferredValueQuery-plan` {
 }
 
 /** Operation value for `query TestInlineQuery`. */
+@Immutable
 class TestInlineQuery(val id: String, val withNotes: Boolean) : QueryOperation<TestInlineQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id), "withNotes" to Variable.of(withNotes))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestInlineQuery && other.id == id && other.withNotes == withNotes
@@ -686,10 +685,10 @@ private object `TestInlineQuery-plan` {
 }
 
 /** Operation value for `query TestResultValuesQuery`. */
+@Immutable
 class TestResultValuesQuery(val name: String) : QueryOperation<TestResultValuesQuery.Data> {
     override val variables: Variables
         get() = Variables.of("name" to Variable.of(name))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestResultValuesQuery && other.name == name
@@ -755,10 +754,10 @@ private object `TestResultValuesQuery-plan` {
 }
 
 /** Operation value for `query TestScanningValueQuery`. */
+@Immutable
 class TestScanningValueQuery(val id: String, val withName: Boolean) : QueryOperation<TestScanningValueQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id), "withName" to Variable.of(withName))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestScanningValueQuery && other.id == id && other.withName == withName

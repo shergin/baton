@@ -3,6 +3,7 @@
 
 package baton.goldens
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.ConnectionCursor
@@ -15,7 +16,6 @@ import baton.Lookup
 import baton.MutationAction
 import baton.MutationOperation
 import baton.MutationType
-import baton.OperationHandle
 import baton.OperationKind
 import baton.OperationType
 import baton.Payload
@@ -24,7 +24,6 @@ import baton.PlanField
 import baton.QueryOperation
 import baton.QueryType
 import baton.Refetch
-import baton.Resolution
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
@@ -437,6 +436,7 @@ class TestRecentNotes_character(override val anchor: Anchor) : Lens {
 }
 
 /** Operation value for `mutation TestAddNote`. */
+@Immutable
 class TestAddNote(val characterId: String, val text: String, val connections: List<String>) : MutationOperation<TestAddNote.Data> {
     override val variables: Variables
         get() = Variables.of("characterId" to Variable.of(characterId), "text" to Variable.of(text), "connections" to Variable.List(connections.map { Variable.of(it) }))
@@ -548,6 +548,7 @@ private object `TestAddNote-plan` {
 suspend operator fun MutationAction<TestAddNote, TestAddNote.Data>.invoke(characterId: String, text: String, connections: List<String>, optimistic: TestAddNote.OptimisticResponse? = null): TestAddNote.Data = this.commit(TestAddNote(characterId, text, connections), optimistic?.payload)
 
 /** Operation value for `mutation TestAddNoteFirst`. */
+@Immutable
 class TestAddNoteFirst(val characterId: String, val text: String, val connections: List<String>) : MutationOperation<TestAddNoteFirst.Data> {
     override val variables: Variables
         get() = Variables.of("characterId" to Variable.of(characterId), "text" to Variable.of(text), "connections" to Variable.List(connections.map { Variable.of(it) }))
@@ -659,6 +660,7 @@ private object `TestAddNoteFirst-plan` {
 suspend operator fun MutationAction<TestAddNoteFirst, TestAddNoteFirst.Data>.invoke(characterId: String, text: String, connections: List<String>, optimistic: TestAddNoteFirst.OptimisticResponse? = null): TestAddNoteFirst.Data = this.commit(TestAddNoteFirst(characterId, text, connections), optimistic?.payload)
 
 /** Operation value for `mutation TestAddNoteNode`. */
+@Immutable
 class TestAddNoteNode(val characterId: String, val text: String, val connections: List<String>) : MutationOperation<TestAddNoteNode.Data> {
     override val variables: Variables
         get() = Variables.of("characterId" to Variable.of(characterId), "text" to Variable.of(text), "connections" to Variable.List(connections.map { Variable.of(it) }))
@@ -748,6 +750,7 @@ private object `TestAddNoteNode-plan` {
 suspend operator fun MutationAction<TestAddNoteNode, TestAddNoteNode.Data>.invoke(characterId: String, text: String, connections: List<String>, optimistic: TestAddNoteNode.OptimisticResponse? = null): TestAddNoteNode.Data = this.commit(TestAddNoteNode(characterId, text, connections), optimistic?.payload)
 
 /** Operation value for `mutation TestAddNoteNodeFirst`. */
+@Immutable
 class TestAddNoteNodeFirst(val characterId: String, val text: String, val connections: List<String>) : MutationOperation<TestAddNoteNodeFirst.Data> {
     override val variables: Variables
         get() = Variables.of("characterId" to Variable.of(characterId), "text" to Variable.of(text), "connections" to Variable.List(connections.map { Variable.of(it) }))
@@ -837,6 +840,7 @@ private object `TestAddNoteNodeFirst-plan` {
 suspend operator fun MutationAction<TestAddNoteNodeFirst, TestAddNoteNodeFirst.Data>.invoke(characterId: String, text: String, connections: List<String>, optimistic: TestAddNoteNodeFirst.OptimisticResponse? = null): TestAddNoteNodeFirst.Data = this.commit(TestAddNoteNodeFirst(characterId, text, connections), optimistic?.payload)
 
 /** Operation value for `mutation TestAddNoteNodeOfAnotherType`. */
+@Immutable
 class TestAddNoteNodeOfAnotherType(val characterId: String, val text: String, val connections: List<String>) : MutationOperation<TestAddNoteNodeOfAnotherType.Data> {
     override val variables: Variables
         get() = Variables.of("characterId" to Variable.of(characterId), "text" to Variable.of(text), "connections" to Variable.List(connections.map { Variable.of(it) }))
@@ -926,10 +930,10 @@ private object `TestAddNoteNodeOfAnotherType-plan` {
 suspend operator fun MutationAction<TestAddNoteNodeOfAnotherType, TestAddNoteNodeOfAnotherType.Data>.invoke(characterId: String, text: String, connections: List<String>, optimistic: TestAddNoteNodeOfAnotherType.OptimisticResponse? = null): TestAddNoteNodeOfAnotherType.Data = this.commit(TestAddNoteNodeOfAnotherType(characterId, text, connections), optimistic?.payload)
 
 /** Operation value for `query TestAliasQuery`. */
+@Immutable
 class TestAliasQuery(val id: String) : QueryOperation<TestAliasQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestAliasQuery && other.id == id
@@ -976,10 +980,10 @@ private object `TestAliasQuery-plan` {
 }
 
 /** Operation value for `query TestAuthorNotesPaginationQuery`. */
+@Immutable
 class TestAuthorNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestAuthorNotesPaginationQuery.Data> {
     override val variables: Variables
         get() = Variables.of("count" to (if (count == null) Variable.Int(2) else Variable.of(count)), "cursor" to cursor?.let { Variable.of(it) }, "id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestAuthorNotesPaginationQuery && other.count == count && other.cursor == cursor && other.id == id
@@ -1068,10 +1072,10 @@ private object `TestAuthorNotesPaginationQuery-plan` {
 }
 
 /** Operation value for `query TestAuthorNotesQuery`. */
+@Immutable
 class TestAuthorNotesQuery(val id: String) : QueryOperation<TestAuthorNotesQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestAuthorNotesQuery && other.id == id
@@ -1160,10 +1164,10 @@ private object `TestAuthorNotesQuery-plan` {
 }
 
 /** Operation value for `query TestDeferredNotesPaginationQuery`. */
+@Immutable
 class TestDeferredNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestDeferredNotesPaginationQuery.Data> {
     override val variables: Variables
         get() = Variables.of("count" to (if (count == null) Variable.Int(2) else Variable.of(count)), "cursor" to cursor?.let { Variable.of(it) }, "id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestDeferredNotesPaginationQuery && other.count == count && other.cursor == cursor && other.id == id
@@ -1246,6 +1250,7 @@ private object `TestDeferredNotesPaginationQuery-plan` {
 }
 
 /** Operation value for `mutation TestDeleteNote`. */
+@Immutable
 class TestDeleteNote(val id: String) : MutationOperation<TestDeleteNote.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
@@ -1313,10 +1318,10 @@ private object `TestDeleteNote-plan` {
 suspend operator fun MutationAction<TestDeleteNote, TestDeleteNote.Data>.invoke(id: String, optimistic: TestDeleteNote.OptimisticResponse? = null): TestDeleteNote.Data = this.commit(TestDeleteNote(id), optimistic?.payload)
 
 /** Operation value for `query TestHiddenNotesPaginationQuery`. */
+@Immutable
 class TestHiddenNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestHiddenNotesPaginationQuery.Data> {
     override val variables: Variables
         get() = Variables.of("count" to (if (count == null) Variable.Int(2) else Variable.of(count)), "cursor" to cursor?.let { Variable.of(it) }, "id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestHiddenNotesPaginationQuery && other.count == count && other.cursor == cursor && other.id == id
@@ -1402,10 +1407,10 @@ private object `TestHiddenNotesPaginationQuery-plan` {
 }
 
 /** Operation value for `query TestHiddenNotesQuery`. */
+@Immutable
 class TestHiddenNotesQuery(val id: String) : QueryOperation<TestHiddenNotesQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestHiddenNotesQuery && other.id == id
@@ -1483,10 +1488,10 @@ private object `TestHiddenNotesQuery-plan` {
 }
 
 /** Operation value for `query TestHiddenRecentNotesPaginationQuery`. */
+@Immutable
 class TestHiddenRecentNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestHiddenRecentNotesPaginationQuery.Data> {
     override val variables: Variables
         get() = Variables.of("count" to (if (count == null) Variable.Int(2) else Variable.of(count)), "cursor" to cursor?.let { Variable.of(it) }, "id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestHiddenRecentNotesPaginationQuery && other.count == count && other.cursor == cursor && other.id == id
@@ -1570,10 +1575,10 @@ private object `TestHiddenRecentNotesPaginationQuery-plan` {
 }
 
 /** Operation value for `query TestHiddenRecentNotesQuery`. */
+@Immutable
 class TestHiddenRecentNotesQuery(val id: String) : QueryOperation<TestHiddenRecentNotesQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestHiddenRecentNotesQuery && other.id == id
@@ -1649,10 +1654,10 @@ private object `TestHiddenRecentNotesQuery-plan` {
 }
 
 /** Operation value for `query TestNotesPaginationQuery`. */
+@Immutable
 class TestNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestNotesPaginationQuery.Data> {
     override val variables: Variables
         get() = Variables.of("count" to (if (count == null) Variable.Int(2) else Variable.of(count)), "cursor" to cursor?.let { Variable.of(it) }, "id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestNotesPaginationQuery && other.count == count && other.cursor == cursor && other.id == id
@@ -1736,10 +1741,10 @@ private object `TestNotesPaginationQuery-plan` {
 }
 
 /** Operation value for `query TestNotesQuery`. */
+@Immutable
 class TestNotesQuery(val id: String) : QueryOperation<TestNotesQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestNotesQuery && other.id == id
@@ -1815,10 +1820,10 @@ private object `TestNotesQuery-plan` {
 }
 
 /** Operation value for `query TestNotesSizedQuery`. */
+@Immutable
 class TestNotesSizedQuery(val id: String, val size: Int? = null) : QueryOperation<TestNotesSizedQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id), "size" to size?.let { Variable.of(it) })
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestNotesSizedQuery && other.id == id && other.size == size
@@ -1894,10 +1899,10 @@ private object `TestNotesSizedQuery-plan` {
 }
 
 /** Operation value for `query TestRecentNotesPaginationQuery`. */
+@Immutable
 class TestRecentNotesPaginationQuery(val count: Int? = null, val cursor: String? = null, val id: String) : QueryOperation<TestRecentNotesPaginationQuery.Data> {
     override val variables: Variables
         get() = Variables.of("count" to (if (count == null) Variable.Int(2) else Variable.of(count)), "cursor" to cursor?.let { Variable.of(it) }, "id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestRecentNotesPaginationQuery && other.count == count && other.cursor == cursor && other.id == id
@@ -1979,10 +1984,10 @@ private object `TestRecentNotesPaginationQuery-plan` {
 }
 
 /** Operation value for `query TestRecentNotesQuery`. */
+@Immutable
 class TestRecentNotesQuery(val id: String) : QueryOperation<TestRecentNotesQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestRecentNotesQuery && other.id == id
@@ -2056,6 +2061,7 @@ private object `TestRecentNotesQuery-plan` {
 }
 
 /** Operation value for `mutation TestRemoveNote`. */
+@Immutable
 class TestRemoveNote(val id: String, val connections: List<String>) : MutationOperation<TestRemoveNote.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id), "connections" to Variable.List(connections.map { Variable.of(it) }))
@@ -2125,10 +2131,10 @@ private object `TestRemoveNote-plan` {
 suspend operator fun MutationAction<TestRemoveNote, TestRemoveNote.Data>.invoke(id: String, connections: List<String>, optimistic: TestRemoveNote.OptimisticResponse? = null): TestRemoveNote.Data = this.commit(TestRemoveNote(id, connections), optimistic?.payload)
 
 /** Operation value for `query TestTwoPagesQuery`. */
+@Immutable
 class TestTwoPagesQuery(val id: String) : QueryOperation<TestTwoPagesQuery.Data> {
     override val variables: Variables
         get() = Variables.of("id" to Variable.of(id))
-    override var resolution: Resolution<OperationHandle<Data>> = Resolution.Unresolved
     override val type: OperationType<Data> get() = Companion
 
     override fun equals(other: Any?): Boolean = other is TestTwoPagesQuery && other.id == id

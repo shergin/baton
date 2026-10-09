@@ -140,7 +140,12 @@ fn a_variable_named_like_a_swift_member_is_free_in_kotlin() {
 }
 
 #[test]
-fn a_mutation_has_no_resolution_to_clash_with() {
-    let text = "mutation Probe($resolution: ID!) { setFavorite(id: $resolution, favorite: true) { character { id } } }";
-    assert!(clashes(text, &KotlinNaming::default()).is_empty());
+fn no_kind_of_operation_has_a_resolution_for_a_variable_to_clash_with() {
+    for text in [
+        "query Probe($resolution: ID!, $Resolution: Boolean!) { character(id: $resolution) { name @include(if: $Resolution) } }",
+        "mutation Probe($resolution: ID!, $Resolution: Boolean!) { setFavorite(id: $resolution, favorite: $Resolution) { character { id } } }",
+        "subscription Probe($resolution: ID!, $Resolution: Boolean!) { noteAdded(characterId: $resolution) { character { name @include(if: $Resolution) } } }",
+    ] {
+        assert!(clashes(text, &KotlinNaming::default()).is_empty(), "{text}");
+    }
 }

@@ -13,51 +13,52 @@ import androidx.compose.runtime.staticCompositionLocalOf
 /**
  * The Baton environment for a composition tree, provided on an ancestor:
  * `CompositionLocalProvider(LocalBaton provides environment) { ... }`. Null
- * outside every provider, where an operation reads failed with
- * `EnvironmentError.NotInjected`.
+ * outside every provider, where a query reads failed with
+ * `EnvironmentError.NotInjected` and a subscription has no handle.
  */
 val LocalBaton = staticCompositionLocalOf<Environment?> { null }
 
 /**
- * A handle and the hold that keeps its records alive while the
- * composable that remembered it stays in the composition; released when it
- * leaves, or when a composition that made it is abandoned.
+ * What a composable remembers of an operation, and the hold that keeps its
+ * records alive while the composable stays in the composition; released
+ * when it leaves, when what it is keyed on changes, or when a composition
+ * that made it is abandoned. No hold outside every environment.
  */
-private class Remembered<Handle : Any>(val handle: Handle, private val hold: Hold) : RememberObserver {
+private class Remembered<Value>(val value: Value, private val hold: Hold?) : RememberObserver {
     override fun onRemembered() {}
 
     override fun onForgotten() {
-        hold.release()
+        hold?.release()
     }
 
     override fun onAbandoned() {
-        hold.release()
+        hold?.release()
     }
 }
 
 /**
- * Resolves a query value to its handle in the environment [LocalBaton]
- * provides and returns the value, carrying its resolution: its `phase`,
- * `fetch`, `isRefreshing` and `isStale` read the handle. The handle is
- * retained while the composable stays, and released when it leaves. An
- * equal value recomposed keeps its handle; a changed value, or another
- * environment, resolves anew, the policy applied on that attach. Outside
- * every provider no handle is made, and the phase reads failed with
- * `EnvironmentError.NotInjected`.
+ * The query's state in the composition: the handle the value resolves to in the
+ * environment [LocalBaton] provides, retained while the composable stays
+ * and released when it leaves, and the `phase`, `fetch`, `isRefreshing`,
+ * `isStale`, `retry()` and `refetch()` that read it. An equal value under
+ * the same policy keeps its handle across recompositions; a changed value,
+ * another policy, or another environment resolves anew, the policy applied
+ * on that attach, and the earlier hold is released. Outside every provider
+ * no handle is made and the phase reads failed with
+ * `EnvironmentError.NotInjected`. The value given is not written to.
  */
 @Composable
-fun <Data : Lens, Op : QueryOperation<Data>> rememberQuery(operation: Op, fetchPolicy: FetchPolicy = FetchPolicy.Default): Op {
+fun <Data : Lens, Op : QueryOperation<Data>> rememberQuery(operation: Op, fetchPolicy: FetchPolicy = FetchPolicy.Default): QueryState<Op, Data> {
     val environment = LocalBaton.current
-    if (environment == null) {
-        operation.resolution = Resolution.NotInjected
-        return operation
-    }
-    val remembered = remember(operation, environment) {
+    // Remembered on every entry, so a composable that gains or loses the
+    // provider keeps its slot, and keyed on the policy, so a policy passed
+    // anew is applied; the attach stays inside the calculation, once per key.
+    val remembered = remember(operation, environment, fetchPolicy) {
+        if (environment == null) return@remember Remembered(QueryState(operation, null), null)
         val handle = environment.handle(operation, fetchPolicy)
-        Remembered(handle, handle.retain())
+        Remembered(QueryState(operation, handle), handle.retain())
     }
-    operation.resolution = Resolution.Resolved(remembered.handle)
-    return operation
+    return remembered.value
 }
 
 /**
@@ -73,23 +74,18 @@ fun <Op : MutationOperation<Data>, Data : Lens> rememberMutation(type: MutationT
 }
 
 /**
- * Resolves a subscription value to its handle in the environment
- * [LocalBaton] provides and returns the value, carrying its resolution: its
- * `subscription` is the handle. The stream is open while the composable
- * stays, and closed when it leaves; an equal value recomposed keeps it.
- * Outside every provider no handle is made and `subscription` is null.
+ * The handle a subscription value resolves to in the environment
+ * [LocalBaton] provides: its stream is open while the composable stays and
+ * closed when it leaves, and an equal value recomposed keeps it. Null
+ * outside every provider, where no handle is made.
  */
 @Composable
-fun <Data : Lens, Op : SubscriptionOperation<Data>> rememberSubscription(operation: Op): Op {
+fun <Data : Lens, Op : SubscriptionOperation<Data>> rememberSubscription(operation: Op): SubscriptionHandle<Data>? {
     val environment = LocalBaton.current
-    if (environment == null) {
-        operation.resolution = Resolution.NotInjected
-        return operation
-    }
     val remembered = remember(operation, environment) {
+        if (environment == null) return@remember Remembered<SubscriptionHandle<Data>?>(null, null)
         val handle = environment.subscriptionHandle(operation)
         Remembered(handle, handle.retain())
     }
-    operation.resolution = Resolution.Resolved(remembered.handle)
-    return operation
+    return remembered.value
 }
