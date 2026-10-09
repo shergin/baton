@@ -22,20 +22,26 @@ data class FieldError(val message: String, val path: String, val extensions: Var
     }
 }
 
-/** The field errors a `@catch` caught or a `@throwOnFieldError` threw, in response order. */
-class FieldErrors(val errors: List<FieldError>) : Exception() {
+/** The field errors a `@catch` caught or a `@throwOnFieldError` threw, in response order. A data class for its equality, printed as an exception is. */
+data class FieldErrors(val errors: List<FieldError>) : Exception() {
     override val message: String get() = errors.joinToString("; ")
+
+    override fun toString(): String = super.toString()
 }
 
 /** A `@required(action: THROW)` field that was null, by its response path, bubbled to the operation when it reached the root. */
-class RequiredFieldError(val path: String, val operationName: String? = null) : Exception() {
+data class RequiredFieldError(val path: String, val operationName: String? = null) : Exception() {
     override val message: String
         get() = if (operationName == null) "required field $path is null" else "required field $path is null, bubbled to the root of $operationName"
+
+    override fun toString(): String = super.toString()
 }
 
 /** A `storeOnly` operation whose data the store does not hold. */
-class MissingDataError(val operationName: String) : Exception() {
+data class MissingDataError(val operationName: String) : Exception() {
     override val message: String get() = "the store holds no data for $operationName"
+
+    override fun toString(): String = super.toString()
 }
 
 /** What is missing when an operation cannot run: the environment, or a piece of it. */
