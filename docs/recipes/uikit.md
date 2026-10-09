@@ -1,16 +1,18 @@
 # UIKit and AppKit: a handle held by a controller
 
 Baton's reads are synchronous on the main actor and its handles are
-`@Observable` classes, so a view controller or an `NSViewController` uses
-them without SwiftUI: it asks the environment for the handle, holds the
-retention that keeps the handle's data alive, renders what it reads, and
-renders again when that changes. Nothing here is a second API; it is the
+`@Observable` classes, so a `UIViewController` or an `NSViewController`
+uses them without SwiftUI: it asks the environment for the handle, holds
+the retention that keeps the handle's data alive, renders what it reads,
+and renders again when that changes. Nothing here is a second API; it is the
 same handle the `@Query` wrapper resolves.
 
-The AppKit code below is compiled in this repository, as the `Controllers`
-target under [`examples/Controllers`](../../examples/Controllers), and
-`ControllersTests` proves what this page says of it. UIKit is the same code
-with UIKit's types; [UIKit](#uikit) lists the differences.
+The code below is compiled in this repository, as the `Controllers` target
+under [`examples/Controllers`](../../examples/Controllers): what both
+platforms share in `Content.swift`, and a list, a detail, a cell and the
+app's lifecycle for each under `UIKit/` and `AppKit/`. CI builds the UIKit
+half for the iOS Simulator and the AppKit half for macOS, and
+`ControllersTests` proves on macOS what this page says of them.
 
 ## Where the GraphQL lives
 
@@ -29,6 +31,12 @@ query CharactersQuery($page: Int) {
   }
 }
 
+fragment CharacterCell_character on Character {
+  name
+  status
+  species
+}
+
 query CharacterQuery($id: ID!) {
   character(id: $id) {
     name
@@ -39,16 +47,16 @@ query CharacterQuery($id: ID!) {
 }
 ```
 
-`@Fragment` is only a marker the compiler reads the text from, so a
-fragment can stay beside the cell that reads it, on the property that holds
-its lens (see [A cell](#a-cell)). Both files generate the same operation
-values and lenses a view's markers do.
+The fragment is here because two cells read it, the UIKit one and the
+AppKit one. An app with one cell can keep it beside the cell instead:
+`@Fragment` is only a marker the compiler reads the text from, so it works
+on a property of any type, not only a view's.
 
 ## The handle and its retention
 
 ```swift
 @MainActor
-public final class CharacterViewController: NSViewController {
+public final class CharacterViewController: UIViewController {
     private let handle: OperationHandle<CharacterQuery>
     private var retention: Retention?
     private var observation: Task<Void, Never>?
@@ -70,7 +78,7 @@ by default). `retain()`, called when the view loads, returns a `Retention`:
 while the controller holds it, the operation's root is the store's and its
 records stay; when the controller goes, so does the retention, and the
 collector may reclaim what nothing else keeps. Hold it in a property, never
-in a local.
+in a local. The AppKit controller is the same, over `NSViewController`.
 
 ## Rendering on change
 
@@ -80,39 +88,48 @@ a closure reads into a sequence that yields when any of it changes. What it
 watches is what the closure reads, and nothing else: the phase reads
 whether the data is there, not the fields in it. So the closure computes
 what the controller shows, reading every field it displays, and the loop
-only applies it:
+only applies it. The computation is plain Swift over the lens, the same on
+both platforms:
 
 ```swift
-enum Shown: Sendable {
+public enum CharacterContent: Sendable, Equatable {
     case loading
     case failed(String)
     case ready(name: String, details: String, origin: String)
-}
 
-public override func viewDidLoad() {
-    super.viewDidLoad()
-    retention = handle.retain()
-    render(Self.shown(handle.phase))
-    observation = Task { [weak self, handle] in
-        for await shown in Observations({ Self.shown(handle.phase) }) {
-            self?.render(shown)
+    @MainActor
+    public init(_ phase: Phase<CharacterQuery.Data>) {
+        switch phase {
+        case .loading:
+            self = .loading
+        case .failed(let error):
+            self = .failed(String(describing: error))
+        case .ready(let data):
+            guard let character = data.character else {
+                self = .failed("No such character")
+                return
+            }
+            self = .ready(
+                name: character.name ?? "Unknown",
+                details: [character.status, character.species].compactMap { $0 }.joined(separator: " · "),
+                origin: character.origin?.name ?? "Unknown"
+            )
         }
     }
 }
+```
 
-static func shown(_ phase: Phase<CharacterQuery.Data>) -> Shown {
-    switch phase {
-    case .loading:
-        return .loading
-    case .failed(let error):
-        return .failed(String(describing: error))
-    case .ready(let data):
-        guard let character = data.character else { return .failed("No such character") }
-        return .ready(
-            name: character.name ?? "Unknown",
-            details: [character.status, character.species].compactMap { $0 }.joined(separator: " · "),
-            origin: character.origin?.name ?? "Unknown"
-        )
+and the controller observes it:
+
+```swift
+public override func viewDidLoad() {
+    super.viewDidLoad()
+    retention = handle.retain()
+    render(CharacterContent(handle.phase))
+    observation = Task { [weak self, handle] in
+        for await content in Observations({ CharacterContent(handle.phase) }) {
+            self?.render(content)
+        }
     }
 }
 ```
@@ -135,32 +152,22 @@ they are a view's.
 ## A cell
 
 A cell takes a lens, not a model: the fragment's generated struct, handed
-down by the controller as a parent view hands it to a child. The list
-controller's closure reads the rows' ids and lenses, not their fields, so a
-commit that renames one character renders that character's cell and does
-not reload the table.
+down by the controller as a parent view hands it to a child. The list's
+content reads the rows' ids and lenses, not their fields, so a commit that
+renames one character renders that character's cell and does not reload
+the table.
 
 ```swift
 @MainActor
-public final class CharacterCell: NSTableCellView {
-    @Fragment("""
-        fragment CharacterCell_character on Character {
-          name
-          status
-          species
-        }
-        """)
-    private var character: CharacterCell_character?
-
+public final class CharacterCell: UITableViewCell {
     private var observation: Task<Void, Never>?
 
     public func bind(_ character: CharacterCell_character) {
         observation?.cancel()
-        self.character = character
-        render(Self.shown(character))
+        render(CharacterCellContent(character))
         observation = Task { [weak self] in
-            for await shown in Observations({ Self.shown(character) }) {
-                self?.render(shown)
+            for await content in Observations({ CharacterCellContent(character) }) {
+                self?.render(content)
             }
         }
     }
@@ -169,14 +176,13 @@ public final class CharacterCell: NSTableCellView {
         super.prepareForReuse()
         observation?.cancel()
         observation = nil
-        character = nil
     }
 
-    static func shown(_ character: CharacterCell_character) -> (name: String, details: String) {
-        (
-            name: character.name ?? "Unknown",
-            details: [character.status, character.species].compactMap { $0 }.joined(separator: " · ")
-        )
+    private func render(_ content: CharacterCellContent) {
+        var configuration = defaultContentConfiguration()
+        configuration.text = content.name
+        configuration.secondaryText = content.details
+        contentConfiguration = configuration
     }
 }
 ```
@@ -184,58 +190,55 @@ public final class CharacterCell: NSTableCellView {
 The lens is a value over the store; it reads synchronously and costs
 nothing to hold, so a bound cell renders in the call. The cell cancels its
 observation on reuse so a recycled cell does not render the row it left.
+The AppKit cell is an `NSTableCellView` with the same `bind` and
+`prepareForReuse`, rendering into two labels.
 
 ## The app's lifecycle
 
 `environment.isActive` parks the retained subscriptions while it is false
 and resumes them when it is true again; `environment.revalidate()` refetches
-the retained operations that went stale or failed. A Mac app's window stays
-on screen while another app is frontmost, so resigning active parks
-nothing: hiding does. Returning to the app revalidates.
+the retained operations that went stale or failed. Each platform says when
+from its own notifications, and the app holds one `Activation` for as long
+as the environment lives.
+
+On iOS the application's notifications, not a scene's: the environment is
+the app's, and one scene leaving the screen while another stays does not
+make the app inactive.
 
 ```swift
-@MainActor
-public final class Activation {
-    private let center: NotificationCenter
-    private var observers: [any NSObjectProtocol] = []
-
-    public init(environment: Environment, center: NotificationCenter = .default) {
-        self.center = center
-        observers = [
-            center.addObserver(forName: NSApplication.didHideNotification, object: nil, queue: .main) { _ in
-                MainActor.assumeIsolated { environment.isActive = false }
-            },
-            center.addObserver(forName: NSApplication.didUnhideNotification, object: nil, queue: .main) { _ in
-                MainActor.assumeIsolated { environment.isActive = true }
-            },
-            center.addObserver(forName: NSApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
-                MainActor.assumeIsolated { environment.revalidate() }
-            },
-        ]
-    }
-
-    isolated deinit {
-        for observer in observers { center.removeObserver(observer) }
-    }
-}
+observers = [
+    center.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
+        MainActor.assumeIsolated { environment.isActive = false }
+    },
+    center.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { _ in
+        MainActor.assumeIsolated {
+            environment.isActive = true
+            environment.revalidate()
+        }
+    },
+]
 ```
 
-The app delegate holds one for as long as the environment lives. Writes
-are the environment's whatever hosts them:
+On macOS a window stays on screen while another app is frontmost, so
+resigning active parks nothing: hiding does, and returning revalidates.
+
+```swift
+observers = [
+    center.addObserver(forName: NSApplication.didHideNotification, object: nil, queue: .main) { _ in
+        MainActor.assumeIsolated { environment.isActive = false }
+    },
+    center.addObserver(forName: NSApplication.didUnhideNotification, object: nil, queue: .main) { _ in
+        MainActor.assumeIsolated { environment.isActive = true }
+    },
+    center.addObserver(forName: NSApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
+        MainActor.assumeIsolated { environment.revalidate() }
+    },
+]
+```
+
+Writes are the environment's whatever hosts them:
 `try await environment.mutate(SetFavorite(id: id, favorite: true), optimistic: ...)`
 from an action, and the optimistic layer shows in the turn of the call.
-
-## UIKit
-
-The same code, with these types:
-
-| AppKit | UIKit |
-|---|---|
-| `NSViewController`, `viewDidLoad()` | `UIViewController`, `viewDidLoad()` |
-| `NSTableCellView`, `prepareForReuse()` | `UITableViewCell` or `UICollectionViewListCell`, `prepareForReuse()` |
-| `NSTextField(labelWithString:)` | `UILabel` |
-| `NSApplication.didHideNotification` and `didUnhideNotification` | `UIScene.didEnterBackgroundNotification` and `willEnterForegroundNotification` |
-| `NSApplication.didBecomeActiveNotification` | `UIScene.willEnterForegroundNotification` |
 
 Nothing in the runtime imports UIKit or AppKit; `Observations` and the
 handles are Foundation and Observation.

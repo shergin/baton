@@ -1,5 +1,6 @@
 # A controller is not a view, so its operations are declared here rather
-# than with `@Query` on a property; the cell's fragment stays with the cell.
+# than with `@Query` on a property. The cell's fragment is here too: the
+# AppKit and the UIKit cell read it, and one declaration serves both.
 
 query CharactersQuery($page: Int) {
   characters(page: $page) {
@@ -8,6 +9,12 @@ query CharactersQuery($page: Int) {
       ...CharacterCell_character
     }
   }
+}
+
+fragment CharacterCell_character on Character {
+  name
+  status
+  species
 }
 
 query CharacterQuery($id: ID!) {

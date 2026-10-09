@@ -142,10 +142,11 @@ let package = Package(
             path: "examples/Exchange",
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
-        // The AppKit controllers of `docs/recipes/uikit.md`: a handle held
-        // by a controller, a table cell bound to a lens and the app's
-        // lifecycle told to the environment, compiled here so the recipe
-        // quotes code that builds and the tests prove it.
+        // The UIKit and AppKit controllers of `docs/recipes/uikit.md`: a
+        // handle held by a controller, a table cell bound to a lens and the
+        // app's lifecycle told to the environment, compiled here so the
+        // recipe quotes code that builds and the tests prove it. CI builds
+        // the UIKit half for the iOS Simulator.
         .target(
             name: "Controllers",
             dependencies: ["Baton"],

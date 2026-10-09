@@ -7,21 +7,13 @@ import Baton
 /// one character renders one cell and reloads nothing.
 @MainActor
 public final class CharactersViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
-    /// The rows, by their position in the response: the character's id and
-    /// the lens its cell reads.
-    public enum Shown: Sendable {
-        case loading
-        case failed(String)
-        case ready([(id: String, character: CharacterCell_character)])
-    }
-
     /// Called with the id of the character the user selects.
     public var selected: (String) -> Void = { _ in }
 
     private let handle: OperationHandle<CharactersQuery>
     private var retention: Retention?
     private var observation: Task<Void, Never>?
-    private var rows: [(id: String, character: CharacterCell_character)] = []
+    private var rows: [CharactersContent.Row] = []
 
     public let tableView = NSTableView()
     public let errorLabel = NSTextField(wrappingLabelWithString: "")
@@ -57,28 +49,16 @@ public final class CharactersViewController: NSViewController, NSTableViewDataSo
     public override func viewDidLoad() {
         super.viewDidLoad()
         retention = handle.retain()
-        render(Self.shown(handle.phase))
+        render(CharactersContent(handle.phase))
         observation = Task { [weak self, handle] in
-            for await shown in Observations({ Self.shown(handle.phase) }) {
-                self?.render(shown)
+            for await content in Observations({ CharactersContent(handle.phase) }) {
+                self?.render(content)
             }
         }
     }
 
-    public static func shown(_ phase: Phase<CharactersQuery.Data>) -> Shown {
-        switch phase {
-        case .loading:
-            return .loading
-        case .failed(let error):
-            return .failed(String(describing: error))
-        case .ready(let data):
-            guard let results = data.characters?.results else { return .ready([]) }
-            return .ready(results.map { (id: $0.id ?? "", character: $0.characterCell) })
-        }
-    }
-
-    private func render(_ shown: Shown) {
-        switch shown {
+    private func render(_ content: CharactersContent) {
+        switch content {
         case .loading:
             rows = []
             errorLabel.isHidden = true
@@ -111,19 +91,10 @@ public final class CharactersViewController: NSViewController, NSTableViewDataSo
 
 /// A row of the table. It takes a lens, not a model: the fragment's
 /// generated struct, handed down by the controller as a parent view hands
-/// it to a child. The fragment is declared here, beside what reads it.
+/// it to a child.
 @MainActor
 public final class CharacterCell: NSTableCellView {
     static let identifier = NSUserInterfaceItemIdentifier("CharacterCell")
-
-    @Fragment("""
-        fragment CharacterCell_character on Character {
-          name
-          status
-          species
-        }
-        """)
-    private var character: CharacterCell_character?
 
     private var observation: Task<Void, Never>?
     public let nameLabel = NSTextField(labelWithString: "")
@@ -154,11 +125,10 @@ public final class CharacterCell: NSTableCellView {
 
     public func bind(_ character: CharacterCell_character) {
         observation?.cancel()
-        self.character = character
-        render(Self.shown(character))
+        render(CharacterCellContent(character))
         observation = Task { [weak self] in
-            for await shown in Observations({ Self.shown(character) }) {
-                self?.render(shown)
+            for await content in Observations({ CharacterCellContent(character) }) {
+                self?.render(content)
             }
         }
     }
@@ -169,19 +139,11 @@ public final class CharacterCell: NSTableCellView {
         super.prepareForReuse()
         observation?.cancel()
         observation = nil
-        character = nil
     }
 
-    static func shown(_ character: CharacterCell_character) -> (name: String, details: String) {
-        (
-            name: character.name ?? "Unknown",
-            details: [character.status, character.species].compactMap { $0 }.joined(separator: " · ")
-        )
-    }
-
-    private func render(_ shown: (name: String, details: String)) {
-        nameLabel.stringValue = shown.name
-        detailsLabel.stringValue = shown.details
+    private func render(_ content: CharacterCellContent) {
+        nameLabel.stringValue = content.name
+        detailsLabel.stringValue = content.details
     }
 }
 #endif

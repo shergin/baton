@@ -7,14 +7,6 @@ import Baton
 /// once when its view loads, and again whenever anything it rendered changes.
 @MainActor
 public final class CharacterViewController: NSViewController {
-    /// What the controller shows. It is computed inside the observed closure,
-    /// so every field it reads is watched, and only those.
-    enum Shown: Sendable {
-        case loading
-        case failed(String)
-        case ready(name: String, details: String, origin: String)
-    }
-
     private let handle: OperationHandle<CharacterQuery>
     private var retention: Retention?
     private var observation: Task<Void, Never>?
@@ -56,34 +48,18 @@ public final class CharacterViewController: NSViewController {
         super.viewDidLoad()
         retention = handle.retain()
         // The first frame is read synchronously; the sequence then yields
-        // after each change to what `shown` read, starting with the current
-        // value, which renders the same thing again.
-        render(Self.shown(handle.phase))
+        // after each change to what the content read, starting with the
+        // current value, which renders the same thing again.
+        render(CharacterContent(handle.phase))
         observation = Task { [weak self, handle] in
-            for await shown in Observations({ Self.shown(handle.phase) }) {
-                self?.render(shown)
+            for await content in Observations({ CharacterContent(handle.phase) }) {
+                self?.render(content)
             }
         }
     }
 
-    static func shown(_ phase: Phase<CharacterQuery.Data>) -> Shown {
-        switch phase {
-        case .loading:
-            return .loading
-        case .failed(let error):
-            return .failed(String(describing: error))
-        case .ready(let data):
-            guard let character = data.character else { return .failed("No such character") }
-            return .ready(
-                name: character.name ?? "Unknown",
-                details: [character.status, character.species].compactMap { $0 }.joined(separator: " · "),
-                origin: character.origin?.name ?? "Unknown"
-            )
-        }
-    }
-
-    private func render(_ shown: Shown) {
-        switch shown {
+    private func render(_ content: CharacterContent) {
+        switch content {
         case .loading:
             show(loading: true, name: "", details: "", origin: "", error: nil)
         case .failed(let message):

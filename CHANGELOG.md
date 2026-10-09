@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The UIKit half of `docs/recipes/uikit.md`, compiled: a
+  `UIViewController` over a handle, a `UITableViewController` whose cells
+  bind a lens, and the app's lifecycle on the application's background and
+  foreground notifications, beside the AppKit ones in the `Controllers`
+  target. What both show is computed once, in `Content.swift`, and CI builds
+  the target for the iOS Simulator.
 - `docs/recipes/uikit.md` quotes compiled code: the `Controllers` target
   under `examples/Controllers`, an `NSViewController` over a handle, a
   table whose cells bind a lens, and the app's lifecycle told to the

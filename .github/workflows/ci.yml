@@ -185,6 +185,12 @@ jobs:
           xcodebuild build -quiet -scheme Baton
           -destination 'generic/platform=iOS Simulator'
           -skipMacroValidation -skipPackagePluginValidation
+      # The UIKit controllers of `docs/recipes/uikit.md`, which the macOS
+      # build skips and no scheme names.
+      - run: >
+          swift build --target Controllers -Xswiftc -warnings-as-errors
+          --sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)"
+          --triple arm64-apple-ios26.0-simulator
       # A framework built for distribution builds its packages with library
       # evolution, which takes no SPI protocol requirement without a default.
       # Not with warnings as errors: the macros import swift-syntax, which is

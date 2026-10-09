@@ -89,7 +89,7 @@ struct ControllersTests {
         let handle = environment.handle(for: CharactersQuery(page: 1))
         let changed = Mutex(false)
         withObservationTracking {
-            _ = CharactersViewController.shown(handle.phase)
+            _ = CharactersContent(handle.phase)
         } onChange: {
             changed.withLock { $0 = true }
         }

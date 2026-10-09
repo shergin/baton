@@ -70,6 +70,7 @@ the vocabulary is `docs/terminology.md`. These files outrank any default.
   `BATON_COMPILER=local swift test -Xswiftc -warnings-as-errors`,
   `BATON_COMPILER=local swift test -c release`,
   `swift build --target Baton -Xswiftc -enable-library-evolution -Xswiftc -emit-module-interface`,
+  `swift build --target Controllers -Xswiftc -warnings-as-errors --sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" --triple arm64-apple-ios26.0-simulator`,
   and in `compiler/` `cargo fmt --check`,
   `cargo clippy --all-targets -- -D warnings` and `cargo test`. CI's
   `floor` job (the oldest supported Xcode) cannot run locally; when it
