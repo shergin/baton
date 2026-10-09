@@ -126,8 +126,8 @@ extension Store {
             let slot = fields[index].slot
             if let disk, case .missing = record.peek(slot) { hydrate(record, slot, from: disk, &walk.batch) }
             switch fields[index].kind {
-            case .scalar:
-                if case .missing = record.peek(slot) { return false }
+            case .scalar(let kind, let list):
+                if !record.holds(slot, kind, list: list) { return false }
             case .linked(let child, let plural, let lookupKey, _):
                 switch record.peek(slot) {
                 case .missing:

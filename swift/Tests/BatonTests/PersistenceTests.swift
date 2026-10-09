@@ -1,4 +1,5 @@
 @_spi(Generated) import Baton
+import BatonSpec
 import BatonTesting
 import Foundation
 import Observation
@@ -1423,6 +1424,113 @@ struct PersistenceTests {
         _ = store.check(Fixture.plan.resolve(Fixture(page: 1).variables, in: store.keys))
         #expect(data.characters?.info?.count == nil)
         #expect(data.characters?.info?.pages == nil)
+    }
+
+    /// The tokenizer operation's plan as an earlier build compiled it, under
+    /// a schema that gave the fields `kinds` names those kinds; every other
+    /// field keeps this build's kind. A launch that commits through it
+    /// leaves the image that build left.
+    func tokenizerPlan(_ kinds: [String: ScalarKind], in store: Store) -> ResolvedSelection {
+        let query = Registry.type("Query")
+        let tokenizer = Registry.type("Tokenizer")
+        func field(_ name: String, _ kind: ScalarKind, list: Bool = false) -> PlanField {
+            .scalar(name, key: .fixed(Registry.slot(tokenizer, name)), kind: kinds[name] ?? kind, list: list)
+        }
+        return Plan(root: Selection(type: query, key: [], fields: [
+            .linked("tokenizer", key: .fixed(Registry.slot(query, "tokenizer")), plural: false, selection: Selection(type: tokenizer, key: ["id"], fields: [
+                field("id", .string),
+                field("text", .string),
+                field("strings", .string, list: true),
+                field("count", .int),
+                field("counts", .int, list: true),
+                field("ratio", .double),
+                field("ratios", .double, list: true),
+                field("flag", .bool),
+                field("flags", .bool, list: true),
+                field("json", .custom),
+                field("jsons", .custom, list: true),
+            ])),
+        ])).resolve(.none, in: store.keys)
+    }
+
+    /// Commits `response` through `tokenizerPlan(kinds)` in a launch over
+    /// the image at `url`, and ends it: the image that build leaves behind.
+    func writeTokenizer(_ kinds: [String: ScalarKind], _ response: Data = Spec.data("tokenizer/response.json"), at url: URL) async throws {
+        let earlier = launch(at: url)
+        earlier.store.commit(try Ingest.normalize(response, plan: tokenizerPlan(kinds, in: earlier.store)))
+        await finish(earlier)
+    }
+
+    /// The tokenizer operation's plan as this build compiled it.
+    func tokenizer(in store: Store) -> ResolvedSelection {
+        TestTokenizerQuery.plan.resolve(TestTokenizerQuery().variables, in: store.keys)
+    }
+
+    @Test("a cell the image holds in a kind its field no longer has is a miss, so the operation fetches, while the same row holding the field's kind answers from the image")
+    func aCellOfAnotherKindIsAMiss() async throws {
+        let response = Spec.data("tokenizer/response.json")
+        // A build whose schema typed `count` a custom scalar kept the
+        // fixture's -42 as its text: the row holds a string where this
+        // build reads an Int.
+        try await writeTokenizer(["count": .custom], at: image.url)
+        let transport = RecordedTransport { _ in response }
+        let upgraded = launch(transport)
+        #expect(upgraded.store.check(tokenizer(in: upgraded.store)) == .miss)
+        let fetching = upgraded.handle(for: TestTokenizerQuery(), fetchPolicy: .storeOrNetwork)
+        guard case .loading = fetching.phase else {
+            Issue.record("expected loading until the response, got \(fetching.phase)")
+            return
+        }
+        await fetching.settle()
+        #expect(transport.requestCount == 1)
+        guard case .ready(let fetched) = fetching.phase else {
+            Issue.record("expected the response's data, got \(fetching.phase)")
+            return
+        }
+        #expect(fetched.tokenizer?.count == -42, "the response wrote the cell again, as an Int")
+        await finish(upgraded)
+
+        // The same row with the count an Int, as this build writes it.
+        let current = TemporaryImage()
+        try await writeTokenizer([:], at: current.url)
+        let unchanged = launch(RecordedTransport { _ in response }, at: current.url)
+        #expect(unchanged.store.check(tokenizer(in: unchanged.store)) == .image)
+        let reading = unchanged.handle(for: TestTokenizerQuery(), fetchPolicy: .storeOrNetwork)
+        guard case .ready(let fromImage) = reading.phase else {
+            Issue.record("expected the image's data, got \(reading.phase)")
+            return
+        }
+        #expect(fromImage.tokenizer?.count == -42)
+        // Data the image holds without a fetch time is stale, so the handle
+        // refetches behind it; the refetch lands before the launch ends.
+        await reading.settle()
+        await finish(unchanged)
+    }
+
+    @Test("a list cell is judged by its first value that is not null: values of another kind are a miss, a list of nulls answers from the image, and a null ahead of a value of another kind does not hide it")
+    func aListCellIsJudgedByItsFirstValue() async throws {
+        let response = Spec.data("tokenizer/response.json")
+        // A build whose schema typed `counts` a list of a custom scalar kept
+        // each count as its text.
+        try await writeTokenizer(["counts": .custom], at: image.url)
+        let texts = launch()
+        #expect(texts.store.check(tokenizer(in: texts.store)) == .miss)
+        await finish(texts)
+
+        // A list of nulls from that build says nothing of a kind.
+        let nulls = TemporaryImage()
+        try await writeTokenizer(["counts": .custom], try Oracle.replacing("tokenizer.counts", with: .list([.null, .null]), in: response), at: nulls.url)
+        let empty = launch(at: nulls.url)
+        #expect(empty.store.check(tokenizer(in: empty.store)) == .image)
+        #expect(try stored(TestTokenizerQuery(), in: empty).tokenizer?.counts == [nil, nil])
+        await finish(empty)
+
+        // A null, then 7 as its text: the text judges the list.
+        let late = TemporaryImage()
+        try await writeTokenizer(["counts": .custom], try Oracle.replacing("tokenizer.counts", with: .list([.null, .int(7)]), in: response), at: late.url)
+        let hidden = launch(at: late.url)
+        #expect(hidden.store.check(tokenizer(in: hidden.store)) == .miss)
+        await finish(hidden)
     }
 
     @Test("a database that is not an image is left alone, and the store works without one")

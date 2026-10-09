@@ -20,8 +20,10 @@ import Synchronization
 public final class Persistence: Sendable {
     public let url: URL
     /// The app's own version of what it caches. An image written under
-    /// another version is discarded: change it on a release whose schema
-    /// gives a field another type.
+    /// another version is discarded. A schema change needs none: a cell
+    /// the image holds under a kind the schema since gave the field another
+    /// reads as absent and is fetched again. Change it when what the app
+    /// caches means something else under the same shape.
     public let version: String
     /// The file size, in bytes, past which the image is discarded at launch.
     public let sizeLimit: Int

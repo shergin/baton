@@ -143,6 +143,59 @@ public final class Record: Observable {
         return position >= 0 ? renderedValues[position] : .missing
     }
 
+    /// Whether the slot's cell holds what a scalar field of `kind` reads:
+    /// null, a value of the kind as the ingest writes one, or for a list one
+    /// whose first value is. A cell the image wrote under a schema that
+    /// gave the field another kind is none of these: the check takes the
+    /// field as absent, so the operation fetches it and the response writes
+    /// the cell again, where a lens would have read nothing from a cell the
+    /// check took as present. Read in place, as `peek` reads: a value copied
+    /// out would retain its payload once per cell of the walk.
+    @inline(__always)
+    func holds(_ slot: Slot, _ kind: ScalarKind, list: Bool) -> Bool {
+        let index = Int(slot.index)
+        if UInt(bitPattern: index) < UInt(values.count) { return Record.fits(values[index], kind, list: list) }
+        if index >= 0 { return false }
+        let position = renderedLookup(slot.index)
+        return position >= 0 && Record.fits(renderedValues[position], kind, list: list)
+    }
+
+    /// Not recursive, so that it inlines: a list's elements are judged apart.
+    @inline(__always)
+    private static func fits(_ value: Value, _ kind: ScalarKind, list: Bool) -> Bool {
+        switch value {
+        case .missing, .ref, .refs:
+            return false
+        case .null:
+            return true
+        case .string:
+            return !list && (kind == .string || kind == .custom)
+        case .int:
+            return !list && kind == .int
+        case .double:
+            return !list && kind == .double
+        case .bool:
+            return !list && kind == .bool
+        case .list(let items):
+            return list && Record.elementsFit(items, kind)
+        }
+    }
+
+    /// Whether a list's first value that is not null is of the kind.
+    private static func elementsFit(_ items: ContiguousArray<Value>, _ kind: ScalarKind) -> Bool {
+        for item in items {
+            switch item {
+            case .null: continue
+            case .string: return kind == .string || kind == .custom
+            case .int: return kind == .int
+            case .double: return kind == .double
+            case .bool: return kind == .bool
+            default: return false
+            }
+        }
+        return true
+    }
+
     /// Where a key numbered apart is among the record's, or -1. Out of
     /// line, so that the reads of dense slots stay small where they are
     /// inlined.

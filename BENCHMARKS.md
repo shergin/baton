@@ -21,6 +21,32 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, a cell judged by its kind in the check — 2026-10-09
+
+Revision: the working tree on top of `b41f2ca`. The availability walk
+counts a scalar cell as present only when its value fits the field's kind
+(`Record.holds` in Swift, `fits` in `Availability.kt`), so a cell the image
+wrote under a schema that since gave the field another kind reads as
+absent and the operation fetches. The cost is one switch per waited scalar
+cell of the walk, read on the Apple M1 Pro, macOS 26.5.2, best of one run
+each, the median in parentheses, on a machine busier than the 8 October
+entry's:
+
+| Measurement | Before, 9 October | First spelling | Judged in place, non-recursive |
+|---|---|---|---|
+| The check of the fixture plan against the store | 127 µs (127) | 278 µs (279) | 137 µs (138) |
+| Hydration of 898 rows | 1.78 ms (1.84) | 1.99 ms (2.13) | 1.88 ms (1.98) |
+| Commit into an empty store, 899 records | 470 µs (505) | 481 µs (517) | 509 µs (531) |
+
+The first spelling passed the cell's value to a function that judged it
+and recursed for a list, and the check doubled: Swift does not inline a
+recursive function, so each cell paid a call with the enum copied and its
+payload retained; reading the cell in place inside the record, with the
+list's elements judged by a function of their own, brought the check to
+137 µs, the 10 µs over the baseline being the switch over 18,000 cells.
+Hydration and the commit moved with the machine, whose commit row is
+40 µs over the baseline in the same run.
+
 ## Unreleased, the entity key once per record, by the profile — 2026-10-09
 
 Revision: the working tree on top of `419e08e`, in both runtimes. The

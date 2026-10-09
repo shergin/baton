@@ -1,10 +1,13 @@
 package baton
 
 import baton.spec.Fixture
+import baton.spec.Slots
 import baton.spec.TestAssetPricesQuery
 import baton.spec.TestHeaderQuery
 import baton.spec.TestNoteCounts
 import baton.spec.TestSecrets
+import baton.spec.TestTokenizerQuery
+import baton.spec.Types
 import baton.testing.RecordedTransport
 import baton.testing.SilentTransport
 import java.io.File
@@ -253,6 +256,126 @@ class PersistenceTests {
             assertEquals(0L, integer("SELECT count(*) FROM notes", foreign.path), "the table is still there")
         } finally {
             foreign.delete()
+        }
+    }
+
+    /**
+     * The tokenizer operation's plan as an earlier build compiled it, under
+     * a schema that gave the fields [kinds] names those kinds; every other
+     * field keeps this build's kind. A launch that commits through it leaves
+     * the image that build left.
+     */
+    private fun tokenizerPlan(kinds: Map<String, ScalarKind>): Plan {
+        fun field(name: String, kind: ScalarKind, list: Boolean = false) =
+            PlanField.scalar(name, StorageKey.Fixed(Registry.slot(Types.Tokenizer, name)), kinds[name] ?: kind, list)
+        val tokenizer = Selection(
+            Types.Tokenizer,
+            listOf("id"),
+            fields = listOf(
+                field("id", ScalarKind.STRING),
+                field("text", ScalarKind.STRING),
+                field("strings", ScalarKind.STRING, list = true),
+                field("count", ScalarKind.INT),
+                field("counts", ScalarKind.INT, list = true),
+                field("ratio", ScalarKind.DOUBLE),
+                field("ratios", ScalarKind.DOUBLE, list = true),
+                field("flag", ScalarKind.BOOL),
+                field("flags", ScalarKind.BOOL, list = true),
+                field("json", ScalarKind.CUSTOM),
+                field("jsons", ScalarKind.CUSTOM, list = true),
+            ),
+        )
+        return Plan(
+            Selection(
+                Types.Query,
+                emptyList(),
+                fields = listOf(PlanField.linked("tokenizer", StorageKey.Fixed(Slots.Query.tokenizer), plural = false, selection = tokenizer)),
+            ),
+        )
+    }
+
+    /** Commits [response] through [tokenizerPlan] of [kinds] in a launch over the image at [path], and ends it: the image that build leaves behind. */
+    private suspend fun TestScope.writeTokenizer(kinds: Map<String, ScalarKind>, response: ByteArray = Spec.bytes("tokenizer/response.json"), path: String = image.path) {
+        val earlier = launch(path = path)
+        earlier.store.commit(Ingest.normalize(response, earlier.store.resolve(tokenizerPlan(kinds), Variables.none), Store.ROOT_KEY))
+        earlier.end()
+    }
+
+    /** The tokenizer fixture with its `counts` written as [counts], a JSON list. */
+    private fun tokenizerResponse(counts: String): ByteArray {
+        val fixture = Spec.text("tokenizer/response.json")
+        val written = "\"counts\":[0,9007199254740993,-9223372036854775808,9223372036854775807,null]"
+        check(written in fixture) { "the fixture's counts are spelled as this test replaces them" }
+        return fixture.replace(written, "\"counts\":$counts").encodeToByteArray()
+    }
+
+    /** The availability check's answer for the tokenizer operation as this build compiled it. */
+    private fun checkTokenizer(environment: Environment): Answer =
+        environment.store.check(environment.store.resolve(TestTokenizerQuery.plan, Variables.none))
+
+    @Test
+    fun `a cell the image holds in a kind its field no longer has is a miss, so the operation fetches, while the same row holding the field's kind answers from the image`() = runTest {
+        val response = Spec.bytes("tokenizer/response.json")
+        // A build whose schema typed `count` a custom scalar kept the
+        // fixture's -42 as its text: the row holds a string where this build
+        // reads an Int.
+        writeTokenizer(mapOf("count" to ScalarKind.CUSTOM))
+        val transport = RecordedTransport(mapOf("TestTokenizerQuery" to response))
+        val upgraded = launch(transport)
+        assertEquals(Answer.MISS, checkTokenizer(upgraded))
+        val fetching = upgraded.handle(TestTokenizerQuery(), FetchPolicy.STORE_OR_NETWORK)
+        assertEquals(Phase.Loading, fetching.phase, "loading until the response")
+        fetching.settle()
+        assertEquals(1, transport.requestCount)
+        val fetched = assertIs<Phase.Ready<TestTokenizerQuery.Data>>(fetching.phase)
+        assertEquals(-42, fetched.data.tokenizer?.count, "the response wrote the cell again, as an Int")
+        upgraded.end()
+
+        // The same row with the count an Int, as this build writes it.
+        val current = TemporaryImage()
+        try {
+            writeTokenizer(emptyMap(), path = current.path)
+            val unchanged = launch(RecordedTransport(mapOf("TestTokenizerQuery" to response)), path = current.path)
+            assertEquals(Answer.IMAGE, checkTokenizer(unchanged))
+            val reading = unchanged.handle(TestTokenizerQuery(), FetchPolicy.STORE_OR_NETWORK)
+            val stored = assertIs<Phase.Ready<TestTokenizerQuery.Data>>(reading.phase, "the image's data at once")
+            assertEquals(-42, stored.data.tokenizer?.count)
+            // Data the image holds without a fetch time is stale, so the
+            // handle refetches behind it; the refetch lands before the end.
+            reading.settle()
+            unchanged.end()
+        } finally {
+            current.delete()
+        }
+    }
+
+    @Test
+    fun `a list cell is judged by its first value that is not null, so values of another kind are a miss, a list of nulls answers from the image, and a null ahead of a value of another kind does not hide it`() = runTest {
+        // A build whose schema typed `counts` a list of a custom scalar kept
+        // each count as its text.
+        writeTokenizer(mapOf("counts" to ScalarKind.CUSTOM))
+        val texts = launch()
+        assertEquals(Answer.MISS, checkTokenizer(texts))
+        texts.end()
+
+        val nulls = TemporaryImage()
+        val late = TemporaryImage()
+        try {
+            // A list of nulls from that build says nothing of a kind.
+            writeTokenizer(mapOf("counts" to ScalarKind.CUSTOM), tokenizerResponse("[null,null]"), nulls.path)
+            val empty = launch(path = nulls.path)
+            assertEquals(Answer.IMAGE, checkTokenizer(empty))
+            assertEquals(listOf<Int?>(null, null), stored(TestTokenizerQuery(), empty)?.tokenizer?.counts)
+            empty.end()
+
+            // A null, then 7 as its text: the text judges the list.
+            writeTokenizer(mapOf("counts" to ScalarKind.CUSTOM), tokenizerResponse("[null,7]"), late.path)
+            val hidden = launch(path = late.path)
+            assertEquals(Answer.MISS, checkTokenizer(hidden))
+            hidden.end()
+        } finally {
+            nulls.delete()
+            late.delete()
         }
     }
 }

@@ -99,6 +99,16 @@ are expected and listed without apology.
   and holds the `SocketServer` double a socket transport's tests run
   against.
 
+- The availability check counts a scalar cell as present only when its
+  value fits the field's kind, in both runtimes: a cell the image wrote
+  under a schema that since gave the field another kind reads as absent,
+  so the operation fetches and the response writes the cell again, where
+  the check used to take the cell as present and the lens then read
+  nothing from it. A schema change needs no new `version` on the
+  persistence; the version is for what the app caches meaning something
+  else under the same shape.
+
+
 ## 0.13.0 (Bublik) — 2026-10-09
 
 - The Kotlin runtime on Maven Central: `com.shergin.baton:baton`,

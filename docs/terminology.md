@@ -565,7 +565,9 @@ memory; the snapshot of a record memory has not read is merged into the
 row, so a response with a few of a record's fields leaves the rest for the
 next check. Optimistic layers never reach it. It is a cache: an image of
 another format, version or protection class and a corrupt one are deleted
-and started again; one over its size limit evicts the rows of launches
+and started again; a cell held under a kind the schema since gave its
+field another reads as absent and is fetched again, so a schema change
+needs no version of its own; one over its size limit evicts the rows of launches
 before the last, then the last launch's, and starts again only when nothing
 is left to evict ([the decision](decisions/the-image-evicts-by-launch.md));
 a record that goes a whole launch unread is dropped at the next, and the

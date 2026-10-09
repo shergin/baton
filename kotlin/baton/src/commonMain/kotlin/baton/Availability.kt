@@ -82,7 +82,8 @@ private fun Store.available(variant: ResolvedVariant, record: Record, disk: Disk
         if (disk != null && record.peek(slot) == Value.Missing) hydrate(record, slot, disk, walk.batch)
         val kind = field.kind
         if (kind !is ResolvedField.Kind.Linked) {
-            if (record.peek(slot) == Value.Missing) return false
+            val scalar = kind as ResolvedField.Kind.Scalar
+            if (!fits(record.peek(slot), scalar.kind, scalar.list)) return false
             continue
         }
         when (val value = record.peek(slot)) {
@@ -154,6 +155,25 @@ private fun Store.available(variant: ResolvedVariant, record: Record, disk: Disk
         if (!merged.deleted && !available(kind.selection.variant(merged.type), merged, disk, walk)) return false
     }
     return true
+}
+
+/**
+ * Whether a cell holds what the field reads: null, a value of the field's
+ * kind as the ingest writes one, or for a list one whose first value is. A
+ * cell the image wrote under a schema that gave the field another kind is
+ * none of these: the field counts as absent, so the operation fetches it
+ * and the response writes the cell again, where a lens would have read
+ * nothing from a cell the check took as present.
+ */
+private fun fits(value: Value, kind: ScalarKind, list: Boolean): Boolean = when (value) {
+    Value.Missing -> false
+    Value.Null -> true
+    is Value.List -> list && (value.values.firstOrNull { it != Value.Null }?.let { fits(it, kind, false) } ?: true)
+    is Value.String -> !list && (kind == ScalarKind.STRING || kind == ScalarKind.CUSTOM)
+    is Value.Int -> !list && kind == ScalarKind.INT
+    is Value.Double -> !list && kind == ScalarKind.DOUBLE
+    is Value.Bool -> !list && kind == ScalarKind.BOOL
+    is Value.Ref, is Value.Refs -> false
 }
 
 /** A list's targets as the store and the image know them together, the list written again when one moved. */
