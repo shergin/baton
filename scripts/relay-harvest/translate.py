@@ -21,17 +21,19 @@ In the documents, Relay's `@dangerously_unaliased_fixme`, which silences the
 check that a conditional spread is aliased, becomes `@alias`; neither
 changes what is normalized.
 
-A test drops out, with its reason, when it depends on something outside
-Baton's concepts (a custom `getDataID`, a feature flag, a store seeded by
-hand, `treatMissingFieldsAsNull`, one id given objects of several types),
-when batonc rejects its document, or when a client id cannot be traced to
-its parent. A client extension file batonc rejects is left out of the
-schema, and the tests that need it drop out with batonc's reason. A kept
-test named in `divergences.json` beside this file is one where Baton parts
-from Relay; the note goes to `spec/relay/divergences.json`. The rest are written as cases
-(one `normalize` call) or as scripts of `payload` steps (several calls in a
-row), with their sources, the Swift test target's documents, and the
-harvest's table in `spec/relay/README.md`.
+Relay's tests are measured against, not obeyed, so each test gets a
+status. A test that depends on something Baton has no counterpart of (a
+custom `getDataID`, a feature flag, `treatMissingFieldsAsNull`, a document
+batonc rejects) is ingested as `unsupported-feature` and left out of the
+runs; its document goes to `unsupported/`. A test the harvest cannot express
+yet (a store seeded by hand, one id given objects of several types, a client
+id that cannot be traced to its parent) is `not-ingested`. A kept test named
+in `expectations.json` beside this file takes the status, note and decision
+written there: `possible-bug`, `unspecified-behaviour`, `invalid-input` or
+`by-design`, each run with its result ignored. The rest must pass. Cases
+are one `normalize` call; scripts of `payload` steps are several in a row.
+A client extension file batonc rejects is left out of the schema, and the
+tests that need it become unsupported with batonc's reason.
 """
 
 import argparse
@@ -282,30 +284,34 @@ def seeded(before):
 
 
 def reason_outside_concepts(calls):
+    """Why a test's calls are not a plain Baton case, as a status and a
+    reason: `unsupported-feature` for what Baton has no counterpart of, the
+    case still ingested and left out of the runs; `not-ingested` for what
+    the translation or the harness cannot express yet."""
     for call in calls:
         if call['options']['customGetDataID']:
-            return 'a custom `getDataID`: Baton keys by configured fields, not by a function'
+            return 'unsupported-feature', 'a custom `getDataID`: Baton keys by configured fields, not by a function'
         if call['flags']:
-            return 'a Relay feature flag: %s' % ', '.join('`%s`' % flag for flag in sorted(call['flags']))
+            return 'unsupported-feature', 'a Relay feature flag: %s' % ', '.join('`%s`' % flag for flag in sorted(call['flags']))
         if call['options']['treatMissingFieldsAsNull']:
-            return '`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null'
+            return 'unsupported-feature', '`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null'
         if call['options']['useExecTimeResolvers']:
-            return 'exec-time resolvers'
+            return 'unsupported-feature', 'exec-time resolvers'
         if call['dataID'] != 'client:root':
-            return 'normalized under `%s`, not the root' % call['dataID']
+            return 'not-ingested', 'normalized under `%s`, not the root' % call['dataID']
         if call['thrown']:
-            return 'Relay throws: %s' % call['thrown']
+            return 'not-ingested', 'Relay throws: %s' % call['thrown']
     for call in calls:
         merged = ids_of_several_types(call['payload'])
         if merged:
-            return ('one id of several types (%s): Relay merges them into one record, Baton keys by type '
-                    '(docs/decisions/identity-is-configured.md)' % ', '.join('`%s`' % id for id in merged))
+            return 'not-ingested', ('one id of several types (%s): Relay merges them into one record, Baton keys by type '
+                                    '(docs/decisions/identity-is-configured.md)' % ', '.join('`%s`' % id for id in merged))
     if seeded(calls[0]['before']):
-        return 'a store seeded by hand before the first payload'
+        return 'not-ingested', 'a store seeded by hand before the first payload'
     for previous, call in zip(calls, calls[1:]):
         if previous['after'] != call['before']:
-            return 'a store edited by hand between payloads'
-    return None
+            return 'not-ingested', 'a store edited by hand between payloads'
+    return None, None
 
 
 def ids_of_several_types(payload):
@@ -405,30 +411,35 @@ def swift_documents(definitions, names):
     return '\n'.join(lines)
 
 
+STATUSES = [
+    ('passes', 'Baton agrees with Relay; the case must pass.'),
+    ('possible-bug', 'Baton is probably wrong; the case runs and its result is ignored.'),
+    ('unspecified-behaviour', 'GraphQL does not say, and Relay chose; the case runs and its result is ignored.'),
+    ('invalid-input', 'the payload is one a conforming server does not send; the case runs and its result is ignored.'),
+    ('by-design', 'Baton parts from Relay on purpose, by a decision; the case runs and its result is ignored.'),
+    ('unsupported-feature', 'Relay has something Baton does not; the case is ingested and left out of the runs.'),
+    ('not-ingested', 'the harvest cannot express the test yet; nothing is written.'),
+]
+
+
 def write_table(table, excluded):
     """Replaces the harvest's table in `spec/relay/README.md`, between its
-    markers, with what this run kept and dropped."""
+    markers, with each test's status."""
     path = os.path.join(OUT, 'README.md')
     text = open(path).read()
     begin, end = '<!-- harvest -->\n', '<!-- /harvest -->\n'
-    kept = [row for row in table if 'dropped' not in row]
-    failing = [row for row in kept if 'divergence' in row]
-    lines = [
-        '%d tests harvested, %d kept, %d dropped; of those kept, %d pass and %d part from Relay.' % (
-            len(table), len(kept), len(table) - len(kept), len(kept) - len(failing), len(failing)),
-        '',
-        '| Test | Outcome |',
-        '|---|---|',
-    ]
+    counts = {}
+    for row in table:
+        counts[row.get('status', 'passes')] = counts.get(row.get('status', 'passes'), 0) + 1
+    lines = ['%d tests harvested.' % len(table), '', '| Status | Tests | Meaning |', '|---|---|---|']
+    lines += ['| `%s` | %d | %s |' % (status, counts.get(status, 0), meaning) for status, meaning in STATUSES]
+    lines += ['', '| Test | Status | Note |', '|---|---|---|']
     for row in table:
         test = row['test'].split(' ', 1)[1].replace('|', '\\|')
-        if 'dropped' in row:
-            outcome = 'dropped: ' + row['dropped']
-        elif 'divergence' in row:
-            outcome = 'parts from Relay: ' + row['divergence']
-        else:
-            outcome = 'kept, passes'
-        lines.append('| %s | %s |' % (test, outcome.replace('|', '\\|')))
+        note = row.get('note', '')
+        if row.get('decision'):
+            note += ' Decision: ' + row['decision']
+        lines.append('| %s | `%s` | %s |' % (test, row.get('status', 'passes'), note.strip().replace('|', '\\|')))
     lines += ['', 'The client extension files batonc rejects, left out of `schema/extensions/`:', '']
     lines += ['- `%s`: %s' % (name, reason) for name, reason in sorted(excluded.items())]
     table_text = '\n'.join(lines) + '\n'
@@ -447,7 +458,7 @@ def main():
     utils = os.path.join(arguments.relay, 'packages', 'relay-test-utils-internal')
     schema_directory = os.path.join(OUT, 'schema')
     extensions_directory = os.path.join(schema_directory, 'extensions')
-    for directory in ('schema', 'sources', 'scripts') + tuple(SUITES.values()):
+    for directory in ('schema', 'sources', 'unsupported', 'scripts') + tuple(SUITES.values()):
         shutil.rmtree(os.path.join(OUT, directory), ignore_errors=True)
     os.makedirs(extensions_directory)
     shutil.copy(os.path.join(utils, 'testschema.graphql'), schema_directory)
@@ -463,9 +474,8 @@ def main():
     extension_paths = [os.path.join(extensions_directory, name) for name in sorted(os.listdir(extensions_directory))]
     kinds, fields = schema_types([os.path.join(schema_directory, 'testschema.graphql')] + extension_paths)
 
-    notes = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'divergences.json')))
-    divergences = {}
-    cases, scripts, table, sources = [], [], [], {}
+    expectations = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'expectations.json')))
+    cases, scripts, table, sources, unsupported = [], [], [], {}, {}
     all_definitions = {}
     for suite, directory in SUITES.items():
         test_path = os.path.join(arguments.relay, 'packages', 'relay-runtime', 'store', '__tests__', suite + '.js')
@@ -483,48 +493,51 @@ def main():
             row = {'test': test, 'origin': origin, 'name': 'relay/' + name, 'operation': operation, 'calls': len(calls)}
             table.append(row)
             if any(call['operation'] != operation for call in calls):
-                row['dropped'] = 'payloads of several operations'
+                row.update(status='not-ingested', note='payloads of several operations')
                 continue
-            reason = reason_outside_concepts(calls)
-            if reason:
-                row['dropped'] = reason
+            status, note = reason_outside_concepts(calls)
+            if status == 'not-ingested':
+                row.update(status=status, note=note)
                 continue
             if operation not in definitions:
-                row['dropped'] = 'no authored document for `%s` in the test file' % operation
+                row.update(status='not-ingested', note='no authored document for `%s` in the test file' % operation)
                 continue
             names = with_fragments(operation, definitions)
             text = '\n'.join(definitions[name] for name in names)
             rejection = batonc_rejection(arguments.batonc, config, text)
-            if rejection:
-                row['dropped'] = rejection
-                continue
             try:
                 dumps = [translate_dump(call['after'], kinds, fields) for call in calls]
             except Untranslatable as error:
-                row['dropped'] = 'translation: %s' % error
+                row.update(status='not-ingested', note='translation: %s' % error)
                 continue
-            sources[operation] = names
-            if origin in notes:
-                row['divergence'] = notes[origin]
+            if rejection:
+                status, note = status or 'unsupported-feature', note or rejection
+                unsupported[operation] = names
+                document = 'relay/unsupported/%s.graphql' % operation
+            else:
+                sources[operation] = names
+                document = 'relay/documents/%s.graphql' % operation
+            expected = expectations.get(origin, {})
+            status, note = expected.get('status', status), expected.get('note', note)
+            marks = {key: value for key, value in (('status', status), ('note', note), ('decision', expected.get('decision'))) if value}
+            row.update(marks)
             if len(calls) == 1:
                 write_json(os.path.join(OUT, name + '.json'), response_of(calls[0]))
                 with open(os.path.join(OUT, name + '.store.json'), 'w') as file:
                     file.write(dump_text(dumps[0]))
-                case = {
-                    'name': 'relay/' + name,
-                    'origin': origin,
+                case = {'name': 'relay/' + name, 'origin': origin}
+                case.update(marks)
+                case.update({
                     'operation': operation,
                     'kind': 'query',
-                    'document': 'relay/documents/%s.graphql' % operation,
+                    'document': document,
                     'variables': calls[0]['variables'],
                     'responses': ['relay/%s.json' % name],
                     'records': 'relay/%s.store.json' % name,
-                }
+                })
                 if not case['variables']:
                     del case['variables']
                 cases.append(case)
-                if origin in notes:
-                    divergences[case['name']] = notes[origin]
                 continue
             steps = []
             for index, (call, dump) in enumerate(zip(calls, dumps)):
@@ -537,12 +550,17 @@ def main():
                     step['variables'] = call['variables']
                 steps.append({'payload': step, 'records': 'relay/%s.store.json' % stem})
             script_path = 'relay/scripts/%s.json' % slug(test)
-            write_json(os.path.join(SPEC, script_path), {'name': slug(test), 'origin': origin, 'steps': steps})
+            script = {'name': slug(test), 'origin': origin}
+            script.update(marks)
+            script['steps'] = steps
+            write_json(os.path.join(SPEC, script_path), script)
             scripts.append(script_path)
-            if origin in notes:
-                divergences[script_path] = notes[origin]
             row['script'] = True
 
+    os.makedirs(os.path.join(OUT, 'unsupported'), exist_ok=True)
+    for operation, names in unsupported.items():
+        with open(os.path.join(OUT, 'unsupported', operation + '.graphql'), 'w') as file:
+            file.write('\n'.join(all_definitions[name] for name in names))
     os.makedirs(os.path.join(OUT, 'sources'), exist_ok=True)
     for operation, names in sources.items():
         with open(os.path.join(OUT, 'sources', operation + '.graphql'), 'w') as file:
@@ -560,14 +578,15 @@ def main():
         'cases': cases,
         'scripts': scripts,
     })
-    unused = sorted(set(notes) - {row['origin'] for row in table if 'dropped' not in row})
+    unused = sorted(set(expectations) - {row['origin'] for row in table if row.get('status') != 'not-ingested'})
     if unused:
-        print('divergences.json names tests that were not kept: %s' % '; '.join(unused), file=sys.stderr)
-    write_json(os.path.join(OUT, 'divergences.json'), divergences)
+        print('expectations.json names tests that were not ingested: %s' % '; '.join(unused), file=sys.stderr)
     write_json(os.path.join(OUT, 'harvest.json'), {'excludedExtensions': excluded, 'tests': table})
     write_table(table, excluded)
-    kept = sum(1 for row in table if 'dropped' not in row)
-    print('%d tests, %d kept (%d as scripts), %d dropped' % (len(table), kept, sum(1 for row in table if row.get('script')), len(table) - kept), file=sys.stderr)
+    counts = {}
+    for row in table:
+        counts[row.get('status', 'passes')] = counts.get(row.get('status', 'passes'), 0) + 1
+    print('%d tests: %s' % (len(table), ', '.join('%d %s' % (count, status) for status, count in sorted(counts.items()))), file=sys.stderr)
 
 
 if __name__ == '__main__':

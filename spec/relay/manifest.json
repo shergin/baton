@@ -21,6 +21,134 @@
       "records": "relay/normalizer/normalizes-queries.store.json"
     },
     {
+      "name": "relay/normalizer/normalizes-queries-with-handle-fields",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer normalizes queries with \"handle\" fields",
+      "status": "unsupported-feature",
+      "note": "batonc: `@__clientField` on a field has no meaning in Baton",
+      "operation": "RelayResponseNormalizerTest2Query",
+      "kind": "query",
+      "document": "relay/unsupported/RelayResponseNormalizerTest2Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/normalizes-queries-with-handle-fields.json"
+      ],
+      "records": "relay/normalizer/normalizes-queries-with-handle-fields.store.json"
+    },
+    {
+      "name": "relay/normalizer/match-normalizes-queries-correctly",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @match normalizes queries correctly",
+      "status": "unsupported-feature",
+      "note": "batonc: `@match` on a field has no meaning in Baton",
+      "operation": "RelayResponseNormalizerTest4Query",
+      "kind": "query",
+      "document": "relay/unsupported/RelayResponseNormalizerTest4Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/match-normalizes-queries-correctly.json"
+      ],
+      "records": "relay/normalizer/match-normalizes-queries-correctly.store.json"
+    },
+    {
+      "name": "relay/normalizer/match-returns-metadata-with-prefixed-path",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @match returns metadata with prefixed path",
+      "status": "unsupported-feature",
+      "note": "batonc: `@match` on a field has no meaning in Baton",
+      "operation": "RelayResponseNormalizerTest4Query",
+      "kind": "query",
+      "document": "relay/unsupported/RelayResponseNormalizerTest4Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/match-returns-metadata-with-prefixed-path.json"
+      ],
+      "records": "relay/normalizer/match-returns-metadata-with-prefixed-path.store.json"
+    },
+    {
+      "name": "relay/normalizer/match-normalizes-queries-correctly-when-the-resolved-type-does-not-match-any-of-the-specified-cases",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @match normalizes queries correctly when the resolved type does not match any of the specified cases",
+      "status": "unsupported-feature",
+      "note": "batonc: `@match` on a field has no meaning in Baton",
+      "operation": "RelayResponseNormalizerTest4Query",
+      "kind": "query",
+      "document": "relay/unsupported/RelayResponseNormalizerTest4Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/match-normalizes-queries-correctly-when-the-resolved-type-does-not-match-any-of-the-specified-cases.json"
+      ],
+      "records": "relay/normalizer/match-normalizes-queries-correctly-when-the-resolved-type-does-not-match-any-of-the-specified-cases.store.json"
+    },
+    {
+      "name": "relay/normalizer/match-normalizes-queries-correctly-when-the-match-field-is-null",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @match normalizes queries correctly when the @match field is null",
+      "status": "unsupported-feature",
+      "note": "batonc: `@match` on a field has no meaning in Baton",
+      "operation": "RelayResponseNormalizerTest4Query",
+      "kind": "query",
+      "document": "relay/unsupported/RelayResponseNormalizerTest4Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/match-normalizes-queries-correctly-when-the-match-field-is-null.json"
+      ],
+      "records": "relay/normalizer/match-normalizes-queries-correctly-when-the-match-field-is-null.store.json"
+    },
+    {
+      "name": "relay/normalizer/module-normalizes-queries-and-returns-metadata-when-the-type-matches-an-module-selection",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @module normalizes queries and returns metadata when the type matches an @module selection",
+      "status": "unsupported-feature",
+      "note": "batonc: `@module` on a fragment spread has no meaning in Baton",
+      "operation": "RelayResponseNormalizerTest5Query",
+      "kind": "query",
+      "document": "relay/unsupported/RelayResponseNormalizerTest5Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/module-normalizes-queries-and-returns-metadata-when-the-type-matches-an-module-selection.json"
+      ],
+      "records": "relay/normalizer/module-normalizes-queries-and-returns-metadata-when-the-type-matches-an-module-selection.store.json"
+    },
+    {
+      "name": "relay/normalizer/module-returns-metadata-with-prefixed-path",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @module returns metadata with prefixed path",
+      "status": "unsupported-feature",
+      "note": "batonc: `@module` on a fragment spread has no meaning in Baton",
+      "operation": "RelayResponseNormalizerTest5Query",
+      "kind": "query",
+      "document": "relay/unsupported/RelayResponseNormalizerTest5Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/module-returns-metadata-with-prefixed-path.json"
+      ],
+      "records": "relay/normalizer/module-returns-metadata-with-prefixed-path.store.json"
+    },
+    {
+      "name": "relay/normalizer/module-normalizes-queries-correctly-when-the-resolved-type-does-not-match-any-module-selections",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @module normalizes queries correctly when the resolved type does not match any @module selections",
+      "status": "unsupported-feature",
+      "note": "batonc: `@module` on a fragment spread has no meaning in Baton",
+      "operation": "RelayResponseNormalizerTest5Query",
+      "kind": "query",
+      "document": "relay/unsupported/RelayResponseNormalizerTest5Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/module-normalizes-queries-correctly-when-the-resolved-type-does-not-match-any-module-selections.json"
+      ],
+      "records": "relay/normalizer/module-normalizes-queries-correctly-when-the-resolved-type-does-not-match-any-module-selections.store.json"
+    },
+    {
       "name": "relay/normalizer/defer-normalizes-when-if-condition-is-false",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer normalizes when if condition is false",
       "operation": "RelayResponseNormalizerTest6Query",
@@ -38,6 +166,9 @@
     {
       "name": "relay/normalizer/defer-returns-metadata-when-if-is-true-literal-value",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer returns metadata when `if` is true (literal value)",
+      "status": "unspecified-behaviour",
+      "note": "The initial payload already holds the deferred fragment's fields. Relay skips them on purpose (`_normalizeDefer`: data for a deferred selection 'should not be present') and waits for a later part; Baton writes what the response holds. The fields in the test's payload are incidental to what it asserts, the placeholder.",
+      "decision": "Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's.",
       "operation": "RelayResponseNormalizerTest7Query",
       "kind": "query",
       "document": "relay/documents/RelayResponseNormalizerTest7Query.graphql",
@@ -52,6 +183,9 @@
     {
       "name": "relay/normalizer/defer-returns-metadata-when-if-is-true-variable-value",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer returns metadata when `if` is true (variable value)",
+      "status": "unspecified-behaviour",
+      "note": "The initial payload already holds the deferred fragment's fields. Relay skips them on purpose (`_normalizeDefer`: data for a deferred selection 'should not be present') and waits for a later part; Baton writes what the response holds. The fields in the test's payload are incidental to what it asserts, the placeholder.",
+      "decision": "Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's.",
       "operation": "RelayResponseNormalizerTest8Query",
       "kind": "query",
       "document": "relay/documents/RelayResponseNormalizerTest8Query.graphql",
@@ -67,6 +201,9 @@
     {
       "name": "relay/normalizer/defer-returns-metadata-for-defer-within-a-plural",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer returns metadata for @defer within a plural",
+      "status": "unspecified-behaviour",
+      "note": "The initial payload already holds the deferred fragment's fields. Relay skips them on purpose (`_normalizeDefer`: data for a deferred selection 'should not be present') and waits for a later part; Baton writes what the response holds. The fields in the test's payload are incidental to what it asserts, the placeholder.",
+      "decision": "Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's.",
       "operation": "RelayResponseNormalizerTest9Query",
       "kind": "query",
       "document": "relay/documents/RelayResponseNormalizerTest9Query.graphql",
@@ -91,6 +228,234 @@
         "relay/normalizer/defer-returns-metadata-with-prefixed-path.json"
       ],
       "records": "relay/normalizer/defer-returns-metadata-with-prefixed-path.store.json"
+    },
+    {
+      "name": "relay/normalizer/stream-normalizes-when-if-condition-is-false",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes when if condition is false",
+      "status": "unsupported-feature",
+      "note": "batonc: `@stream` on a field has no meaning in Baton",
+      "operation": "RelayResponseNormalizerTest11Query",
+      "kind": "query",
+      "document": "relay/unsupported/RelayResponseNormalizerTest11Query.graphql",
+      "variables": {
+        "id": "1",
+        "enableStream": false
+      },
+      "responses": [
+        "relay/normalizer/stream-normalizes-when-if-condition-is-false.json"
+      ],
+      "records": "relay/normalizer/stream-normalizes-when-if-condition-is-false.store.json"
+    },
+    {
+      "name": "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-literal-value",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes and returns metadata when `if` is true (literal value)",
+      "status": "unsupported-feature",
+      "note": "batonc: `@stream` on a field has no meaning in Baton",
+      "operation": "RelayResponseNormalizerTestQuery",
+      "kind": "query",
+      "document": "relay/unsupported/RelayResponseNormalizerTestQuery.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-literal-value.json"
+      ],
+      "records": "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-literal-value.store.json"
+    },
+    {
+      "name": "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-variable-value",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes and returns metadata when `if` is true (variable value)",
+      "status": "unsupported-feature",
+      "note": "batonc: `@stream` on a field has no meaning in Baton",
+      "operation": "RelayResponseNormalizerTest12Query",
+      "kind": "query",
+      "document": "relay/unsupported/RelayResponseNormalizerTest12Query.graphql",
+      "variables": {
+        "id": "1",
+        "enableStream": true
+      },
+      "responses": [
+        "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-variable-value.json"
+      ],
+      "records": "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-variable-value.store.json"
+    },
+    {
+      "name": "relay/normalizer/stream-normalizes-and-returns-metadata-for-stream-within-a-plural",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes and returns metadata for @stream within a plural",
+      "status": "unsupported-feature",
+      "note": "batonc: `@stream` on a field has no meaning in Baton",
+      "operation": "RelayResponseNormalizerTest13Query",
+      "kind": "query",
+      "document": "relay/unsupported/RelayResponseNormalizerTest13Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/stream-normalizes-and-returns-metadata-for-stream-within-a-plural.json"
+      ],
+      "records": "relay/normalizer/stream-normalizes-and-returns-metadata-for-stream-within-a-plural.store.json"
+    },
+    {
+      "name": "relay/normalizer/stream-returns-metadata-with-prefixed-path",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream returns metadata with prefixed path",
+      "status": "unsupported-feature",
+      "note": "batonc: `@stream` on a field has no meaning in Baton",
+      "operation": "RelayResponseNormalizerTest14Query",
+      "kind": "query",
+      "document": "relay/unsupported/RelayResponseNormalizerTest14Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/stream-returns-metadata-with-prefixed-path.json"
+      ],
+      "records": "relay/normalizer/stream-returns-metadata-with-prefixed-path.store.json"
+    },
+    {
+      "name": "relay/normalizer/user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID single field overwrite fields in same position but with different data",
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "operation": "RelayResponseNormalizerTest16Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest16Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data.json"
+      ],
+      "records": "relay/normalizer/user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data.store.json"
+    },
+    {
+      "name": "relay/normalizer/user-defined-getdataid-single-field-stores-user-defined-id-when-function-returns-an-string",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID single field stores user-defined id when function returns an string",
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "operation": "RelayResponseNormalizerTest15Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest15Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/user-defined-getdataid-single-field-stores-user-defined-id-when-function-returns-an-string.json"
+      ],
+      "records": "relay/normalizer/user-defined-getdataid-single-field-stores-user-defined-id-when-function-returns-an-string.store.json"
+    },
+    {
+      "name": "relay/normalizer/user-defined-getdataid-single-field-falls-through-to-previously-generated-id-if-function-returns-null",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID single field falls through to previously generated ID if function returns null ",
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "operation": "RelayResponseNormalizerTest15Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest15Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/user-defined-getdataid-single-field-falls-through-to-previously-generated-id-if-function-returns-null.json"
+      ],
+      "records": "relay/normalizer/user-defined-getdataid-single-field-falls-through-to-previously-generated-id-if-function-returns-null.store.json"
+    },
+    {
+      "name": "relay/normalizer/user-defined-getdataid-single-field-falls-through-to-generateclientid-when-the-function-returns-null-and-no-previously-generated-id",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID single field falls through to generateClientID when the function returns null, and no previously generated ID",
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "operation": "RelayResponseNormalizerTest15Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest15Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/user-defined-getdataid-single-field-falls-through-to-generateclientid-when-the-function-returns-null-and-no-previously-generated-id.json"
+      ],
+      "records": "relay/normalizer/user-defined-getdataid-single-field-falls-through-to-generateclientid-when-the-function-returns-null-and-no-previously-generated-id.store.json"
+    },
+    {
+      "name": "relay/normalizer/user-defined-getdataid-plural-fields-stores-user-defined-ids-when-function-returns-an-string",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID plural fields stores user-defined ids when function returns an string",
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "operation": "RelayResponseNormalizerTest18Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest18Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/user-defined-getdataid-plural-fields-stores-user-defined-ids-when-function-returns-an-string.json"
+      ],
+      "records": "relay/normalizer/user-defined-getdataid-plural-fields-stores-user-defined-ids-when-function-returns-an-string.store.json"
+    },
+    {
+      "name": "relay/normalizer/user-defined-getdataid-plural-fields-uses-cached-ids-if-they-were-generated-before-and-the-function-returns-null",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID plural fields uses cached IDs if they were generated before and the function returns null",
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "operation": "RelayResponseNormalizerTest18Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest18Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/user-defined-getdataid-plural-fields-uses-cached-ids-if-they-were-generated-before-and-the-function-returns-null.json"
+      ],
+      "records": "relay/normalizer/user-defined-getdataid-plural-fields-uses-cached-ids-if-they-were-generated-before-and-the-function-returns-null.store.json"
+    },
+    {
+      "name": "relay/normalizer/user-defined-getdataid-plural-fields-falls-through-to-generateclientid-when-the-function-returns-null-and-there-is-one-new-field-in-stored-plural-links",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID plural fields falls through to generateClientID when the function returns null and there is one new field in stored plural links",
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "operation": "RelayResponseNormalizerTest18Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest18Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/user-defined-getdataid-plural-fields-falls-through-to-generateclientid-when-the-function-returns-null-and-there-is-one-new-field-in-stored-plural-links.json"
+      ],
+      "records": "relay/normalizer/user-defined-getdataid-plural-fields-falls-through-to-generateclientid-when-the-function-returns-null-and-there-is-one-new-field-in-stored-plural-links.store.json"
+    },
+    {
+      "name": "relay/normalizer/user-defined-getdataid-plural-fields-falls-through-to-generateclientid-when-the-function-returns-null-and-no-previously-generated-ids",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID plural fields falls through to generateClientID when the function returns null and no previously generated IDs",
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "operation": "RelayResponseNormalizerTest18Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest18Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/user-defined-getdataid-plural-fields-falls-through-to-generateclientid-when-the-function-returns-null-and-no-previously-generated-ids.json"
+      ],
+      "records": "relay/normalizer/user-defined-getdataid-plural-fields-falls-through-to-generateclientid-when-the-function-returns-null-and-no-previously-generated-ids.store.json"
+    },
+    {
+      "name": "relay/normalizer/normalize-queries-with-provided-variables",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer normalize queries with provided variables",
+      "status": "unsupported-feature",
+      "note": "batonc: Expected a non-variable identifier (e.g. 'x' or 'Foo')",
+      "operation": "RelayResponseNormalizerTest_pvQuery",
+      "kind": "query",
+      "document": "relay/unsupported/RelayResponseNormalizerTest_pvQuery.graphql",
+      "variables": {
+        "id": "4",
+        "__relay_internal__pv__RelayProvider_returnsTruerelayprovider": true,
+        "__relay_internal__pv__RelayProvider_returnsFalserelayprovider": false
+      },
+      "responses": [
+        "relay/normalizer/normalize-queries-with-provided-variables.json"
+      ],
+      "records": "relay/normalizer/normalize-queries-with-provided-variables.store.json"
     },
     {
       "name": "relay/normalizer/warns-in-dev-if-payload-data-is-missing-an-expected-field",
@@ -217,8 +582,44 @@
       "records": "relay/normalizer/leaves-undefined-fields-unset.store.json"
     },
     {
+      "name": "relay/normalizer/when-treatmissingfieldsasnull-is-true-set-undefined-fields-to-null",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when treatMissingFieldsAsNull is true set undefined fields to null",
+      "status": "unsupported-feature",
+      "note": "`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null",
+      "operation": "RelayResponseNormalizerTest33Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest33Query.graphql",
+      "variables": {
+        "id": "1",
+        "size": 32
+      },
+      "responses": [
+        "relay/normalizer/when-treatmissingfieldsasnull-is-true-set-undefined-fields-to-null.json"
+      ],
+      "records": "relay/normalizer/when-treatmissingfieldsasnull-is-true-set-undefined-fields-to-null.store.json"
+    },
+    {
+      "name": "relay/normalizer/when-treatmissingfieldsasnull-is-true-does-not-warn-if-a-single-response-contains-the-same-fields-with-the-same-id",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when treatMissingFieldsAsNull is true does not warn if a single response contains the same fields with the same id",
+      "status": "unsupported-feature",
+      "note": "`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null",
+      "operation": "RelayResponseNormalizerTest35Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest35Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/when-treatmissingfieldsasnull-is-true-does-not-warn-if-a-single-response-contains-the-same-fields-with-the-same-id.json"
+      ],
+      "records": "relay/normalizer/when-treatmissingfieldsasnull-is-true-does-not-warn-if-a-single-response-contains-the-same-fields-with-the-same-id.store.json"
+    },
+    {
       "name": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload",
+      "status": "unspecified-behaviour",
+      "note": "Relay keys an object whose id is the empty string by its path; Baton keys it `User:`, one record for every such object of the type.",
+      "decision": "Document it and copy Relay, unless that costs performance (owner, 2026-10-09).",
       "operation": "RelayResponseNormalizerTest30Query",
       "kind": "query",
       "document": "relay/documents/RelayResponseNormalizerTest30Query.graphql",
@@ -230,6 +631,9 @@
     {
       "name": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-same-id",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload - same id",
+      "status": "unspecified-behaviour",
+      "note": "Relay keys an object whose id is the empty string by its path; Baton keys it `User:`, one record for every such object of the type.",
+      "decision": "Document it and copy Relay, unless that costs performance (owner, 2026-10-09).",
       "operation": "RelayResponseNormalizerTest30Query",
       "kind": "query",
       "document": "relay/documents/RelayResponseNormalizerTest30Query.graphql",
@@ -241,6 +645,9 @@
     {
       "name": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-for-list",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload for list",
+      "status": "unspecified-behaviour",
+      "note": "An `ID` the server sends as a number or a boolean: Relay keys the object by its path; Baton's ingest rejects the response.",
+      "decision": "Document it and copy Relay, unless that costs performance (owner, 2026-10-09).",
       "operation": "RelayResponseNormalizerTest31Query",
       "kind": "query",
       "document": "relay/documents/RelayResponseNormalizerTest31Query.graphql",
@@ -250,8 +657,24 @@
       "records": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-for-list.store.json"
     },
     {
+      "name": "relay/normalizer/records-which-concrete-types-implement-which-client-schema-extension-interfaces",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer records which concrete types implement which client schema extension interfaces",
+      "status": "unsupported-feature",
+      "note": "batonc: Unknown type 'ClientInterface'. Did you mean `ClientObject`?",
+      "operation": "RelayResponseNormalizerTestClientInterfaceQuery",
+      "kind": "query",
+      "document": "relay/unsupported/RelayResponseNormalizerTestClientInterfaceQuery.graphql",
+      "responses": [
+        "relay/normalizer/records-which-concrete-types-implement-which-client-schema-extension-interfaces.json"
+      ],
+      "records": "relay/normalizer/records-which-concrete-types-implement-which-client-schema-extension-interfaces.store.json"
+    },
+    {
       "name": "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-multiple-field-errors",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled normalizes queries with multiple field errors",
+      "status": "possible-bug",
+      "note": "Relay keeps every error of a field as a list of messages; Baton keeps one error a field, the last, with its absolute path, and loses the others.",
+      "decision": "Match Relay, unless that costs performance (owner, 2026-10-09).",
       "operation": "RelayResponseNormalizerTest37Query",
       "kind": "query",
       "document": "relay/documents/RelayResponseNormalizerTest37Query.graphql",
@@ -267,6 +690,9 @@
     {
       "name": "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-field-errors-that-bubbled-up",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled normalizes queries with field errors that bubbled up",
+      "status": "possible-bug",
+      "note": "Relay keeps every error that bubbled to the nulled field, with paths relative to it; Baton keeps one, the last, with its absolute path, and loses the others.",
+      "decision": "Match Relay, unless that costs performance (owner, 2026-10-09).",
       "operation": "RelayResponseNormalizerTest38Query",
       "kind": "query",
       "document": "relay/documents/RelayResponseNormalizerTest38Query.graphql",
@@ -282,6 +708,9 @@
     {
       "name": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-disabled-ignores-field-errors-on-an-empty-list",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled when noncompliant error handling on lists is disabled ignores field errors on an empty list",
+      "status": "unspecified-behaviour",
+      "note": "An error whose path ends at a list that is not null: Relay drops it; Baton places it on the list's field, the last field its path reaches.",
+      "decision": "Match Relay, unless that costs performance (owner, 2026-10-09).",
       "operation": "RelayResponseNormalizerTest39Query",
       "kind": "query",
       "document": "relay/documents/RelayResponseNormalizerTest39Query.graphql",
@@ -293,6 +722,40 @@
         "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-disabled-ignores-field-errors-on-an-empty-list.json"
       ],
       "records": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-disabled-ignores-field-errors-on-an-empty-list.store.json"
+    },
+    {
+      "name": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-enabled-stores-field-errors-on-an-linked-field-that-is-an-empty-list",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled when noncompliant error handling on lists is enabled stores field errors on an linked field that is an empty list",
+      "status": "unsupported-feature",
+      "note": "a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS`",
+      "operation": "RelayResponseNormalizerTest40Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest40Query.graphql",
+      "variables": {
+        "id": "1",
+        "size": 32
+      },
+      "responses": [
+        "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-enabled-stores-field-errors-on-an-linked-field-that-is-an-empty-list.json"
+      ],
+      "records": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-enabled-stores-field-errors-on-an-linked-field-that-is-an-empty-list.store.json"
+    },
+    {
+      "name": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-enabled-stores-field-errors-on-an-scalar-field-that-is-an-empty-list",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled when noncompliant error handling on lists is enabled stores field errors on an scalar field that is an empty list",
+      "status": "unsupported-feature",
+      "note": "a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS`",
+      "operation": "RelayResponseNormalizerTest41Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest41Query.graphql",
+      "variables": {
+        "id": "1",
+        "size": 32
+      },
+      "responses": [
+        "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-enabled-stores-field-errors-on-an-scalar-field-that-is-an-empty-list.json"
+      ],
+      "records": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-enabled-stores-field-errors-on-an-scalar-field-that-is-an-empty-list.store.json"
     },
     {
       "name": "relay/normalizer/prototype-less-objects-e-g-from-graphql-js-executor-normalizes-prototype-less-payloads-with-type-discriminator",
@@ -311,6 +774,9 @@
     {
       "name": "relay/normalizer/prototype-less-objects-e-g-from-graphql-js-executor-normalizes-prototype-less-payloads-for-union-types",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer Prototype-less objects (e.g., from graphql-js executor) normalizes prototype-less payloads for union types",
+      "status": "invalid-input",
+      "note": "The server text asks for `... on Node { __isNode: __typename, id }`, and the test's payload leaves `__isNode` out, which a conforming server does not do; the test is about prototype-less objects and the omission is incidental. Relay knows no schema at run time and applies an abstract fragment only when the payload answers `__isX`, so it stores no `id`; Baton knows from the schema that `Page` is a `Node` and stores it (spec/runtime.md, memberships).",
+      "decision": "Open. The recommendation is no change: both behave the same on a response that answers the text.",
       "operation": "RelayResponseNormalizerTest43Query",
       "kind": "query",
       "document": "relay/documents/RelayResponseNormalizerTest43Query.graphql",
@@ -323,5 +789,10 @@
       "records": "relay/normalizer/prototype-less-objects-e-g-from-graphql-js-executor-normalizes-prototype-less-payloads-for-union-types.store.json"
     }
   ],
-  "scripts": []
+  "scripts": [
+    "relay/scripts/normalizes-queries-with-filters.json",
+    "relay/scripts/user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization.json",
+    "relay/scripts/user-defined-getdataid-plural-fields-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization.json",
+    "relay/scripts/when-treatmissingfieldsasnull-is-true-skips-client-fields-not-present-in-the-payload-but-present-in-the-store.json"
+  ]
 }

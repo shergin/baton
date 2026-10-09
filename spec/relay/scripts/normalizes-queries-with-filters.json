@@ -1,0 +1,36 @@
+{
+  "name": "normalizes-queries-with-filters",
+  "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer normalizes queries with \"filters\"",
+  "status": "unsupported-feature",
+  "note": "batonc: `@__clientField` on a field has no meaning in Baton",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayResponseNormalizerTest3Query",
+        "response": "relay/normalizer/normalizes-queries-with-filters-1.json",
+        "variables": {
+          "id": "1",
+          "orderBy": [
+            "last name"
+          ],
+          "isViewerFriend": true
+        }
+      },
+      "records": "relay/normalizer/normalizes-queries-with-filters-1.store.json"
+    },
+    {
+      "payload": {
+        "operation": "RelayResponseNormalizerTest3Query",
+        "response": "relay/normalizer/normalizes-queries-with-filters-2.json",
+        "variables": {
+          "id": "1",
+          "orderBy": [
+            "first name"
+          ],
+          "isViewerFriend": true
+        }
+      },
+      "records": "relay/normalizer/normalizes-queries-with-filters-2.store.json"
+    }
+  ]
+}

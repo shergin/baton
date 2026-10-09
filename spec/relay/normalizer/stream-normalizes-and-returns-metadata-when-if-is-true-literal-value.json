@@ -1,0 +1,15 @@
+{
+  "data": {
+    "node": {
+      "id": "1",
+      "__typename": "Feedback",
+      "actors": [
+        {
+          "__typename": "User",
+          "id": "2",
+          "name": "Alice"
+        }
+      ]
+    }
+  }
+}

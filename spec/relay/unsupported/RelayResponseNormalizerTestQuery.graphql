@@ -1,0 +1,12 @@
+query RelayResponseNormalizerTestQuery($id: ID!) {
+  node(id: $id) {
+    ...RelayResponseNormalizerTest8Fragment @alias
+  }
+}
+
+fragment RelayResponseNormalizerTest8Fragment on Feedback {
+  id
+  actors @stream(label: "actors", if: true, initial_count: 0) {
+    name
+  }
+}

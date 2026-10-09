@@ -20,7 +20,8 @@
       "name": "relay/normalizer/normalizes-queries-with-handle-fields",
       "operation": "RelayResponseNormalizerTest2Query",
       "calls": 1,
-      "dropped": "batonc: `@__clientField` on a field has no meaning in Baton"
+      "status": "unsupported-feature",
+      "note": "batonc: `@__clientField` on a field has no meaning in Baton"
     },
     {
       "test": "RelayResponseNormalizer normalizes queries with \"filters\"",
@@ -28,7 +29,9 @@
       "name": "relay/normalizer/normalizes-queries-with-filters",
       "operation": "RelayResponseNormalizerTest3Query",
       "calls": 2,
-      "dropped": "batonc: `@__clientField` on a field has no meaning in Baton"
+      "status": "unsupported-feature",
+      "note": "batonc: `@__clientField` on a field has no meaning in Baton",
+      "script": true
     },
     {
       "test": "RelayResponseNormalizer @match normalizes queries correctly",
@@ -36,7 +39,8 @@
       "name": "relay/normalizer/match-normalizes-queries-correctly",
       "operation": "RelayResponseNormalizerTest4Query",
       "calls": 1,
-      "dropped": "batonc: `@match` on a field has no meaning in Baton"
+      "status": "unsupported-feature",
+      "note": "batonc: `@match` on a field has no meaning in Baton"
     },
     {
       "test": "RelayResponseNormalizer @match returns metadata with prefixed path",
@@ -44,7 +48,8 @@
       "name": "relay/normalizer/match-returns-metadata-with-prefixed-path",
       "operation": "RelayResponseNormalizerTest4Query",
       "calls": 1,
-      "dropped": "batonc: `@match` on a field has no meaning in Baton"
+      "status": "unsupported-feature",
+      "note": "batonc: `@match` on a field has no meaning in Baton"
     },
     {
       "test": "RelayResponseNormalizer @match normalizes queries correctly when the resolved type does not match any of the specified cases",
@@ -52,7 +57,8 @@
       "name": "relay/normalizer/match-normalizes-queries-correctly-when-the-resolved-type-does-not-match-any-of-the-specified-cases",
       "operation": "RelayResponseNormalizerTest4Query",
       "calls": 1,
-      "dropped": "batonc: `@match` on a field has no meaning in Baton"
+      "status": "unsupported-feature",
+      "note": "batonc: `@match` on a field has no meaning in Baton"
     },
     {
       "test": "RelayResponseNormalizer @match normalizes queries correctly when the @match field is null",
@@ -60,7 +66,8 @@
       "name": "relay/normalizer/match-normalizes-queries-correctly-when-the-match-field-is-null",
       "operation": "RelayResponseNormalizerTest4Query",
       "calls": 1,
-      "dropped": "batonc: `@match` on a field has no meaning in Baton"
+      "status": "unsupported-feature",
+      "note": "batonc: `@match` on a field has no meaning in Baton"
     },
     {
       "test": "RelayResponseNormalizer @module normalizes queries and returns metadata when the type matches an @module selection",
@@ -68,7 +75,8 @@
       "name": "relay/normalizer/module-normalizes-queries-and-returns-metadata-when-the-type-matches-an-module-selection",
       "operation": "RelayResponseNormalizerTest5Query",
       "calls": 1,
-      "dropped": "batonc: `@module` on a fragment spread has no meaning in Baton"
+      "status": "unsupported-feature",
+      "note": "batonc: `@module` on a fragment spread has no meaning in Baton"
     },
     {
       "test": "RelayResponseNormalizer @module returns metadata with prefixed path",
@@ -76,7 +84,8 @@
       "name": "relay/normalizer/module-returns-metadata-with-prefixed-path",
       "operation": "RelayResponseNormalizerTest5Query",
       "calls": 1,
-      "dropped": "batonc: `@module` on a fragment spread has no meaning in Baton"
+      "status": "unsupported-feature",
+      "note": "batonc: `@module` on a fragment spread has no meaning in Baton"
     },
     {
       "test": "RelayResponseNormalizer @module normalizes queries correctly when the resolved type does not match any @module selections",
@@ -84,7 +93,8 @@
       "name": "relay/normalizer/module-normalizes-queries-correctly-when-the-resolved-type-does-not-match-any-module-selections",
       "operation": "RelayResponseNormalizerTest5Query",
       "calls": 1,
-      "dropped": "batonc: `@module` on a fragment spread has no meaning in Baton"
+      "status": "unsupported-feature",
+      "note": "batonc: `@module` on a fragment spread has no meaning in Baton"
     },
     {
       "test": "RelayResponseNormalizer @defer normalizes when if condition is false",
@@ -99,7 +109,9 @@
       "name": "relay/normalizer/defer-returns-metadata-when-if-is-true-literal-value",
       "operation": "RelayResponseNormalizerTest7Query",
       "calls": 1,
-      "divergence": "Relay skips a deferred fragment's fields when the initial payload already holds them and waits for the later part; Baton writes what the response holds."
+      "status": "unspecified-behaviour",
+      "note": "The initial payload already holds the deferred fragment's fields. Relay skips them on purpose (`_normalizeDefer`: data for a deferred selection 'should not be present') and waits for a later part; Baton writes what the response holds. The fields in the test's payload are incidental to what it asserts, the placeholder.",
+      "decision": "Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's."
     },
     {
       "test": "RelayResponseNormalizer @defer returns metadata when `if` is true (variable value)",
@@ -107,7 +119,9 @@
       "name": "relay/normalizer/defer-returns-metadata-when-if-is-true-variable-value",
       "operation": "RelayResponseNormalizerTest8Query",
       "calls": 1,
-      "divergence": "Relay skips a deferred fragment's fields when the initial payload already holds them and waits for the later part; Baton writes what the response holds."
+      "status": "unspecified-behaviour",
+      "note": "The initial payload already holds the deferred fragment's fields. Relay skips them on purpose (`_normalizeDefer`: data for a deferred selection 'should not be present') and waits for a later part; Baton writes what the response holds. The fields in the test's payload are incidental to what it asserts, the placeholder.",
+      "decision": "Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's."
     },
     {
       "test": "RelayResponseNormalizer @defer returns metadata for @defer within a plural",
@@ -115,7 +129,9 @@
       "name": "relay/normalizer/defer-returns-metadata-for-defer-within-a-plural",
       "operation": "RelayResponseNormalizerTest9Query",
       "calls": 1,
-      "divergence": "Relay skips a deferred fragment's fields when the initial payload already holds them and waits for the later part; Baton writes what the response holds."
+      "status": "unspecified-behaviour",
+      "note": "The initial payload already holds the deferred fragment's fields. Relay skips them on purpose (`_normalizeDefer`: data for a deferred selection 'should not be present') and waits for a later part; Baton writes what the response holds. The fields in the test's payload are incidental to what it asserts, the placeholder.",
+      "decision": "Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's."
     },
     {
       "test": "RelayResponseNormalizer @defer returns metadata with prefixed path",
@@ -130,7 +146,8 @@
       "name": "relay/normalizer/stream-normalizes-when-if-condition-is-false",
       "operation": "RelayResponseNormalizerTest11Query",
       "calls": 1,
-      "dropped": "batonc: `@stream` on a field has no meaning in Baton"
+      "status": "unsupported-feature",
+      "note": "batonc: `@stream` on a field has no meaning in Baton"
     },
     {
       "test": "RelayResponseNormalizer @stream normalizes and returns metadata when `if` is true (literal value)",
@@ -138,7 +155,8 @@
       "name": "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-literal-value",
       "operation": "RelayResponseNormalizerTestQuery",
       "calls": 1,
-      "dropped": "batonc: `@stream` on a field has no meaning in Baton"
+      "status": "unsupported-feature",
+      "note": "batonc: `@stream` on a field has no meaning in Baton"
     },
     {
       "test": "RelayResponseNormalizer @stream normalizes and returns metadata when `if` is true (variable value)",
@@ -146,7 +164,8 @@
       "name": "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-variable-value",
       "operation": "RelayResponseNormalizerTest12Query",
       "calls": 1,
-      "dropped": "batonc: `@stream` on a field has no meaning in Baton"
+      "status": "unsupported-feature",
+      "note": "batonc: `@stream` on a field has no meaning in Baton"
     },
     {
       "test": "RelayResponseNormalizer @stream normalizes and returns metadata for @stream within a plural",
@@ -154,7 +173,8 @@
       "name": "relay/normalizer/stream-normalizes-and-returns-metadata-for-stream-within-a-plural",
       "operation": "RelayResponseNormalizerTest13Query",
       "calls": 1,
-      "dropped": "batonc: `@stream` on a field has no meaning in Baton"
+      "status": "unsupported-feature",
+      "note": "batonc: `@stream` on a field has no meaning in Baton"
     },
     {
       "test": "RelayResponseNormalizer @stream returns metadata with prefixed path",
@@ -162,7 +182,8 @@
       "name": "relay/normalizer/stream-returns-metadata-with-prefixed-path",
       "operation": "RelayResponseNormalizerTest14Query",
       "calls": 1,
-      "dropped": "batonc: `@stream` on a field has no meaning in Baton"
+      "status": "unsupported-feature",
+      "note": "batonc: `@stream` on a field has no meaning in Baton"
     },
     {
       "test": "RelayResponseNormalizer Client Extensions skips client fields not present in the payload but present in the store",
@@ -170,7 +191,8 @@
       "name": "relay/normalizer/client-extensions-skips-client-fields-not-present-in-the-payload-but-present-in-the-store",
       "operation": "RelayResponseNormalizerTestStrippedQuery",
       "calls": 2,
-      "dropped": "a store seeded by hand before the first payload"
+      "status": "not-ingested",
+      "note": "a store seeded by hand before the first payload"
     },
     {
       "test": "RelayResponseNormalizer Client Extensions skips client fields not present in the payload or store",
@@ -178,7 +200,8 @@
       "name": "relay/normalizer/client-extensions-skips-client-fields-not-present-in-the-payload-or-store",
       "operation": "RelayResponseNormalizerTestStrippedQuery",
       "calls": 2,
-      "dropped": "a store seeded by hand before the first payload"
+      "status": "not-ingested",
+      "note": "a store seeded by hand before the first payload"
     },
     {
       "test": "RelayResponseNormalizer Client Extensions ignores linked client fields not present in the payload",
@@ -186,7 +209,8 @@
       "name": "relay/normalizer/client-extensions-ignores-linked-client-fields-not-present-in-the-payload",
       "operation": "RelayResponseNormalizerTestStrippedQuery",
       "calls": 2,
-      "dropped": "a store seeded by hand before the first payload"
+      "status": "not-ingested",
+      "note": "a store seeded by hand before the first payload"
     },
     {
       "test": "RelayResponseNormalizer Client Extensions ignores linked client fields not present in the payload or store",
@@ -194,7 +218,8 @@
       "name": "relay/normalizer/client-extensions-ignores-linked-client-fields-not-present-in-the-payload-or-store",
       "operation": "RelayResponseNormalizerTestStrippedQuery",
       "calls": 2,
-      "dropped": "a store seeded by hand before the first payload"
+      "status": "not-ingested",
+      "note": "a store seeded by hand before the first payload"
     },
     {
       "test": "RelayResponseNormalizer User-defined getDataID single field overwrite fields in same position but with different data",
@@ -202,7 +227,8 @@
       "name": "relay/normalizer/user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data",
       "operation": "RelayResponseNormalizerTest16Query",
       "calls": 1,
-      "dropped": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
     },
     {
       "test": "RelayResponseNormalizer User-defined getDataID single field overwrite fields in same position but with different data in second normalization",
@@ -210,7 +236,9 @@
       "name": "relay/normalizer/user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization",
       "operation": "RelayResponseNormalizerTest17Query",
       "calls": 2,
-      "dropped": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "script": true
     },
     {
       "test": "RelayResponseNormalizer User-defined getDataID single field stores user-defined id when function returns an string",
@@ -218,7 +246,8 @@
       "name": "relay/normalizer/user-defined-getdataid-single-field-stores-user-defined-id-when-function-returns-an-string",
       "operation": "RelayResponseNormalizerTest15Query",
       "calls": 1,
-      "dropped": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
     },
     {
       "test": "RelayResponseNormalizer User-defined getDataID single field falls through to previously generated ID if function returns null ",
@@ -226,7 +255,8 @@
       "name": "relay/normalizer/user-defined-getdataid-single-field-falls-through-to-previously-generated-id-if-function-returns-null",
       "operation": "RelayResponseNormalizerTest15Query",
       "calls": 1,
-      "dropped": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
     },
     {
       "test": "RelayResponseNormalizer User-defined getDataID single field falls through to generateClientID when the function returns null, and no previously generated ID",
@@ -234,7 +264,8 @@
       "name": "relay/normalizer/user-defined-getdataid-single-field-falls-through-to-generateclientid-when-the-function-returns-null-and-no-previously-generated-id",
       "operation": "RelayResponseNormalizerTest15Query",
       "calls": 1,
-      "dropped": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
     },
     {
       "test": "RelayResponseNormalizer User-defined getDataID plural fields stores user-defined ids when function returns an string",
@@ -242,7 +273,8 @@
       "name": "relay/normalizer/user-defined-getdataid-plural-fields-stores-user-defined-ids-when-function-returns-an-string",
       "operation": "RelayResponseNormalizerTest18Query",
       "calls": 1,
-      "dropped": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
     },
     {
       "test": "RelayResponseNormalizer User-defined getDataID plural fields uses cached IDs if they were generated before and the function returns null",
@@ -250,7 +282,8 @@
       "name": "relay/normalizer/user-defined-getdataid-plural-fields-uses-cached-ids-if-they-were-generated-before-and-the-function-returns-null",
       "operation": "RelayResponseNormalizerTest18Query",
       "calls": 1,
-      "dropped": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
     },
     {
       "test": "RelayResponseNormalizer User-defined getDataID plural fields falls through to generateClientID when the function returns null and there is one new field in stored plural links",
@@ -258,7 +291,8 @@
       "name": "relay/normalizer/user-defined-getdataid-plural-fields-falls-through-to-generateclientid-when-the-function-returns-null-and-there-is-one-new-field-in-stored-plural-links",
       "operation": "RelayResponseNormalizerTest18Query",
       "calls": 1,
-      "dropped": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
     },
     {
       "test": "RelayResponseNormalizer User-defined getDataID plural fields falls through to generateClientID when the function returns null and no previously generated IDs",
@@ -266,7 +300,8 @@
       "name": "relay/normalizer/user-defined-getdataid-plural-fields-falls-through-to-generateclientid-when-the-function-returns-null-and-no-previously-generated-ids",
       "operation": "RelayResponseNormalizerTest18Query",
       "calls": 1,
-      "dropped": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
     },
     {
       "test": "RelayResponseNormalizer User-defined getDataID plural fields overwrite fields in same position but with different data in second normalization",
@@ -274,7 +309,9 @@
       "name": "relay/normalizer/user-defined-getdataid-plural-fields-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization",
       "operation": "RelayResponseNormalizerTest19Query",
       "calls": 2,
-      "dropped": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "status": "unsupported-feature",
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "script": true
     },
     {
       "test": "RelayResponseNormalizer normalize queries with provided variables",
@@ -282,7 +319,8 @@
       "name": "relay/normalizer/normalize-queries-with-provided-variables",
       "operation": "RelayResponseNormalizerTest_pvQuery",
       "calls": 1,
-      "dropped": "batonc: Expected a non-variable identifier (e.g. 'x' or 'Foo')"
+      "status": "unsupported-feature",
+      "note": "batonc: Expected a non-variable identifier (e.g. 'x' or 'Foo')"
     },
     {
       "test": "RelayResponseNormalizer warns in __DEV__ if payload data is missing an expected field",
@@ -346,7 +384,8 @@
       "name": "relay/normalizer/warns-in-dev-if-payload-contains-inconsistent-types-for-a-record",
       "operation": "RelayResponseNormalizerTest27Query",
       "calls": 2,
-      "dropped": "one id of several types (`1`): Relay merges them into one record, Baton keys by type (docs/decisions/identity-is-configured.md)"
+      "status": "not-ingested",
+      "note": "one id of several types (`1`): Relay merges them into one record, Baton keys by type (docs/decisions/identity-is-configured.md)"
     },
     {
       "test": "RelayResponseNormalizer does not warn in __DEV__ on inconsistent types for a client record",
@@ -354,7 +393,8 @@
       "name": "relay/normalizer/does-not-warn-in-dev-on-inconsistent-types-for-a-client-record",
       "operation": "RelayResponseNormalizerTest28Query",
       "calls": 2,
-      "dropped": "one id of several types (`client:1`): Relay merges them into one record, Baton keys by type (docs/decisions/identity-is-configured.md)"
+      "status": "not-ingested",
+      "note": "one id of several types (`client:1`): Relay merges them into one record, Baton keys by type (docs/decisions/identity-is-configured.md)"
     },
     {
       "test": "RelayResponseNormalizer leaves undefined fields unset",
@@ -369,7 +409,8 @@
       "name": "relay/normalizer/when-treatmissingfieldsasnull-is-true-set-undefined-fields-to-null",
       "operation": "RelayResponseNormalizerTest33Query",
       "calls": 1,
-      "dropped": "`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null"
+      "status": "unsupported-feature",
+      "note": "`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null"
     },
     {
       "test": "RelayResponseNormalizer when treatMissingFieldsAsNull is true skips client fields not present in the payload but present in the store",
@@ -377,7 +418,9 @@
       "name": "relay/normalizer/when-treatmissingfieldsasnull-is-true-skips-client-fields-not-present-in-the-payload-but-present-in-the-store",
       "operation": "RelayResponseNormalizerTest34Query",
       "calls": 2,
-      "dropped": "`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null"
+      "status": "unsupported-feature",
+      "note": "`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null",
+      "script": true
     },
     {
       "test": "RelayResponseNormalizer when treatMissingFieldsAsNull is true does not warn if a single response contains the same fields with the same id",
@@ -385,7 +428,8 @@
       "name": "relay/normalizer/when-treatmissingfieldsasnull-is-true-does-not-warn-if-a-single-response-contains-the-same-fields-with-the-same-id",
       "operation": "RelayResponseNormalizerTest35Query",
       "calls": 1,
-      "dropped": "`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null"
+      "status": "unsupported-feature",
+      "note": "`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null"
     },
     {
       "test": "RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload",
@@ -393,7 +437,9 @@
       "name": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload",
       "operation": "RelayResponseNormalizerTest30Query",
       "calls": 1,
-      "divergence": "Relay keys an object whose id is the empty string by its path; Baton keys it `User:`, one record for every such object of the type."
+      "status": "unspecified-behaviour",
+      "note": "Relay keys an object whose id is the empty string by its path; Baton keys it `User:`, one record for every such object of the type.",
+      "decision": "Document it and copy Relay, unless that costs performance (owner, 2026-10-09)."
     },
     {
       "test": "RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload - same id",
@@ -401,7 +447,9 @@
       "name": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-same-id",
       "operation": "RelayResponseNormalizerTest30Query",
       "calls": 1,
-      "divergence": "Relay keys an object whose id is the empty string by its path; Baton keys it `User:`, one record for every such object of the type."
+      "status": "unspecified-behaviour",
+      "note": "Relay keys an object whose id is the empty string by its path; Baton keys it `User:`, one record for every such object of the type.",
+      "decision": "Document it and copy Relay, unless that costs performance (owner, 2026-10-09)."
     },
     {
       "test": "RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload for list",
@@ -409,7 +457,9 @@
       "name": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-for-list",
       "operation": "RelayResponseNormalizerTest31Query",
       "calls": 1,
-      "divergence": "An `ID` the server sends as a number or a boolean: Relay keys the object by its path; Baton's ingest rejects the response."
+      "status": "unspecified-behaviour",
+      "note": "An `ID` the server sends as a number or a boolean: Relay keys the object by its path; Baton's ingest rejects the response.",
+      "decision": "Document it and copy Relay, unless that costs performance (owner, 2026-10-09)."
     },
     {
       "test": "RelayResponseNormalizer records which concrete types implement which client schema extension interfaces",
@@ -417,7 +467,8 @@
       "name": "relay/normalizer/records-which-concrete-types-implement-which-client-schema-extension-interfaces",
       "operation": "RelayResponseNormalizerTestClientInterfaceQuery",
       "calls": 1,
-      "dropped": "batonc: Unknown type 'ClientInterface'. Did you mean `ClientObject`?"
+      "status": "unsupported-feature",
+      "note": "batonc: Unknown type 'ClientInterface'. Did you mean `ClientObject`?"
     },
     {
       "test": "RelayResponseNormalizer when field error handling is enabled normalizes queries with multiple field errors",
@@ -425,7 +476,9 @@
       "name": "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-multiple-field-errors",
       "operation": "RelayResponseNormalizerTest37Query",
       "calls": 1,
-      "divergence": "Relay keeps every error of a field as a list of messages; Baton keeps one error a field, the last, with its absolute path."
+      "status": "possible-bug",
+      "note": "Relay keeps every error of a field as a list of messages; Baton keeps one error a field, the last, with its absolute path, and loses the others.",
+      "decision": "Match Relay, unless that costs performance (owner, 2026-10-09)."
     },
     {
       "test": "RelayResponseNormalizer when field error handling is enabled normalizes queries with field errors that bubbled up",
@@ -433,7 +486,9 @@
       "name": "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-field-errors-that-bubbled-up",
       "operation": "RelayResponseNormalizerTest38Query",
       "calls": 1,
-      "divergence": "Relay keeps every error that bubbled to the nulled field, with paths relative to it; Baton keeps one, the last, with its absolute path."
+      "status": "possible-bug",
+      "note": "Relay keeps every error that bubbled to the nulled field, with paths relative to it; Baton keeps one, the last, with its absolute path, and loses the others.",
+      "decision": "Match Relay, unless that costs performance (owner, 2026-10-09)."
     },
     {
       "test": "RelayResponseNormalizer when field error handling is enabled when noncompliant error handling on lists is disabled ignores field errors on an empty list",
@@ -441,7 +496,9 @@
       "name": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-disabled-ignores-field-errors-on-an-empty-list",
       "operation": "RelayResponseNormalizerTest39Query",
       "calls": 1,
-      "divergence": "An error whose path ends at a list that is not null: Relay drops it; Baton places it on the list's field, the last field its path reaches."
+      "status": "unspecified-behaviour",
+      "note": "An error whose path ends at a list that is not null: Relay drops it; Baton places it on the list's field, the last field its path reaches.",
+      "decision": "Match Relay, unless that costs performance (owner, 2026-10-09)."
     },
     {
       "test": "RelayResponseNormalizer when field error handling is enabled when noncompliant error handling on lists is enabled stores field errors on an linked field that is an empty list",
@@ -449,7 +506,8 @@
       "name": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-enabled-stores-field-errors-on-an-linked-field-that-is-an-empty-list",
       "operation": "RelayResponseNormalizerTest40Query",
       "calls": 1,
-      "dropped": "a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS`"
+      "status": "unsupported-feature",
+      "note": "a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS`"
     },
     {
       "test": "RelayResponseNormalizer when field error handling is enabled when noncompliant error handling on lists is enabled stores field errors on an scalar field that is an empty list",
@@ -457,7 +515,8 @@
       "name": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-enabled-stores-field-errors-on-an-scalar-field-that-is-an-empty-list",
       "operation": "RelayResponseNormalizerTest41Query",
       "calls": 1,
-      "dropped": "a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS`"
+      "status": "unsupported-feature",
+      "note": "a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS`"
     },
     {
       "test": "RelayResponseNormalizer Prototype-less objects (e.g., from graphql-js executor) normalizes prototype-less payloads with type discriminator",
@@ -472,7 +531,9 @@
       "name": "relay/normalizer/prototype-less-objects-e-g-from-graphql-js-executor-normalizes-prototype-less-payloads-for-union-types",
       "operation": "RelayResponseNormalizerTest43Query",
       "calls": 1,
-      "divergence": "The payload lacks the `__isNode` the server text asks for: Relay then skips `... on Node { id }` and stores no `id`; Baton knows from the schema that `Page` is a `Node` and stores it."
+      "status": "invalid-input",
+      "note": "The server text asks for `... on Node { __isNode: __typename, id }`, and the test's payload leaves `__isNode` out, which a conforming server does not do; the test is about prototype-less objects and the omission is incidental. Relay knows no schema at run time and applies an abstract fragment only when the payload answers `__isX`, so it stores no `id`; Baton knows from the schema that `Page` is a `Node` and stores it (spec/runtime.md, memberships).",
+      "decision": "Open. The recommendation is no change: both behave the same on a response that answers the text."
     }
   ]
 }

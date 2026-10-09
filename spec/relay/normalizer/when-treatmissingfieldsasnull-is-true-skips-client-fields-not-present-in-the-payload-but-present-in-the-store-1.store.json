@@ -1,0 +1,6 @@
+{
+  "User:1": {"__typename": "User", "firstName": "Bob", "id": "1", "nickname": "ecilA"},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "User:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

@@ -65,3 +65,4 @@ principle, the proof belongs here.
 - [A format is per emitter](a-format-is-per-emitter.md)
 - [The Kotlin host marks a document on the composable](the-kotlin-host-marks-a-document-on-the-composable.md)
 - [swift-syntax spans the floor to the newest release](swift-syntax-spans-the-floor-to-the-newest.md)
+- [Relay's store tests are measured against, not obeyed](relays-tests-are-measured-not-obeyed.md)

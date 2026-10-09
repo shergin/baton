@@ -1,0 +1,18 @@
+query RelayResponseNormalizerTest13Query($id: ID!) {
+  node(id: $id) {
+    ...RelayResponseNormalizerTest10Fragment
+      @alias
+  }
+}
+
+fragment RelayResponseNormalizerTest10Fragment on Feedback {
+  id
+  actors {
+    ... on User {
+      name
+      actors @stream(label: "actors", if: true, initial_count: 0) {
+        name
+      }
+    }
+  }
+}

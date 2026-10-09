@@ -5,13 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
-- `spec/relay/`: 23 cases harvested from Relay v21.0.1's
-  `RelayResponseNormalizer-test.js`, its payloads and the records its tests
-  expect, translated into Baton's keys by `scripts/relay-harvest/` and run
-  by the Swift test target `BatonRelayTests`. Thirteen agree with Relay;
-  ten part from it and are listed in `spec/relay/divergences.json` until
-  each is decided: a deferred fragment's fields in the initial payload, an
-  empty or non-string `id`, and how many errors a field keeps.
+- `spec/relay/`: Relay v21.0.1's `RelayResponseNormalizer-test.js`
+  harvested into cases, its payloads and the records its tests expect
+  translated into Baton's keys by `scripts/relay-harvest/` and run by the
+  Swift test target `BatonRelayTests`. Relay's tests are measured against,
+  not obeyed: of 60, 13 agree with Relay and must pass; 10 carry a status
+  (`possible-bug`, `unspecified-behaviour`, `invalid-input`) and run with
+  their results ignored until they pass; 31 use features Baton does not have
+  and are kept out of the runs; 6 are not expressible yet.
+  `docs/decisions/relays-tests-are-measured-not-obeyed.md` is the record.
 - The Kotlin runtime on Maven Central: `com.shergin.baton:baton`,
   `baton-testing` and `baton-inspector`, Kotlin Multiplatform artifacts for
   the JVM and Android, versioned with the release; and the Gradle plugin

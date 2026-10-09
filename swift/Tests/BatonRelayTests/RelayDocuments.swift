@@ -136,6 +136,89 @@ struct RelayDocuments {
     var relayResponseNormalizerTest6Fragment: RelayResponseNormalizerTest6Fragment
 
     @Query("""
+        query RelayResponseNormalizerTest16Query {
+          me {
+            author {
+              id
+              name
+            }
+          }
+          meAgain: me {
+            author {
+              id
+              name
+            }
+          }
+        }
+        """)
+    var relayResponseNormalizerTest16Query: RelayResponseNormalizerTest16Query
+
+    @Query("""
+        query RelayResponseNormalizerTest17Query {
+          me {
+            author {
+              id
+              name
+            }
+          }
+        }
+        """)
+    var relayResponseNormalizerTest17Query: RelayResponseNormalizerTest17Query
+
+    @Query("""
+        query RelayResponseNormalizerTest15Query($id: ID) {
+          node(id: $id) {
+            id
+            __typename
+            ... on User {
+              actor {
+                id
+                __typename
+              }
+              author {
+                id
+                __typename
+              }
+            }
+          }
+        }
+        """)
+    var relayResponseNormalizerTest15Query: RelayResponseNormalizerTest15Query
+
+    @Query("""
+        query RelayResponseNormalizerTest18Query($id: ID) {
+          node(id: $id) {
+            id
+            __typename
+            ... on User {
+              actors {
+                id
+                __typename
+              }
+            }
+          }
+        }
+        """)
+    var relayResponseNormalizerTest18Query: RelayResponseNormalizerTest18Query
+
+    @Query("""
+        query RelayResponseNormalizerTest19Query($id: ID) {
+          node(id: $id) {
+            id
+            __typename
+            ... on User {
+              actors {
+                id
+                name
+                __typename
+              }
+            }
+          }
+        }
+        """)
+    var relayResponseNormalizerTest19Query: RelayResponseNormalizerTest19Query
+
+    @Query("""
         query RelayResponseNormalizerTest20Query($id: ID) {
           node(id: $id) {
             id
@@ -326,6 +409,62 @@ struct RelayDocuments {
     var relayResponseNormalizerTest29Query: RelayResponseNormalizerTest29Query
 
     @Query("""
+        query RelayResponseNormalizerTest33Query($id: ID, $size: [Int]) {
+          node(id: $id) {
+            id
+            __typename
+            ... on User {
+              firstName
+              profilePicture(size: $size) {
+                uri
+              }
+            }
+          }
+        }
+        """)
+    var relayResponseNormalizerTest33Query: RelayResponseNormalizerTest33Query
+
+    @Query("""
+        query RelayResponseNormalizerTest34Query($id: ID) {
+          node(id: $id) {
+            id
+            __typename
+            ... on User {
+              firstName
+              nickname
+              foo {
+                bar {
+                  content
+                }
+              }
+            }
+          }
+        }
+        """)
+    var relayResponseNormalizerTest34Query: RelayResponseNormalizerTest34Query
+
+    @Query("""
+        query RelayResponseNormalizerTest35Query($id: ID) {
+          node(id: $id) {
+            id
+            __typename
+            ... on User {
+              name
+              friends(first: 2) {
+                edges {
+                  node {
+                    id
+                    firstName
+                  }
+                }
+              }
+            }
+          }
+        }
+        """)
+    var relayResponseNormalizerTest35Query: RelayResponseNormalizerTest35Query
+
+    @Query("""
         query RelayResponseNormalizerTest30Query {
           me {
             author {
@@ -411,6 +550,36 @@ struct RelayDocuments {
     var relayResponseNormalizerTest39Query: RelayResponseNormalizerTest39Query
 
     @Query("""
+        query RelayResponseNormalizerTest40Query($id: ID!) {
+          node(id: $id) {
+            id
+            __typename
+            ... on User {
+              friends(first: 3) {
+                edges {
+                  cursor
+                }
+              }
+            }
+          }
+        }
+        """)
+    var relayResponseNormalizerTest40Query: RelayResponseNormalizerTest40Query
+
+    @Query("""
+        query RelayResponseNormalizerTest41Query($id: ID!) {
+          node(id: $id) {
+            id
+            __typename
+            ... on User {
+              emailAddresses
+            }
+          }
+        }
+        """)
+    var relayResponseNormalizerTest41Query: RelayResponseNormalizerTest41Query
+
+    @Query("""
         query RelayResponseNormalizerTest42Query($id: ID!) {
           node(id: $id) {
             ...RelayResponseNormalizerTest42Fragment
@@ -450,6 +619,11 @@ extension RelayDocuments {
         "RelayResponseNormalizerTest8Query": RelayResponseNormalizerTest8Query.self,
         "RelayResponseNormalizerTest9Query": RelayResponseNormalizerTest9Query.self,
         "RelayResponseNormalizerTest10Query": RelayResponseNormalizerTest10Query.self,
+        "RelayResponseNormalizerTest16Query": RelayResponseNormalizerTest16Query.self,
+        "RelayResponseNormalizerTest17Query": RelayResponseNormalizerTest17Query.self,
+        "RelayResponseNormalizerTest15Query": RelayResponseNormalizerTest15Query.self,
+        "RelayResponseNormalizerTest18Query": RelayResponseNormalizerTest18Query.self,
+        "RelayResponseNormalizerTest19Query": RelayResponseNormalizerTest19Query.self,
         "RelayResponseNormalizerTest20Query": RelayResponseNormalizerTest20Query.self,
         "RelayResponseNormalizerTest21Query": RelayResponseNormalizerTest21Query.self,
         "RelayResponseNormalizerTest22Query": RelayResponseNormalizerTest22Query.self,
@@ -459,11 +633,16 @@ extension RelayDocuments {
         "RelayResponseNormalizerTest25Query": RelayResponseNormalizerTest25Query.self,
         "RelayResponseNormalizerTest26Query": RelayResponseNormalizerTest26Query.self,
         "RelayResponseNormalizerTest29Query": RelayResponseNormalizerTest29Query.self,
+        "RelayResponseNormalizerTest33Query": RelayResponseNormalizerTest33Query.self,
+        "RelayResponseNormalizerTest34Query": RelayResponseNormalizerTest34Query.self,
+        "RelayResponseNormalizerTest35Query": RelayResponseNormalizerTest35Query.self,
         "RelayResponseNormalizerTest30Query": RelayResponseNormalizerTest30Query.self,
         "RelayResponseNormalizerTest31Query": RelayResponseNormalizerTest31Query.self,
         "RelayResponseNormalizerTest37Query": RelayResponseNormalizerTest37Query.self,
         "RelayResponseNormalizerTest38Query": RelayResponseNormalizerTest38Query.self,
         "RelayResponseNormalizerTest39Query": RelayResponseNormalizerTest39Query.self,
+        "RelayResponseNormalizerTest40Query": RelayResponseNormalizerTest40Query.self,
+        "RelayResponseNormalizerTest41Query": RelayResponseNormalizerTest41Query.self,
         "RelayResponseNormalizerTest42Query": RelayResponseNormalizerTest42Query.self,
         "RelayResponseNormalizerTest43Query": RelayResponseNormalizerTest43Query.self,
     ]

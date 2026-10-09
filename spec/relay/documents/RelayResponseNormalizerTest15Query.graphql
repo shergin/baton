@@ -1,0 +1,1 @@
+query RelayResponseNormalizerTest15Query($id:ID){node(id:$id){id,__typename,...on User{actor{id,__typename},author{id,__typename}}}}

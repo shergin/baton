@@ -1,0 +1,12 @@
+{
+  "data": {
+    "me": {
+      "__typename": "User",
+      "id": "me",
+      "author": {
+        "id": "friend1",
+        "name": "Second Friend"
+      }
+    }
+  }
+}

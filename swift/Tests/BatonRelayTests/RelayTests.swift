@@ -7,8 +7,8 @@ import Testing
 /// The cases harvested from Relay's own store tests into `spec/relay/`: each
 /// commits the payload Relay's test normalized and compares the store with
 /// the records Relay's test expected, keyed as Baton keys them. The manifest
-/// has the main manifest's format; `spec/relay/README.md` says what the
-/// harvest kept and why the rest dropped out.
+/// has the main manifest's format; `spec/relay/README.md` says what each
+/// status means and what the harvest kept.
 extension Spec {
     static let relayManifest: Manifest = {
         do {
@@ -18,16 +18,28 @@ extension Spec {
         }
     }()
 
-    /// The cases and scripts where Baton parts from Relay, by name, each
-    /// with a line saying how. They wait for the owner's decision; until
-    /// then each runs as a known issue, which fails once it passes.
-    static let relayDivergences: [String: String] = {
+    /// The status of every case the manifest lists, by the case's name.
+    static let relayCaseMarks: [String: RelayMarks] = {
+        struct Listing: Decodable { let cases: [RelayMarks] }
         do {
-            return try JSONDecoder().decode([String: String].self, from: data("relay/divergences.json"))
+            let listing = try JSONDecoder().decode(Listing.self, from: data("relay/manifest.json"))
+            return Dictionary(uniqueKeysWithValues: listing.cases.map { ($0.name, $0) })
         } catch {
-            fatalError("Spec: relay/divergences.json does not read: \(error)")
+            fatalError("Spec: relay/manifest.json does not read: \(error)")
         }
     }()
+}
+
+/// What the harvest says of a case or a script: a status when Baton is not
+/// held to Relay's result, and why. Relay's tests are measured against, not
+/// obeyed: a case with a status runs as a known issue, which fails once it
+/// passes, except an unsupported feature's, which is left out of the runs.
+struct RelayMarks: Decodable, Sendable {
+    let name: String
+    let status: String?
+    let note: String?
+
+    var isRun: Bool { status != "unsupported-feature" }
 }
 
 struct RelayCase: Sendable, CustomTestStringConvertible {
@@ -35,15 +47,23 @@ struct RelayCase: Sendable, CustomTestStringConvertible {
 
     var testDescription: String { entry.name }
 
-    static let all = Spec.relayManifest.cases.map(RelayCase.init(entry:))
+    var marks: RelayMarks? { Spec.relayCaseMarks[entry.name] }
+
+    static let all = Spec.relayManifest.cases.map(RelayCase.init(entry:)).filter { $0.marks?.isRun ?? true }
 }
 
 struct RelayScript: Sendable, CustomTestStringConvertible {
     let path: String
+    let marks: RelayMarks
 
     var testDescription: String { path }
 
-    static let all = Spec.relayManifest.scripts.map(RelayScript.init(path:))
+    static let all: [RelayScript] = Spec.relayManifest.scripts.compactMap { path in
+        guard let marks = try? JSONDecoder().decode(RelayMarks.self, from: Spec.data(path)) else {
+            fatalError("Spec: \(path) does not read")
+        }
+        return marks.isRun ? RelayScript(path: path, marks: marks) : nil
+    }
 }
 
 struct RelayError: Error, CustomStringConvertible {
@@ -55,7 +75,7 @@ struct RelayError: Error, CustomStringConvertible {
 struct RelayTests {
     @Test("a payload Relay's normalizer tests commit leaves the records Relay's test expects", arguments: RelayCase.all)
     func aPayloadLeavesTheRecordsRelayExpects(_ relay: RelayCase) throws {
-        try divergent(relay.entry.name) {
+        try measured(relay.marks) {
             let store = Store()
             store.log = nil
             for response in relay.entry.responses {
@@ -68,7 +88,7 @@ struct RelayTests {
     @Test("payloads Relay's normalizer tests commit in a row leave, after each, the records Relay's test expects", arguments: RelayScript.all)
     func payloadsInARowLeaveTheRecordsRelayExpects(_ relay: RelayScript) throws {
         let script = try Manifest.Script.load(relay.path)
-        try divergent(relay.path) {
+        try measured(relay.marks) {
             let store = Store()
             store.log = nil
             for (index, step) in script.steps.enumerated() {
@@ -84,10 +104,10 @@ struct RelayTests {
         }
     }
 
-    @Test("every operation the Relay cases name has its document under spec/relay/documents, equal to the text the compiler generated")
+    @Test("every operation the Relay cases compile has its document under spec/relay/documents, equal to the text the compiler generated")
     func theDocumentsAgreeWithTheGeneratedText() throws {
         let bless = ProcessInfo.processInfo.environment["BATON_BLESS"] != nil
-        for entry in Spec.relayManifest.cases {
+        for entry in Spec.relayManifest.cases where entry.document.hasPrefix("relay/documents/") {
             let operation = try Self.operation(entry.operation)
             let text = (operation.text ?? "") + "\n"
             let url = Spec.directory.appendingPathComponent(entry.document)
@@ -106,13 +126,14 @@ struct RelayTests {
 
     // MARK: Helpers
 
-    /// Runs a case's body, as a known issue when it is a recorded divergence.
-    func divergent(_ name: String, _ body: () throws -> Void) throws {
-        guard let divergence = Spec.relayDivergences[name] else {
+    /// Runs a case's body, as a known issue when the harvest gives it a
+    /// status: its result is then ignored until it passes.
+    func measured(_ marks: RelayMarks?, _ body: () throws -> Void) throws {
+        guard let marks, let status = marks.status else {
             try body()
             return
         }
-        withKnownIssue(Comment(rawValue: divergence)) {
+        withKnownIssue(Comment(rawValue: "\(status): \(marks.note ?? "")")) {
             try body()
         }
     }

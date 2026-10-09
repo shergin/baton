@@ -1,0 +1,13 @@
+query RelayResponseNormalizerTest_pvQuery($id: ID!) {
+  node(id: $id) {
+    id
+    ...RelayResponseNormalizerTest_pvFragment @alias
+  }
+}
+
+fragment RelayResponseNormalizerTest_pvFragment on User
+@argumentDefinitions(
+  includeName: {
+    type: "Boolean!"
+    provider: "./RelayProvider_returnsTrue.relayprovider"
+  }

@@ -1,0 +1,7 @@
+{
+  "User:1": {"__typename": "User", "id": "1", "nameRenderer(supported:\"34hjiS\")": {"__ref": "User:1:nameRenderer(supported:\"34hjiS\"):CustomNameRenderer"}},
+  "User:1:nameRenderer(supported:\"34hjiS\"):CustomNameRenderer": {"__typename": "CustomNameRenderer"},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "User:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

@@ -1,0 +1,12 @@
+{
+  "data": {
+    "node": {
+      "__typename": "User",
+      "id": "4",
+      "name": "testName",
+      "firstName": "testLastName",
+      "lastName": "testLastName",
+      "username": "testUsername"
+    }
+  }
+}

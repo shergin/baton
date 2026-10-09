@@ -1,0 +1,30 @@
+{
+  "name": "when-treatmissingfieldsasnull-is-true-skips-client-fields-not-present-in-the-payload-but-present-in-the-store",
+  "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when treatMissingFieldsAsNull is true skips client fields not present in the payload but present in the store",
+  "status": "unsupported-feature",
+  "note": "`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayResponseNormalizerTest34Query",
+        "response": "relay/normalizer/when-treatmissingfieldsasnull-is-true-skips-client-fields-not-present-in-the-payload-but-present-in-the-store-1.json",
+        "variables": {
+          "id": "1",
+          "size": 32
+        }
+      },
+      "records": "relay/normalizer/when-treatmissingfieldsasnull-is-true-skips-client-fields-not-present-in-the-payload-but-present-in-the-store-1.store.json"
+    },
+    {
+      "payload": {
+        "operation": "RelayResponseNormalizerTest34Query",
+        "response": "relay/normalizer/when-treatmissingfieldsasnull-is-true-skips-client-fields-not-present-in-the-payload-but-present-in-the-store-2.json",
+        "variables": {
+          "id": "1",
+          "size": 32
+        }
+      },
+      "records": "relay/normalizer/when-treatmissingfieldsasnull-is-true-skips-client-fields-not-present-in-the-payload-but-present-in-the-store-2.store.json"
+    }
+  ]
+}
