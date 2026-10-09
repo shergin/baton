@@ -81,7 +81,7 @@ class Anchor @Generated constructor(val record: Record, val owner: Owner) {
     @Generated
     fun binding(site: ArgumentSite, values: () -> Map<String, Variable?>): Anchor = Anchor(record, owner.binding(site, values), origin)
 
-    /** The slot's value, read on the store's thread through its cell, so a read in composition registers the slot. */
+    /** The slot's value, read on the store's thread through its channel, so a read in composition registers the slot. */
     private fun load(slot: Slot): Value {
         store?.checkThread()
         return record.read(slot)

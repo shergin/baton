@@ -13,25 +13,42 @@ class StoreTests {
     private val header = Spec.case("rickandmorty/character-header-9")
 
     /** The header's response with the name changed, as a later fetch of the same character answers. */
-    private val renamed = """
-        {"data":{"character":{"name":"Agency Director Prime","status":"Dead","species":"Human","image":"https://rickandmortyapi.com/api/character/avatar/9.jpeg","origin":{"name":"Earth (Replacement Dimension)","id":"20"},"id":"9"}}}
-    """.trimIndent().encodeToByteArray()
+    private val renamed = Spec.text(header.responses[0]).replace("\"Agency Director\"", "\"Agency Director Prime\"").encodeToByteArray()
+
+    /** The header's response with the status changed, as another later fetch answers. */
+    private val revived = Spec.text(header.responses[0]).replace("\"Dead\"", "\"Alive\"").encodeToByteArray()
 
     private fun commit(store: Store, case: Spec.Case, response: ByteArray): Int {
         val resolved = store.resolve(checkNotNull(case.plan), case.variables)
         return store.commit(Ingest.normalize(response, resolved, Store.ROOT_KEY))
     }
 
-    /** The states a read of [slot] on [record] registers in a snapshot that observes its reads. */
-    private fun statesRead(record: Record, slot: Slot): Set<Any> {
-        val read = HashSet<Any>()
-        val snapshot = Snapshot.takeSnapshot { read.add(it) }
+    /** The states [read] registers in a snapshot that observes its reads. */
+    private fun statesRead(read: () -> Unit): Set<Any> {
+        val states = HashSet<Any>()
+        val snapshot = Snapshot.takeSnapshot { states.add(it) }
         try {
-            snapshot.enter { record.read(slot) }
+            snapshot.enter(read)
         } finally {
             snapshot.dispose()
         }
-        return read
+        return states
+    }
+
+    /** The states a read of [slot] on [record] registers in a snapshot that observes its reads. */
+    private fun statesRead(record: Record, slot: Slot): Set<Any> = statesRead { record.read(slot) }
+
+    /** The states [writes] modifies in the global snapshot, as an apply observer hears them once the snapshot's changes are sent. */
+    private fun statesModified(writes: () -> Unit): Set<Any> {
+        val modified = HashSet<Any>()
+        val observer = Snapshot.registerApplyObserver { states, _ -> modified.addAll(states) }
+        try {
+            writes()
+            Snapshot.sendApplyNotifications()
+        } finally {
+            observer.dispose()
+        }
+        return modified
     }
 
     @Test
@@ -43,19 +60,39 @@ class StoreTests {
         val status = Registry.slot(character.type, "status")
         val nameStates = statesRead(character, name)
         val statusStates = statesRead(character, status)
-        assertTrue(nameStates.isNotEmpty() && statusStates.isNotEmpty(), "a read registers the slot's cell")
+        assertTrue(nameStates.isNotEmpty() && statusStates.isNotEmpty(), "a read registers the slot's channel")
 
-        val changed = HashSet<Any>()
-        val observer = Snapshot.registerApplyObserver { states, _ -> changed.addAll(states) }
-        try {
-            assertEquals(1, commit(store, header, renamed), "the commit reports the one field it changed")
-            Snapshot.sendApplyNotifications()
-        } finally {
-            observer.dispose()
-        }
+        val changed = statesModified { assertEquals(1, commit(store, header, renamed), "the commit reports the one field it changed") }
         assertTrue(nameStates.all { it in changed }, "the name's readers are told")
         assertTrue(statusStates.none { it in changed }, "the status's readers are not")
         assertEquals(Value.String("Agency Director Prime"), character.peek(name))
+    }
+
+    @Test
+    fun `a slot nobody read has no channel, so a commit modifies no snapshot state but the store's revision`() {
+        val store = Store()
+        val revision = statesRead { store.revision }
+        val making = statesModified { header.commit(store) }
+        assertEquals(revision, making, "a commit that makes the records modifies the revision alone")
+        val renaming = statesModified { assertEquals(1, commit(store, header, renamed), "the name changed") }
+        assertEquals(revision, renaming, "a commit that changes a field nobody read modifies the revision alone")
+    }
+
+    @Test
+    fun `a slot that was read has a channel, and a commit modifies it only when it changes that slot`() {
+        val store = Store()
+        header.commit(store)
+        val character = assertNotNull(store.existing("Character:9"))
+        val name = statesRead(character, Registry.slot(character.type, "name"))
+        assertTrue(name.isNotEmpty(), "a read makes the slot's channel and registers it")
+        val revision = statesRead { store.revision }
+
+        val statusChange = statesModified { assertEquals(1, commit(store, header, revived), "the status changed") }
+        assertEquals(revision, statusChange, "a change to another field of the record modifies the revision alone")
+        val sameAgain = statesModified { assertEquals(0, commit(store, header, revived), "nothing changed") }
+        assertEquals(revision, sameAgain, "the same payload again modifies the revision alone")
+        val nameChange = statesModified { assertEquals(2, commit(store, header, renamed), "the name and the status changed") }
+        assertEquals(name + revision, nameChange, "a change to the name modifies the channel its read registered, and to the status, which nobody read, no state")
     }
 
     @Test

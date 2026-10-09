@@ -21,6 +21,32 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the Kotlin record's channels on a device — 2026-10-08
+
+Revision: the working tree on top of `47bdcca`. The Kotlin `IngestBenchmark`
+(`kotlin/benchmarks/android`, the release build that is not debuggable, run
+as the entry below describes) now also takes the medians of what the
+runtime's `art.gc.bytes-allocated` counter grows by during the ingest and
+during the commit, which is good to one allocation buffer since the counter
+moves as buffers are handed out, and measures once what one store holds
+after the commit: the heap in use after a collection with the store alive,
+less the heap in use after a collection before the store was made. Each row
+is two runs of 300 after 200 warm-ups on the Pixel 9, Android 17 (API 37),
+in one sitting; the first row is the runtime at `47bdcca` under the
+extended benchmark.
+
+| Runtime | Ingest, off the main thread | Commit, on the main thread | Ingest allocates | Commit allocates | A store holds |
+|---|---|---|---|---|---|
+| `47bdcca`: a cell is snapshot state, one per written slot; arrays sized by the type's slot count | 5.23, 5.25 ms | 1.35, 1.36 ms | 1,820 KB | 672 KB | 1,100 KB |
+| A channel per slot read, made at the first read; cells plain values | 5.25, 5.27 ms | 0.95, 0.94 ms | 1,828 KB | 448 KB | 896 KB |
+
+The channel is the change: the commit takes 0.95 ms where it took
+1.35 ms, allocates 448 KB where it allocated 672 KB, and a store holds
+896 KB where it held 1,100 KB, because a slot nobody has read is a store
+into an array and no snapshot state object with its record of writes. The
+ingest does not touch records and does not move; its allocation column
+wobbles by less than one buffer across the rows and is not a reading.
+
 ## Unreleased, the Kotlin ingest on a device — 2026-10-07
 
 Revision: `436da2b`. The Kotlin runtime's `IngestBenchmark`

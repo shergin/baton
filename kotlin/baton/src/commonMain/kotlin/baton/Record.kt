@@ -39,14 +39,16 @@ internal sealed interface Value {
  * field error beside a cell where the response put one, and whether
  * `@deleteRecord` removed it.
  *
- * A cell is Compose snapshot state, so a read in composition registers that
- * slot and a write invalidates that slot's readers alone: the contract's
- * notification granularity, a record and a field. The array of cells is
- * sized by the registry's slot count for the type when the record is made
- * and grown when a slot is interned after; a cell's state is made when the
- * slot is first read or written, since a type has many slots and a record
- * holds few. A key the store numbered (a negative slot index) has its cell
- * in a short list sorted by number. A record belongs to its store's thread.
+ * A cell holds its value in a plain array. Beside it, a slot that was read
+ * has a channel, Compose snapshot state made at the slot's first read and
+ * bumped by a write that changes the slot: a read in composition registers
+ * the channel, so a write invalidates that slot's readers alone, the
+ * contract's notification granularity, a record and a field. A slot nobody
+ * read has no channel, and a write to it is a store into the array. The
+ * arrays are sized by the registry's slot count for the type when the
+ * record is made and grown when a slot is interned after. A key the store
+ * numbered (a negative slot index) has its cell and channel in short lists
+ * sorted by number. A record belongs to its store's thread.
  */
 class Record internal constructor(val type: TypeID, val key: String, internal val idOffset: Int = -1) {
     /** Whether `@deleteRecord` removed it: links to it read as null and lists skip it, until a payload names it again. */
@@ -54,10 +56,14 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
     var deleted: Boolean = false
         private set
 
-    private var cells: Array<MutableState<Value>?> = arrayOfNulls(Registry.slotCount(type))
-    /** The numbers of the store's keys written to the record, ascending, and their cells beside them. */
+    /** The dense slots' values, by index; null where the slot was never written. */
+    private var values: Array<Value?> = arrayOfNulls(Registry.slotCount(type))
+    /** The dense slots' channels, by index, each made at its slot's first read; empty until one is. */
+    private var channels: Array<MutableState<Unit>?> = EMPTY_CHANNELS
+    /** The numbers of the store's keys written to the record, ascending, with their values and channels beside them. */
     private var renderedNumbers: IntArray = EMPTY_NUMBERS
-    private var renderedCells: Array<MutableState<Value>?> = EMPTY_CELLS
+    private var renderedValues: Array<Value?> = EMPTY_VALUES
+    private var renderedChannels: Array<MutableState<Unit>?> = EMPTY_CHANNELS
     private var renderedCount = 0
     /** Field errors by slot index; made when the first error lands. */
     private var errors: HashMap<Int, FieldError>? = null
@@ -79,28 +85,25 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
     internal fun hasID(id: String): Boolean =
         idOffset >= 0 && key.length - idOffset == id.length && key.regionMatches(idOffset, id, 0, id.length)
 
-    /** The slot's value, read through its cell: in composition, the read registers the slot. */
-    internal fun read(slot: Slot): Value = cell(slot).value
+    /** The slot's value, read through its channel: in composition, the read registers the slot. */
+    internal fun read(slot: Slot): Value {
+        channel(slot).value
+        return stored(slot.index)
+    }
 
-    /** The slot's value for the store's own bookkeeping, making no cell for a slot never written. */
+    /** The slot's value for the store's own bookkeeping, registering nothing and making no channel. */
     internal fun peek(slot: Slot): Value {
         val index = slot.index
         staged?.get(index)?.let { return it }
-        if (index >= 0) {
-            if (index >= cells.size) return Value.Missing
-            return cells[index]?.value ?: Value.Missing
-        }
-        val position = renderedPosition(index.inv())
-        if (position < 0) return Value.Missing
-        return renderedCells[position]?.value ?: Value.Missing
+        return stored(index)
     }
 
     /** The field error beside a slot. */
     internal fun peekError(slot: Slot): FieldError? = errors?.get(slot.index)
 
-    /** The field error beside a slot, read through the slot's cell, which an error's arrival notifies: in composition, the read registers the slot. */
+    /** The field error beside a slot, read through the slot's channel, which an error's arrival bumps: in composition, the read registers the slot. */
     internal fun error(slot: Slot): FieldError? {
-        cell(slot).value
+        channel(slot).value
         return errors?.get(slot.index)
     }
 
@@ -115,15 +118,10 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
     internal fun write(slot: Slot, value: Value): Value? {
         check(slot.type == type) { "a ${slot.type.name} slot written into a ${type.name} record" }
         val index = slot.index
-        if (index >= 0 && (index >= cells.size || cells[index] == null)) {
-            if (value == Value.Missing) return null
-        } else if (index < 0 && renderedPosition(index.inv()) < 0) {
-            if (value == Value.Missing) return null
-        }
-        val cell = cell(slot)
-        val previous = cell.value
+        val previous = stored(index)
         if (previous == value) return null
-        cell.value = value
+        store(index, value)
+        bump(index)
         return previous
     }
 
@@ -137,7 +135,7 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
         val previous = peek(slot)
         if (previous == value) return null
         // The cell is made now, so the walks over the record's values find the staged value.
-        cell(slot)
+        ensure(slot.index)
         val table = staged ?: HashMap<Int, Value>().also { staged = it }
         table[slot.index] = value
         return previous
@@ -154,9 +152,10 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
         val value = table.getValue(slot.index)
         table.remove(slot.index)
         if (table.isEmpty()) staged = null
-        val cell = cell(slot)
-        if (cell.value == value) return false
-        cell.value = value
+        val index = slot.index
+        if (stored(index) == value) return false
+        store(index, value)
+        bump(index)
         return true
     }
 
@@ -177,8 +176,7 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
 
     /** Tells a slot's readers that what they read changed though the value did not: its error, or a link's target deleted. */
     internal fun notify(slot: Slot) {
-        val cell = cell(slot)
-        cell.value = cell.value
+        bump(slot.index)
     }
 
     internal fun setDeleted(deleted: Boolean) {
@@ -227,15 +225,18 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
      * records break, or the store's session ended.
      */
     internal fun clear() {
-        for (cell in cells) {
-            if (cell != null && cell.value != Value.Missing) cell.value = Value.Missing
+        for (index in values.indices) {
+            if (stored(index) == Value.Missing) continue
+            values[index] = null
+            bump(index)
         }
         for (position in 0 until renderedCount) {
-            val cell = renderedCells[position] ?: continue
-            if (cell.value != Value.Missing) cell.value = Value.Missing
+            if ((renderedValues[position] ?: Value.Missing) == Value.Missing) continue
+            renderedChannels[position]?.value = Unit
         }
         renderedNumbers = EMPTY_NUMBERS
-        renderedCells = EMPTY_CELLS
+        renderedValues = EMPTY_VALUES
+        renderedChannels = EMPTY_CHANNELS
         renderedCount = 0
         errors = null
         staged = null
@@ -265,25 +266,27 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
                 continue
             }
             renderedNumbers[kept] = number
-            renderedCells[kept] = renderedCells[position]
+            renderedValues[kept] = renderedValues[position]
+            renderedChannels[kept] = renderedChannels[position]
             kept += 1
         }
-        for (position in kept until renderedCount) renderedCells[position] = null
+        for (position in kept until renderedCount) {
+            renderedValues[position] = null
+            renderedChannels[position] = null
+        }
         renderedCount = kept
         if (errors?.isEmpty() == true) errors = null
     }
 
-    /** Calls [body] with every slot that holds a value and the state of its cell; for the harness that observes notifications. */
-    internal fun forEachCell(body: (Slot, Any) -> Unit) {
-        for (index in cells.indices) {
-            val cell = cells[index] ?: continue
-            if (cell.value == Value.Missing) continue
-            body(Slot(type, index), cell)
+    /** Calls [body] with every slot that holds a value and its channel, made if the slot was never read; for the harness that observes notifications. */
+    internal fun forEachChannel(body: (Slot, Any) -> Unit) {
+        for (index in values.indices) {
+            if (stored(index) == Value.Missing) continue
+            body(Slot(type, index), channel(index))
         }
         for (position in 0 until renderedCount) {
-            val cell = renderedCells[position] ?: continue
-            if (cell.value == Value.Missing) continue
-            body(Slot(type, renderedNumbers[position].inv()), cell)
+            if ((renderedValues[position] ?: Value.Missing) == Value.Missing) continue
+            body(Slot(type, renderedNumbers[position].inv()), renderedChannel(position))
         }
     }
 
@@ -298,16 +301,14 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
     /** Calls [body] with every slot that holds a value, dense slots first, then the store's keys by number. */
     internal fun forEachValue(body: (Slot, Value) -> Unit) {
         val staged = staged
-        for (index in cells.indices) {
-            val cell = cells[index] ?: continue
-            val value = staged?.get(index) ?: cell.value
+        for (index in values.indices) {
+            val value = staged?.get(index) ?: values[index] ?: continue
             if (value == Value.Missing) continue
             body(Slot(type, index), value)
         }
         for (position in 0 until renderedCount) {
-            val cell = renderedCells[position] ?: continue
             val index = renderedNumbers[position].inv()
-            val value = staged?.get(index) ?: cell.value
+            val value = staged?.get(index) ?: renderedValues[position] ?: continue
             if (value == Value.Missing) continue
             body(Slot(type, index), value)
         }
@@ -343,29 +344,79 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
         for (slot in linking) notify(slot)
     }
 
-    /** The slot's cell, made, and the arrays grown, on first touch. */
-    private fun cell(slot: Slot): MutableState<Value> {
-        val index = slot.index
+    /** The slot's stored value, missing where the slot was never written; staged values are not read here. */
+    private fun stored(index: Int): Value {
+        if (index >= 0) return if (index < values.size) values[index] ?: Value.Missing else Value.Missing
+        val position = renderedPosition(index.inv())
+        return if (position < 0) Value.Missing else renderedValues[position] ?: Value.Missing
+    }
+
+    /** Stores a slot's value, growing the dense array or placing the store's number among the record's as needed. */
+    private fun store(index: Int, value: Value) {
         if (index >= 0) {
-            if (index >= cells.size) cells = cells.copyOf(maxOf(index + 1, Registry.slotCount(type)))
-            return cells[index] ?: newCell().also { cells[index] = it }
+            if (index >= values.size) values = values.copyOf(maxOf(index + 1, Registry.slotCount(type)))
+            values[index] = value
+            return
         }
-        val number = index.inv()
-        val position = renderedPosition(number)
-        if (position >= 0) return renderedCells[position] ?: newCell().also { renderedCells[position] = it }
-        val insertion = -(position + 1)
+        // The position first: placing the number may replace the array, and an indexed store reads the array before its index.
+        val position = position(index.inv())
+        renderedValues[position] = value
+    }
+
+    /** Makes a slot's cell, with no value in it: a staged value needs a place the walks over the record find. */
+    private fun ensure(index: Int) {
+        if (index >= 0) {
+            if (index >= values.size) values = values.copyOf(maxOf(index + 1, Registry.slotCount(type)))
+            return
+        }
+        position(index.inv())
+    }
+
+    /** Tells the slot's readers, when it has any: the channel a read made, bumped. */
+    private fun bump(index: Int) {
+        val channel = if (index >= 0) {
+            channels.getOrNull(index)
+        } else {
+            val position = renderedPosition(index.inv())
+            if (position < 0) null else renderedChannels[position]
+        }
+        channel?.value = Unit
+    }
+
+    /** The slot's channel, made at the first read, with the store's number placed among the record's if it is new. */
+    private fun channel(slot: Slot): MutableState<Unit> {
+        val index = slot.index
+        if (index >= 0) return channel(index)
+        return renderedChannel(position(index.inv()))
+    }
+
+    private fun channel(index: Int): MutableState<Unit> {
+        if (index >= channels.size) channels = channels.copyOf(maxOf(index + 1, values.size))
+        return channels[index] ?: newChannel().also { channels[index] = it }
+    }
+
+    private fun renderedChannel(position: Int): MutableState<Unit> =
+        renderedChannels[position] ?: newChannel().also { renderedChannels[position] = it }
+
+    /** The position of a store's number among the record's, placed if it is new, with no value and no channel yet. */
+    private fun position(number: Int): Int {
+        val found = renderedPosition(number)
+        if (found >= 0) return found
+        val insertion = -(found + 1)
         if (renderedCount == renderedNumbers.size) {
             val capacity = maxOf(4, renderedCount * 2)
             renderedNumbers = renderedNumbers.copyOf(capacity)
-            renderedCells = renderedCells.copyOf(capacity)
+            renderedValues = renderedValues.copyOf(capacity)
+            renderedChannels = renderedChannels.copyOf(capacity)
         }
         renderedNumbers.copyInto(renderedNumbers, insertion + 1, insertion, renderedCount)
-        renderedCells.copyInto(renderedCells, insertion + 1, insertion, renderedCount)
-        val cell = newCell()
+        renderedValues.copyInto(renderedValues, insertion + 1, insertion, renderedCount)
+        renderedChannels.copyInto(renderedChannels, insertion + 1, insertion, renderedCount)
         renderedNumbers[insertion] = number
-        renderedCells[insertion] = cell
+        renderedValues[insertion] = null
+        renderedChannels[insertion] = null
         renderedCount += 1
-        return cell
+        return insertion
     }
 
     /** Where a store's key is among the record's: its position, or `-(insertion + 1)`. */
@@ -375,14 +426,15 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
 
     internal companion object {
         private val EMPTY_NUMBERS = IntArray(0)
-        private val EMPTY_CELLS = arrayOfNulls<MutableState<Value>>(0)
+        private val EMPTY_VALUES = arrayOfNulls<Value>(0)
+        private val EMPTY_CHANNELS = arrayOfNulls<MutableState<Unit>>(0)
 
         /**
-         * Every write is compared by the record before it reaches the cell,
-         * and a write of an equal value notifies on purpose, so the cell's
-         * own policy never compares.
+         * A channel carries no value, so its policy never compares: every
+         * bump is a change, and the record decides before bumping whether
+         * the slot changed.
          */
-        private fun newCell(): MutableState<Value> = mutableStateOf(Value.Missing, neverEqualPolicy())
+        private fun newChannel(): MutableState<Unit> = mutableStateOf(Unit, neverEqualPolicy())
 
         /** An entity's key, `Type:id`, built here and nowhere else. */
         fun entityKey(typeName: String, id: String): String = "$typeName:$id"

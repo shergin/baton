@@ -458,20 +458,20 @@ internal class ScriptRun(private val script: Script) {
     // The expectations.
 
     /** What the step's batches notified, slot by slot, among the fields that held a value before the step. */
-    private class Observation(val cells: IdentityHashMap<Any, Script.Notification>) {
+    private class Observation(val channels: IdentityHashMap<Any, Script.Notification>) {
         val heard = HashSet<Script.Notification>()
         lateinit var handle: ObserverHandle
     }
 
     /** Observes every stored slot of every record, each on its own, so the notifications of a step are known slot by slot. */
     private fun observeEverySlot(): Observation {
-        val cells = IdentityHashMap<Any, Script.Notification>()
+        val channels = IdentityHashMap<Any, Script.Notification>()
         for ((key, record) in store.recordsByKey()) {
-            record.forEachCell { slot, cell -> cells[cell] = Script.Notification(key, store.keys.text(slot)) }
+            record.forEachChannel { slot, channel -> channels[channel] = Script.Notification(key, store.keys.text(slot)) }
         }
-        val observation = Observation(cells)
+        val observation = Observation(channels)
         observation.handle = Snapshot.registerApplyObserver { changed, _ ->
-            for (state in changed) cells[state]?.let { observation.heard.add(it) }
+            for (state in changed) channels[state]?.let { observation.heard.add(it) }
         }
         return observation
     }

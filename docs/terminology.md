@@ -451,7 +451,9 @@ record it read, and by nothing else. See
 [what it leaves to a runtime](../spec/runtime.md#11-what-is-not-the-contract).
 Swift: an Observation key path, one per slot index and shared by every
 record.
-Kotlin: the cell itself, Compose snapshot state, one per slot of a record.
+Kotlin: a channel beside the cell, Compose snapshot state made when the
+slot is first read and bumped by a write that changes it; a slot nobody
+read has none.
 
 **Store.** *Concept: store.* Relay's word.
 Here: all records, retained roots and lifetime state; owned by the main

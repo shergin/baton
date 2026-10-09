@@ -19,8 +19,9 @@ fun Store.dump(): String {
 
 /**
  * Every value a record holds, by storage key, as the dump writes it, with
- * its error; for an inspector. The values are read through the record's
- * cells, so a read in composition registers them.
+ * its error; for an inspector. The values are read as the store's own
+ * bookkeeping reads them, registering no slot: an inspector reads the
+ * store's revision, which every batch moves.
  */
 @Generated
 fun Store.fieldTexts(record: Record): List<Triple<String, String, FieldError?>> =

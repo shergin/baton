@@ -28,6 +28,16 @@ are expected and listed without apology.
   calls them, as the Swift environment's run on the main actor; a call
   from `Dispatchers.IO` used to fail the store's thread check. The
   synchronous calls are still made on the store's thread.
+- The Kotlin record's cells are plain values, and a slot has a channel,
+  Compose snapshot state, only once something read it: a write to a slot
+  nobody read is a store into an array, where before every written slot
+  carried a state object and every write went through the snapshot
+  system. A read in composition registers the channel as it registered
+  the cell, and the notifications are the same, slot by slot, under the
+  spec's scripts. On a Pixel 9 the commit of the 899-record fixture takes
+  0.95 ms where it took 1.35 ms, allocates 448 KB where it allocated
+  672 KB, and a store holds 896 KB where it held 1,100 KB; the ingest does
+  not move (`BENCHMARKS.md`).
 
 ## 0.12.0 (Palianytsia) — 2026-10-08
 

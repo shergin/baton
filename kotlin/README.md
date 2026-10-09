@@ -219,8 +219,10 @@ wire's values (`Value.kt`), the operation interfaces (`Operation.kt`), the
 host markers (`Markers.kt`), the generated-code marker and the format
 (`Generated.kt`), and the public errors (`Errors.kt`).
 
-The store and the ingest, to the dump. A record's cells are Compose
-snapshot state, one per slot (`Record.kt`); the store numbers the keys a
+The store and the ingest, to the dump. A record's cells are plain values,
+and a slot that was read has a channel beside its cell, Compose snapshot
+state made at the first read and bumped by a write that changes the slot
+(`Record.kt`); the store numbers the keys a
 session renders, under a lock the ingest shares, and adopts a constant the
 build names after (`Keys.kt`);
 a plan is resolved under the store's keys (`Resolution.kt`); a response's
@@ -239,8 +241,8 @@ ingested in about 1.7 ms and committed in about 0.3 ms on JDK 21 on an M1
 Pro, the medians `IngestTiming` prints.
 
 The reads. The anchor's readers are every accessor generated code calls
-(`Lens.kt`): a read loads one cell on the store's thread, so composition
-registers that slot alone; a missing or wrong-kind value goes to the
+(`Lens.kt`): a read loads one cell through its channel on the store's
+thread, so composition registers that slot alone; a missing or wrong-kind value goes to the
 store's log and reads as null or a zero value; a non-null link with no
 record reads the type's placeholder, the link alone reported; `@required`,
 `@catch`, `@throwOnFieldError` and `@defer` read by Relay's rules. The

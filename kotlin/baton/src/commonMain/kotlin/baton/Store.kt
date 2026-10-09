@@ -107,7 +107,8 @@ class Store(
      * A number that moves with every batch, collection and end, as snapshot
      * state: read in composition, it recomposes on any change to the store,
      * a record made or removed among them. Only an inspector reads it; a
-     * lens reads its slots' cells and is told of those alone.
+     * lens reads its slots through their channels and is told of those
+     * alone.
      */
     @Generated
     val revision: Int get() = revisionState.intValue

@@ -28,9 +28,9 @@ import baton.fieldTexts
  * A view over an environment's store, for a debug pane: the store's counts,
  * its records by type, searchable by key or type, each opening onto its
  * fields, values and field errors. It is live: it reads the store's
- * revision and the records' cells as snapshot state, so a commit, a
- * collection or the end recomposes it. It reads and never writes, on the
- * store's thread, where compositions run.
+ * revision as snapshot state, which every batch, collection and end moves,
+ * so each recomposes it. It reads and never writes, on the store's thread,
+ * where compositions run.
  */
 @Composable
 fun StoreInspector(environment: Environment, modifier: Modifier = Modifier) {
@@ -102,9 +102,9 @@ private fun RecordRow(store: Store, record: Record, opened: Boolean, onClick: ()
 }
 
 /**
- * A record's fields, read through its cells: a commit that changes one
- * recomposes this, and the store's revision, read here too, brings a field
- * the record did not hold before.
+ * A record's fields, read under the store's revision: every commit
+ * recomposes this, which brings a changed value and a field the record did
+ * not hold before.
  */
 @Composable
 private fun Fields(store: Store, record: Record) {
