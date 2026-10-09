@@ -793,7 +793,10 @@ package final class ResolvedSelection: Sendable {
 }
 
 /// The fields a record of one concrete type reads, with their slots on it.
-package struct ResolvedVariant: Sendable {
+/// A reference, made once per type at the resolution: the walks over
+/// records look it up per record, and a value of ten lists would retain
+/// each of them at every lookup.
+package final class ResolvedVariant: Sendable {
     package let type: TypeID
     package let fields: [ResolvedField]
     /// The type's name, taken once, for the keys the ingest builds.

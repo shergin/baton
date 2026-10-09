@@ -21,6 +21,60 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the collection walk's regression, bisected — 2026-10-08
+
+The entry below found the pass over one root reaching 50,004 records at
+2.4 times what the keys step recorded. A bisect over `fcec2ce..f0b8328`,
+each step the whole suite at that commit built with that commit's
+compiler, on the same Apple M1 Pro, macOS 26.5.2, Xcode 26.6, Swift 6.3.3,
+names the commit and the shape of the loss; the one-root pass, best
+(median):
+
+| Commit | What it did | One-root pass |
+|---|---|---|
+| `e32a412`, the parent | | 2.52 ms (2.84) |
+| `3b468bb`, "Give a resolved variant the lists its walks need", 2026-10-06 | `ResolvedVariant` became a struct of ten lists, and every walk looked it up by value | 23.50 ms (23.61); the pass over 301 roots 24 ms from 2.6, the pass over 300 roots reaching one record each 290 µs from 34, the ingest 7.0 ms from 3.0 |
+| `0c9c0d6`, "Key a record by the fields the configuration names" | | 5.12 ms (5.93); the ingest 3.21 ms, the 300-root pass 67 µs |
+| `c7d3e7e` to `de29024`, four commits | | 5.08 ms to 6.25 ms |
+| `f0b8328` | | 6.38 ms (6.53) |
+
+The sweep, "a pass that keeps none of 50,000 records", stayed between
+21.9 and 26.4 ms best at every step. The cause is a struct copy: a
+`ResolvedVariant` holds ten lists and a string, `variant(for:)` returned
+it by value, and a lookup per record retained each of them and released
+them at the end of the step, in the collector's walk and in the ingest's.
+The fix makes `ResolvedVariant` a final class, so a lookup retains one
+object. The whole suite twice, back to back, before (the epoch-marks
+commit `f8c4b88`, the two runs of the entry below) and after, best
+(median):
+
+| Measurement | `f8c4b88`, two runs | With the class, two runs |
+|---|---|---|
+| A pass over one root reaching 50,004 records | 4.71 ms (5.22), 4.68 ms (5.02) | 1.58 ms (1.67), 1.62 ms (1.64) |
+| A pass over 301 roots, 50,304 records | 4.99 ms (5.22), 4.75 ms (5.11) | 1.63 ms (2.11), 1.66 ms (1.71) |
+| A pass over 300 roots reaching one record each | 70.9 µs (72.7), 72.1 µs (72.6) | 25.4 µs (26.2), 25.6 µs (26.5) |
+| A pass that keeps none of 50,000 records | 21.3 ms (22.6), 24.4 ms (29.4) | 24.7 ms (28.6), 29.2 ms (33.9) |
+| The lifetime step's pass, best / median / worst | 0.56 / 6.27 / 11.08, 0.67 / 6.37 / 9.58 ms | 0.14 / 1.99 / 2.84, 0.15 / 2.01 / 2.76 ms |
+| The check of the fixture plan against the store | 605 µs (615), 602 µs (638) | 138 µs (138), 138 µs (138) |
+| Hydration: the check reads 898 rows into an empty store | 2.41 ms (2.63), 2.43 ms (2.64) | 1.92 ms (2.08), 1.93 ms (2.16) |
+| Response bytes into a change set | 3.23 ms (3.40), 3.27 ms (3.70) | 2.92 ms (3.26), 2.93 ms (3.08) |
+| Commit into an empty store, 899 records | 594 µs (606), 603 µs (648) | the same |
+| Untracked lens read, per field, the control | 25.8 ns | 25.7, 25.8 ns |
+| The session's footprint, 61,308 records | +28.0, +28.1 MB | +20.3, +20.4 MB |
+| A new character given name (slot 1), for 50,000 | +28.8, +27.0 MB | +22.0, +21.5 MB |
+
+The marking passes are three times faster and below what the keys step
+recorded (2.49 to 2.80 ms, 31.7 to 36.0 µs), the lifetime step's median
+pass 2.0 ms where that step recorded 2.53 to 2.71, and the same copy had
+been taxing every walk that looks a variant up per record: the
+availability check is 4.4 times faster, back near the 105 to 110 µs the
+earlier entries hold, hydration a fifth faster and the ingest a tenth. The
+sweep moves within its spread, the noisiest entry in the suite. The
+session's footprint is 8 MB smaller, which says the copies also left
+memory behind; the slot-1 line stands 2 MB above its `f0b8328` reading,
+which the mark on the record does not explain and the entry below leaves
+with the allocator.
+
 ## Unreleased, the collection pass marks with an epoch — 2026-10-08
 
 Revision: the working tree on top of `f0b8328`. The collector marks every

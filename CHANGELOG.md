@@ -70,8 +70,15 @@ are expected and listed without apology.
   flag, so a pass allocates nothing. On an M1 Pro the pass over one root
   reaching 50,004 records takes 4.7 ms where it took 6.4 ms
   (`BENCHMARKS.md`, which also records that the pass is 2.4 times what the
-  keys step measured, a regression in the walk still to be found). The
-  Kotlin collector marks the same way; it has no collection bench yet.
+  keys step measured, a regression in the walk since found). The Kotlin
+  collector marks the same way; it has no collection bench yet.
+- A resolved variant is a reference. It had become a struct of ten lists
+  on 6 October, looked up by value once per record by every walk, so each
+  lookup retained and released ten buffers; a bisect of the benchmark
+  suite found it. With it a class, the collection pass over 50,004 records
+  takes 1.6 ms where it took 4.7 ms, the availability check 138 µs where it
+  took 605 µs, hydration 1.9 ms where it took 2.4 ms, and the ingest a
+  tenth less; the session's footprint is 8 MB smaller (`BENCHMARKS.md`).
 
 ## 0.12.0 (Palianytsia) — 2026-10-08
 
