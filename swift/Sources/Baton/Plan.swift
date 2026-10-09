@@ -352,6 +352,11 @@ public struct PlanField: Sendable {
     /// Whether resolving the field reads a variable: its key, its guards, its
     /// lookup, its connection or its edit, or a field below it.
     let readsVariables: Bool
+    /// Whether reading the field records an edit for the commit, a
+    /// connection's merge or an edge directive, here or below it. An object
+    /// under such a field is read in full, since a repeated edit is not a
+    /// repeated value.
+    let edits: Bool
 
     init(responseKey: String, key: StorageKey, kind: Kind, edit: Edit?, deferred: String?, caught: Bool, client: Bool, transient: Bool, guards: [[Guard]]) {
         self.responseKey = responseKey
@@ -376,6 +381,9 @@ public struct PlanField: Sendable {
             if let connection, connection.readsVariables { readsVariables = true }
         }
         self.readsVariables = readsVariables
+        var edits = edit != nil
+        if case .linked(let selection, _, _, let connection) = kind, connection != nil || selection.edits { edits = true }
+        self.edits = edits
     }
 
     public static func scalar(_ responseKey: String, key: StorageKey, kind: ScalarKind, list: Bool, edit: Edit? = nil, deferred: String? = nil, caught: Bool = false, client: Bool = false, transient: Bool = false, guards: [[Guard]] = []) -> PlanField {
@@ -447,6 +455,9 @@ public final class Selection: Sendable {
     /// Whether any field below reads a variable; when none does, the
     /// selection resolves once and keeps the resolution.
     let readsVariables: Bool
+    /// Whether a field of the selection, or of one below it, records an
+    /// edit when read: a connection's merge or an edge directive.
+    let edits: Bool
     /// Whether a field of the selection is a transient root field: an
     /// operation selecting one leaves no fetch stamp in the image.
     let transient: Bool
@@ -465,6 +476,7 @@ public final class Selection: Sendable {
         self.variants = variants
         readsVariables = variants.contains { $0.fields.contains(where: \.readsVariables) }
         transient = variants.contains { $0.fields.contains(where: \.transient) }
+        edits = variants.contains { $0.fields.contains(where: \.edits) }
     }
 
     /// Binds the variables: fields whose guards fail are dropped, keys with
@@ -499,7 +511,7 @@ public final class Selection: Sendable {
         }
         // A selection that reads no variables renders no key, and its
         // resolution is shared by every store: it holds no store's keys.
-        return ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: others, listed: listed, conditions: conditions, memberships: memberships, hold: readsVariables ? hold : nil, transient: transient)
+        return ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: others, listed: listed, conditions: conditions, memberships: memberships, hold: readsVariables ? hold : nil, transient: transient, edits: edits)
     }
 
     /// A field with its variables bound, its slot on the selection's own type.
@@ -660,6 +672,11 @@ package final class ResolvedSelection: Sendable {
     /// Whether the selection reads a transient root field, so the operation
     /// leaves no fetch stamp in the image.
     package let transient: Bool
+    /// Whether a field of the selection, or of one below it, records an
+    /// edit when read: a connection's merge or an edge directive. An object
+    /// under such a selection is read in full and never as a repeat of an
+    /// earlier one, since a repeated edit is not a repeated value.
+    let edits: Bool
     /// The fields of a selection on an object type; on an abstract type,
     /// those every type reads, resolved on the abstract type itself for a
     /// record whose payload names no type. Stored apart from a variant so
@@ -694,11 +711,12 @@ package final class ResolvedSelection: Sendable {
     /// shares.
     private let hold: Keys.Hold?
 
-    init(type: TypeID, key: [String], isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant], conditions: [(TypeID, [ResolvedField])] = [], memberships: [Selection.MembershipAnswer] = [], hold: Keys.Hold?, transient: Bool = false) {
+    init(type: TypeID, key: [String], isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant], conditions: [(TypeID, [ResolvedField])] = [], memberships: [Selection.MembershipAnswer] = [], hold: Keys.Hold?, transient: Bool = false, edits: Bool) {
         self.type = type
         self.key = key
         self.isAbstract = isAbstract
         self.transient = transient
+        self.edits = edits
         self.fields = fields
         own = ResolvedVariant(type: type, key: key, fields: fields, typeName: type.name)
         self.listed = listed
@@ -784,7 +802,7 @@ package final class ResolvedSelection: Sendable {
                 ResolvedVariant(type: variant.type, key: variant.key, fields: variant.fields.filter { $0.deferred == label }.map { $0.undeferred() }, typeName: variant.typeName)
             }
             let own = fields.filter { $0.deferred == label }.map { $0.undeferred() }
-            let selection = ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: own, listed: listed.mapValues(part), conditions: conditions.map { ($0.0, $0.1.filter { $0.deferred == label }.map { $0.undeferred() }) }, memberships: membershipKeys.map { Selection.MembershipAnswer(String(decoding: $0.bytes, as: UTF8.self), $0.condition) }, hold: hold)
+            let selection = ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: own, listed: listed.mapValues(part), conditions: conditions.map { ($0.0, $0.1.filter { $0.deferred == label }.map { $0.undeferred() }) }, memberships: membershipKeys.map { Selection.MembershipAnswer(String(decoding: $0.bytes, as: UTF8.self), $0.condition) }, hold: hold, edits: edits)
             guard !own.isEmpty || selection.listed.values.contains(where: { !$0.fields.isEmpty }) else { return nil }
             cache[label] = selection
             return selection
