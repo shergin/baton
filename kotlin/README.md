@@ -260,8 +260,9 @@ through.
 The environment (`Environment.kt`) and what hangs off it. A request and
 its standard encoding, and a transport with one verb, a `Flow` of payloads
 (`Transport.kt`); the value-free log (`Log.kt`). The environment commits on
-its main dispatcher, the store's thread, and reads responses on its ingest
-dispatcher; a query's fetch checks for cancellation before its commit, a
+its main dispatcher, the store's thread, where its suspending calls run
+whatever thread calls them, and reads responses on its ingest dispatcher;
+a query's fetch checks for cancellation before its commit, a
 mutation's request and commit run where no cancellation reaches them, and
 `end()` cancels, clears and forgets the session. A handle (`Handle.kt`)
 applies its fetch policy and derives its phase from its root and its

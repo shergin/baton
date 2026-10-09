@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import baton.spec.TestHeaderQuery
 import baton.spec.TestHeader_character
@@ -19,7 +20,10 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import org.junit.Rule
 import org.junit.Test
 
@@ -40,13 +44,6 @@ class ComposeTests {
     private fun Provided(transport: ScriptedTransport, content: @Composable () -> Unit) {
         val made = remember { Environment(transport, transport, Store()).also { environment = it } }
         CompositionLocalProvider(LocalBaton provides made, content = content)
-    }
-
-    /** Runs a suspending call on the composition's thread, which owns the store. */
-    private fun <T> onStoreThread(call: suspend () -> T): T {
-        var result: Result<T>? = null
-        rule.runOnIdle { result = runCatching { runBlocking { call() } } }
-        return result!!.getOrThrow()
     }
 
     @Test
@@ -97,7 +94,7 @@ class ComposeTests {
         rule.waitUntil(5_000) { compositions.isNotEmpty() }
         assertEquals(listOf("name Jerry Smith", "status Alive"), compositions)
         compositions.clear()
-        onStoreThread {
+        rule.onStoreThread {
             val rename = TestRename(id = "5", name = "Jerry Prime")
             checkNotNull(environment).commitPayload(rename, Payload("{\"data\":{\"rename\":{\"character\":{\"id\":\"5\",\"name\":\"Jerry Prime\"}}}}"))
         }
@@ -187,9 +184,9 @@ class ComposeTests {
             outside = rename
         }
         rule.waitForIdle()
-        val name = onStoreThread { checkNotNull(provided).commit(TestRename(id = "1", name = "Rick Prime")).rename?.character?.name }
+        val name = rule.onStoreThread { checkNotNull(provided).commit(TestRename(id = "1", name = "Rick Prime")).rename?.character?.name }
         assertEquals("Rick Prime", name)
-        assertFailsWith<EnvironmentError> { onStoreThread { checkNotNull(outside).commit(TestRename(id = "1", name = "Rick Prime")) } }
+        assertFailsWith<EnvironmentError> { rule.onStoreThread { checkNotNull(outside).commit(TestRename(id = "1", name = "Rick Prime")) } }
     }
 
     @Test
@@ -214,4 +211,17 @@ class ComposeTests {
         assertIs<Stream.Idle>(handle?.stream)
         assertTrue(transport.requestCount == 1)
     }
+}
+
+/**
+ * Runs a suspending call on the composition's thread, which owns the store,
+ * and waits for it from the test's thread. The call is a coroutine on the
+ * main dispatcher, which is that thread: `runBlocking` there would block the
+ * thread the call comes back to after its ingest, and never return.
+ */
+@OptIn(ExperimentalCoroutinesApi::class)
+internal fun <T> ComposeTestRule.onStoreThread(call: suspend () -> T): T {
+    val running = runOnIdle { CoroutineScope(Dispatchers.Main.immediate).async { call() } }
+    waitUntil(5_000) { running.isCompleted }
+    return running.getCompleted()
 }

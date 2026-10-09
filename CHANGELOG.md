@@ -23,6 +23,11 @@ are expected and listed without apology.
   whole table and scanned it for a freed number first, quadratic in the
   texts a type renders, a search field's terms for one. The image's locks
   are the same `Lock` now, in `Threads.kt`.
+- The Kotlin environment's suspending calls, `fetch`, `mutate`,
+  `commitPayload` and `end`, run on its main dispatcher whatever thread
+  calls them, as the Swift environment's run on the main actor; a call
+  from `Dispatchers.IO` used to fail the store's thread check. The
+  synchronous calls are still made on the store's thread.
 
 ## 0.12.0 (Palianytsia) — 2026-10-08
 

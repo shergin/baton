@@ -10,7 +10,6 @@ import baton.inspector.StoreInspector
 import baton.spec.TestHeaderQuery
 import baton.spec.TestRename
 import baton.testing.ScriptedTransport
-import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
 
@@ -40,7 +39,7 @@ class InspectorTests {
         rule.onNodeWithText("Character:5").performClick()
         rule.onNodeWithText("\"Jerry Smith\"").assertExists()
 
-        rule.runOnIdle { runBlocking { checkNotNull(environment).mutate(TestRename(id = "5", name = "Jerry Prime"), null) } }
+        rule.onStoreThread { checkNotNull(environment).mutate(TestRename(id = "5", name = "Jerry Prime"), null) }
         rule.waitUntil(5_000) { shown("\"Jerry Prime\"") == 1 }
         rule.onNodeWithText("\"Jerry Smith\"").assertDoesNotExist()
     }

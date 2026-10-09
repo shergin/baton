@@ -23,8 +23,10 @@ import kotlinx.coroutines.withContext
  * with the fetches in flight; what keeps records alive is the store's. The
  * store belongs to the thread that made it, so the environment commits on
  * [mainDispatcher], which runs there, and tokenizes responses on
- * [ingestDispatcher]; a test passes one test dispatcher for both. See
- * `spec/runtime.md`, section 10.
+ * [ingestDispatcher]; a test passes one test dispatcher for both. Its
+ * suspending calls run on [mainDispatcher] whatever thread calls them, as
+ * the Swift environment's calls run on the main actor; its synchronous
+ * calls are made on the store's thread. See `spec/runtime.md`, section 10.
  */
 class Environment(
     val transport: Transport,
@@ -153,20 +155,22 @@ class Environment(
      * the log.
      */
     suspend fun end() {
-        store.checkThread()
-        if (ended) return
-        ended = true
-        for (handle in handles.values.toList()) handle.end()
-        handles.clear()
-        for (handle in subscriptionHandles.values.toList()) handle.end()
-        subscriptionHandles.clear()
-        // The image writes what it was handed, under the session's keys,
-        // and gives its file back for the next environment before the store
-        // forgets the keys. Nothing commits meanwhile: the environment has
-        // ended.
-        store.persistence?.close()
-        store.end()
-        scope.cancel()
+        withContext(mainDispatcher) {
+            store.checkThread()
+            if (ended) return@withContext
+            ended = true
+            for (handle in handles.values.toList()) handle.end()
+            handles.clear()
+            for (handle in subscriptionHandles.values.toList()) handle.end()
+            subscriptionHandles.clear()
+            // The image writes what it was handed, under the session's keys,
+            // and gives its file back for the next environment before the store
+            // forgets the keys. Nothing commits meanwhile: the environment has
+            // ended.
+            store.persistence?.close()
+            store.end()
+            scope.cancel()
+        }
     }
 
     /**
@@ -176,14 +180,16 @@ class Environment(
      * a lens reads them and logged as `fieldError` events.
      */
     suspend fun <Data : Lens> fetch(operation: QueryOperation<Data>) {
-        if (ended) throw EnvironmentError.Gone
-        val type = operation.type
-        val committed = fetch(type, operation.variables, store.resolve(type.plan, operation.variables), null)
-        if (!type.throwsOnFieldError || ended) return
-        // The handle's reading: the operation's own selection and the errors no field holds, read once and healed nowhere.
-        val anchor = Anchor(store.root, Owner.reading(operation.variables, store))
-        val errors = committed.unplaced + type.fieldErrors(anchor)
-        if (errors.isNotEmpty()) throw FieldErrors(errors)
+        withContext(mainDispatcher) {
+            if (ended) throw EnvironmentError.Gone
+            val type = operation.type
+            val committed = fetch(type, operation.variables, store.resolve(type.plan, operation.variables), null)
+            if (!type.throwsOnFieldError || ended) return@withContext
+            // The handle's reading: the operation's own selection and the errors no field holds, read once and healed nowhere.
+            val anchor = Anchor(store.root, Owner.reading(operation.variables, store))
+            val errors = committed.unplaced + type.fieldErrors(anchor)
+            if (errors.isNotEmpty()) throw FieldErrors(errors)
+        }
     }
 
     /**
@@ -217,11 +223,13 @@ class Environment(
      * `@throwOnFieldError` the field errors no `@catch` handled are thrown.
      */
     suspend fun commitPayload(operation: Operation<*>, payload: Payload) {
-        if (ended) throw EnvironmentError.Gone
-        val type = operation.type
-        val root = store.root(Store.rootKey(type.name, operation.variables), store.resolve(type.plan, operation.variables), store.root(type.kind))
-        val committed = commit(payload.bytes, root.resolved, root, checkingCancellation = false, complete = false)
-        if (type.throwsOnFieldError && committed.uncaught.isNotEmpty()) throw FieldErrors(committed.uncaught)
+        withContext(mainDispatcher) {
+            if (ended) throw EnvironmentError.Gone
+            val type = operation.type
+            val root = store.root(Store.rootKey(type.name, operation.variables), store.resolve(type.plan, operation.variables), store.root(type.kind))
+            val committed = commit(payload.bytes, root.resolved, root, checkingCancellation = false, complete = false)
+            if (type.throwsOnFieldError && committed.uncaught.isNotEmpty()) throw FieldErrors(committed.uncaught)
+        }
     }
 
     /**
@@ -234,7 +242,7 @@ class Environment(
      * call; the server's payload replaces the layer in one batch, and a
      * failure reverts it.
      */
-    suspend fun <Data : Lens> mutate(operation: MutationOperation<Data>, optimistic: Payload? = null): Data {
+    suspend fun <Data : Lens> mutate(operation: MutationOperation<Data>, optimistic: Payload? = null): Data = withContext(mainDispatcher) {
         if (ended) throw EnvironmentError.Gone
         val type = operation.type
         val resolved = store.resolve(type.plan, operation.variables)
@@ -251,7 +259,7 @@ class Environment(
         }
         store.keepCompleted(root)
         if (type.throwsOnFieldError && committed.uncaught.isNotEmpty()) throw FieldErrors(committed.uncaught)
-        return type.data(Anchor(store.mutationRoot, scope(root, operation.variables)))
+        type.data(Anchor(store.mutationRoot, scope(root, operation.variables)))
     }
 
     /** What a commit left for the operation's reading besides its records: the field errors no `@catch` handled, and those no field holds. */

@@ -1,5 +1,6 @@
 package baton
 
+import baton.spec.Slots
 import baton.spec.TestHeaderQuery
 import baton.spec.TestRename
 import baton.testing.RecordedTransport
@@ -9,14 +10,20 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 
 /** The environment's rules the scripts do not hold, over the operations generated from `spec/sources`. */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -129,6 +136,37 @@ class EnvironmentTests {
         val handle = environment.handle(TestHeaderQuery(id = "5"))
         assertEquals(Phase.Failed(EnvironmentError.Gone), handle.phase)
         assertFailsWith<EnvironmentError> { handle.refetch() }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    @Test
+    fun `a suspending call made off the store's thread runs on it`() = runBlocking {
+        val storeThread = newSingleThreadContext("store")
+        try {
+            val transport = ScriptedTransport(
+                mapOf("TestHeaderQuery" to Spec.bytes("tests/character-header-5.json"), "TestRename" to Spec.bytes("tests/rename-1.json")),
+            )
+            // A store belongs to the thread that made it; every read below is made there too.
+            val environment = withContext(storeThread) { Environment(transport, null, Store(), storeThread, Dispatchers.Default) }
+            val store = environment.store
+            val name = Slots.Character.name
+
+            withContext(Dispatchers.Default) { environment.fetch(TestHeaderQuery(id = "5")) }
+            withContext(storeThread) { assertEquals(Value.String("Jerry Smith"), assertNotNull(store.recordsByKey()["Character:5"]).peek(name)) }
+
+            val rename = TestRename(id = "1", name = "Rick Prime")
+            withContext(Dispatchers.Default) { environment.commitPayload(rename, Payload(Spec.bytes("tests/rename-1.json"))) }
+            withContext(storeThread) { assertEquals(Value.String("Rick Prime"), assertNotNull(store.recordsByKey()["Character:1"]).peek(name)) }
+
+            val data = withContext(Dispatchers.Default) { environment.mutate(rename) }
+            withContext(storeThread) { assertEquals("Rick Prime", data.rename?.character?.name) }
+
+            withContext(Dispatchers.Default) { environment.end() }
+            assertTrue(environment.ended)
+            withContext(storeThread) { assertEquals(3, store.count, "the end left the three roots alone") }
+        } finally {
+            storeThread.close()
+        }
     }
 
     @Test
