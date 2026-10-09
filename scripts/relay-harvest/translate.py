@@ -32,6 +32,8 @@ in `expectations.json` beside this file takes the status, note and decision
 written there: `possible-bug`, `unspecified-behaviour`, `invalid-input` or
 `by-design`, each run with its result ignored. The rest must pass. Cases
 are one `normalize` call; scripts of `payload` steps are several in a row.
+A DataChecker test is a script of the response its seeded store stands for
+(`record.js` writes it) and a `check` step with Relay's answer.
 A client extension file batonc rejects is left out of the schema, and the
 tests that need it become unsupported with batonc's reason.
 """
@@ -54,8 +56,11 @@ MUTATION_ROOT = 'client:root:mutation'
 SUBSCRIPTION_ROOT = 'client:root:subscription'
 
 # The test files harvested, by the directory each one's cases go to.
+# The test files harvested: the directory each one's cases go to, and the
+# call its cases are made of.
 SUITES = {
-    'RelayResponseNormalizer-test': 'normalizer',
+    'RelayResponseNormalizer-test': ('normalizer', 'normalize'),
+    'DataChecker-test': ('checker', 'check'),
 }
 
 
@@ -266,11 +271,8 @@ def dump_text(dump):
 
 
 def slug(test):
-    words = re.sub(r'[^a-z0-9]+', '-', test.lower()).strip('-')
-    for prefix in ('relayresponsenormalizer-',):
-        if words.startswith(prefix):
-            words = words[len(prefix):]
-    return words
+    """A test's name without its outermost `describe`, as a file name."""
+    return re.sub(r'[^a-z0-9]+', '-', test.split(' ', 1)[-1].lower()).strip('-')
 
 
 def seeded(before):
@@ -424,28 +426,219 @@ STATUSES = [
 
 def write_table(table, excluded):
     """Replaces the harvest's table in `spec/relay/README.md`, between its
-    markers, with each test's status."""
+    markers, with each test's status, a section a test file."""
     path = os.path.join(OUT, 'README.md')
     text = open(path).read()
     begin, end = '<!-- harvest -->\n', '<!-- /harvest -->\n'
-    counts = {}
+    suites = []
     for row in table:
-        counts[row.get('status', 'passes')] = counts.get(row.get('status', 'passes'), 0) + 1
-    lines = ['%d tests harvested.' % len(table), '', '| Status | Tests | Meaning |', '|---|---|---|']
-    lines += ['| `%s` | %d | %s |' % (status, counts.get(status, 0), meaning) for status, meaning in STATUSES]
-    lines += ['', '| Test | Status | Note |', '|---|---|---|']
-    for row in table:
-        test = row['test'].split(' ', 1)[1].replace('|', '\\|')
-        note = row.get('note', '')
-        if row.get('decision'):
-            note += ' Decision: ' + row['decision']
-        lines.append('| %s | `%s` | %s |' % (test, row.get('status', 'passes'), note.strip().replace('|', '\\|')))
+        if row['suite'] not in suites:
+            suites.append(row['suite'])
+    lines = ['%d tests harvested.' % len(table), '']
+    lines += ['| Status | Meaning |' + ''.join(' `%s` |' % suite.replace('-test', '') for suite in suites)]
+    lines += ['|---|---|' + '---|' * len(suites)]
+    for status, meaning in STATUSES:
+        counts = [sum(1 for row in table if row['suite'] == suite and row.get('status', 'passes') == status) for suite in suites]
+        lines.append('| `%s` | %s |' % (status, meaning) + ''.join(' %d |' % count for count in counts))
+    for suite in suites:
+        lines += ['', '### `%s.js`' % suite, '', '| Test | Status | Note |', '|---|---|---|']
+        for row in table:
+            if row['suite'] != suite:
+                continue
+            test = row['test'].split(' ', 1)[-1].replace('|', '\\|')
+            note = row.get('note', '')
+            if row.get('decision'):
+                note += ' Decision: ' + row['decision']
+            lines.append('| %s | `%s` | %s |' % (test, row.get('status', 'passes'), note.strip().replace('|', '\\|')))
     lines += ['', 'The client extension files batonc rejects, left out of `schema/extensions/`:', '']
     lines += ['- `%s`: %s' % (name, reason) for name, reason in sorted(excluded.items())]
     table_text = '\n'.join(lines) + '\n'
     start = text.index(begin) + len(begin)
     with open(path, 'w') as file:
         file.write(text[:start] + table_text + text[text.index(end):])
+
+
+class Harvest:
+    """What a run writes: cases, scripts, the documents they compile or
+    keep, and a row of the table for every test."""
+
+    def __init__(self, arguments, config, kinds, fields):
+        self.arguments, self.config, self.kinds, self.fields = arguments, config, kinds, fields
+        self.expectations = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'expectations.json')))
+        self.cases, self.scripts, self.table = [], [], []
+        self.sources, self.unsupported, self.definitions = {}, {}, {}
+
+    def row(self, suite, test, operation, calls):
+        origin = '%s: %s' % (suite + '.js', test)
+        row = {'suite': suite, 'test': test, 'origin': origin, 'operation': operation, 'calls': calls}
+        self.table.append(row)
+        return row
+
+    def document(self, row, operation, definitions, status, note):
+        """Where the operation's document goes, and the marks the row ends
+        with; None when the test has no authored document."""
+        if operation not in definitions:
+            row.update(status='not-ingested', note='no authored document for `%s` in the test file' % operation)
+            return None
+        names = with_fragments(operation, definitions)
+        rejection = batonc_rejection(self.arguments.batonc, self.config, '\n'.join(definitions[name] for name in names))
+        if rejection:
+            status, note = status or 'unsupported-feature', note or rejection
+            self.unsupported[operation] = names
+            path = 'relay/unsupported/%s.graphql' % operation
+        else:
+            self.sources[operation] = names
+            path = 'relay/documents/%s.graphql' % operation
+        expected = self.expectations.get(row['origin'], {})
+        status, note = expected.get('status', status), expected.get('note', note)
+        marks = {key: value for key, value in (('status', status), ('note', note), ('decision', expected.get('decision'))) if value}
+        row.update(marks)
+        return path, marks
+
+    def script(self, row, name, marks, steps):
+        path = 'relay/scripts/%s.json' % name.replace('/', '-')
+        script = {'name': name.replace('/', '-'), 'origin': row['origin']}
+        script.update(marks)
+        script['steps'] = steps
+        write_json(os.path.join(SPEC, path), script)
+        self.scripts.append(path)
+        row.update(name=path, script=True)
+
+    def normalizer(self, suite, directory, definitions, calls_by_test):
+        for test, calls in calls_by_test.items():
+            name = '%s/%s' % (directory, slug(test))
+            operation = calls[0]['operation']
+            row = self.row(suite, test, operation, len(calls))
+            if any(call['operation'] != operation for call in calls):
+                row.update(status='not-ingested', note='payloads of several operations')
+                continue
+            status, note = reason_outside_concepts(calls)
+            if status == 'not-ingested':
+                row.update(status=status, note=note)
+                continue
+            try:
+                dumps = [translate_dump(call['after'], self.kinds, self.fields) for call in calls]
+            except Untranslatable as error:
+                row.update(status='not-ingested', note='translation: %s' % error)
+                continue
+            placed = self.document(row, operation, definitions, status, note)
+            if placed is None:
+                continue
+            document, marks = placed
+            if len(calls) == 1:
+                write_json(os.path.join(OUT, name + '.json'), response_of(calls[0]))
+                with open(os.path.join(OUT, name + '.store.json'), 'w') as file:
+                    file.write(dump_text(dumps[0]))
+                case = {'name': 'relay/' + name, 'origin': row['origin']}
+                case.update(marks)
+                case.update({
+                    'operation': operation,
+                    'kind': 'query',
+                    'document': document,
+                    'variables': calls[0]['variables'],
+                    'responses': ['relay/%s.json' % name],
+                    'records': 'relay/%s.store.json' % name,
+                })
+                if not case['variables']:
+                    del case['variables']
+                self.cases.append(case)
+                row['name'] = case['name']
+                continue
+            steps = []
+            for index, (call, dump) in enumerate(zip(calls, dumps)):
+                stem = '%s-%d' % (name, index + 1)
+                write_json(os.path.join(OUT, stem + '.json'), response_of(call))
+                with open(os.path.join(OUT, stem + '.store.json'), 'w') as file:
+                    file.write(dump_text(dump))
+                step = {'operation': operation, 'response': 'relay/%s.json' % stem}
+                if call['variables']:
+                    step['variables'] = call['variables']
+                steps.append({'payload': step, 'records': 'relay/%s.store.json' % stem})
+            self.script(row, name, marks, steps)
+
+    def checker(self, suite, directory, definitions, calls_by_test):
+        """Each check becomes a script: the response the test's seeded store
+        stands for as a payload, then the check with Relay's answer."""
+        for test, calls in calls_by_test.items():
+            call = calls[0]
+            row = self.row(suite, test, call['operation'], len(calls))
+            reason = checker_reason(calls)
+            if reason and reason[0] == 'not-ingested':
+                row.update(status=reason[0], note=reason[1])
+                continue
+            status, note = reason or (None, None)
+            placed = self.document(row, call['operation'], definitions, status, note)
+            if placed is None:
+                continue
+            document, marks = placed
+            name = '%s/%s' % (directory, slug(test))
+            write_json(os.path.join(OUT, name + '.json'), {key: value for key, value in call['response'].items() if value != []})
+            reference = {'operation': call['operation']}
+            if call['variables']:
+                reference['variables'] = call['variables']
+            answer = {'available': 'memory', 'missing': 'miss'}[call['answer']['status']]
+            payload = dict(reference, response='relay/%s.json' % name)
+            self.script(row, name, marks, [{'payload': payload}, {'check': reference, 'answer': answer}])
+            row['document'] = document
+
+    def write(self, excluded):
+        os.makedirs(os.path.join(OUT, 'unsupported'), exist_ok=True)
+        for operation, names in self.unsupported.items():
+            with open(os.path.join(OUT, 'unsupported', operation + '.graphql'), 'w') as file:
+                file.write('\n'.join(self.definitions[name] for name in names))
+        os.makedirs(os.path.join(OUT, 'sources'), exist_ok=True)
+        for operation, names in self.sources.items():
+            with open(os.path.join(OUT, 'sources', operation + '.graphql'), 'w') as file:
+                file.write('\n'.join(self.definitions[name] for name in names))
+        defined = []
+        for names in self.sources.values():
+            defined += [name for name in names if name not in defined]
+        os.makedirs(SWIFT, exist_ok=True)
+        with open(os.path.join(SWIFT, 'RelayDocuments.swift'), 'w') as file:
+            file.write(swift_documents(self.definitions, defined))
+        write_json(os.path.join(OUT, 'manifest.json'), {
+            'format': 3,
+            'sources': {'config': 'relay/baton.json', 'directory': 'relay/sources'},
+            'cases': self.cases,
+            'scripts': self.scripts,
+        })
+        unused = sorted(set(self.expectations) - {row['origin'] for row in self.table if row.get('status') != 'not-ingested'})
+        if unused:
+            print('expectations.json names tests that were not ingested: %s' % '; '.join(unused), file=sys.stderr)
+        write_json(os.path.join(OUT, 'harvest.json'), {'excludedExtensions': excluded, 'tests': self.table})
+        write_table(self.table, excluded)
+        counts = {}
+        for row in self.table:
+            counts[row.get('status', 'passes')] = counts.get(row.get('status', 'passes'), 0) + 1
+        print('%d tests: %s' % (len(self.table), ', '.join('%d %s' % (count, status) for status, count in sorted(counts.items()))), file=sys.stderr)
+
+
+def checker_reason(calls):
+    """Why a DataChecker test is not a plain script, as a status and a
+    reason, or None."""
+    call = calls[0]
+    if len(calls) > 1:
+        return 'not-ingested', 'several checks in one test'
+    if call['dataID'] != 'client:root':
+        return 'not-ingested', 'a check of a fragment at `%s`; Baton checks an operation from its root' % call['dataID']
+    if call.get('unsynthesizable'):
+        if re.search(r'ModuleImport|ClientEdge|Resolver', call['unsynthesizable']):
+            return 'not-ingested', 'the store holds what %s writes, which no response does' % call['unsynthesizable']
+        return 'not-ingested', 'the seeded store stands for no response: %s' % call['unsynthesizable']
+    if 'answerFromResponse' not in call:
+        return 'not-ingested', 'a check of a selector that is not a query'
+    if call['answer']['status'] != call['answerFromResponse']['status']:
+        return 'not-ingested', ('the response the seeded store stands for gives Relay another answer (%s, not %s)'
+                                % (call['answerFromResponse']['status'], call['answer']['status']))
+    if call['customGetDataID']:
+        return 'unsupported-feature', 'a custom `getDataID`: Baton keys by configured fields, not by a function'
+    if call['flags']:
+        return 'unsupported-feature', 'a Relay feature flag: %s' % ', '.join('`%s`' % flag for flag in sorted(call['flags']))
+    if call['handlers']:
+        return 'unsupported-feature', 'missing field handlers: Baton resolves a missing root field by a configured lookup'
+    if '__invalidated_at' in json.dumps(call['seeded']):
+        return 'unsupported-feature', 'a record invalidated by hand: Baton invalidates the store, not a record'
+    return None
 
 
 def main():
@@ -458,7 +651,7 @@ def main():
     utils = os.path.join(arguments.relay, 'packages', 'relay-test-utils-internal')
     schema_directory = os.path.join(OUT, 'schema')
     extensions_directory = os.path.join(schema_directory, 'extensions')
-    for directory in ('schema', 'sources', 'unsupported', 'scripts') + tuple(SUITES.values()):
+    for directory in ('schema', 'sources', 'unsupported', 'scripts') + tuple(directory for directory, _ in SUITES.values()):
         shutil.rmtree(os.path.join(OUT, directory), ignore_errors=True)
     os.makedirs(extensions_directory)
     shutil.copy(os.path.join(utils, 'testschema.graphql'), schema_directory)
@@ -474,119 +667,21 @@ def main():
     extension_paths = [os.path.join(extensions_directory, name) for name in sorted(os.listdir(extensions_directory))]
     kinds, fields = schema_types([os.path.join(schema_directory, 'testschema.graphql')] + extension_paths)
 
-    expectations = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'expectations.json')))
-    cases, scripts, table, sources, unsupported = [], [], [], {}, {}
-    all_definitions = {}
-    for suite, directory in SUITES.items():
+    harvest = Harvest(arguments, config, kinds, fields)
+    for suite, (directory, function) in SUITES.items():
         test_path = os.path.join(arguments.relay, 'packages', 'relay-runtime', 'store', '__tests__', suite + '.js')
         definitions = documents_in(open(test_path).read())
-        all_definitions.update(definitions)
+        harvest.definitions.update(definitions)
         calls_by_test = {}
         for line in open(os.path.join(arguments.harvest, suite + '.jsonl')):
             call = json.loads(line)
-            if call['function'] == 'normalize':
+            if call['function'] == function:
                 calls_by_test.setdefault(call['test'], []).append(call)
-        for test, calls in calls_by_test.items():
-            name = '%s/%s' % (directory, slug(test))
-            operation = calls[0]['operation']
-            origin = '%s: %s' % (suite + '.js', test)
-            row = {'test': test, 'origin': origin, 'name': 'relay/' + name, 'operation': operation, 'calls': len(calls)}
-            table.append(row)
-            if any(call['operation'] != operation for call in calls):
-                row.update(status='not-ingested', note='payloads of several operations')
-                continue
-            status, note = reason_outside_concepts(calls)
-            if status == 'not-ingested':
-                row.update(status=status, note=note)
-                continue
-            if operation not in definitions:
-                row.update(status='not-ingested', note='no authored document for `%s` in the test file' % operation)
-                continue
-            names = with_fragments(operation, definitions)
-            text = '\n'.join(definitions[name] for name in names)
-            rejection = batonc_rejection(arguments.batonc, config, text)
-            try:
-                dumps = [translate_dump(call['after'], kinds, fields) for call in calls]
-            except Untranslatable as error:
-                row.update(status='not-ingested', note='translation: %s' % error)
-                continue
-            if rejection:
-                status, note = status or 'unsupported-feature', note or rejection
-                unsupported[operation] = names
-                document = 'relay/unsupported/%s.graphql' % operation
-            else:
-                sources[operation] = names
-                document = 'relay/documents/%s.graphql' % operation
-            expected = expectations.get(origin, {})
-            status, note = expected.get('status', status), expected.get('note', note)
-            marks = {key: value for key, value in (('status', status), ('note', note), ('decision', expected.get('decision'))) if value}
-            row.update(marks)
-            if len(calls) == 1:
-                write_json(os.path.join(OUT, name + '.json'), response_of(calls[0]))
-                with open(os.path.join(OUT, name + '.store.json'), 'w') as file:
-                    file.write(dump_text(dumps[0]))
-                case = {'name': 'relay/' + name, 'origin': origin}
-                case.update(marks)
-                case.update({
-                    'operation': operation,
-                    'kind': 'query',
-                    'document': document,
-                    'variables': calls[0]['variables'],
-                    'responses': ['relay/%s.json' % name],
-                    'records': 'relay/%s.store.json' % name,
-                })
-                if not case['variables']:
-                    del case['variables']
-                cases.append(case)
-                continue
-            steps = []
-            for index, (call, dump) in enumerate(zip(calls, dumps)):
-                stem = '%s-%d' % (name, index + 1)
-                write_json(os.path.join(OUT, stem + '.json'), response_of(call))
-                with open(os.path.join(OUT, stem + '.store.json'), 'w') as file:
-                    file.write(dump_text(dump))
-                step = {'operation': operation, 'response': 'relay/%s.json' % stem}
-                if call['variables']:
-                    step['variables'] = call['variables']
-                steps.append({'payload': step, 'records': 'relay/%s.store.json' % stem})
-            script_path = 'relay/scripts/%s.json' % slug(test)
-            script = {'name': slug(test), 'origin': origin}
-            script.update(marks)
-            script['steps'] = steps
-            write_json(os.path.join(SPEC, script_path), script)
-            scripts.append(script_path)
-            row['script'] = True
-
-    os.makedirs(os.path.join(OUT, 'unsupported'), exist_ok=True)
-    for operation, names in unsupported.items():
-        with open(os.path.join(OUT, 'unsupported', operation + '.graphql'), 'w') as file:
-            file.write('\n'.join(all_definitions[name] for name in names))
-    os.makedirs(os.path.join(OUT, 'sources'), exist_ok=True)
-    for operation, names in sources.items():
-        with open(os.path.join(OUT, 'sources', operation + '.graphql'), 'w') as file:
-            file.write('\n'.join(all_definitions[name] for name in names))
-    defined = []
-    for names in sources.values():
-        defined += [name for name in names if name not in defined]
-    os.makedirs(SWIFT, exist_ok=True)
-    with open(os.path.join(SWIFT, 'RelayDocuments.swift'), 'w') as file:
-        file.write(swift_documents(all_definitions, defined))
-
-    write_json(os.path.join(OUT, 'manifest.json'), {
-        'format': 3,
-        'sources': {'config': 'relay/baton.json', 'directory': 'relay/sources'},
-        'cases': cases,
-        'scripts': scripts,
-    })
-    unused = sorted(set(expectations) - {row['origin'] for row in table if row.get('status') != 'not-ingested'})
-    if unused:
-        print('expectations.json names tests that were not ingested: %s' % '; '.join(unused), file=sys.stderr)
-    write_json(os.path.join(OUT, 'harvest.json'), {'excludedExtensions': excluded, 'tests': table})
-    write_table(table, excluded)
-    counts = {}
-    for row in table:
-        counts[row.get('status', 'passes')] = counts.get(row.get('status', 'passes'), 0) + 1
-    print('%d tests: %s' % (len(table), ', '.join('%d %s' % (count, status) for status, count in sorted(counts.items()))), file=sys.stderr)
+        if function == 'normalize':
+            harvest.normalizer(suite, directory, definitions, calls_by_test)
+        else:
+            harvest.checker(suite, directory, definitions, calls_by_test)
+    harvest.write(excluded)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,28 @@
+{
+  "name": "checker-when-individual-records-have-been-invalidated-when-data-is-missing-returns-correct-invalidation-epoch-in-result-when-record-was-invalidated",
+  "origin": "DataChecker-test.js: check() when individual records have been invalidated when data is missing returns correct invalidation epoch in result when record was invalidated",
+  "status": "unsupported-feature",
+  "note": "a record invalidated by hand: Baton invalidates the store, not a record",
+  "steps": [
+    {
+      "payload": {
+        "operation": "DataCheckerTestQuery",
+        "variables": {
+          "id": "1",
+          "size": 32
+        },
+        "response": "relay/checker/when-individual-records-have-been-invalidated-when-data-is-missing-returns-correct-invalidation-epoch-in-result-when-record-was-invalidated.json"
+      }
+    },
+    {
+      "check": {
+        "operation": "DataCheckerTestQuery",
+        "variables": {
+          "id": "1",
+          "size": 32
+        }
+      },
+      "answer": "miss"
+    }
+  ]
+}

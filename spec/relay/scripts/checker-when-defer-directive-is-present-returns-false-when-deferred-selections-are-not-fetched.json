@@ -1,0 +1,27 @@
+{
+  "name": "checker-when-defer-directive-is-present-returns-false-when-deferred-selections-are-not-fetched",
+  "origin": "DataChecker-test.js: check() when @defer directive is present returns false when deferred selections are not fetched",
+  "status": "by-design",
+  "note": "The deferred fragment's fields are not in the store. Relay's check answers missing; Baton's answers from the selection outside the deferred parts, which checks them apart, and the operation fetches either way (spec/runtime.md, 'The deferred parts are checked apart').",
+  "decision": "Open. The recommendation is no change, since the answer only decides whether the rest renders while the deferred part is fetched.",
+  "steps": [
+    {
+      "payload": {
+        "operation": "DataCheckerTest9Query",
+        "variables": {
+          "id": "1"
+        },
+        "response": "relay/checker/when-defer-directive-is-present-returns-false-when-deferred-selections-are-not-fetched.json"
+      }
+    },
+    {
+      "check": {
+        "operation": "DataCheckerTest9Query",
+        "variables": {
+          "id": "1"
+        }
+      },
+      "answer": "miss"
+    }
+  ]
+}

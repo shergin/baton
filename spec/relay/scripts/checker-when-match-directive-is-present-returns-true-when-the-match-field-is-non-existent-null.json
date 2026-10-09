@@ -1,0 +1,26 @@
+{
+  "name": "checker-when-match-directive-is-present-returns-true-when-the-match-field-is-non-existent-null",
+  "origin": "DataChecker-test.js: check() when @match directive is present returns true when the match field is non-existent (null)",
+  "status": "unsupported-feature",
+  "note": "batonc: `@match` on a field has no meaning in Baton",
+  "steps": [
+    {
+      "payload": {
+        "operation": "DataCheckerTest4Query",
+        "variables": {
+          "id": "1"
+        },
+        "response": "relay/checker/when-match-directive-is-present-returns-true-when-the-match-field-is-non-existent-null.json"
+      }
+    },
+    {
+      "check": {
+        "operation": "DataCheckerTest4Query",
+        "variables": {
+          "id": "1"
+        }
+      },
+      "answer": "memory"
+    }
+  ]
+}

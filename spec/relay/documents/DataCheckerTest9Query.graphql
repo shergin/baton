@@ -1,0 +1,1 @@
+query DataCheckerTest9Query($id:ID!){node(id:$id){__typename,...DataCheckerTest6Fragment@defer(label:"DataCheckerTest9Query$defer$TestFragment"),id}}fragment DataCheckerTest6Fragment on User{id,name}

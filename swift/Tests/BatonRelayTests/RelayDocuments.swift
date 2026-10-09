@@ -608,6 +608,55 @@ struct RelayDocuments {
         }
         """)
     var relayResponseNormalizerTest43Query: RelayResponseNormalizerTest43Query
+
+    @Query("""
+        query DataCheckerTestQuery($id: ID, $size: [Int]) {
+          node(id: $id) {
+            id
+            __typename
+            ... on Page {
+              actors {
+                name
+              }
+            }
+            ... on User {
+              firstName
+              friends(first: 3) {
+                edges {
+                  cursor
+                  node {
+                    id
+                    firstName
+                  }
+                }
+              }
+              profilePicture(size: $size) {
+                uri
+              }
+            }
+          }
+        }
+        """)
+    var dataCheckerTestQuery: DataCheckerTestQuery
+
+    @Query("""
+        query DataCheckerTest9Query($id: ID!) {
+          node(id: $id) {
+            ...DataCheckerTest6Fragment
+              @alias
+              @defer(label: "TestFragment")
+          }
+        }
+        """)
+    var dataCheckerTest9Query: DataCheckerTest9Query
+
+    @Fragment("""
+        fragment DataCheckerTest6Fragment on User {
+          id
+          name
+        }
+        """)
+    var dataCheckerTest6Fragment: DataCheckerTest6Fragment
 }
 
 extension RelayDocuments {
@@ -645,5 +694,7 @@ extension RelayDocuments {
         "RelayResponseNormalizerTest41Query": RelayResponseNormalizerTest41Query.self,
         "RelayResponseNormalizerTest42Query": RelayResponseNormalizerTest42Query.self,
         "RelayResponseNormalizerTest43Query": RelayResponseNormalizerTest43Query.self,
+        "DataCheckerTestQuery": DataCheckerTestQuery.self,
+        "DataCheckerTest9Query": DataCheckerTest9Query.self,
     ]
 }

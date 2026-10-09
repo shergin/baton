@@ -8,532 +8,1198 @@
   },
   "tests": [
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer normalizes queries",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer normalizes queries",
-      "name": "relay/normalizer/normalizes-queries",
       "operation": "RelayResponseNormalizerTest1Query",
-      "calls": 1
+      "calls": 1,
+      "name": "relay/normalizer/normalizes-queries"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer normalizes queries with \"handle\" fields",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer normalizes queries with \"handle\" fields",
-      "name": "relay/normalizer/normalizes-queries-with-handle-fields",
       "operation": "RelayResponseNormalizerTest2Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "batonc: `@__clientField` on a field has no meaning in Baton"
+      "note": "batonc: `@__clientField` on a field has no meaning in Baton",
+      "name": "relay/normalizer/normalizes-queries-with-handle-fields"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer normalizes queries with \"filters\"",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer normalizes queries with \"filters\"",
-      "name": "relay/normalizer/normalizes-queries-with-filters",
       "operation": "RelayResponseNormalizerTest3Query",
       "calls": 2,
       "status": "unsupported-feature",
       "note": "batonc: `@__clientField` on a field has no meaning in Baton",
+      "name": "relay/scripts/normalizer-normalizes-queries-with-filters.json",
       "script": true
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @match normalizes queries correctly",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @match normalizes queries correctly",
-      "name": "relay/normalizer/match-normalizes-queries-correctly",
       "operation": "RelayResponseNormalizerTest4Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "batonc: `@match` on a field has no meaning in Baton"
+      "note": "batonc: `@match` on a field has no meaning in Baton",
+      "name": "relay/normalizer/match-normalizes-queries-correctly"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @match returns metadata with prefixed path",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @match returns metadata with prefixed path",
-      "name": "relay/normalizer/match-returns-metadata-with-prefixed-path",
       "operation": "RelayResponseNormalizerTest4Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "batonc: `@match` on a field has no meaning in Baton"
+      "note": "batonc: `@match` on a field has no meaning in Baton",
+      "name": "relay/normalizer/match-returns-metadata-with-prefixed-path"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @match normalizes queries correctly when the resolved type does not match any of the specified cases",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @match normalizes queries correctly when the resolved type does not match any of the specified cases",
-      "name": "relay/normalizer/match-normalizes-queries-correctly-when-the-resolved-type-does-not-match-any-of-the-specified-cases",
       "operation": "RelayResponseNormalizerTest4Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "batonc: `@match` on a field has no meaning in Baton"
+      "note": "batonc: `@match` on a field has no meaning in Baton",
+      "name": "relay/normalizer/match-normalizes-queries-correctly-when-the-resolved-type-does-not-match-any-of-the-specified-cases"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @match normalizes queries correctly when the @match field is null",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @match normalizes queries correctly when the @match field is null",
-      "name": "relay/normalizer/match-normalizes-queries-correctly-when-the-match-field-is-null",
       "operation": "RelayResponseNormalizerTest4Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "batonc: `@match` on a field has no meaning in Baton"
+      "note": "batonc: `@match` on a field has no meaning in Baton",
+      "name": "relay/normalizer/match-normalizes-queries-correctly-when-the-match-field-is-null"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @module normalizes queries and returns metadata when the type matches an @module selection",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @module normalizes queries and returns metadata when the type matches an @module selection",
-      "name": "relay/normalizer/module-normalizes-queries-and-returns-metadata-when-the-type-matches-an-module-selection",
       "operation": "RelayResponseNormalizerTest5Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "batonc: `@module` on a fragment spread has no meaning in Baton"
+      "note": "batonc: `@module` on a fragment spread has no meaning in Baton",
+      "name": "relay/normalizer/module-normalizes-queries-and-returns-metadata-when-the-type-matches-an-module-selection"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @module returns metadata with prefixed path",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @module returns metadata with prefixed path",
-      "name": "relay/normalizer/module-returns-metadata-with-prefixed-path",
       "operation": "RelayResponseNormalizerTest5Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "batonc: `@module` on a fragment spread has no meaning in Baton"
+      "note": "batonc: `@module` on a fragment spread has no meaning in Baton",
+      "name": "relay/normalizer/module-returns-metadata-with-prefixed-path"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @module normalizes queries correctly when the resolved type does not match any @module selections",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @module normalizes queries correctly when the resolved type does not match any @module selections",
-      "name": "relay/normalizer/module-normalizes-queries-correctly-when-the-resolved-type-does-not-match-any-module-selections",
       "operation": "RelayResponseNormalizerTest5Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "batonc: `@module` on a fragment spread has no meaning in Baton"
+      "note": "batonc: `@module` on a fragment spread has no meaning in Baton",
+      "name": "relay/normalizer/module-normalizes-queries-correctly-when-the-resolved-type-does-not-match-any-module-selections"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @defer normalizes when if condition is false",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer normalizes when if condition is false",
-      "name": "relay/normalizer/defer-normalizes-when-if-condition-is-false",
       "operation": "RelayResponseNormalizerTest6Query",
-      "calls": 1
+      "calls": 1,
+      "name": "relay/normalizer/defer-normalizes-when-if-condition-is-false"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @defer returns metadata when `if` is true (literal value)",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer returns metadata when `if` is true (literal value)",
-      "name": "relay/normalizer/defer-returns-metadata-when-if-is-true-literal-value",
       "operation": "RelayResponseNormalizerTest7Query",
       "calls": 1,
       "status": "unspecified-behaviour",
       "note": "The initial payload already holds the deferred fragment's fields. Relay skips them on purpose (`_normalizeDefer`: data for a deferred selection 'should not be present') and waits for a later part; Baton writes what the response holds. The fields in the test's payload are incidental to what it asserts, the placeholder.",
-      "decision": "Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's."
+      "decision": "Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's.",
+      "name": "relay/normalizer/defer-returns-metadata-when-if-is-true-literal-value"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @defer returns metadata when `if` is true (variable value)",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer returns metadata when `if` is true (variable value)",
-      "name": "relay/normalizer/defer-returns-metadata-when-if-is-true-variable-value",
       "operation": "RelayResponseNormalizerTest8Query",
       "calls": 1,
       "status": "unspecified-behaviour",
       "note": "The initial payload already holds the deferred fragment's fields. Relay skips them on purpose (`_normalizeDefer`: data for a deferred selection 'should not be present') and waits for a later part; Baton writes what the response holds. The fields in the test's payload are incidental to what it asserts, the placeholder.",
-      "decision": "Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's."
+      "decision": "Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's.",
+      "name": "relay/normalizer/defer-returns-metadata-when-if-is-true-variable-value"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @defer returns metadata for @defer within a plural",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer returns metadata for @defer within a plural",
-      "name": "relay/normalizer/defer-returns-metadata-for-defer-within-a-plural",
       "operation": "RelayResponseNormalizerTest9Query",
       "calls": 1,
       "status": "unspecified-behaviour",
       "note": "The initial payload already holds the deferred fragment's fields. Relay skips them on purpose (`_normalizeDefer`: data for a deferred selection 'should not be present') and waits for a later part; Baton writes what the response holds. The fields in the test's payload are incidental to what it asserts, the placeholder.",
-      "decision": "Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's."
+      "decision": "Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's.",
+      "name": "relay/normalizer/defer-returns-metadata-for-defer-within-a-plural"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @defer returns metadata with prefixed path",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer returns metadata with prefixed path",
-      "name": "relay/normalizer/defer-returns-metadata-with-prefixed-path",
       "operation": "RelayResponseNormalizerTest10Query",
-      "calls": 1
+      "calls": 1,
+      "name": "relay/normalizer/defer-returns-metadata-with-prefixed-path"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @stream normalizes when if condition is false",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes when if condition is false",
-      "name": "relay/normalizer/stream-normalizes-when-if-condition-is-false",
       "operation": "RelayResponseNormalizerTest11Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton"
+      "note": "batonc: `@stream` on a field has no meaning in Baton",
+      "name": "relay/normalizer/stream-normalizes-when-if-condition-is-false"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @stream normalizes and returns metadata when `if` is true (literal value)",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes and returns metadata when `if` is true (literal value)",
-      "name": "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-literal-value",
       "operation": "RelayResponseNormalizerTestQuery",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton"
+      "note": "batonc: `@stream` on a field has no meaning in Baton",
+      "name": "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-literal-value"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @stream normalizes and returns metadata when `if` is true (variable value)",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes and returns metadata when `if` is true (variable value)",
-      "name": "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-variable-value",
       "operation": "RelayResponseNormalizerTest12Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton"
+      "note": "batonc: `@stream` on a field has no meaning in Baton",
+      "name": "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-variable-value"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @stream normalizes and returns metadata for @stream within a plural",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes and returns metadata for @stream within a plural",
-      "name": "relay/normalizer/stream-normalizes-and-returns-metadata-for-stream-within-a-plural",
       "operation": "RelayResponseNormalizerTest13Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton"
+      "note": "batonc: `@stream` on a field has no meaning in Baton",
+      "name": "relay/normalizer/stream-normalizes-and-returns-metadata-for-stream-within-a-plural"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer @stream returns metadata with prefixed path",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream returns metadata with prefixed path",
-      "name": "relay/normalizer/stream-returns-metadata-with-prefixed-path",
       "operation": "RelayResponseNormalizerTest14Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton"
+      "note": "batonc: `@stream` on a field has no meaning in Baton",
+      "name": "relay/normalizer/stream-returns-metadata-with-prefixed-path"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer Client Extensions skips client fields not present in the payload but present in the store",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer Client Extensions skips client fields not present in the payload but present in the store",
-      "name": "relay/normalizer/client-extensions-skips-client-fields-not-present-in-the-payload-but-present-in-the-store",
       "operation": "RelayResponseNormalizerTestStrippedQuery",
       "calls": 2,
       "status": "not-ingested",
       "note": "a store seeded by hand before the first payload"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer Client Extensions skips client fields not present in the payload or store",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer Client Extensions skips client fields not present in the payload or store",
-      "name": "relay/normalizer/client-extensions-skips-client-fields-not-present-in-the-payload-or-store",
       "operation": "RelayResponseNormalizerTestStrippedQuery",
       "calls": 2,
       "status": "not-ingested",
       "note": "a store seeded by hand before the first payload"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer Client Extensions ignores linked client fields not present in the payload",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer Client Extensions ignores linked client fields not present in the payload",
-      "name": "relay/normalizer/client-extensions-ignores-linked-client-fields-not-present-in-the-payload",
       "operation": "RelayResponseNormalizerTestStrippedQuery",
       "calls": 2,
       "status": "not-ingested",
       "note": "a store seeded by hand before the first payload"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer Client Extensions ignores linked client fields not present in the payload or store",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer Client Extensions ignores linked client fields not present in the payload or store",
-      "name": "relay/normalizer/client-extensions-ignores-linked-client-fields-not-present-in-the-payload-or-store",
       "operation": "RelayResponseNormalizerTestStrippedQuery",
       "calls": 2,
       "status": "not-ingested",
       "note": "a store seeded by hand before the first payload"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer User-defined getDataID single field overwrite fields in same position but with different data",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID single field overwrite fields in same position but with different data",
-      "name": "relay/normalizer/user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data",
       "operation": "RelayResponseNormalizerTest16Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "name": "relay/normalizer/user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer User-defined getDataID single field overwrite fields in same position but with different data in second normalization",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID single field overwrite fields in same position but with different data in second normalization",
-      "name": "relay/normalizer/user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization",
       "operation": "RelayResponseNormalizerTest17Query",
       "calls": 2,
       "status": "unsupported-feature",
       "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "name": "relay/scripts/normalizer-user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization.json",
       "script": true
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer User-defined getDataID single field stores user-defined id when function returns an string",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID single field stores user-defined id when function returns an string",
-      "name": "relay/normalizer/user-defined-getdataid-single-field-stores-user-defined-id-when-function-returns-an-string",
       "operation": "RelayResponseNormalizerTest15Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "name": "relay/normalizer/user-defined-getdataid-single-field-stores-user-defined-id-when-function-returns-an-string"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer User-defined getDataID single field falls through to previously generated ID if function returns null ",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID single field falls through to previously generated ID if function returns null ",
-      "name": "relay/normalizer/user-defined-getdataid-single-field-falls-through-to-previously-generated-id-if-function-returns-null",
       "operation": "RelayResponseNormalizerTest15Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "name": "relay/normalizer/user-defined-getdataid-single-field-falls-through-to-previously-generated-id-if-function-returns-null"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer User-defined getDataID single field falls through to generateClientID when the function returns null, and no previously generated ID",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID single field falls through to generateClientID when the function returns null, and no previously generated ID",
-      "name": "relay/normalizer/user-defined-getdataid-single-field-falls-through-to-generateclientid-when-the-function-returns-null-and-no-previously-generated-id",
       "operation": "RelayResponseNormalizerTest15Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "name": "relay/normalizer/user-defined-getdataid-single-field-falls-through-to-generateclientid-when-the-function-returns-null-and-no-previously-generated-id"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer User-defined getDataID plural fields stores user-defined ids when function returns an string",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID plural fields stores user-defined ids when function returns an string",
-      "name": "relay/normalizer/user-defined-getdataid-plural-fields-stores-user-defined-ids-when-function-returns-an-string",
       "operation": "RelayResponseNormalizerTest18Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "name": "relay/normalizer/user-defined-getdataid-plural-fields-stores-user-defined-ids-when-function-returns-an-string"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer User-defined getDataID plural fields uses cached IDs if they were generated before and the function returns null",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID plural fields uses cached IDs if they were generated before and the function returns null",
-      "name": "relay/normalizer/user-defined-getdataid-plural-fields-uses-cached-ids-if-they-were-generated-before-and-the-function-returns-null",
       "operation": "RelayResponseNormalizerTest18Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "name": "relay/normalizer/user-defined-getdataid-plural-fields-uses-cached-ids-if-they-were-generated-before-and-the-function-returns-null"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer User-defined getDataID plural fields falls through to generateClientID when the function returns null and there is one new field in stored plural links",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID plural fields falls through to generateClientID when the function returns null and there is one new field in stored plural links",
-      "name": "relay/normalizer/user-defined-getdataid-plural-fields-falls-through-to-generateclientid-when-the-function-returns-null-and-there-is-one-new-field-in-stored-plural-links",
       "operation": "RelayResponseNormalizerTest18Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "name": "relay/normalizer/user-defined-getdataid-plural-fields-falls-through-to-generateclientid-when-the-function-returns-null-and-there-is-one-new-field-in-stored-plural-links"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer User-defined getDataID plural fields falls through to generateClientID when the function returns null and no previously generated IDs",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID plural fields falls through to generateClientID when the function returns null and no previously generated IDs",
-      "name": "relay/normalizer/user-defined-getdataid-plural-fields-falls-through-to-generateclientid-when-the-function-returns-null-and-no-previously-generated-ids",
       "operation": "RelayResponseNormalizerTest18Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function"
+      "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "name": "relay/normalizer/user-defined-getdataid-plural-fields-falls-through-to-generateclientid-when-the-function-returns-null-and-no-previously-generated-ids"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer User-defined getDataID plural fields overwrite fields in same position but with different data in second normalization",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID plural fields overwrite fields in same position but with different data in second normalization",
-      "name": "relay/normalizer/user-defined-getdataid-plural-fields-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization",
       "operation": "RelayResponseNormalizerTest19Query",
       "calls": 2,
       "status": "unsupported-feature",
       "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+      "name": "relay/scripts/normalizer-user-defined-getdataid-plural-fields-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization.json",
       "script": true
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer normalize queries with provided variables",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer normalize queries with provided variables",
-      "name": "relay/normalizer/normalize-queries-with-provided-variables",
       "operation": "RelayResponseNormalizerTest_pvQuery",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "batonc: Expected a non-variable identifier (e.g. 'x' or 'Foo')"
+      "note": "batonc: Expected a non-variable identifier (e.g. 'x' or 'Foo')",
+      "name": "relay/normalizer/normalize-queries-with-provided-variables"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer warns in __DEV__ if payload data is missing an expected field",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer warns in __DEV__ if payload data is missing an expected field",
-      "name": "relay/normalizer/warns-in-dev-if-payload-data-is-missing-an-expected-field",
       "operation": "RelayResponseNormalizerTest20Query",
-      "calls": 1
+      "calls": 1,
+      "name": "relay/normalizer/warns-in-dev-if-payload-data-is-missing-an-expected-field"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer does not warn in __DEV__ if payload data is missing for an abstract field",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer does not warn in __DEV__ if payload data is missing for an abstract field",
-      "name": "relay/normalizer/does-not-warn-in-dev-if-payload-data-is-missing-for-an-abstract-field",
       "operation": "RelayResponseNormalizerTest21Query",
-      "calls": 1
+      "calls": 1,
+      "name": "relay/normalizer/does-not-warn-in-dev-if-payload-data-is-missing-for-an-abstract-field"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer warns in __DEV__ if a single response contains conflicting fields with the same id",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer warns in __DEV__ if a single response contains conflicting fields with the same id",
-      "name": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-fields-with-the-same-id",
       "operation": "RelayResponseNormalizerTest22Query",
-      "calls": 1
+      "calls": 1,
+      "name": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-fields-with-the-same-id"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer does not warn if a single response contains the same fields with the same id",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer does not warn if a single response contains the same fields with the same id",
-      "name": "relay/normalizer/does-not-warn-if-a-single-response-contains-the-same-fields-with-the-same-id",
       "operation": "RelayResponseNormalizerTest32Query",
-      "calls": 1
+      "calls": 1,
+      "name": "relay/normalizer/does-not-warn-if-a-single-response-contains-the-same-fields-with-the-same-id"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer does not warn if a single response contains the same scalar array value",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer does not warn if a single response contains the same scalar array value",
-      "name": "relay/normalizer/does-not-warn-if-a-single-response-contains-the-same-scalar-array-value",
       "operation": "RelayResponseNormalizerTest23Query",
-      "calls": 1
+      "calls": 1,
+      "name": "relay/normalizer/does-not-warn-if-a-single-response-contains-the-same-scalar-array-value"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer warns in __DEV__ if a single response contains conflicting fields with multiple same ids",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer warns in __DEV__ if a single response contains conflicting fields with multiple same ids",
-      "name": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-fields-with-multiple-same-ids",
       "operation": "RelayResponseNormalizerTest24Query",
-      "calls": 1
+      "calls": 1,
+      "name": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-fields-with-multiple-same-ids"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer warns in __DEV__ if a single response contains conflicting linked fields",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer warns in __DEV__ if a single response contains conflicting linked fields",
-      "name": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-linked-fields",
       "operation": "RelayResponseNormalizerTest25Query",
-      "calls": 1
+      "calls": 1,
+      "name": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-linked-fields"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer warns in __DEV__ if a single response contains conflicting linked fields with null values",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer warns in __DEV__ if a single response contains conflicting linked fields with null values",
-      "name": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-linked-fields-with-null-values",
       "operation": "RelayResponseNormalizerTest26Query",
-      "calls": 1
+      "calls": 1,
+      "name": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-linked-fields-with-null-values"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer warns in __DEV__ if payload contains inconsistent types for a record",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer warns in __DEV__ if payload contains inconsistent types for a record",
-      "name": "relay/normalizer/warns-in-dev-if-payload-contains-inconsistent-types-for-a-record",
       "operation": "RelayResponseNormalizerTest27Query",
       "calls": 2,
       "status": "not-ingested",
       "note": "one id of several types (`1`): Relay merges them into one record, Baton keys by type (docs/decisions/identity-is-configured.md)"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer does not warn in __DEV__ on inconsistent types for a client record",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer does not warn in __DEV__ on inconsistent types for a client record",
-      "name": "relay/normalizer/does-not-warn-in-dev-on-inconsistent-types-for-a-client-record",
       "operation": "RelayResponseNormalizerTest28Query",
       "calls": 2,
       "status": "not-ingested",
       "note": "one id of several types (`client:1`): Relay merges them into one record, Baton keys by type (docs/decisions/identity-is-configured.md)"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer leaves undefined fields unset",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer leaves undefined fields unset",
-      "name": "relay/normalizer/leaves-undefined-fields-unset",
       "operation": "RelayResponseNormalizerTest29Query",
-      "calls": 1
+      "calls": 1,
+      "name": "relay/normalizer/leaves-undefined-fields-unset"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer when treatMissingFieldsAsNull is true set undefined fields to null",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when treatMissingFieldsAsNull is true set undefined fields to null",
-      "name": "relay/normalizer/when-treatmissingfieldsasnull-is-true-set-undefined-fields-to-null",
       "operation": "RelayResponseNormalizerTest33Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null"
+      "note": "`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null",
+      "name": "relay/normalizer/when-treatmissingfieldsasnull-is-true-set-undefined-fields-to-null"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer when treatMissingFieldsAsNull is true skips client fields not present in the payload but present in the store",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when treatMissingFieldsAsNull is true skips client fields not present in the payload but present in the store",
-      "name": "relay/normalizer/when-treatmissingfieldsasnull-is-true-skips-client-fields-not-present-in-the-payload-but-present-in-the-store",
       "operation": "RelayResponseNormalizerTest34Query",
       "calls": 2,
       "status": "unsupported-feature",
       "note": "`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null",
+      "name": "relay/scripts/normalizer-when-treatmissingfieldsasnull-is-true-skips-client-fields-not-present-in-the-payload-but-present-in-the-store.json",
       "script": true
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer when treatMissingFieldsAsNull is true does not warn if a single response contains the same fields with the same id",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when treatMissingFieldsAsNull is true does not warn if a single response contains the same fields with the same id",
-      "name": "relay/normalizer/when-treatmissingfieldsasnull-is-true-does-not-warn-if-a-single-response-contains-the-same-fields-with-the-same-id",
       "operation": "RelayResponseNormalizerTest35Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null"
+      "note": "`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null",
+      "name": "relay/normalizer/when-treatmissingfieldsasnull-is-true-does-not-warn-if-a-single-response-contains-the-same-fields-with-the-same-id"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload",
-      "name": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload",
       "operation": "RelayResponseNormalizerTest30Query",
       "calls": 1,
       "status": "unspecified-behaviour",
       "note": "Relay keys an object whose id is the empty string by its path; Baton keys it `User:`, one record for every such object of the type.",
-      "decision": "Document it and copy Relay, unless that costs performance (owner, 2026-10-09)."
+      "decision": "Document it and copy Relay, unless that costs performance (owner, 2026-10-09).",
+      "name": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload - same id",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload - same id",
-      "name": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-same-id",
       "operation": "RelayResponseNormalizerTest30Query",
       "calls": 1,
       "status": "unspecified-behaviour",
       "note": "Relay keys an object whose id is the empty string by its path; Baton keys it `User:`, one record for every such object of the type.",
-      "decision": "Document it and copy Relay, unless that costs performance (owner, 2026-10-09)."
+      "decision": "Document it and copy Relay, unless that costs performance (owner, 2026-10-09).",
+      "name": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-same-id"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload for list",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload for list",
-      "name": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-for-list",
       "operation": "RelayResponseNormalizerTest31Query",
       "calls": 1,
       "status": "unspecified-behaviour",
       "note": "An `ID` the server sends as a number or a boolean: Relay keys the object by its path; Baton's ingest rejects the response.",
-      "decision": "Document it and copy Relay, unless that costs performance (owner, 2026-10-09)."
+      "decision": "Document it and copy Relay, unless that costs performance (owner, 2026-10-09).",
+      "name": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-for-list"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer records which concrete types implement which client schema extension interfaces",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer records which concrete types implement which client schema extension interfaces",
-      "name": "relay/normalizer/records-which-concrete-types-implement-which-client-schema-extension-interfaces",
       "operation": "RelayResponseNormalizerTestClientInterfaceQuery",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "batonc: Unknown type 'ClientInterface'. Did you mean `ClientObject`?"
+      "note": "batonc: Unknown type 'ClientInterface'. Did you mean `ClientObject`?",
+      "name": "relay/normalizer/records-which-concrete-types-implement-which-client-schema-extension-interfaces"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer when field error handling is enabled normalizes queries with multiple field errors",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled normalizes queries with multiple field errors",
-      "name": "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-multiple-field-errors",
       "operation": "RelayResponseNormalizerTest37Query",
       "calls": 1,
       "status": "possible-bug",
       "note": "Relay keeps every error of a field as a list of messages; Baton keeps one error a field, the last, with its absolute path, and loses the others.",
-      "decision": "Match Relay, unless that costs performance (owner, 2026-10-09)."
+      "decision": "Match Relay, unless that costs performance (owner, 2026-10-09).",
+      "name": "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-multiple-field-errors"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer when field error handling is enabled normalizes queries with field errors that bubbled up",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled normalizes queries with field errors that bubbled up",
-      "name": "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-field-errors-that-bubbled-up",
       "operation": "RelayResponseNormalizerTest38Query",
       "calls": 1,
       "status": "possible-bug",
       "note": "Relay keeps every error that bubbled to the nulled field, with paths relative to it; Baton keeps one, the last, with its absolute path, and loses the others.",
-      "decision": "Match Relay, unless that costs performance (owner, 2026-10-09)."
+      "decision": "Match Relay, unless that costs performance (owner, 2026-10-09).",
+      "name": "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-field-errors-that-bubbled-up"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer when field error handling is enabled when noncompliant error handling on lists is disabled ignores field errors on an empty list",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled when noncompliant error handling on lists is disabled ignores field errors on an empty list",
-      "name": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-disabled-ignores-field-errors-on-an-empty-list",
       "operation": "RelayResponseNormalizerTest39Query",
       "calls": 1,
       "status": "unspecified-behaviour",
       "note": "An error whose path ends at a list that is not null: Relay drops it; Baton places it on the list's field, the last field its path reaches.",
-      "decision": "Match Relay, unless that costs performance (owner, 2026-10-09)."
+      "decision": "Match Relay, unless that costs performance (owner, 2026-10-09).",
+      "name": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-disabled-ignores-field-errors-on-an-empty-list"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer when field error handling is enabled when noncompliant error handling on lists is enabled stores field errors on an linked field that is an empty list",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled when noncompliant error handling on lists is enabled stores field errors on an linked field that is an empty list",
-      "name": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-enabled-stores-field-errors-on-an-linked-field-that-is-an-empty-list",
       "operation": "RelayResponseNormalizerTest40Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS`"
+      "note": "a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS`",
+      "name": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-enabled-stores-field-errors-on-an-linked-field-that-is-an-empty-list"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer when field error handling is enabled when noncompliant error handling on lists is enabled stores field errors on an scalar field that is an empty list",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled when noncompliant error handling on lists is enabled stores field errors on an scalar field that is an empty list",
-      "name": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-enabled-stores-field-errors-on-an-scalar-field-that-is-an-empty-list",
       "operation": "RelayResponseNormalizerTest41Query",
       "calls": 1,
       "status": "unsupported-feature",
-      "note": "a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS`"
+      "note": "a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS`",
+      "name": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-enabled-stores-field-errors-on-an-scalar-field-that-is-an-empty-list"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer Prototype-less objects (e.g., from graphql-js executor) normalizes prototype-less payloads with type discriminator",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer Prototype-less objects (e.g., from graphql-js executor) normalizes prototype-less payloads with type discriminator",
-      "name": "relay/normalizer/prototype-less-objects-e-g-from-graphql-js-executor-normalizes-prototype-less-payloads-with-type-discriminator",
       "operation": "RelayResponseNormalizerTest42Query",
-      "calls": 1
+      "calls": 1,
+      "name": "relay/normalizer/prototype-less-objects-e-g-from-graphql-js-executor-normalizes-prototype-less-payloads-with-type-discriminator"
     },
     {
+      "suite": "RelayResponseNormalizer-test",
       "test": "RelayResponseNormalizer Prototype-less objects (e.g., from graphql-js executor) normalizes prototype-less payloads for union types",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer Prototype-less objects (e.g., from graphql-js executor) normalizes prototype-less payloads for union types",
-      "name": "relay/normalizer/prototype-less-objects-e-g-from-graphql-js-executor-normalizes-prototype-less-payloads-for-union-types",
       "operation": "RelayResponseNormalizerTest43Query",
       "calls": 1,
       "status": "invalid-input",
       "note": "The server text asks for `... on Node { __isNode: __typename, id }`, and the test's payload leaves `__isNode` out, which a conforming server does not do; the test is about prototype-less objects and the omission is incidental. Relay knows no schema at run time and applies an abstract fragment only when the payload answers `__isX`, so it stores no `id`; Baton knows from the schema that `Page` is a `Node` and stores it (spec/runtime.md, memberships).",
-      "decision": "Open. The recommendation is no change: both behave the same on a response that answers the text."
+      "decision": "Open. The recommendation is no change: both behave the same on a response that answers the text.",
+      "name": "relay/normalizer/prototype-less-objects-e-g-from-graphql-js-executor-normalizes-prototype-less-payloads-for-union-types"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() reads query data",
+      "origin": "DataChecker-test.js: check() reads query data",
+      "operation": "DataCheckerTestQuery",
+      "calls": 1,
+      "name": "relay/scripts/checker-reads-query-data.json",
+      "script": true,
+      "document": "relay/documents/DataCheckerTestQuery.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() reads fragment data",
+      "origin": "DataChecker-test.js: check() reads fragment data",
+      "operation": "DataCheckerTestFragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() reads handle fields in fragment",
+      "origin": "DataChecker-test.js: check() reads handle fields in fragment",
+      "operation": "DataCheckerTest1Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() reads handle fields in fragment and checks missing",
+      "origin": "DataChecker-test.js: check() reads handle fields in fragment and checks missing",
+      "operation": "DataCheckerTest2Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() reads handle fields in fragment and checks missing sub field",
+      "origin": "DataChecker-test.js: check() reads handle fields in fragment and checks missing sub field",
+      "operation": "DataCheckerTest3Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() reads handle fields in operation",
+      "origin": "DataChecker-test.js: check() reads handle fields in operation",
+      "operation": "DataCheckerTest1Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the response the seeded store stands for gives Relay another answer (missing, not available)"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() reads handle fields in operation and checks missing",
+      "origin": "DataChecker-test.js: check() reads handle fields in operation and checks missing",
+      "operation": "DataCheckerTest7Query",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "batonc: `@__clientField` on a field has no meaning in Baton",
+      "name": "relay/scripts/checker-reads-handle-fields-in-operation-and-checks-missing.json",
+      "script": true,
+      "document": "relay/unsupported/DataCheckerTest7Query.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() reads handle fields in operation and checks missing sub field",
+      "origin": "DataChecker-test.js: check() reads handle fields in operation and checks missing sub field",
+      "operation": "DataCheckerTest8Query",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "batonc: `@__clientField` on a field has no meaning in Baton",
+      "name": "relay/scripts/checker-reads-handle-fields-in-operation-and-checks-missing-sub-field.json",
+      "script": true,
+      "document": "relay/unsupported/DataCheckerTest8Query.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() reads scalar handle fields in operation and checks presence",
+      "origin": "DataChecker-test.js: check() reads scalar handle fields in operation and checks presence",
+      "operation": "DataCheckerTest2Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the response the seeded store stands for gives Relay another answer (missing, not available)"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() reads scalar handle fields in operation and checks missing",
+      "origin": "DataChecker-test.js: check() reads scalar handle fields in operation and checks missing",
+      "operation": "DataCheckerTest3Query",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "batonc: `@__clientField` on a field has no meaning in Baton",
+      "name": "relay/scripts/checker-reads-scalar-handle-fields-in-operation-and-checks-missing.json",
+      "script": true,
+      "document": "relay/unsupported/DataCheckerTest3Query.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @match directive is present returns true when the match field/record exist and match a supported type (plaintext)",
+      "origin": "DataChecker-test.js: check() when @match directive is present returns true when the match field/record exist and match a supported type (plaintext)",
+      "operation": "DataCheckerTest4Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ModuleImport` selection writes, which no response does"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @match directive is present returns true when the match field/record exist and match a supported type (markdown)",
+      "origin": "DataChecker-test.js: check() when @match directive is present returns true when the match field/record exist and match a supported type (markdown)",
+      "operation": "DataCheckerTest4Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ModuleImport` selection writes, which no response does"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @match directive is present returns false when the match field/record exist but the matched fragment has not been processed",
+      "origin": "DataChecker-test.js: check() when @match directive is present returns false when the match field/record exist but the matched fragment has not been processed",
+      "operation": "DataCheckerTest4Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ModuleImport` selection writes, which no response does"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @match directive is present returns false when the match field/record exist but a scalar field is missing",
+      "origin": "DataChecker-test.js: check() when @match directive is present returns false when the match field/record exist but a scalar field is missing",
+      "operation": "DataCheckerTest4Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ModuleImport` selection writes, which no response does"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @match directive is present returns false when the match field/record exist but a linked field is missing",
+      "origin": "DataChecker-test.js: check() when @match directive is present returns false when the match field/record exist but a linked field is missing",
+      "operation": "DataCheckerTest4Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ModuleImport` selection writes, which no response does"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @match directive is present returns true when the match field/record exist but do not match a supported type",
+      "origin": "DataChecker-test.js: check() when @match directive is present returns true when the match field/record exist but do not match a supported type",
+      "operation": "DataCheckerTest4Query",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "batonc: `@match` on a field has no meaning in Baton",
+      "name": "relay/scripts/checker-when-match-directive-is-present-returns-true-when-the-match-field-record-exist-but-do-not-match-a-supported-type.json",
+      "script": true,
+      "document": "relay/unsupported/DataCheckerTest4Query.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @match directive is present returns true when the match field is non-existent (null)",
+      "origin": "DataChecker-test.js: check() when @match directive is present returns true when the match field is non-existent (null)",
+      "operation": "DataCheckerTest4Query",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "batonc: `@match` on a field has no meaning in Baton",
+      "name": "relay/scripts/checker-when-match-directive-is-present-returns-true-when-the-match-field-is-non-existent-null.json",
+      "script": true,
+      "document": "relay/unsupported/DataCheckerTest4Query.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @match directive is present returns false when the match field is not fetched (undefined)",
+      "origin": "DataChecker-test.js: check() when @match directive is present returns false when the match field is not fetched (undefined)",
+      "operation": "DataCheckerTest4Query",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "batonc: `@match` on a field has no meaning in Baton",
+      "name": "relay/scripts/checker-when-match-directive-is-present-returns-false-when-the-match-field-is-not-fetched-undefined.json",
+      "script": true,
+      "document": "relay/unsupported/DataCheckerTest4Query.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @module directive is present returns true when the field/record exists and matches the @module type (plaintext)",
+      "origin": "DataChecker-test.js: check() when @module directive is present returns true when the field/record exists and matches the @module type (plaintext)",
+      "operation": "DataCheckerTest5Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ModuleImport` selection writes, which no response does"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @module directive is present returns true when the field/record exist and matches the @module type (markdown)",
+      "origin": "DataChecker-test.js: check() when @module directive is present returns true when the field/record exist and matches the @module type (markdown)",
+      "operation": "DataCheckerTest5Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ModuleImport` selection writes, which no response does"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @module directive is present returns false when the field/record exist but the @module fragment has not been processed",
+      "origin": "DataChecker-test.js: check() when @module directive is present returns false when the field/record exist but the @module fragment has not been processed",
+      "operation": "DataCheckerTest5Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ModuleImport` selection writes, which no response does"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @module directive is present returns false when the field/record exists but a scalar field is missing",
+      "origin": "DataChecker-test.js: check() when @module directive is present returns false when the field/record exists but a scalar field is missing",
+      "operation": "DataCheckerTest5Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ModuleImport` selection writes, which no response does"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @module directive is present returns false when the field/record exists but a linked field is missing",
+      "origin": "DataChecker-test.js: check() when @module directive is present returns false when the field/record exists but a linked field is missing",
+      "operation": "DataCheckerTest5Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ModuleImport` selection writes, which no response does"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @module directive is present returns true when the field/record exists but does not match any @module selection",
+      "origin": "DataChecker-test.js: check() when @module directive is present returns true when the field/record exists but does not match any @module selection",
+      "operation": "DataCheckerTest5Query",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "batonc: `@module` on a fragment spread has no meaning in Baton",
+      "name": "relay/scripts/checker-when-module-directive-is-present-returns-true-when-the-field-record-exists-but-does-not-match-any-module-selection.json",
+      "script": true,
+      "document": "relay/unsupported/DataCheckerTest5Query.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @defer directive is present returns true when deferred selections are fetched",
+      "origin": "DataChecker-test.js: check() when @defer directive is present returns true when deferred selections are fetched",
+      "operation": "DataCheckerTest9Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the response the seeded store stands for gives Relay another answer (missing, not available)"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @defer directive is present returns false when deferred selections are not fetched",
+      "origin": "DataChecker-test.js: check() when @defer directive is present returns false when deferred selections are not fetched",
+      "operation": "DataCheckerTest9Query",
+      "calls": 1,
+      "status": "by-design",
+      "note": "The deferred fragment's fields are not in the store. Relay's check answers missing; Baton's answers from the selection outside the deferred parts, which checks them apart, and the operation fetches either way (spec/runtime.md, 'The deferred parts are checked apart').",
+      "decision": "Open. The recommendation is no change, since the answer only decides whether the rest renders while the deferred part is fetched.",
+      "name": "relay/scripts/checker-when-defer-directive-is-present-returns-false-when-deferred-selections-are-not-fetched.json",
+      "script": true,
+      "document": "relay/documents/DataCheckerTest9Query.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @stream directive is present returns true when streamed selections are fetched",
+      "origin": "DataChecker-test.js: check() when @stream directive is present returns true when streamed selections are fetched",
+      "operation": "DataCheckerTest6Query",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "batonc: `@stream` on a field has no meaning in Baton",
+      "name": "relay/scripts/checker-when-stream-directive-is-present-returns-true-when-streamed-selections-are-fetched.json",
+      "script": true,
+      "document": "relay/unsupported/DataCheckerTest6Query.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when @stream directive is present returns false when streamed selections are not fetched",
+      "origin": "DataChecker-test.js: check() when @stream directive is present returns false when streamed selections are not fetched",
+      "operation": "DataCheckerTest6Query",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "batonc: `@stream` on a field has no meaning in Baton",
+      "name": "relay/scripts/checker-when-stream-directive-is-present-returns-false-when-streamed-selections-are-not-fetched.json",
+      "script": true,
+      "document": "relay/unsupported/DataCheckerTest6Query.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when the data is complete returns available",
+      "origin": "DataChecker-test.js: check() when the data is complete returns available",
+      "operation": "DataCheckerTestQuery",
+      "calls": 1,
+      "name": "relay/scripts/checker-when-the-data-is-complete-returns-available.json",
+      "script": true,
+      "document": "relay/documents/DataCheckerTestQuery.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing returns missing on missing records",
+      "origin": "DataChecker-test.js: check() when some data is missing returns missing on missing records",
+      "operation": "DataCheckerTest8Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing returns missing on missing fields",
+      "origin": "DataChecker-test.js: check() when some data is missing returns missing on missing fields",
+      "operation": "DataCheckerTest9Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing allows handlers to supplement missing scalar fields",
+      "origin": "DataChecker-test.js: check() when some data is missing allows handlers to supplement missing scalar fields",
+      "operation": "DataCheckerTest10Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing linked field handler handler that returns undefined",
+      "origin": "DataChecker-test.js: check() when some data is missing linked field handler handler that returns undefined",
+      "operation": "DataCheckerTest11Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `user1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing linked field handler handler that returns null",
+      "origin": "DataChecker-test.js: check() when some data is missing linked field handler handler that returns null",
+      "operation": "DataCheckerTest11Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `user1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing linked field handler handler that returns 'hometown-exists'",
+      "origin": "DataChecker-test.js: check() when some data is missing linked field handler handler that returns 'hometown-exists'",
+      "operation": "DataCheckerTest11Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `user1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing linked field handler handler that returns 'hometown-deleted'",
+      "origin": "DataChecker-test.js: check() when some data is missing linked field handler handler that returns 'hometown-deleted'",
+      "operation": "DataCheckerTest11Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `user1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing linked field handler handler that returns 'hometown-unknown'",
+      "origin": "DataChecker-test.js: check() when some data is missing linked field handler handler that returns 'hometown-unknown'",
+      "operation": "DataCheckerTest11Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `user1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing plural linked field handler handler that returns undefined",
+      "origin": "DataChecker-test.js: check() when some data is missing plural linked field handler handler that returns undefined",
+      "operation": "DataCheckerTest12Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `user1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing plural linked field handler handler that returns null",
+      "origin": "DataChecker-test.js: check() when some data is missing plural linked field handler handler that returns null",
+      "operation": "DataCheckerTest12Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `user1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing plural linked field handler handler that returns []",
+      "origin": "DataChecker-test.js: check() when some data is missing plural linked field handler handler that returns []",
+      "operation": "DataCheckerTest12Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `user1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing plural linked field handler handler that returns [undefined]",
+      "origin": "DataChecker-test.js: check() when some data is missing plural linked field handler handler that returns [undefined]",
+      "operation": "DataCheckerTest12Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `user1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing plural linked field handler handler that returns [null]",
+      "origin": "DataChecker-test.js: check() when some data is missing plural linked field handler handler that returns [null]",
+      "operation": "DataCheckerTest12Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `user1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing plural linked field handler handler that returns ['screenname-exists']",
+      "origin": "DataChecker-test.js: check() when some data is missing plural linked field handler handler that returns ['screenname-exists']",
+      "operation": "DataCheckerTest12Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `user1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing plural linked field handler handler that returns ['screenname-deleted']",
+      "origin": "DataChecker-test.js: check() when some data is missing plural linked field handler handler that returns ['screenname-deleted']",
+      "operation": "DataCheckerTest12Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `user1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing plural linked field handler handler that returns ['screenname-unknown']",
+      "origin": "DataChecker-test.js: check() when some data is missing plural linked field handler handler that returns ['screenname-unknown']",
+      "operation": "DataCheckerTest12Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `user1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing plural linked field handler handler that returns ['screenname-exists', 'screenname-unknown']",
+      "origin": "DataChecker-test.js: check() when some data is missing plural linked field handler handler that returns ['screenname-exists', 'screenname-unknown']",
+      "operation": "DataCheckerTest12Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `user1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing returns modified records with the target",
+      "origin": "DataChecker-test.js: check() when some data is missing returns modified records with the target",
+      "operation": "DataCheckerTest13Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when some data is missing returns available even when client field is missing",
+      "origin": "DataChecker-test.js: check() when some data is missing returns available even when client field is missing",
+      "operation": "DataCheckerTest14Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a fragment at `1`; Baton checks an operation from its root"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when individual records have been invalidated when data is complete returns correct invalidation epoch in result when record was invalidated",
+      "origin": "DataChecker-test.js: check() when individual records have been invalidated when data is complete returns correct invalidation epoch in result when record was invalidated",
+      "operation": "DataCheckerTestQuery",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "a record invalidated by hand: Baton invalidates the store, not a record",
+      "name": "relay/scripts/checker-when-individual-records-have-been-invalidated-when-data-is-complete-returns-correct-invalidation-epoch-in-result-when-record-was-invalidated.json",
+      "script": true,
+      "document": "relay/documents/DataCheckerTestQuery.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when individual records have been invalidated when data is complete returns correct invalidation epoch in result when multiple records invalidated at different times",
+      "origin": "DataChecker-test.js: check() when individual records have been invalidated when data is complete returns correct invalidation epoch in result when multiple records invalidated at different times",
+      "operation": "DataCheckerTestQuery",
+      "calls": 2,
+      "status": "not-ingested",
+      "note": "several checks in one test"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when individual records have been invalidated when data is missing returns correct invalidation epoch in result when record was invalidated",
+      "origin": "DataChecker-test.js: check() when individual records have been invalidated when data is missing returns correct invalidation epoch in result when record was invalidated",
+      "operation": "DataCheckerTestQuery",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "a record invalidated by hand: Baton invalidates the store, not a record",
+      "name": "relay/scripts/checker-when-individual-records-have-been-invalidated-when-data-is-missing-returns-correct-invalidation-epoch-in-result-when-record-was-invalidated.json",
+      "script": true,
+      "document": "relay/documents/DataCheckerTestQuery.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when individual records have been invalidated when data is missing returns correct invalidation epoch in result when multiple records invalidated at different times",
+      "origin": "DataChecker-test.js: check() when individual records have been invalidated when data is missing returns correct invalidation epoch in result when multiple records invalidated at different times",
+      "operation": "DataCheckerTestQuery",
+      "calls": 2,
+      "status": "not-ingested",
+      "note": "several checks in one test"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() when individual records have been invalidated when data is missing returns null invalidation epoch when stale record is unreachable",
+      "origin": "DataChecker-test.js: check() when individual records have been invalidated when data is missing returns null invalidation epoch when stale record is unreachable",
+      "operation": "DataCheckerTestQuery",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "a record invalidated by hand: Baton invalidates the store, not a record",
+      "name": "relay/scripts/checker-when-individual-records-have-been-invalidated-when-data-is-missing-returns-null-invalidation-epoch-when-stale-record-is-unreachable.json",
+      "script": true,
+      "document": "relay/documents/DataCheckerTestQuery.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() returns false when a Node record is missing an id",
+      "origin": "DataChecker-test.js: check() returns false when a Node record is missing an id",
+      "operation": "DataCheckerTest16Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a selector that is not a query"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() precise type refinement returns `missing` when a Node record is missing an id",
+      "origin": "DataChecker-test.js: check() precise type refinement returns `missing` when a Node record is missing an id",
+      "operation": "DataCheckerTest17Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a selector that is not a query"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() precise type refinement returns `missing` when an abstract refinement is only missing the discriminator field",
+      "origin": "DataChecker-test.js: check() precise type refinement returns `missing` when an abstract refinement is only missing the discriminator field",
+      "operation": "DataCheckerTest18Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a selector that is not a query"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() precise type refinement returns `available` when a record is only missing fields in non-implemented interfaces",
+      "origin": "DataChecker-test.js: check() precise type refinement returns `available` when a record is only missing fields in non-implemented interfaces",
+      "operation": "DataCheckerTest19Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a check of a selector that is not a query"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() should assign client-only abstract type information to the target source",
+      "origin": "DataChecker-test.js: check() should assign client-only abstract type information to the target source",
+      "operation": "DataCheckerTestClient2AbstractQuery",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the seeded store stands for no response: no root record"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() should assign client-only abstract type information to the target source if it is not available in the source",
+      "origin": "DataChecker-test.js: check() should assign client-only abstract type information to the target source if it is not available in the source",
+      "operation": "DataCheckerTestClientAbstractQuery",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "batonc: Unknown type 'ClientInterface'. Did you mean `ClientObject`?",
+      "name": "relay/scripts/checker-should-assign-client-only-abstract-type-information-to-the-target-source-if-it-is-not-available-in-the-source.json",
+      "script": true,
+      "document": "relay/unsupported/DataCheckerTestClientAbstractQuery.graphql"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() exec time resolvers client query should return available when all data is available",
+      "origin": "DataChecker-test.js: check() exec time resolvers client query should return available when all data is available",
+      "operation": "DataCheckerTestExecQuery",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ClientEdgeToClientObject` selection writes, which no response does"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() exec time resolvers client query should return available when only client data is missing",
+      "origin": "DataChecker-test.js: check() exec time resolvers client query should return available when only client data is missing",
+      "operation": "DataCheckerTestExecQuery",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ClientEdgeToClientObject` selection writes, which no response does"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() exec time resolvers server and client query should return available when server data is available",
+      "origin": "DataChecker-test.js: check() exec time resolvers server and client query should return available when server data is available",
+      "operation": "DataCheckerTestExecWithServerDataQuery",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ClientEdgeToClientObject` selection writes, which no response does"
+    },
+    {
+      "suite": "DataChecker-test",
+      "test": "check() exec time resolvers server and client query should return missing when server data is missing",
+      "origin": "DataChecker-test.js: check() exec time resolvers server and client query should return missing when server data is missing",
+      "operation": "DataCheckerTestExecWithServerDataQuery",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ClientEdgeToClientObject` selection writes, which no response does"
     }
   ]
 }

@@ -1,0 +1,20 @@
+{
+  "name": "checker-reads-scalar-handle-fields-in-operation-and-checks-missing",
+  "origin": "DataChecker-test.js: check() reads scalar handle fields in operation and checks missing",
+  "status": "unsupported-feature",
+  "note": "batonc: `@__clientField` on a field has no meaning in Baton",
+  "steps": [
+    {
+      "payload": {
+        "operation": "DataCheckerTest3Query",
+        "response": "relay/checker/reads-scalar-handle-fields-in-operation-and-checks-missing.json"
+      }
+    },
+    {
+      "check": {
+        "operation": "DataCheckerTest3Query"
+      },
+      "answer": "miss"
+    }
+  ]
+}

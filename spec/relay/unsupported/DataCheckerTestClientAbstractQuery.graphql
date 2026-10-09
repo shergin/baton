@@ -1,0 +1,9 @@
+query DataCheckerTestClientAbstractQuery {
+  client_interface {
+    ...DataCheckerTestClientInterface
+  }
+}
+
+fragment DataCheckerTestClientInterface on ClientInterface {
+  description
+}

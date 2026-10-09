@@ -1,0 +1,12 @@
+query DataCheckerTest6Query($id: ID!) {
+  node(id: $id) {
+    ...DataCheckerTest7Fragment @alias
+  }
+}
+
+fragment DataCheckerTest7Fragment on Feedback {
+  id
+  actors @stream(label: "TestFragmentActors", initial_count: 0) {
+    name
+  }
+}

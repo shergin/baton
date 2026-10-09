@@ -1,0 +1,26 @@
+{
+  "name": "checker-when-stream-directive-is-present-returns-true-when-streamed-selections-are-fetched",
+  "origin": "DataChecker-test.js: check() when @stream directive is present returns true when streamed selections are fetched",
+  "status": "unsupported-feature",
+  "note": "batonc: `@stream` on a field has no meaning in Baton",
+  "steps": [
+    {
+      "payload": {
+        "operation": "DataCheckerTest6Query",
+        "variables": {
+          "id": "1"
+        },
+        "response": "relay/checker/when-stream-directive-is-present-returns-true-when-streamed-selections-are-fetched.json"
+      }
+    },
+    {
+      "check": {
+        "operation": "DataCheckerTest6Query",
+        "variables": {
+          "id": "1"
+        }
+      },
+      "answer": "memory"
+    }
+  ]
+}

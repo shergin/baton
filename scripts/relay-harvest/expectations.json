@@ -48,5 +48,10 @@
     "status": "invalid-input",
     "note": "The server text asks for `... on Node { __isNode: __typename, id }`, and the test's payload leaves `__isNode` out, which a conforming server does not do; the test is about prototype-less objects and the omission is incidental. Relay knows no schema at run time and applies an abstract fragment only when the payload answers `__isX`, so it stores no `id`; Baton knows from the schema that `Page` is a `Node` and stores it (spec/runtime.md, memberships).",
     "decision": "Open. The recommendation is no change: both behave the same on a response that answers the text."
+  },
+  "DataChecker-test.js: check() when @defer directive is present returns false when deferred selections are not fetched": {
+    "status": "by-design",
+    "note": "The deferred fragment's fields are not in the store. Relay's check answers missing; Baton's answers from the selection outside the deferred parts, which checks them apart, and the operation fetches either way (spec/runtime.md, 'The deferred parts are checked apart').",
+    "decision": "Open. The recommendation is no change, since the answer only decides whether the rest renders while the deferred part is fetched."
   }
 }

@@ -1,0 +1,26 @@
+{
+  "name": "checker-when-match-directive-is-present-returns-false-when-the-match-field-is-not-fetched-undefined",
+  "origin": "DataChecker-test.js: check() when @match directive is present returns false when the match field is not fetched (undefined)",
+  "status": "unsupported-feature",
+  "note": "batonc: `@match` on a field has no meaning in Baton",
+  "steps": [
+    {
+      "payload": {
+        "operation": "DataCheckerTest4Query",
+        "variables": {
+          "id": "1"
+        },
+        "response": "relay/checker/when-match-directive-is-present-returns-false-when-the-match-field-is-not-fetched-undefined.json"
+      }
+    },
+    {
+      "check": {
+        "operation": "DataCheckerTest4Query",
+        "variables": {
+          "id": "1"
+        }
+      },
+      "answer": "miss"
+    }
+  ]
+}

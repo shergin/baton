@@ -8,7 +8,8 @@ makes them and translates the records into Baton's keys. The tests,
 `testschema.graphql` and the client extensions are Relay's, MIT licensed,
 copyright Meta Platforms, Inc. and affiliates.
 
-The harvest covers `RelayResponseNormalizer-test.js`. Relay's tests are
+The harvest covers `RelayResponseNormalizer-test.js` and
+`DataChecker-test.js`. Relay's tests are
 measured against, not obeyed
 ([docs/decisions/relays-tests-are-measured-not-obeyed.md](../../docs/decisions/relays-tests-are-measured-not-obeyed.md)):
 each case carries a status, and a case whose status is not `passes` says
@@ -25,6 +26,9 @@ never its dump. The statuses are written in
   Relay's result, a `status`, a `note` and a `decision`; `scripts` lists a
   test that normalizes several payloads in a row, as `payload` steps.
 - `normalizer/`: the payloads as responses and the records after them.
+- `checker/`: the responses the availability checks' seeded stores stand
+  for; each is a script of a `payload` step and a `check` step with Relay's
+  answer, `available` as `memory` and `missing` as `miss`.
 - `sources/`: each operation as the test's author wrote it, with its
   fragments; `documents/`: the text the compiler generated from it;
   `unsupported/`: the documents batonc rejects, kept for when it does not.
@@ -37,6 +41,17 @@ The Swift test target `BatonRelayTests` compiles `sources/` (generated into
 unsupported ones, each with a status as a known issue: it commits
 the responses as payloads and compares the store with the dump.
 
+## Seeded stores
+
+Relay's checker, reader and marker tests seed a store by hand; Baton's
+cases start from a response. The recorder walks the query's selection over
+the seeded records and writes the response they stand for, a field the
+store lacks left out and a field error written as a response error; Relay
+normalizes that response into an empty store and answers again, and a test
+is kept only when the two answers agree. The case then compares Baton and
+Relay on one response a server could send. A check of a fragment at a
+record has no counterpart: a Baton fragment has no plan of its own.
+
 ## Running the harvest again
 
 In a checkout of Relay v21.0.1 outside this repository, install and build
@@ -44,9 +59,11 @@ its JavaScript (`yarn install --ignore-scripts`, then
 `node_modules/.bin/gulp dist`), record the calls, and translate them:
 
 ```sh
-HARVEST_OUT=/tmp/harvest NODE_ENV=test OSS=true node_modules/.bin/jest \
-  packages/relay-runtime/store/__tests__/RelayResponseNormalizer-test.js \
-  --setupFilesAfterEnv <baton>/scripts/relay-harvest/record.js
+for suite in RelayResponseNormalizer DataChecker; do
+  HARVEST_OUT=/tmp/harvest NODE_ENV=test OSS=true node_modules/.bin/jest \
+    packages/relay-runtime/store/__tests__/$suite-test.js \
+    --setupFilesAfterEnv <baton>/scripts/relay-harvest/record.js
+done
 python3 scripts/relay-harvest/translate.py --relay <relay> \
   --harvest /tmp/harvest --batonc compiler/target/release/batonc
 BATON_COMPILER=local BATON_BLESS=1 swift test --filter BatonRelayTests
@@ -57,17 +74,19 @@ BATON_COMPILER=local BATON_BLESS=1 swift test --filter BatonRelayTests
 The translator writes this table.
 
 <!-- harvest -->
-60 tests harvested.
+123 tests harvested.
 
-| Status | Tests | Meaning |
-|---|---|---|
-| `passes` | 13 | Baton agrees with Relay; the case must pass. |
-| `possible-bug` | 2 | Baton is probably wrong; the case runs and its result is ignored. |
-| `unspecified-behaviour` | 7 | GraphQL does not say, and Relay chose; the case runs and its result is ignored. |
-| `invalid-input` | 1 | the payload is one a conforming server does not send; the case runs and its result is ignored. |
-| `by-design` | 0 | Baton parts from Relay on purpose, by a decision; the case runs and its result is ignored. |
-| `unsupported-feature` | 31 | Relay has something Baton does not; the case is ingested and left out of the runs. |
-| `not-ingested` | 6 | the harvest cannot express the test yet; nothing is written. |
+| Status | Meaning | `RelayResponseNormalizer` | `DataChecker` |
+|---|---|---|---|
+| `passes` | Baton agrees with Relay; the case must pass. | 13 | 2 |
+| `possible-bug` | Baton is probably wrong; the case runs and its result is ignored. | 2 | 0 |
+| `unspecified-behaviour` | GraphQL does not say, and Relay chose; the case runs and its result is ignored. | 7 | 0 |
+| `invalid-input` | the payload is one a conforming server does not send; the case runs and its result is ignored. | 1 | 0 |
+| `by-design` | Baton parts from Relay on purpose, by a decision; the case runs and its result is ignored. | 0 | 1 |
+| `unsupported-feature` | Relay has something Baton does not; the case is ingested and left out of the runs. | 31 | 13 |
+| `not-ingested` | the harvest cannot express the test yet; nothing is written. | 6 | 47 |
+
+### `RelayResponseNormalizer-test.js`
 
 | Test | Status | Note |
 |---|---|---|
@@ -131,6 +150,74 @@ The translator writes this table.
 | when field error handling is enabled when noncompliant error handling on lists is enabled stores field errors on an scalar field that is an empty list | `unsupported-feature` | a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS` |
 | Prototype-less objects (e.g., from graphql-js executor) normalizes prototype-less payloads with type discriminator | `passes` |  |
 | Prototype-less objects (e.g., from graphql-js executor) normalizes prototype-less payloads for union types | `invalid-input` | The server text asks for `... on Node { __isNode: __typename, id }`, and the test's payload leaves `__isNode` out, which a conforming server does not do; the test is about prototype-less objects and the omission is incidental. Relay knows no schema at run time and applies an abstract fragment only when the payload answers `__isX`, so it stores no `id`; Baton knows from the schema that `Page` is a `Node` and stores it (spec/runtime.md, memberships). Decision: Open. The recommendation is no change: both behave the same on a response that answers the text. |
+
+### `DataChecker-test.js`
+
+| Test | Status | Note |
+|---|---|---|
+| reads query data | `passes` |  |
+| reads fragment data | `not-ingested` | a check of a fragment at `1`; Baton checks an operation from its root |
+| reads handle fields in fragment | `not-ingested` | a check of a fragment at `1`; Baton checks an operation from its root |
+| reads handle fields in fragment and checks missing | `not-ingested` | a check of a fragment at `1`; Baton checks an operation from its root |
+| reads handle fields in fragment and checks missing sub field | `not-ingested` | a check of a fragment at `1`; Baton checks an operation from its root |
+| reads handle fields in operation | `not-ingested` | the response the seeded store stands for gives Relay another answer (missing, not available) |
+| reads handle fields in operation and checks missing | `unsupported-feature` | batonc: `@__clientField` on a field has no meaning in Baton |
+| reads handle fields in operation and checks missing sub field | `unsupported-feature` | batonc: `@__clientField` on a field has no meaning in Baton |
+| reads scalar handle fields in operation and checks presence | `not-ingested` | the response the seeded store stands for gives Relay another answer (missing, not available) |
+| reads scalar handle fields in operation and checks missing | `unsupported-feature` | batonc: `@__clientField` on a field has no meaning in Baton |
+| when @match directive is present returns true when the match field/record exist and match a supported type (plaintext) | `not-ingested` | the store holds what a `ModuleImport` selection writes, which no response does |
+| when @match directive is present returns true when the match field/record exist and match a supported type (markdown) | `not-ingested` | the store holds what a `ModuleImport` selection writes, which no response does |
+| when @match directive is present returns false when the match field/record exist but the matched fragment has not been processed | `not-ingested` | the store holds what a `ModuleImport` selection writes, which no response does |
+| when @match directive is present returns false when the match field/record exist but a scalar field is missing | `not-ingested` | the store holds what a `ModuleImport` selection writes, which no response does |
+| when @match directive is present returns false when the match field/record exist but a linked field is missing | `not-ingested` | the store holds what a `ModuleImport` selection writes, which no response does |
+| when @match directive is present returns true when the match field/record exist but do not match a supported type | `unsupported-feature` | batonc: `@match` on a field has no meaning in Baton |
+| when @match directive is present returns true when the match field is non-existent (null) | `unsupported-feature` | batonc: `@match` on a field has no meaning in Baton |
+| when @match directive is present returns false when the match field is not fetched (undefined) | `unsupported-feature` | batonc: `@match` on a field has no meaning in Baton |
+| when @module directive is present returns true when the field/record exists and matches the @module type (plaintext) | `not-ingested` | the store holds what a `ModuleImport` selection writes, which no response does |
+| when @module directive is present returns true when the field/record exist and matches the @module type (markdown) | `not-ingested` | the store holds what a `ModuleImport` selection writes, which no response does |
+| when @module directive is present returns false when the field/record exist but the @module fragment has not been processed | `not-ingested` | the store holds what a `ModuleImport` selection writes, which no response does |
+| when @module directive is present returns false when the field/record exists but a scalar field is missing | `not-ingested` | the store holds what a `ModuleImport` selection writes, which no response does |
+| when @module directive is present returns false when the field/record exists but a linked field is missing | `not-ingested` | the store holds what a `ModuleImport` selection writes, which no response does |
+| when @module directive is present returns true when the field/record exists but does not match any @module selection | `unsupported-feature` | batonc: `@module` on a fragment spread has no meaning in Baton |
+| when @defer directive is present returns true when deferred selections are fetched | `not-ingested` | the response the seeded store stands for gives Relay another answer (missing, not available) |
+| when @defer directive is present returns false when deferred selections are not fetched | `by-design` | The deferred fragment's fields are not in the store. Relay's check answers missing; Baton's answers from the selection outside the deferred parts, which checks them apart, and the operation fetches either way (spec/runtime.md, 'The deferred parts are checked apart'). Decision: Open. The recommendation is no change, since the answer only decides whether the rest renders while the deferred part is fetched. |
+| when @stream directive is present returns true when streamed selections are fetched | `unsupported-feature` | batonc: `@stream` on a field has no meaning in Baton |
+| when @stream directive is present returns false when streamed selections are not fetched | `unsupported-feature` | batonc: `@stream` on a field has no meaning in Baton |
+| when the data is complete returns available | `passes` |  |
+| when some data is missing returns missing on missing records | `not-ingested` | a check of a fragment at `1`; Baton checks an operation from its root |
+| when some data is missing returns missing on missing fields | `not-ingested` | a check of a fragment at `1`; Baton checks an operation from its root |
+| when some data is missing allows handlers to supplement missing scalar fields | `not-ingested` | a check of a fragment at `1`; Baton checks an operation from its root |
+| when some data is missing linked field handler handler that returns undefined | `not-ingested` | a check of a fragment at `user1`; Baton checks an operation from its root |
+| when some data is missing linked field handler handler that returns null | `not-ingested` | a check of a fragment at `user1`; Baton checks an operation from its root |
+| when some data is missing linked field handler handler that returns 'hometown-exists' | `not-ingested` | a check of a fragment at `user1`; Baton checks an operation from its root |
+| when some data is missing linked field handler handler that returns 'hometown-deleted' | `not-ingested` | a check of a fragment at `user1`; Baton checks an operation from its root |
+| when some data is missing linked field handler handler that returns 'hometown-unknown' | `not-ingested` | a check of a fragment at `user1`; Baton checks an operation from its root |
+| when some data is missing plural linked field handler handler that returns undefined | `not-ingested` | a check of a fragment at `user1`; Baton checks an operation from its root |
+| when some data is missing plural linked field handler handler that returns null | `not-ingested` | a check of a fragment at `user1`; Baton checks an operation from its root |
+| when some data is missing plural linked field handler handler that returns [] | `not-ingested` | a check of a fragment at `user1`; Baton checks an operation from its root |
+| when some data is missing plural linked field handler handler that returns [undefined] | `not-ingested` | a check of a fragment at `user1`; Baton checks an operation from its root |
+| when some data is missing plural linked field handler handler that returns [null] | `not-ingested` | a check of a fragment at `user1`; Baton checks an operation from its root |
+| when some data is missing plural linked field handler handler that returns ['screenname-exists'] | `not-ingested` | a check of a fragment at `user1`; Baton checks an operation from its root |
+| when some data is missing plural linked field handler handler that returns ['screenname-deleted'] | `not-ingested` | a check of a fragment at `user1`; Baton checks an operation from its root |
+| when some data is missing plural linked field handler handler that returns ['screenname-unknown'] | `not-ingested` | a check of a fragment at `user1`; Baton checks an operation from its root |
+| when some data is missing plural linked field handler handler that returns ['screenname-exists', 'screenname-unknown'] | `not-ingested` | a check of a fragment at `user1`; Baton checks an operation from its root |
+| when some data is missing returns modified records with the target | `not-ingested` | a check of a fragment at `1`; Baton checks an operation from its root |
+| when some data is missing returns available even when client field is missing | `not-ingested` | a check of a fragment at `1`; Baton checks an operation from its root |
+| when individual records have been invalidated when data is complete returns correct invalidation epoch in result when record was invalidated | `unsupported-feature` | a record invalidated by hand: Baton invalidates the store, not a record |
+| when individual records have been invalidated when data is complete returns correct invalidation epoch in result when multiple records invalidated at different times | `not-ingested` | several checks in one test |
+| when individual records have been invalidated when data is missing returns correct invalidation epoch in result when record was invalidated | `unsupported-feature` | a record invalidated by hand: Baton invalidates the store, not a record |
+| when individual records have been invalidated when data is missing returns correct invalidation epoch in result when multiple records invalidated at different times | `not-ingested` | several checks in one test |
+| when individual records have been invalidated when data is missing returns null invalidation epoch when stale record is unreachable | `unsupported-feature` | a record invalidated by hand: Baton invalidates the store, not a record |
+| returns false when a Node record is missing an id | `not-ingested` | a check of a selector that is not a query |
+| precise type refinement returns `missing` when a Node record is missing an id | `not-ingested` | a check of a selector that is not a query |
+| precise type refinement returns `missing` when an abstract refinement is only missing the discriminator field | `not-ingested` | a check of a selector that is not a query |
+| precise type refinement returns `available` when a record is only missing fields in non-implemented interfaces | `not-ingested` | a check of a selector that is not a query |
+| should assign client-only abstract type information to the target source | `not-ingested` | the seeded store stands for no response: no root record |
+| should assign client-only abstract type information to the target source if it is not available in the source | `unsupported-feature` | batonc: Unknown type 'ClientInterface'. Did you mean `ClientObject`? |
+| exec time resolvers client query should return available when all data is available | `not-ingested` | the store holds what a `ClientEdgeToClientObject` selection writes, which no response does |
+| exec time resolvers client query should return available when only client data is missing | `not-ingested` | the store holds what a `ClientEdgeToClientObject` selection writes, which no response does |
+| exec time resolvers server and client query should return available when server data is available | `not-ingested` | the store holds what a `ClientEdgeToClientObject` selection writes, which no response does |
+| exec time resolvers server and client query should return missing when server data is missing | `not-ingested` | the store holds what a `ClientEdgeToClientObject` selection writes, which no response does |
 
 The client extension files batonc rejects, left out of `schema/extensions/`:
 

@@ -1,0 +1,7 @@
+query DataCheckerTest3Query {
+  me {
+    profilePicture(size: 32) {
+      uri @__clientField(handle: "test")
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "data": {
+    "me": {
+      "__typename": "User",
+      "profilePicture": {
+        "__typename": "Photo",
+        "uri": "https://..."
+      },
+      "id": "1"
+    }
+  }
+}
