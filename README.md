@@ -8,6 +8,9 @@
 one request per screen, cached data in the first frame, and a re-render only
 where a field changed.
 
+In Swift, UIKit and AppKit are supported too: a controller holds the same
+handle a view does ([the recipe](docs/recipes/uikit.md)).
+
 A view declares the GraphQL fragment it reads, beside its body. The compiler
 aggregates the fragments of a screen into one operation, validates everything
 against the schema at build time, and emits a small typed lens per fragment.

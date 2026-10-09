@@ -10,7 +10,8 @@ are expected and listed without apology.
   bind a lens, and the app's lifecycle on the application's background and
   foreground notifications, beside the AppKit ones in the `Controllers`
   target. What both show is computed once, in `Content.swift`, and CI builds
-  the target for the iOS Simulator.
+  the target for the iOS Simulator. The README says that UIKit and AppKit
+  are supported in Swift.
 - `docs/recipes/uikit.md` quotes compiled code: the `Controllers` target
   under `examples/Controllers`, an `NSViewController` over a handle, a
   table whose cells bind a lens, and the app's lifecycle told to the
