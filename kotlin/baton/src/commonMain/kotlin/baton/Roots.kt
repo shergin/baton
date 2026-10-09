@@ -174,27 +174,28 @@ internal fun Store.settleVerdicts() {
 internal fun Store.collect(): Int {
     checkThread()
     if (ended) return 0
-    val reachable = HashSet<Record>()
-    for (root in roots.values) mark(root.resolved, root.record, reachable)
-    persistence?.let { reachable.addAll(it.unwrittenRecords()) }
+    // The pass marks what it reaches with its number; a record it does not reach keeps an earlier one.
+    epoch += 1
+    for (root in roots.values) mark(root.resolved, root.record)
+    persistence?.let { for (record in it.unwrittenRecords()) record.mark = epoch }
     // The records an optimistic layer wrote stay while it is applied: its revert writes back into them.
     for (layer in optimisticLayers) {
-        for (key in layer.changes.recordKeys) existing(key)?.let { reachable.add(it) }
+        for (key in layer.changes.recordKeys) existing(key)?.let { it.mark = epoch }
     }
     collections += 1
-    val swept = sweep(reachable)
+    val swept = sweep()
     freeKeys()
     return swept
 }
 
-/** Collects every record the selection reaches from [record]. */
-private fun mark(selection: ResolvedSelection, record: Record, reachable: MutableSet<Record>) {
-    reachable.add(record)
+/** Marks every record the selection reaches from [record] with the pass's number. A record two paths reach is walked under each, since each follows its own links. */
+private fun Store.mark(selection: ResolvedSelection, record: Record) {
+    record.mark = epoch
     for (field in selection.variant(record.type).follows) {
         val kind = field.kind as? ResolvedField.Kind.Linked ?: continue
         when (val value = record.peek(field.slot)) {
-            is Value.Ref -> mark(kind.selection, value.record, reachable)
-            is Value.Refs -> for (target in value.records) if (target != null) mark(kind.selection, target, reachable)
+            is Value.Ref -> mark(kind.selection, value.record)
+            is Value.Refs -> for (target in value.records) if (target != null) mark(kind.selection, target)
             else -> Unit
         }
     }

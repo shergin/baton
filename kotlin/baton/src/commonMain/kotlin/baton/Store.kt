@@ -90,6 +90,9 @@ class Store(
     /** Completed mutations' roots' keys, oldest first, apart from the buffer. */
     internal val completedMutations = ArrayList<String>()
     internal var collectionScheduled = false
+    /** The number of the collection pass running or last run, which the records it reached carry as their mark. */
+    internal var epoch = 0
+
     /** How many collections have run; for the tests and the inspector. */
     @Generated
     var collections = 0
@@ -729,29 +732,29 @@ class Store(
     }
 
     /**
-     * Removes every record not in [reachable] (the three roots stay), clears
-     * their slots so links between them break, and drops the roots' links to
-     * them. Returns how many records were removed.
+     * Removes every record the pass did not mark (the three roots stay),
+     * clears their slots so links between them break, and drops the roots'
+     * links to them. Returns how many records were removed.
      */
-    internal fun sweep(reachable: Set<Record>): Int {
+    internal fun sweep(): Int {
         advanceRevision()
         val unreachable = ArrayList<String>()
         for ((key, record) in records) {
-            if (key == ROOT_KEY || key == MUTATION_ROOT_KEY || key == SUBSCRIPTION_ROOT_KEY || record in reachable) continue
+            if (key == ROOT_KEY || key == MUTATION_ROOT_KEY || key == SUBSCRIPTION_ROOT_KEY || record.mark == epoch) continue
             unreachable.add(key)
         }
-        val swept = HashSet<Record>()
+        var swept = 0
         for (key in unreachable) {
             val record = records.remove(key) ?: continue
-            swept.add(record)
             record.clear()
+            swept += 1
         }
-        if (swept.isNotEmpty()) {
-            root.prune(swept)
-            mutationRoot.prune(swept)
-            subscriptionRoot.prune(swept)
+        if (swept > 0) {
+            root.prune()
+            mutationRoot.prune()
+            subscriptionRoot.prune()
         }
-        return swept.size
+        return swept
     }
 
     /** Adds every slot that has a twin, whose number the constant it was adopted for keeps, to [into]. */

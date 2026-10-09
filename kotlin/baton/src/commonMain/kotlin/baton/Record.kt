@@ -225,6 +225,9 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
     internal var swept: Boolean = false
         private set
 
+    /** The collection pass that last reached the record, the store's epoch: a pass marks with a number and keeps no set. */
+    internal var mark: Int = 0
+
     /**
      * Clears every value and error, telling the slots' readers, and marks
      * the record swept: a collection removes it, so links between removed
@@ -249,15 +252,15 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
         swept = true
     }
 
-    /** Drops every value that links to a removed record: a root's links to what a collection swept. */
-    internal fun prune(removed: Set<Record>) {
-        fun linksRemoved(value: Value): Boolean = when (value) {
-            is Value.Ref -> value.record in removed
-            is Value.Refs -> value.records.any { it != null && it in removed }
+    /** Drops every value that links to a swept record: a root's links to what a collection removed. */
+    internal fun prune() {
+        fun linksSwept(value: Value): Boolean = when (value) {
+            is Value.Ref -> value.record.swept
+            is Value.Refs -> value.records.any { it != null && it.swept }
             else -> false
         }
         val pruned = ArrayList<Slot>()
-        forEachValue { slot, value -> if (linksRemoved(value)) pruned.add(slot) }
+        forEachValue { slot, value -> if (linksSwept(value)) pruned.add(slot) }
         for (slot in pruned) write(slot, Value.Missing)
     }
 

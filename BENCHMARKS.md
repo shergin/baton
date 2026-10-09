@@ -21,6 +21,43 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the collection pass marks with an epoch — 2026-10-08
+
+Revision: the working tree on top of `f0b8328`. The collector marks every
+record it reaches with the store's epoch, a number on the record, where it
+inserted each into a `Set<ObjectIdentifier>`; the sweep reads the mark,
+and a root prunes its links to swept records by the record's own `swept`
+flag, so a pass allocates nothing. The walk is unchanged: a record two
+paths reach is still walked under each, since each follows its own links.
+`swift run -c release BatonBenchmarks`, the whole suite, on an Apple M1
+Pro (MacBook Pro), macOS 26.5.2, Xcode 26.6, Swift 6.3.3; best (median);
+the baseline twice at `f0b8328` and the change twice, back to back, on a
+machine running nothing else. The first baseline run overlapped a Gradle
+compile and read 6.79 ms (7.17) on the one-root pass; it is left out.
+
+| Measurement | Before | After, two runs |
+|---|---|---|
+| A pass over one root reaching 50,004 records | 6.38 ms (6.53) | 4.71 ms (5.22), 4.68 ms (5.02) |
+| A pass over 301 roots, 50,304 records | 6.48 ms (7.17) | 4.99 ms (5.22), 4.75 ms (5.11) |
+| A pass over 300 roots reaching one record each | 82.2 µs (82.3) | 70.9 µs (72.7), 72.1 µs (72.6) |
+| A pass that keeps none of 50,000 records | 24.8 ms (28.1) | 21.3 ms (22.6), 24.4 ms (29.4) |
+| The lifetime step's pass, best / median / worst | 0.82 / 8.05 / 8.95 ms | 0.56 / 6.27 / 11.08 ms, 0.67 / 6.37 / 9.58 ms |
+| Untracked lens read, per field, the control | 25.8 ns | 25.8 ns, 25.8 ns |
+
+The mark takes a quarter off the pass that reaches 50,004 records and a
+seventh off the one over 300 roots; the pass that keeps none is the sweep,
+and moves within its spread. Two things this run says beyond the change.
+The one-root pass at `f0b8328` is 6.38 ms where the keys step recorded
+2.68 ms (3.10) and the lifetime step 2.49 ms (2.77) on this machine: the
+walk, not the sweep, slowed by about 2.4 times somewhere in the Swift
+commits since `fcec2ce`, which a bisect is owed. And the long session's
+"a new character given name (slot 1)" footprint reads +27.0 and +28.8 MB
+after the change where it read +19.7 and +19.8 MB before, while the
+session's footprint over 61,308 records stays at +28 MB in all four runs;
+a four-byte mark costs at most one allocation quantum per record, 0.8 MB
+over 50,000, so what moved is the attribution: the collection section
+before it leaves no freed set behind for the allocator to reuse.
+
 ## Unreleased, Apollo Kotlin again after the record's channels — 2026-10-08
 
 Revision: `86ca4c2`. The comparison of the 7 October entry run again the

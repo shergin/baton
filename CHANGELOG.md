@@ -64,6 +64,14 @@ are expected and listed without apology.
   so a failed phase that did not change compares equal, and a handle makes
   its root's lens once. The Kotlin format is 2; code generated for format 1
   fails to compile against this runtime with a message to rebuild.
+- A collection pass marks the records it reaches with the store's epoch, a
+  number on the record, where it kept a set of them; the sweep reads the
+  mark, and a root prunes its links to swept records by the record's own
+  flag, so a pass allocates nothing. On an M1 Pro the pass over one root
+  reaching 50,004 records takes 4.7 ms where it took 6.4 ms
+  (`BENCHMARKS.md`, which also records that the pass is 2.4 times what the
+  keys step measured, a regression in the walk still to be found). The
+  Kotlin collector marks the same way; it has no collection bench yet.
 
 ## 0.12.0 (Palianytsia) — 2026-10-08
 

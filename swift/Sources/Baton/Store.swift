@@ -1107,62 +1107,68 @@ public final class Store {
         }
     }
 
-    /// Collects every record the selection reaches from the root, for
-    /// collection. A connection is reached through its client slot as well as
-    /// through the page the operation fetched, so merged pages live as long as
-    /// any root reaches the connection.
-    func mark(_ selection: ResolvedSelection, from record: Record? = nil, into reachable: inout Set<ObjectIdentifier>) {
+    /// The number of the collection pass running or last run, which the
+    /// records it reached carry as their mark.
+    var epoch: UInt32 = 0
+
+    /// Marks every record the selection reaches from the root with the
+    /// pass's number, for collection. A connection is reached through its
+    /// client slot as well as through the page the operation fetched, so
+    /// merged pages live as long as any root reaches the connection. A record
+    /// two paths reach is walked under each, since each follows its own
+    /// links.
+    func mark(_ selection: ResolvedSelection, from record: Record? = nil) {
         let record = record ?? root
-        reachable.insert(ObjectIdentifier(record))
-        mark(selection.variant(for: record.type).follows, from: record, into: &reachable)
+        record.mark = epoch
+        mark(selection.variant(for: record.type).follows, from: record)
     }
 
     /// Follows the variant's links, the connections' client links among
     /// them.
-    private func mark(_ follows: [ResolvedField], from record: Record, into reachable: inout Set<ObjectIdentifier>) {
+    private func mark(_ follows: [ResolvedField], from record: Record) {
         for index in follows.indices {
             guard case .linked(let child, _, _, _) = follows[index].kind else { continue }
-            mark(record.peek(follows[index].slot), child, into: &reachable)
+            mark(record.peek(follows[index].slot), child)
         }
     }
 
-    private func mark(_ value: Value, _ child: ResolvedSelection, into reachable: inout Set<ObjectIdentifier>) {
+    private func mark(_ value: Value, _ child: ResolvedSelection) {
         switch value {
         case .ref(let target):
-            mark(child, from: target, into: &reachable)
+            mark(child, from: target)
         case .refs(let targets):
             for case let target? in targets {
-                mark(child, from: target, into: &reachable)
+                mark(child, from: target)
             }
         default:
             return
         }
     }
 
-    /// Removes every record not in `reachable` (the roots stay), clears their
-    /// slots so cycles break, and drops the roots' links to them. Returns how
-    /// many records were removed.
+    /// Removes every record the pass did not mark (the roots stay), clears
+    /// their slots so cycles break, and drops the roots' links to them.
+    /// Returns how many records were removed.
     @discardableResult
-    func sweep(keeping reachable: Set<ObjectIdentifier>) -> Int {
+    func sweep() -> Int {
         // The keys first, then the removals: removing from the dictionary
         // while iterating it copies the whole dictionary at the first one.
         var unreachable: [String] = []
         for (key, record) in records
-        where key != Store.rootKey && key != Store.mutationRootKey && key != Store.subscriptionRootKey && !reachable.contains(ObjectIdentifier(record)) {
+        where key != Store.rootKey && key != Store.mutationRootKey && key != Store.subscriptionRootKey && record.mark != epoch {
             unreachable.append(key)
         }
-        var swept = Set<ObjectIdentifier>(minimumCapacity: unreachable.count)
+        var swept = 0
         for key in unreachable {
             guard let record = records.removeValue(forKey: key) else { continue }
-            swept.insert(ObjectIdentifier(record))
             record.clear()
+            swept += 1
         }
-        if !swept.isEmpty {
-            root.prune(swept)
-            mutationRoot.prune(swept)
-            subscriptionRoot.prune(swept)
+        if swept > 0 {
+            root.prune()
+            mutationRoot.prune()
+            subscriptionRoot.prune()
         }
-        return swept.count
+        return swept
     }
 
     /// Frees the numbers of rendered keys nothing can name any more: no live

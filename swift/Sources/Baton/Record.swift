@@ -20,6 +20,9 @@ public final class Record: Observable {
     /// Whether the collector took the record out of the store. A link that
     /// still holds it is repointed when the image is read.
     private(set) var swept = false
+    /// The collection pass that last reached the record, the store's epoch:
+    /// a pass marks with a number and keeps no set.
+    var mark: UInt32 = 0
     /// The values of the dense slots, by index.
     private var values: ContiguousArray<Value>
     /// The keys numbered apart that were written to the record, as `~index`
@@ -413,11 +416,11 @@ public final class Record: Observable {
     /// slot reads missing afterwards; a key numbered apart leaves with its
     /// entry, since the roots would otherwise keep one per id and cursor a
     /// session rendered.
-    func prune(_ swept: Set<ObjectIdentifier>) {
+    func prune() {
         func linksSwept(_ value: Value) -> Bool {
             switch value {
-            case .ref(let target): swept.contains(ObjectIdentifier(target))
-            case .refs(let targets): targets.contains(where: { $0.map { swept.contains(ObjectIdentifier($0)) } ?? false })
+            case .ref(let target): target.swept
+            case .refs(let targets): targets.contains(where: { $0?.swept ?? false })
             default: false
             }
         }

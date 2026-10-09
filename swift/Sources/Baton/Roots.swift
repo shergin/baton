@@ -267,21 +267,23 @@ extension Store {
     /// removed.
     @discardableResult
     package func collect() -> Int {
-        var reachable = Set<ObjectIdentifier>()
-        reachable.reserveCapacity(count)
+        // The pass marks what it reaches with its number; a record it does
+        // not reach keeps an earlier one.
+        epoch &+= 1
+        if epoch == 0 { epoch = 1 }
         for root in roots.values {
-            mark(root.resolved, from: root.record, into: &reachable)
+            mark(root.resolved, from: root.record)
         }
         for record in persistence?.unwrittenRecords() ?? [] {
-            reachable.insert(ObjectIdentifier(record))
+            record.mark = epoch
         }
         for layer in optimisticLayers {
             for key in layer.changes.recordKeys {
-                if let record = existing(key) { reachable.insert(ObjectIdentifier(record)) }
+                if let record = existing(key) { record.mark = epoch }
             }
         }
         collections += 1
-        let swept = sweep(keeping: reachable)
+        let swept = sweep()
         freeKeys()
         return swept
     }
