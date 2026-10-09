@@ -190,6 +190,13 @@ internal class ResolvedSelection(
     private val keys: Keys?,
     /** Whether the selection reads a transient field: an operation selecting a transient root field leaves no fetch stamp in the image. */
     val transient: Boolean = false,
+    /**
+     * Whether a field of the selection, or of one below it, records an edit
+     * when read: a connection's merge or an edge directive. An object under
+     * such a selection is read in full and never as a repeat of an earlier
+     * one, since a repeated edit is not a repeated value.
+     */
+    val edits: Boolean,
 ) {
     private val own = ResolvedVariant(type, key, fields)
     val membershipKeys: List<Pair<ByteArray, TypeID>> = memberships.map { it.responseKey.encodeToByteArray() to it.condition }
@@ -278,6 +285,7 @@ internal class ResolvedSelection(
                 membershipKeys.map { Selection.MembershipAnswer(it.first.decodeToString(), it.second) },
                 keys,
                 transient,
+                edits,
             )
         }
         while (true) {
@@ -341,7 +349,7 @@ private class Resolver(private val variables: Variables, private val keys: Keys)
                 listed[concrete] = ResolvedVariant(concrete, variant.key ?: selection.key, fields.map { it.on(concrete, held) })
             }
         }
-        return ResolvedSelection(selection.type, selection.key, selection.isAbstract, others, listed, conditions, selection.memberships, held, selection.transient)
+        return ResolvedSelection(selection.type, selection.key, selection.isAbstract, others, listed, conditions, selection.memberships, held, selection.transient, selection.edits)
     }
 
     private fun field(field: PlanField, type: TypeID): ResolvedField {
