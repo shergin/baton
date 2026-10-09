@@ -25,12 +25,17 @@ the variant a module compiles against:
 
 The runtime depends on the Compose runtime, which generated code names
 (`@Stable`), kotlinx-coroutines and the AndroidX SQLite driver API; Compose
-UI is the app's own. On Android it starts at API 23.
+UI is the app's own. On Android it starts at API 23. The AndroidX pieces
+are on Google's Maven repository, which Gradle does not search unless the
+build names it, so the settings name `google()` beside `mavenCentral()` for
+dependencies, as the snippet below does. The runtime is built with Kotlin
+2.4.20.
 
 ## The plugin
 
 The plugin is on Maven Central beside the runtime, not on the Gradle plugin
-portal, so the settings name that repository for plugins once:
+portal, so the settings name that repository for plugins once, and Google's
+beside it for the runtime's dependencies:
 
 ```kotlin
 // settings.gradle.kts
@@ -40,23 +45,34 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        google()
+    }
+}
 ```
 
-The module that holds the screens applies it, names its hosts, and adds the
-task's output to the source set that compiles them:
+The module that holds the screens applies it beside the Kotlin plugin,
+names its hosts, and adds the task's output to the source set that compiles
+them; a Multiplatform module here, where a JVM-only module applies
+`kotlin("jvm")`, adds the directory to `sourceSets.main` and declares the
+dependency at the top level:
 
 ```kotlin
 // build.gradle.kts
 import baton.gradle.BatonGenerate
 
 plugins {
+    kotlin("multiplatform") version "2.4.20"
     id("com.shergin.baton") version "0.13.0"
 }
 
 // The hosts: every Kotlin file the compiler scans for `@Fragment`, `@Query`,
 // `@Mutation` and `@Subscription`, and any `.graphql` document beside them.
 val generateBaton = tasks.named<BatonGenerate>("generateBaton") {
-    hosts.from(fileTree("src/commonMain/kotlin") { include("**/*.kt") })
+    hosts.from(fileTree("src/commonMain/kotlin") { include("**/*.kt", "**/*.graphql") })
 }
 
 kotlin {
@@ -83,7 +99,9 @@ androidComponents {
 ```
 
 `baton.json` is read from the module's directory by convention, with the
-schema and the lookups as [the compiler's recipe](batonc.md) describes, and
+schema, the identity, the lookups and the scalars as
+[the vocabulary](../terminology.md) defines them and
+[the compiler's recipe](batonc.md) reads them, and
 `"kotlin": {"package": "<package>"}` for the shared file.
 
 The compiler is the release's: on first use the plugin downloads

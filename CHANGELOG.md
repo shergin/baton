@@ -32,6 +32,13 @@ are expected and listed without apology.
   object of the name takes the suffix the package's kept names take. The
   Swift emitter accepts the name, as before.
 
+- The Gradle recipe names Google's Maven repository beside Maven Central
+  for dependencies, where the runtime's AndroidX pieces come from: a
+  consumer built from the recipe alone could not resolve the Compose
+  runtime. Its snippets apply the Kotlin plugin, include `.graphql`
+  documents among the hosts, and say where `baton.json`'s entries are
+  defined.
+
 ## 0.13.0 (Bublik) — 2026-10-09
 
 - The Kotlin runtime on Maven Central: `com.shergin.baton:baton`,
