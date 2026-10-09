@@ -363,14 +363,24 @@ attempt, fails outside 2xx with the status and body, or with the
 `application/graphql-response+json`, and with status 0 without a
 response; its flow is cold, and a cancellation closes the connection. It
 uses `java.net` alone, in `jvmSharedMain`, which Android compiles too.
-`GraphQLTransportWebSocket`
-(`jvmMain`) speaks `graphql-transport-ws` over `java.net.http.WebSocket`,
+`GraphQLTransportWebSocket` (`commonMain`) speaks `graphql-transport-ws`,
 one socket per transport with every stream under an id of its own, closed
-when its last stream ends; Android's platform has no WebSocket client, so
-there the socket transport is the app's. `Environment(url, headers,
-subscriptions, store)` is an environment over HTTP. `jvmTest` holds them
-against a `com.sun.net.httpserver` server and a `graphql-transport-ws`
-server on plain sockets, both on the loopback interface.
+when its last stream ends, over a `WebSocketClient` the platform or an
+edge supplies: `JdkWebSocketClient` (`jvmMain`) over
+`java.net.http.WebSocket`, which the JVM factory of the same name picks,
+or `OkHttpWebSocketClient` from `baton-okhttp`, since Android's platform
+has no WebSocket client of its own. That module, the edge over OkHttp,
+also holds `OkHttpTransport`, HTTP over an app's `OkHttpClient` with its
+interceptors and pool, reading a response as `HttpTransport` reads it
+through the public pieces a transport over any client needs: what a
+request accepts (`Request.accept`), the request errors of a body
+(`requestErrors`), the media type that answers in a GraphQL response
+(`answersInGraphQLResponse`) and the two parsers. `Environment(url,
+headers, subscriptions, store)` is an environment over HTTP. `jvmTest`
+holds them against a `com.sun.net.httpserver` server and the
+`SocketServer` double of `baton-testing`, a `graphql-transport-ws` server
+on plain sockets, both on the loopback interface; the edge's tests run on
+a device too.
 
 The composables (`Compose.kt`). `LocalBaton` provides the environment;
 `rememberQuery(operation, fetchPolicy)` returns a `QueryState`, the

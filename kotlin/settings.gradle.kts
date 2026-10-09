@@ -21,6 +21,7 @@ rootProject.name = "baton-kotlin"
 include(":baton")
 include(":goldens")
 include(":baton-testing")
+include(":baton-okhttp")
 include(":baton-inspector")
 include(":samples:shared")
 include(":samples:desktop")

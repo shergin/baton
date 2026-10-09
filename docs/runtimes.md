@@ -31,7 +31,7 @@ named by their source set.
 | The availability check | `Availability.swift` | `Availability.kt` |
 | Hydration from the image | `Hydration.swift` | `Hydration.kt` |
 | The environment, the one door | `Environment.swift` | `Environment.kt` |
-| Transports, framing, payloads | `Transport.swift`, `Payload.swift` | `Transport.kt`, `Framing.kt`, `Payload.kt`, `jvmSharedMain/HttpTransport.kt`, `jvmMain/GraphQLTransportWebSocket.kt` |
+| Transports, framing, payloads | `Transport.swift`, `Payload.swift` | `Transport.kt`, `Framing.kt`, `Payload.kt`, `GraphQLTransportWebSocket.kt`, `jvmSharedMain/HttpTransport.kt`, `jvmMain/JdkWebSocketClient.kt` |
 | Delivery of payloads to handles | `Delivery.swift` | `Delivery.kt` |
 | The image: persistence, the disk, the row codec | `Persistence.swift`, `Disk.swift`, `Row.swift` | `Persistence.kt`, `Disk.kt`, `Row.kt`, `Image.kt`, `jvmSharedMain/Image.jvmShared.kt`, `jvmMain/Image.jvm.kt`, `androidMain/Image.android.kt` |
 | The host's observation | `SwiftUI.swift`, `Macros.swift` | `Compose.kt` |
@@ -42,6 +42,9 @@ named by their source set.
 What differs is the host and the platform: Swift observes through
 Observation and the macros, Kotlin through Compose's snapshot state;
 Swift's threads are actors, Kotlin's are dispatchers and a lock; the image
-sits on the system's SQLite in Swift and on the AndroidX driver in Kotlin.
+sits on the system's SQLite in Swift and on the AndroidX driver in Kotlin;
+the socket is the platform's in Swift and, in Kotlin, the JVM's own or the
+one an app brings through the `baton-okhttp` edge, the protocol over it
+being the runtime's in both.
 A mechanism in one tree and not the other is a gap, listed in the
 changelog until it closes.

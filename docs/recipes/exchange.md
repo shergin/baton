@@ -63,6 +63,12 @@ let environment = Environment(
 A subscription sent through the exchange gets its retry too, until its
 first event; after that the handle's reconnection takes over. A socket
 transport renews its own connection, so it usually stands alone, as above.
+In Kotlin the socket transport takes the client it opens sockets with: on
+the JVM `GraphQLTransportWebSocket(url, credentials = ...)` picks the
+JVM's own, and on Android, whose platform has none,
+`GraphQLTransportWebSocket(url, credentials = ..., client =
+OkHttpWebSocketClient(okHttp))` from `baton-okhttp`, beside an
+`OkHttpTransport(okHttp, url)` for the queries.
 
 ## What the tests prove
 

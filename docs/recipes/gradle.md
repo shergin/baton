@@ -20,7 +20,8 @@ the variant a module compiles against:
 | Coordinate | What | Targets |
 |---|---|---|
 | `com.shergin.baton:baton` | the runtime: the store, the lenses, the environment, the transports, the image | JVM, Android |
-| `com.shergin.baton:baton-testing` | `ScriptedTransport`, `RecordedTransport`, `SilentTransport` and `wait`, for an app's tests | JVM |
+| `com.shergin.baton:baton-testing` | `ScriptedTransport`, `RecordedTransport`, `SilentTransport`, `wait` and the `SocketServer` double, for an app's tests | JVM, Android |
+| `com.shergin.baton:baton-okhttp` | `OkHttpTransport` and `OkHttpWebSocketClient`, the transports over an app's OkHttp client, and the socket Android's platform lacks | JVM, Android |
 | `com.shergin.baton:baton-inspector` | `StoreInspector`, a live Compose view of a store for a debug pane, and `StoreExport` | JVM, Android |
 
 The runtime depends on the Compose runtime, which generated code names

@@ -950,7 +950,12 @@ writes `operationName`, `variables`, `onError` when set, and `query` for a
 text or `documentId` for an id, and a server with another convention
 replaces the function on the built-in transports and keeps them. The
 built-in transports read credentials per attempt, from a function, so a
-rotated token reaches the next request or connection. The built-in HTTP
+rotated token reaches the next request or connection. In Kotlin the socket
+transport speaks its protocol over a WebSocket client the platform or an
+edge supplies, the JVM's own or OkHttp's through `baton-okhttp`, which
+also brings an HTTP transport over OkHttp; the pieces a transport over
+another client needs, what a request accepts, the request errors of a
+body and the two parsers, are public. The built-in HTTP
 transport reads `multipart/mixed` for a deferred response and
 `text/event-stream` for a subscription, `graphql-sse` in its
 distinct-connections mode, one response per operation whose `next` events

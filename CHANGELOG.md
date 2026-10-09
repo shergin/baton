@@ -74,6 +74,20 @@ are expected and listed without apology.
   spell is declared in the runtime. CI runs the Kotlin hostile-name sweep,
   over a `kotlinc` Gradle writes from the embedded compiler.
 
+- Subscriptions on Android, through `baton-okhttp`: the Kotlin socket
+  transport's `graphql-transport-ws` is the runtime's, in common code over
+  a `WebSocketClient` the platform or an edge supplies, the JVM's own
+  `JdkWebSocketClient` over `java.net.http` or `OkHttpWebSocketClient` over
+  an app's OkHttp client, which Android has no socket without;
+  `GraphQLTransportWebSocket(url, client = OkHttpWebSocketClient(okHttp))`.
+  The same module brings `OkHttpTransport`, HTTP over the app's OkHttp
+  client with its interceptors and pool, reading a response as the
+  built-in transport does; the pieces a transport over any client needs,
+  `Request.accept`, `requestErrors` and `answersInGraphQLResponse`, are
+  public beside the two parsers. `baton-testing` builds for Android too,
+  and holds the `SocketServer` double a socket transport's tests run
+  against.
+
 ## 0.13.0 (Bublik) — 2026-10-09
 
 - The Kotlin runtime on Maven Central: `com.shergin.baton:baton`,
