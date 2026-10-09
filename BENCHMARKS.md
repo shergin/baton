@@ -21,6 +21,52 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the ingest and the commit, by the profile — 2026-10-08
+
+Revision: the working tree on top of `bb93aff`. A time profile of the
+suite (Instruments at 10 kHz over the first two seconds, twelve launches,
+entry closures isolated by frame) put the ingest's largest cost, 28%, on
+copying the 144-byte `ResolvedField` struct once per JSON key at two
+sites of the cursor, each copy retaining its lists; and the commit's on
+three things: the `ObservationRegistrar` each record makes with itself
+(a sixth), the records table hashed twice per key and regrown as it
+filled (a fifth), and the dynamic exclusivity checks on the record's
+value array and the store's table (an eighth). String hashing was real
+and secondary; bounds checks were nothing. Three changes follow the
+profile: the cursor reads a matched field's members through the list
+and never copies the struct; `Record.values` and `Store.records` are
+`@exclusivity(unchecked)`, isolated to the main actor as the rendered
+lists already were; and the table is reserved for the change set's
+records before a commit grows it. The registrar stays as it was: four
+spellings that make it at the first read were measured to cost every
+read 45 to 150 ns, since the registrar's layout is its library's and
+only a stored constant is used in place, and the read is the thesis.
+`swift run -c release BatonBenchmarks`, the whole suite, twice before
+(at `bb93aff`) and twice after, back to back on a quiet Apple M1 Pro,
+macOS 26.5.2, Xcode 26.6, Swift 6.3.3; best (median).
+
+| Measurement | `bb93aff`, two runs | After, two runs |
+|---|---|---|
+| Response bytes into a change set | 2.92 ms (3.26), 2.93 ms (3.08) | 2.06 ms (2.20), 2.06 ms (2.16) |
+| Commit into an empty store, 899 records | 594 µs (606), 603 µs (648) | 472 µs (485), 468 µs (472) |
+| Commit of the same payload again | 128 µs (128), 130 µs (130) | 114 µs (114), 113 µs (114) |
+| Commit with one field changed, 20 rows observing | 130 µs (131), 133 µs (134) | 116 µs (120), 115 µs (116) |
+| The check of the fixture plan against the store | 138 µs (138), 138 µs (138) | 127 µs (127), 127 µs (127) |
+| Hydration: the check reads 898 rows into an empty store | 1.92 ms (2.08), 1.93 ms (2.16) | 1.79 ms (1.81), 1.78 ms (1.94) |
+| Untracked lens read, per field | 25.7 ns (25.8), 25.8 ns (25.8) | 20.9 ns (21.0), 20.5 ns (20.5) |
+| Tracked read, a row body of 8 fields, per field | 589 ns (637), 565 ns (600) | 579 ns (628), 580 ns (606) |
+| Untracked value read, per field | 33.2 ns (33.4), 33.3 ns (34.1) | 28.2 ns (29.2), 28.3 ns (28.4) |
+| Field selected on an interface, untracked | 22.2 ns (22.4), 22.9 ns (23.1) | 18.8 ns (18.9), 18.8 ns (18.8) |
+| `@catch` read of a field without an error | 85.8 ns (88.9), 86.5 ns (89.3) | 78.8 ns (79.0), 78.6 ns (79.0) |
+| Nodes of the merged connection, 2,100 lenses, untracked | 88.9 µs (89.1), 89.0 µs (91.8) | 80.9 µs (81.0), 80.8 µs (80.9) |
+| A pass that keeps none of 50,000 records | 24.7 ms (28.6), 29.2 ms (33.9) | 22.0 ms (25.2), 20.4 ms (26.1) |
+| A spread with `@arguments`, the control that reads no record | 10.2 ns, 10.7 ns | 10.3 ns, 10.3 ns |
+
+The ingest is 30% faster, the commit a fifth, and the untracked reads
+nine to twenty percent, since the value array's exclusivity check was on
+their path too; the marking passes do not move. The collection's sweep,
+the noisiest entry, moves within its spread.
+
 ## Unreleased, the collection walk's regression, bisected — 2026-10-08
 
 The entry below found the pass over one root reaching 50,004 records at

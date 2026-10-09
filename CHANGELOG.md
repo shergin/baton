@@ -79,6 +79,14 @@ are expected and listed without apology.
   takes 1.6 ms where it took 4.7 ms, the availability check 138 µs where it
   took 605 µs, hydration 1.9 ms where it took 2.4 ms, and the ingest a
   tenth less; the session's footprint is 8 MB smaller (`BENCHMARKS.md`).
+- The ingest reads a matched field's members through the plan's list and
+  never copies the field, which a profile found copying its lists once
+  per JSON key; the record's value array and the store's table skip the
+  dynamic exclusivity checks that main-actor isolation makes redundant,
+  and the table is reserved for a change set's records before a commit
+  grows it. On an M1 Pro the response is in a change set in 2.06 ms where
+  it took 2.92, the commit into an empty store takes 470 µs where it took
+  600, and an untracked lens read 21 ns where it took 26 (`BENCHMARKS.md`).
 
 ## 0.12.0 (Palianytsia) — 2026-10-08
 
