@@ -3,7 +3,7 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
-## Unreleased
+## 0.13.0 (Bublik) — 2026-10-09
 
 - The Kotlin runtime on Maven Central: `com.shergin.baton:baton`,
   `baton-testing` and `baton-inspector`, Kotlin Multiplatform artifacts for
