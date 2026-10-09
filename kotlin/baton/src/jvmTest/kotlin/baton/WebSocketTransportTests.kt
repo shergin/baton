@@ -1,6 +1,7 @@
 package baton
 
 import baton.spec.TestNoteAdded
+import baton.testing.SocketServer
 import baton.testing.wait
 import java.net.ServerSocket
 import java.util.concurrent.CopyOnWriteArrayList

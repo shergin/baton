@@ -1,4 +1,4 @@
-package baton
+package baton.testing
 
 import java.io.ByteArrayOutputStream
 import java.io.EOFException
@@ -9,23 +9,25 @@ import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.Socket
 import java.security.MessageDigest
-import java.util.Base64
+import kotlin.io.encoding.Base64
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 
 /**
- * A `graphql-transport-ws` server on the loopback interface, as small as the
- * tests need: it accepts the handshake, acknowledges `connection_init` unless
- * told not to, keeps every message a client sent, and sends what a test tells
- * it to, on the socket that subscribed last. Written over plain sockets, since
- * the JDK has a WebSocket client and no server.
+ * A `graphql-transport-ws` server double on the loopback interface, for the
+ * tests of a socket transport or of an app over one: it accepts the
+ * handshake, acknowledges `connection_init` unless told not to, keeps every
+ * message a client sent, and sends what a test tells it to, on the socket
+ * that subscribed last. Written over plain sockets, which the JVM and
+ * Android share, since neither has a WebSocket server.
  */
 class SocketServer(private val acknowledges: Boolean = true) {
     /** A message a client sent: its type, its id, and its payload as JSON text. */
     class Message(val type: String?, val id: String?, val payload: String?)
 
-    private val server = ServerSocket(0, 50, InetAddress.getLoopbackAddress())
+    // Bound to the IPv4 loopback the url names: Android's loopback address is `::1`.
+    private val server = ServerSocket(0, 50, InetAddress.getByAddress(byteArrayOf(127, 0, 0, 1)))
     private val connections = CopyOnWriteArrayList<Connection>()
     private val closings = AtomicInteger(0)
 
@@ -103,7 +105,7 @@ class SocketServer(private val acknowledges: Boolean = true) {
                         0x0, 0x1 -> {
                             text.write(payload)
                             if (final) {
-                                receive(text.toString(Charsets.UTF_8))
+                                receive(text.toByteArray().decodeToString())
                                 text.reset()
                             }
                         }
@@ -141,7 +143,7 @@ class SocketServer(private val acknowledges: Boolean = true) {
             offeredProtocols += headers["sec-websocket-protocol"].orEmpty()
             headers["authorization"]?.let { authorizations += it }
             val key = headers["sec-websocket-key"].orEmpty()
-            val accept = Base64.getEncoder().encodeToString(
+            val accept = Base64.encode(
                 MessageDigest.getInstance("SHA-1").digest((key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11").toByteArray()),
             )
             val response = "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n" +
@@ -165,17 +167,21 @@ class SocketServer(private val acknowledges: Boolean = true) {
             return payload
         }
 
+        /** Exactly [count] bytes, or the end of the stream as an `EOFException`; a loop, since Android 6 has no `readNBytes`. */
         private fun read(input: InputStream, count: Int): ByteArray {
-            val bytes = input.readNBytes(count)
-            if (bytes.size < count) throw EOFException()
+            val bytes = ByteArray(count)
+            var filled = 0
+            while (filled < count) {
+                val got = input.read(bytes, filled, count - filled)
+                if (got < 0) throw EOFException()
+                filled += got
+            }
             return bytes
         }
 
         private fun receive(text: String) {
-            @Suppress("UNCHECKED_CAST")
-            val message = Json.parse(text) as Map<String, Any?>
-            val payload = if ("payload" in message) Json.write(message["payload"]) else null
-            messages += Message(message["type"] as String?, message["id"] as String?, payload)
+            val message = members(text)
+            messages += Message(message["type"], message["id"], message["payload"])
             if (message["type"] == "connection_init" && acknowledges) send("{\"type\":\"connection_ack\"}")
         }
 
@@ -212,4 +218,103 @@ class SocketServer(private val acknowledges: Boolean = true) {
             }
         }
     }
+}
+
+/**
+ * The members of a message's top-level object, read without a JSON library:
+ * a string value decoded, any other value as its own JSON text, as the
+ * client wrote it. The messages are the protocol's own, so a malformed one
+ * is a test's failure, not a case to recover from.
+ */
+private fun members(text: String): Map<String, String?> {
+    val members = HashMap<String, String?>()
+    var index = skipSpace(text, 0)
+    check(index < text.length && text[index] == '{') { "a message is an object: $text" }
+    index = skipSpace(text, index + 1)
+    while (index < text.length && text[index] != '}') {
+        if (text[index] == ',') {
+            index = skipSpace(text, index + 1)
+            continue
+        }
+        val (key, afterKey) = string(text, index)
+        index = skipSpace(text, afterKey)
+        check(index < text.length && text[index] == ':') { "a member has a colon: $text" }
+        index = skipSpace(text, index + 1)
+        if (text[index] == '"') {
+            val (value, afterValue) = string(text, index)
+            members[key] = value
+            index = afterValue
+        } else {
+            val end = valueEnd(text, index)
+            members[key] = text.substring(index, end)
+            index = end
+        }
+        index = skipSpace(text, index)
+    }
+    return members
+}
+
+private fun skipSpace(text: String, from: Int): Int {
+    var index = from
+    while (index < text.length && text[index].isWhitespace()) index += 1
+    return index
+}
+
+/** The string starting at the quote at [from], decoded, and where the text goes on after its closing quote. */
+private fun string(text: String, from: Int): Pair<String, Int> {
+    check(text[from] == '"') { "a string starts with a quote: $text" }
+    val value = StringBuilder()
+    var index = from + 1
+    while (true) {
+        val character = text[index]
+        when (character) {
+            '"' -> return value.toString() to index + 1
+            '\\' -> {
+                val escaped = text[index + 1]
+                index += 2
+                when (escaped) {
+                    'n' -> value.append('\n')
+                    'r' -> value.append('\r')
+                    't' -> value.append('\t')
+                    'b' -> value.append('\b')
+                    'f' -> value.append('\u000C')
+                    'u' -> {
+                        value.append(text.substring(index, index + 4).toInt(16).toChar())
+                        index += 4
+                    }
+                    else -> value.append(escaped)
+                }
+            }
+            else -> {
+                value.append(character)
+                index += 1
+            }
+        }
+    }
+}
+
+/** Where the value starting at [from], an object, an array, a number or a literal, ends: after its last character. */
+private fun valueEnd(text: String, from: Int): Int {
+    var depth = 0
+    var index = from
+    var inString = false
+    while (index < text.length) {
+        val character = text[index]
+        if (inString) {
+            if (character == '\\') index += 1 else if (character == '"') inString = false
+        } else {
+            when (character) {
+                '"' -> inString = true
+                '{', '[' -> depth += 1
+                '}', ']' -> {
+                    if (depth == 0) return index
+                    depth -= 1
+                    if (depth == 0) return index + 1
+                }
+                ',' -> if (depth == 0) return index
+            }
+        }
+        index += 1
+    }
+    return index
 }
