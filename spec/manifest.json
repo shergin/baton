@@ -2322,6 +2322,92 @@
         ],
         "value": "Edited"
       }
+    },
+    {
+      "name": "tests/character-printed-two-ways",
+      "operation": "TestList",
+      "kind": "query",
+      "document": "documents/TestList.graphql",
+      "variables": {
+        "page": 1
+      },
+      "responses": [
+        "tests/character-printed-two-ways.json"
+      ],
+      "records": "tests/character-printed-two-ways.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "characters.results.0.species",
+          "value": "Humanoid",
+          "note": "the character's last printing gives the value: the last entry per record and slot wins"
+        },
+        {
+          "path": "characters.results.1.species",
+          "value": "Humanoid"
+        },
+        {
+          "path": "characters.results.0.name",
+          "value": "Rick Sanchez"
+        }
+      ]
+    },
+    {
+      "name": "tests/union-unknown-type-twice",
+      "operation": "TestUnion",
+      "kind": "query",
+      "document": "documents/TestUnion.graphql",
+      "variables": {
+        "name": "robot"
+      },
+      "responses": [
+        "tests/union-unknown-type-twice.json"
+      ],
+      "records": "tests/union-unknown-type-twice.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "search.2.name",
+          "value": "Butter Robot"
+        },
+        {
+          "path": "search.3.label",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "search.3.status",
+          "value": "Alive"
+        }
+      ]
+    },
+    {
+      "name": "tests/character-printed-two-ways-and-back",
+      "operation": "TestList",
+      "kind": "query",
+      "document": "documents/TestList.graphql",
+      "variables": {
+        "page": 1
+      },
+      "responses": [
+        "tests/character-printed-two-ways-and-back.json"
+      ],
+      "records": "tests/character-printed-two-ways-and-back.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "characters.results.0.species",
+          "value": "Human"
+        },
+        {
+          "path": "characters.results.1.species",
+          "value": "Human",
+          "note": "the character's last printing gives the value: the last entry per record and slot wins"
+        },
+        {
+          "path": "characters.results.2.species",
+          "value": "Human"
+        }
+      ]
     }
   ],
   "scripts": [

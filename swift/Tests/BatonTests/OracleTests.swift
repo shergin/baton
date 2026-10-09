@@ -109,7 +109,7 @@ struct OracleTests {
         // list takes its variant from the memberships the response states,
         // which the store learns at the commit, and the variant is settled
         // once per type.
-        let expected = try Oracle.leaves(of: response, plan: plan)
+        let expected = Oracle.committed(try Oracle.leaves(of: response, plan: plan), places: Oracle.places(of: oracle.root(in: store), plan: plan))
         #expect(!expected.isEmpty)
         expectSame(Oracle.leaves(of: oracle.root(in: store), plan: plan), expected, "after the commit")
         StoreDump.expectMatches(store, oracle.dumpName)

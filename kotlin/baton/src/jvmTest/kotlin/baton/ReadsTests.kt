@@ -1,5 +1,6 @@
 package baton
 
+import baton.spec.TestList
 import baton.spec.TestNotesQuery
 import baton.spec.TestProfileQuery
 import baton.spec.TestStrictQuery
@@ -56,6 +57,10 @@ class ReadsTests {
         val clientWritten: (Reading) -> Unit = { reading ->
             assertTrue(reading.events.isEmpty(), "a client field a payload wrote reads as any field does: ${reading.events}")
         }
+        val lastPrinting: (Reading) -> Unit = { reading ->
+            val results = assertNotNull(assertNotNull((reading.data as TestList.Data).characters).results)
+            assertEquals(1, results.map { it.recordID }.toSet().size, "the character's printings are one record, which holds the value of the last")
+        }
         mapOf(
             "tests/character-errors character.species" to strictThrows,
             "tests/character-errors-answered character.species" to strictThrows,
@@ -71,6 +76,8 @@ class ReadsTests {
             "tests/pin-character character.isPinned" to clientWritten,
             "tests/pin-character character.note" to clientWritten,
             "tests/drafts drafts.0.id" to clientWritten,
+            "tests/character-printed-two-ways characters.results.0.species" to lastPrinting,
+            "tests/character-printed-two-ways-and-back characters.results.1.species" to lastPrinting,
         )
     }
 

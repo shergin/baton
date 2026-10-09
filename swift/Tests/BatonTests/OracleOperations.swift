@@ -190,6 +190,9 @@ extension OracleOperation {
         "characters.results.1.name": { $0.characters?.results?.element(1)?.testRow.name.manifestValue ?? .null },
         "characters.results.2.name": { $0.characters?.results?.element(2)?.testRow.name.manifestValue ?? .null },
         "characters.results.1": { $0.characters?.results?.element(1).map { _ in Manifest.Value.object([:]) } ?? .null },
+        "characters.results.0.species": { $0.characters?.results?.element(0)?.testHeader.species.manifestValue ?? .null },
+        "characters.results.1.species": { $0.characters?.results?.element(1)?.testHeader.species.manifestValue ?? .null },
+        "characters.results.2.species": { $0.characters?.results?.element(2)?.testHeader.species.manifestValue ?? .null },
     ]
 
     static let notesReads: [String: @MainActor @Sendable (TestNotesQuery.Data) -> Manifest.Value] = [
@@ -423,6 +426,9 @@ extension OracleOperation {
         "search.1.status": { $0.search?.element(1)?.asCharacter?.status.manifestValue ?? .null },
         "search.1.name": { $0.search?.element(1)?.asNamed?.name.manifestValue ?? .null },
         "search.2.air_date": { $0.search?.element(2)?.asEpisode?.air_date.manifestValue ?? .null },
+        "search.2.name": { $0.search?.element(2)?.asNamed?.name.manifestValue ?? .null },
+        "search.3.label": { label($0.search?.element(3)) },
+        "search.3.status": { $0.search?.element(3)?.asCharacter?.status.manifestValue ?? .null },
     ]
 
     @MainActor private static func label(_ element: TestUnion.Data.Search?) -> Manifest.Value {

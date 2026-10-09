@@ -1,0 +1,14 @@
+mutation TestAppendCastNodes($id: ID!, $name: String!, $connections: [ID!]!) {
+  rename(id: $id, name: $name) {
+    character {
+      id
+      episode {
+        id
+        name
+        air_date
+        episode
+        characters @appendNode(connections: $connections, edgeTypeName: "NoteEdge") { id }
+      }
+    }
+  }
+}

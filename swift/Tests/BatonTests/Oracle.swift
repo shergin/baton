@@ -63,8 +63,9 @@ struct OracleError: Error, CustomStringConvertible {
 /// The response as the oracle of the store: two walks over the same resolved
 /// plan, one through the response's JSON as `JSONSerialization` reads it and
 /// one through the records the store holds, must yield the same leaves in the
-/// same order. A field the response does not carry, or the store never
-/// received, yields no leaf on that side.
+/// same order, once a record the response prints two ways reads its last
+/// printing (`committed`). A field the response does not carry, or the store
+/// never received, yields no leaf on that side.
 enum Oracle {
     /// The leaves of the raw response, read by the plan from a
     /// `JSONSerialization` tree.
@@ -81,8 +82,43 @@ enum Oracle {
     /// The leaves of the store, read by the same plan from the root.
     @MainActor static func leaves(of root: Record, plan: ResolvedSelection) -> [Leaf] {
         var leaves: [Leaf] = []
-        walk(root, plan, "", &leaves)
+        var places: [String: Place] = [:]
+        walk(root, plan, "", &leaves, &places)
         return leaves
+    }
+
+    /// Where a scalar leaf of the store is read: the record, by its key,
+    /// and the slot.
+    struct Place: Hashable {
+        let record: String
+        let slot: Slot
+    }
+
+    /// Where each scalar leaf of the store is read, by the leaf's path.
+    @MainActor static func places(of root: Record, plan: ResolvedSelection) -> [String: Place] {
+        var leaves: [Leaf] = []
+        var places: [String: Place] = [:]
+        walk(root, plan, "", &leaves, &places)
+        return places
+    }
+
+    /// The leaves of a response as the commit leaves them: a record the
+    /// response prints more than once holds, in each slot, the value of its
+    /// last printing, since the last entry per record and slot wins
+    /// (`spec/runtime.md`, section 4), and every path that reads the slot
+    /// reads that value. `places` says which record and slot each path
+    /// reads; the store's records are the dump's, which the oracle compares
+    /// beside. A response that prints each record one way is its own leaves.
+    static func committed(_ leaves: [Leaf], places: [String: Place]) -> [Leaf] {
+        var last: [Place: LeafValue] = [:]
+        for leaf in leaves {
+            guard let place = places[leaf.path] else { continue }
+            last[place] = leaf.value
+        }
+        return leaves.map { leaf in
+            guard let place = places[leaf.path], let value = last[place] else { return leaf }
+            return Leaf(path: leaf.path, value: value)
+        }
     }
 
     // MARK: The response
@@ -153,7 +189,7 @@ enum Oracle {
 
     // MARK: The store
 
-    @MainActor private static func walk(_ record: Record, _ selection: ResolvedSelection, _ path: String, _ leaves: inout [Leaf]) {
+    @MainActor private static func walk(_ record: Record, _ selection: ResolvedSelection, _ path: String, _ leaves: inout [Leaf], _ places: inout [String: Place]) {
         for field in selection.variant(for: record.type).fields {
             let here = path.isEmpty ? field.responseKey : path + "." + field.responseKey
             if field.responseKey == "__typename" {
@@ -165,15 +201,16 @@ enum Oracle {
             switch field.kind {
             case .scalar(let kind, _):
                 leaves.append(Leaf(path: here, value: scalar(value, kind)))
+                places[here] = Place(record: record.key, slot: field.slot)
             case .linked(let child, _, _, _):
                 switch value {
                 case .ref(let target) where !target.deleted:
-                    walk(target, child, here, &leaves)
+                    walk(target, child, here, &leaves, &places)
                 case .refs(let targets):
                     for (offset, target) in targets.enumerated() {
                         let item = here + "." + String(offset)
                         if let target, !target.deleted {
-                            walk(target, child, item, &leaves)
+                            walk(target, child, item, &leaves, &places)
                         } else {
                             leaves.append(Leaf(path: item, value: .null))
                         }

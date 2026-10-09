@@ -135,6 +135,48 @@
       "text": "query TestAliasQuery($id:ID!){character(id:$id){...TestRow_character,id}}fragment TestRow_character on Character{name,status,image}"
     },
     {
+      "name": "TestAppendCastNodes",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/RepeatDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "name",
+          "type": "String!"
+        },
+        {
+          "name": "connections",
+          "type": "[ID!]!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestAppendCastNodes($id:ID!,$name:String!){rename(id:$id,name:$name){character{id,episode{id,name,air_date,episode,characters{id}}}}}"
+    },
+    {
+      "name": "TestAppendEpisodeNodes",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/RepeatDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "name",
+          "type": "String!"
+        },
+        {
+          "name": "connections",
+          "type": "[ID!]!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestAppendEpisodeNodes($id:ID!,$name:String!){rename(id:$id,name:$name){character{id,episode{id,name,air_date,episode}}}}"
+    },
+    {
       "name": "TestAssetNameQuery",
       "kind": "query",
       "source": "swift/Tests/BatonTests/IdentityDocuments.swift",
