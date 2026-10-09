@@ -862,6 +862,7 @@ class Store(
         val values = changes.values
         for (index in 0 until changes.recordCount) {
             val record = objects[index]!!
+            record.reserve(changes.highestDenseSlot(index) + 1)
             // A deleted record a payload names again comes back.
             if (record.deleted) setDeleted(record, false, batch)
             for (position in changes.starts[index] until changes.starts[index + 1]) {

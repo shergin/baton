@@ -45,10 +45,11 @@ internal sealed interface Value {
  * the channel, so a write invalidates that slot's readers alone, the
  * contract's notification granularity, a record and a field. A slot nobody
  * read has no channel, and a write to it is a store into the array. The
- * arrays are sized by the registry's slot count for the type when the
- * record is made and grown when a slot is interned after. A key the store
- * numbered (a negative slot index) has its cell and channel in short lists
- * sorted by number. A record belongs to its store's thread.
+ * arrays are sized by what the record holds: a commit reserves the highest
+ * slot its change set writes to the record, and a write past the end grows
+ * them. A key the store numbered (a negative slot index) has its cell and
+ * channel in short lists sorted by number. A record belongs to its store's
+ * thread.
  */
 class Record internal constructor(val type: TypeID, val key: String, internal val idOffset: Int = -1) {
     /** Whether `@deleteRecord` removed it: links to it read as null and lists skip it, until a payload names it again. */
@@ -57,7 +58,7 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
         private set
 
     /** The dense slots' values, by index; null where the slot was never written. */
-    private var values: Array<Value?> = arrayOfNulls(Registry.slotCount(type))
+    private var values: Array<Value?> = EMPTY_VALUES
     /** The dense slots' channels, by index, each made at its slot's first read; empty until one is. */
     private var channels: Array<MutableState<Unit>?> = EMPTY_CHANNELS
     /** The numbers of the store's keys written to the record, ascending, with their values and channels beside them. */
@@ -84,6 +85,11 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
     /** Whether the record is an entity with this id. */
     internal fun hasID(id: String): Boolean =
         idOffset >= 0 && key.length - idOffset == id.length && key.regionMatches(idOffset, id, 0, id.length)
+
+    /** Makes room for the dense slots below [count]: a commit reserves what its change set writes to the record, so its writes grow nothing. */
+    internal fun reserve(count: Int) {
+        if (count > values.size) values = values.copyOf(count)
+    }
 
     /** The slot's value, read through its channel: in composition, the read registers the slot. */
     internal fun read(slot: Slot): Value {
@@ -351,10 +357,13 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
         return if (position < 0) Value.Missing else renderedValues[position] ?: Value.Missing
     }
 
+    /** The dense array's size once it holds [index]: past the end, half again the size, so a record filled slot by slot grows a few times. */
+    private fun grown(index: Int): Int = maxOf(index + 1, values.size + values.size / 2 + 2)
+
     /** Stores a slot's value, growing the dense array or placing the store's number among the record's as needed. */
     private fun store(index: Int, value: Value) {
         if (index >= 0) {
-            if (index >= values.size) values = values.copyOf(maxOf(index + 1, Registry.slotCount(type)))
+            if (index >= values.size) values = values.copyOf(grown(index))
             values[index] = value
             return
         }
@@ -366,7 +375,7 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
     /** Makes a slot's cell, with no value in it: a staged value needs a place the walks over the record find. */
     private fun ensure(index: Int) {
         if (index >= 0) {
-            if (index >= values.size) values = values.copyOf(maxOf(index + 1, Registry.slotCount(type)))
+            if (index >= values.size) values = values.copyOf(grown(index))
             return
         }
         position(index.inv())

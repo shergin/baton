@@ -38,6 +38,14 @@ are expected and listed without apology.
   0.95 ms where it took 1.35 ms, allocates 448 KB where it allocated
   672 KB, and a store holds 896 KB where it held 1,100 KB; the ingest does
   not move (`BENCHMARKS.md`).
+- A Kotlin record's array of values is sized by what the record holds: a
+  commit reserves the highest slot its change set writes to the record,
+  and a write past the end grows it. Before, every record allocated an
+  array as long as the type's slot count in the whole process, every
+  document's fields on the type, when it rendered a few of them. The
+  benchmark's process holds one document, so there the commit allocates
+  24 KB less and a store holds 12 KB less, for a time within 0.02 ms; the
+  gain is for a process with many documents on a type.
 
 ## 0.12.0 (Palianytsia) — 2026-10-08
 

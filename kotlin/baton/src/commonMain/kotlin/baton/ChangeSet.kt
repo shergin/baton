@@ -197,6 +197,16 @@ internal class ChangeSet(val bytes: ByteArray) {
         starts = grouped
     }
 
+    /** The highest dense slot index among a record's entries, once grouped; -1 when it has none. */
+    fun highestDenseSlot(record: Int): Int {
+        var highest = -1
+        for (position in starts[record] until starts[record + 1]) {
+            val slot = entrySlots[position]
+            if (slot > highest) highest = slot
+        }
+        return highest
+    }
+
     /** The position of a record's entry for a slot, once grouped; -1 when it has none. */
     fun entry(record: Int, slotIndex: Int): Int {
         for (position in starts[record] until starts[record + 1]) {

@@ -21,7 +21,7 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
-## Unreleased, the Kotlin record's channels on a device — 2026-10-08
+## Unreleased, the Kotlin record's channels and sizing on a device — 2026-10-08
 
 Revision: the working tree on top of `47bdcca`. The Kotlin `IngestBenchmark`
 (`kotlin/benchmarks/android`, the release build that is not debuggable, run
@@ -39,13 +39,19 @@ extended benchmark.
 |---|---|---|---|---|---|
 | `47bdcca`: a cell is snapshot state, one per written slot; arrays sized by the type's slot count | 5.23, 5.25 ms | 1.35, 1.36 ms | 1,820 KB | 672 KB | 1,100 KB |
 | A channel per slot read, made at the first read; cells plain values | 5.25, 5.27 ms | 0.95, 0.94 ms | 1,828 KB | 448 KB | 896 KB |
+| And the arrays sized by what the record holds | 5.21, 5.19 ms | 0.97, 0.97 ms | 1,856 KB | 424 KB | 884 KB |
 
 The channel is the change: the commit takes 0.95 ms where it took
 1.35 ms, allocates 448 KB where it allocated 672 KB, and a store holds
 896 KB where it held 1,100 KB, because a slot nobody has read is a store
 into an array and no snapshot state object with its record of writes. The
 ingest does not touch records and does not move; its allocation column
-wobbles by less than one buffer across the rows and is not a reading.
+wobbles by less than one buffer across the rows and is not a reading. The
+sizing moves little here by construction: the benchmark's process holds
+one document, so a type's slot count is close to what its records render;
+24 KB less allocated by the commit and 12 KB less held, for a time within
+0.02 ms. Its case is a process with many documents on a type, which no
+bench holds yet.
 
 ## Unreleased, the Kotlin ingest on a device — 2026-10-07
 
