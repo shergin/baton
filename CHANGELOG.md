@@ -3,6 +3,15 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
+## Unreleased
+
+- The compiler refuses `OptimisticResponse` as the name of a Kotlin
+  fragment or operation, with a message at the name, as it refuses `Data`:
+  the builder a mutation nests hid a mutation of that name inside its own
+  body, and the Kotlin written for it did not compile. An enum or an input
+  object of the name takes the suffix the package's kept names take. The
+  Swift emitter accepts the name, as before.
+
 ## 0.13.0 (Bublik) — 2026-10-09
 
 - The Kotlin runtime on Maven Central: `com.shergin.baton:baton`,

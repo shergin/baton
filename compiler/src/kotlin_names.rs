@@ -133,13 +133,15 @@ pub const STANDARD_LIBRARY_FUNCTIONS: [&str; 7] = [
 
 /// What a lens, a lens's companion, an operation's companion and a
 /// mutation's action declare or inherit, and the locals of a value's
-/// `fieldErrors`, with what a message calls each. Generated code names a
-/// fragment's or an operation's class in their bodies,
-/// `Fragment.fieldErrors(anchor)`, `Fragment(anchor)`, and a member or a
-/// local of the class's name would be read in its place: a lens nested in
-/// an operation sees the members of the operation's companion, and an
-/// action's body those of the action it extends.
-pub const MEMBER_NAMES: [(&str, &str); 29] = [
+/// `fieldErrors`, with what a message calls each, and the types an
+/// operation's value nests. Generated code names a fragment's or an
+/// operation's class in their bodies, `Fragment.fieldErrors(anchor)`,
+/// `Fragment(anchor)`, `MutationType<Mutation, Mutation.Data>`, and a
+/// member, a local or a nested type of the class's name would be read in
+/// its place: a lens nested in an operation sees the members of the
+/// operation's companion, an action's body those of the action it extends,
+/// and a mutation's body its own `OptimisticResponse`.
+pub const MEMBER_NAMES: [(&str, &str); 30] = [
     ("anchor", "the `anchor` every lens has"),
     ("recordID", "the `recordID` every lens has"),
     ("equals", "the `equals` every class has"),
@@ -172,6 +174,7 @@ pub const MEMBER_NAMES: [(&str, &str); 29] = [
     ),
     ("data", "the operation's `data`"),
     ("Data", "the operation's root lens `Data`"),
+    ("OptimisticResponse", "the mutation's `OptimisticResponse`"),
     ("invoke", "the mutation action's `invoke`"),
     ("bound", "the local `bound` of a spread's binding"),
     ("errors", "the local `errors` of a check"),
