@@ -1,0 +1,7 @@
+query RelayResponseNormalizerTest30Query {
+  me {
+    author {
+      id
+    }
+  }
+}

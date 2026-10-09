@@ -1,0 +1,6 @@
+{
+  "User:1": {"__errors": {"emailAddresses": [{"message": "There was an error!"}]}, "__typename": "User", "emailAddresses": [], "id": "1"},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "User:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

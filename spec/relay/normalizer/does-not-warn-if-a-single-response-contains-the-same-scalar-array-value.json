@@ -1,0 +1,29 @@
+{
+  "data": {
+    "node": {
+      "id": "1",
+      "__typename": "User",
+      "name": "Alice",
+      "friends": {
+        "edges": [
+          {
+            "node": {
+              "id": "a",
+              "emailAddresses": [
+                "a@example.com"
+              ]
+            }
+          },
+          {
+            "node": {
+              "id": "a",
+              "emailAddresses": [
+                "a@example.com"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "data": {
+    "node": {
+      "id": "1",
+      "__typename": "User",
+      "actors": [
+        {
+          "id": "1",
+          "__typename": "Page"
+        },
+        {
+          "id": "2",
+          "__typename": "Page"
+        }
+      ]
+    }
+  }
+}

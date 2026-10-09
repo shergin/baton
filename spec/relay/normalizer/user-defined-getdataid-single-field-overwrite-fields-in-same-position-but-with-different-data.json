@@ -1,0 +1,20 @@
+{
+  "data": {
+    "me": {
+      "__typename": "User",
+      "id": "me",
+      "author": {
+        "id": "friend1",
+        "name": "First Friend"
+      }
+    },
+    "meAgain": {
+      "__typename": "User",
+      "id": "me",
+      "author": {
+        "id": "friend2",
+        "name": "Second Friend"
+      }
+    }
+  }
+}

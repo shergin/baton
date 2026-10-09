@@ -1,0 +1,9 @@
+{
+  "data": {
+    "node": {
+      "id": "1",
+      "__typename": "User",
+      "firstName": "Bob"
+    }
+  }
+}

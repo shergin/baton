@@ -1,0 +1,1 @@
+query RelayResponseNormalizerTest10Query($id:ID!){node(id:$id){__typename,...RelayResponseNormalizerTest6Fragment@defer(label:"RelayResponseNormalizerTest10Query$defer$TestFragment"),id}}fragment RelayResponseNormalizerTest6Fragment on User{id,name}

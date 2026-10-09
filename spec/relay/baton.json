@@ -1,0 +1,13 @@
+{
+  "schema": "schema/testschema.graphql",
+  "schemaExtensions": [
+    "schema/extensions"
+  ],
+  "identity": {
+    "types": {
+      "Node": [
+        "id"
+      ]
+    }
+  }
+}

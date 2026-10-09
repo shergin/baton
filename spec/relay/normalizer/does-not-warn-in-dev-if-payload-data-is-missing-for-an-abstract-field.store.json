@@ -1,0 +1,6 @@
+{
+  "client:root": {"__typename": "Query", "named": {"__ref": "client:root:named:SimpleNamed"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:named:SimpleNamed": {"__typename": "SimpleNamed", "name": "Alice"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

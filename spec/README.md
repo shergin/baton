@@ -41,6 +41,10 @@ and the documents; `BATON_BLESS=1 cargo test` in `compiler/` writes
   for byte by the compiler's tests, which also prove that they plan what
   the markers plan.
 - `scripts/`: the scripts, below: steps over time and what each leaves.
+- `relay/`: cases harvested from Relay's own store tests, with Relay's test
+  schema, its own manifest in this format and the cases where Baton parts
+  from Relay; [`relay/README.md`](relay/README.md) says how they are made
+  and what the harvest kept.
 - `manifest.json`: the sources, the cases and the scripts, below.
 - `runtime.md`: the contract, one paragraph a rule, each ending with the
   fixture that holds it or the word *unheld*.

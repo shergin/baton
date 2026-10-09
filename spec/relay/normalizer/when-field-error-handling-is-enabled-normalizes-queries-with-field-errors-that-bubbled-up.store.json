@@ -1,0 +1,6 @@
+{
+  "User:1": {"__errors": {"friends(first:3)": [{"message": "No one knows Kramer's first name until season six!", "path": ["edges", 1, "node", "firstName"]}, {"message": "There was another error!", "path": ["edges", 1, "node", "firstName"]}, {"message": "No one knows Newman's first name!", "path": ["edges", 2, "node", "firstName"]}]}, "__typename": "User", "firstName": "Jerry", "friends(first:3)": null, "id": "1", "lastName": "Seinfeld"},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "User:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

@@ -1,0 +1,14 @@
+query RelayResponseNormalizerTestClientInterfaceQuery {
+  client_interface {
+    ...RelayResponseNormalizerTestClientInterfaceFragment
+  }
+  client_union {
+    ... on ClientUnion {
+      __typename
+    }
+  }
+}
+
+fragment RelayResponseNormalizerTestClientInterfaceFragment on ClientInterface {
+  description
+}

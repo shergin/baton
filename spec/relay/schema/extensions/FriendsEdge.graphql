@@ -1,0 +1,5 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+
+extend type FriendsEdge {
+  client_friend_edge_field: String
+}

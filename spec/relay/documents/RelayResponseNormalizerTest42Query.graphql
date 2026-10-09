@@ -1,0 +1,1 @@
+query RelayResponseNormalizerTest42Query($id:ID!){node(id:$id){__typename,...RelayResponseNormalizerTest42Fragment,id}}fragment RelayResponseNormalizerTest42Fragment on Node{__isNode:__typename,id,...on User{name}}

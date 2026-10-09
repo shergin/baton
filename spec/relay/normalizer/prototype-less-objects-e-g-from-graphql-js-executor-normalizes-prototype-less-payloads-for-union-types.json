@@ -1,0 +1,8 @@
+{
+  "data": {
+    "userOrPage": {
+      "__typename": "Page",
+      "id": "1"
+    }
+  }
+}

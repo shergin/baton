@@ -1,0 +1,14 @@
+query RelayResponseNormalizerTest16Query {
+  me {
+    author {
+      id
+      name
+    }
+  }
+  meAgain: me {
+    author {
+      id
+      name
+    }
+  }
+}

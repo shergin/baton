@@ -1,0 +1,8 @@
+{
+  "Page:test:root:node(id:\"1\"):actor:0": {"__typename": "Page", "id": "1"},
+  "User:test:root:node(id:\"1\")": {"__typename": "User", "actors": {"__refs": ["Page:test:root:node(id:\"1\"):actor:0", "User:test:root:node(id:\"1\"):actors:1:Page"]}, "id": "1"},
+  "User:test:root:node(id:\"1\"):actors:1:Page": {"__typename": "Page", "id": "2"},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "User:test:root:node(id:\"1\")"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

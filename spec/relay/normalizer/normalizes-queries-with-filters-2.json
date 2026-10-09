@@ -1,0 +1,23 @@
+{
+  "data": {
+    "node": {
+      "id": "4",
+      "__typename": "User",
+      "friends": {
+        "edges": [
+          {
+            "cursor": "cursor:bestFriends:2",
+            "node": {
+              "id": "cat",
+              "name": "Betty"
+            }
+          }
+        ],
+        "pageInfo": {
+          "hasNextPage": false,
+          "endCursor": "cursor-2"
+        }
+      }
+    }
+  }
+}

@@ -21,6 +21,15 @@ taught this one something specific, and the line says what it was.
   initiative naming normalized caching, colocation, masking, trusted
   documents and code generation as the marks of a successful deployment.
 
+## The fixtures
+
+- **Relay's runtime tests** (Meta, MIT) — `spec/relay/` holds cases
+  harvested from Relay v21.0.1's `RelayResponseNormalizer-test.js`: its
+  documents, payloads and expected records, translated into Baton's keys,
+  and its `testschema.graphql` with the client extensions. Relay's own
+  statement of what a normalized store holds is the second oracle Baton's
+  store is held to.
+
 ## Native predecessors and neighbours
 
 - **Relay.swift** (Matt Moriarity) — proof that the full model runs on

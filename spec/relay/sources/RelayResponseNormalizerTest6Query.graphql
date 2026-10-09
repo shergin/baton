@@ -1,0 +1,15 @@
+query RelayResponseNormalizerTest6Query(
+  $id: ID!
+  $enableDefer: Boolean!
+) {
+  node(id: $id) {
+    ...RelayResponseNormalizerTest2Fragment
+      @alias
+      @defer(label: "TestFragment", if: $enableDefer)
+  }
+}
+
+fragment RelayResponseNormalizerTest2Fragment on User {
+  id
+  name
+}

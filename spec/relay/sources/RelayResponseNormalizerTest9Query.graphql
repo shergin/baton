@@ -1,0 +1,15 @@
+query RelayResponseNormalizerTest9Query($id: ID!) {
+  node(id: $id) {
+    ... on Feedback {
+      actors {
+        ...RelayResponseNormalizerTest5Fragment
+          @alias
+          @defer(label: "TestFragment", if: true)
+      }
+    }
+  }
+}
+
+fragment RelayResponseNormalizerTest5Fragment on User {
+  name
+}

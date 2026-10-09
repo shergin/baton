@@ -1,0 +1,28 @@
+{
+  "name": "user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization",
+  "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer User-defined getDataID single field overwrite fields in same position but with different data in second normalization",
+  "status": "unsupported-feature",
+  "note": "a custom `getDataID`: Baton keys by configured fields, not by a function",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayResponseNormalizerTest17Query",
+        "response": "relay/normalizer/user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization-1.json",
+        "variables": {
+          "id": "1"
+        }
+      },
+      "records": "relay/normalizer/user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization-1.store.json"
+    },
+    {
+      "payload": {
+        "operation": "RelayResponseNormalizerTest17Query",
+        "response": "relay/normalizer/user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization-2.json",
+        "variables": {
+          "id": "1"
+        }
+      },
+      "records": "relay/normalizer/user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization-2.store.json"
+    }
+  ]
+}

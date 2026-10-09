@@ -1,0 +1,7 @@
+{
+  "User:1": {"__typename": "User", "friends(first:3)": {"__ref": "User:1:friends(first:3)"}, "id": "1"},
+  "User:1:friends(first:3)": {"__typename": "FriendsConnection", "edges": {"__refs": []}},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "User:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

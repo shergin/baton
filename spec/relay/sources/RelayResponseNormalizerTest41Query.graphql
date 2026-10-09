@@ -1,0 +1,9 @@
+query RelayResponseNormalizerTest41Query($id: ID!) {
+  node(id: $id) {
+    id
+    __typename
+    ... on User {
+      emailAddresses
+    }
+  }
+}

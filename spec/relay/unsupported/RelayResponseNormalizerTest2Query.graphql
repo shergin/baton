@@ -1,0 +1,17 @@
+query RelayResponseNormalizerTest2Query($id: ID!) {
+  node(id: $id) {
+    id
+    __typename
+    ... on User {
+      friends(first: 1) @__clientField(handle: "bestFriends") {
+        edges {
+          cursor
+          node {
+            id
+            name @__clientField(handle: "friendsName")
+          }
+        }
+      }
+    }
+  }
+}

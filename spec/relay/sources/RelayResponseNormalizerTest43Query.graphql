@@ -1,0 +1,7 @@
+query RelayResponseNormalizerTest43Query($id: ID!) {
+  userOrPage(id: $id) {
+    ... on User {
+      id
+    }
+  }
+}

@@ -1,0 +1,5 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+
+extend interface Actor {
+  client_actor_field: String
+}

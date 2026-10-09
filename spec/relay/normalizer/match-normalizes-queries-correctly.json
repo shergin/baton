@@ -1,0 +1,17 @@
+{
+  "data": {
+    "node": {
+      "id": "1",
+      "__typename": "User",
+      "nameRenderer": {
+        "__typename": "MarkdownUserNameRenderer",
+        "__module_component_RelayResponseNormalizerTestFragment": "MarkdownUserNameRenderer.react",
+        "__module_operation_RelayResponseNormalizerTestFragment": "RelayResponseNormalizerTestMarkdownUserNameRenderer_name$normalization.graphql",
+        "markdown": "markdown payload",
+        "data": {
+          "markup": "<markup/>"
+        }
+      }
+    }
+  }
+}

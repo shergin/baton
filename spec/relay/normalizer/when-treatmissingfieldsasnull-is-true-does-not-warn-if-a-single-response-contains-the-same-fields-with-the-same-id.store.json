@@ -1,0 +1,10 @@
+{
+  "User:1": {"__typename": "User", "friends(first:2)": {"__ref": "User:1:friends(first:2)"}, "id": "1", "name": "Alice"},
+  "User:1:friends(first:2)": {"__typename": "FriendsConnection", "edges": {"__refs": ["User:1:friends(first:2):edges:0", "User:1:friends(first:2):edges:1"]}},
+  "User:1:friends(first:2):edges:0": {"__typename": "FriendsEdge", "node": {"__ref": "User:a"}},
+  "User:1:friends(first:2):edges:1": {"__typename": "FriendsEdge", "node": {"__ref": "User:a"}},
+  "User:a": {"__typename": "User", "firstName": null, "id": "a"},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "User:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

@@ -1,0 +1,52 @@
+{
+  "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer returns metadata when `if` is true (literal value)": {
+    "status": "unspecified-behaviour",
+    "note": "The initial payload already holds the deferred fragment's fields. Relay skips them on purpose (`_normalizeDefer`: data for a deferred selection 'should not be present') and waits for a later part; Baton writes what the response holds. The fields in the test's payload are incidental to what it asserts, the placeholder.",
+    "decision": "Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's."
+  },
+  "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer returns metadata when `if` is true (variable value)": {
+    "status": "unspecified-behaviour",
+    "note": "The initial payload already holds the deferred fragment's fields. Relay skips them on purpose (`_normalizeDefer`: data for a deferred selection 'should not be present') and waits for a later part; Baton writes what the response holds. The fields in the test's payload are incidental to what it asserts, the placeholder.",
+    "decision": "Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's."
+  },
+  "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer returns metadata for @defer within a plural": {
+    "status": "unspecified-behaviour",
+    "note": "The initial payload already holds the deferred fragment's fields. Relay skips them on purpose (`_normalizeDefer`: data for a deferred selection 'should not be present') and waits for a later part; Baton writes what the response holds. The fields in the test's payload are incidental to what it asserts, the placeholder.",
+    "decision": "Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's."
+  },
+  "RelayResponseNormalizer-test.js: RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload": {
+    "status": "unspecified-behaviour",
+    "note": "Relay keys an object whose id is the empty string by its path; Baton keys it `User:`, one record for every such object of the type.",
+    "decision": "Document it and copy Relay, unless that costs performance (owner, 2026-10-09)."
+  },
+  "RelayResponseNormalizer-test.js: RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload - same id": {
+    "status": "unspecified-behaviour",
+    "note": "Relay keys an object whose id is the empty string by its path; Baton keys it `User:`, one record for every such object of the type.",
+    "decision": "Document it and copy Relay, unless that costs performance (owner, 2026-10-09)."
+  },
+  "RelayResponseNormalizer-test.js: RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload for list": {
+    "status": "unspecified-behaviour",
+    "note": "An `ID` the server sends as a number or a boolean: Relay keys the object by its path; Baton's ingest rejects the response.",
+    "decision": "Document it and copy Relay, unless that costs performance (owner, 2026-10-09)."
+  },
+  "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled normalizes queries with multiple field errors": {
+    "status": "possible-bug",
+    "note": "Relay keeps every error of a field as a list of messages; Baton keeps one error a field, the last, with its absolute path, and loses the others.",
+    "decision": "Match Relay, unless that costs performance (owner, 2026-10-09)."
+  },
+  "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled normalizes queries with field errors that bubbled up": {
+    "status": "possible-bug",
+    "note": "Relay keeps every error that bubbled to the nulled field, with paths relative to it; Baton keeps one, the last, with its absolute path, and loses the others.",
+    "decision": "Match Relay, unless that costs performance (owner, 2026-10-09)."
+  },
+  "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled when noncompliant error handling on lists is disabled ignores field errors on an empty list": {
+    "status": "unspecified-behaviour",
+    "note": "An error whose path ends at a list that is not null: Relay drops it; Baton places it on the list's field, the last field its path reaches.",
+    "decision": "Match Relay, unless that costs performance (owner, 2026-10-09)."
+  },
+  "RelayResponseNormalizer-test.js: RelayResponseNormalizer Prototype-less objects (e.g., from graphql-js executor) normalizes prototype-less payloads for union types": {
+    "status": "invalid-input",
+    "note": "The server text asks for `... on Node { __isNode: __typename, id }`, and the test's payload leaves `__isNode` out, which a conforming server does not do; the test is about prototype-less objects and the omission is incidental. Relay knows no schema at run time and applies an abstract fragment only when the payload answers `__isX`, so it stores no `id`; Baton knows from the schema that `Page` is a `Node` and stores it (spec/runtime.md, memberships).",
+    "decision": "Open. The recommendation is no change: both behave the same on a response that answers the text."
+  }
+}

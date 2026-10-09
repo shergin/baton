@@ -1,0 +1,8 @@
+{
+  "Feedback:1": {"__typename": "Feedback", "actors": {"__refs": ["User:2", "User:3"]}, "id": "1"},
+  "User:2": {"__typename": "User", "id": "2"},
+  "User:3": {"__typename": "User", "id": "3"},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "Feedback:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

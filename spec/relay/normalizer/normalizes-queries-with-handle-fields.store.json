@@ -1,0 +1,9 @@
+{
+  "User:4": {"__typename": "User", "friends(first:1)": {"__ref": "User:4:friends(first:1)"}, "id": "4"},
+  "User:4:friends(first:1)": {"__typename": "FriendsConnection", "edges": {"__refs": ["User:4:friends(first:1):edges:0"]}},
+  "User:4:friends(first:1):edges:0": {"__typename": "FriendsEdge", "cursor": "cursor:bestFriends", "node": {"__ref": "User:pet"}},
+  "User:pet": {"__typename": "User", "id": "pet", "name": "Beast"},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "User:4"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

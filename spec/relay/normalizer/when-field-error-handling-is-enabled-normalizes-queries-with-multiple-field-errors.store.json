@@ -1,0 +1,13 @@
+{
+  "User:1": {"__typename": "User", "firstName": "Jerry", "friends(first:3)": {"__ref": "User:1:friends(first:3)"}, "id": "1", "lastName": "Seinfeld"},
+  "User:1:friends(first:3)": {"__typename": "FriendsConnection", "edges": {"__refs": ["User:1:friends(first:3):edges:0", "User:1:friends(first:3):edges:1", "User:1:friends(first:3):edges:2"]}},
+  "User:1:friends(first:3):edges:0": {"__typename": "FriendsEdge", "cursor": "cursor:2", "node": {"__ref": "User:2"}},
+  "User:1:friends(first:3):edges:1": {"__typename": "FriendsEdge", "cursor": "cursor:3", "node": {"__ref": "User:3"}},
+  "User:1:friends(first:3):edges:2": {"__typename": "FriendsEdge", "cursor": "cursor:4", "node": {"__ref": "User:4"}},
+  "User:2": {"__typename": "User", "firstName": "George", "id": "2", "lastName": "Costanza"},
+  "User:3": {"__errors": {"firstName": [{"message": "No one knows Kramer's first name until season six!"}, {"message": "There was another error!"}]}, "__typename": "User", "firstName": null, "id": "3", "lastName": "Kramer"},
+  "User:4": {"__errors": {"firstName": [{"message": "No one knows Newman's first name!"}]}, "__typename": "User", "firstName": null, "id": "4", "lastName": "Newman"},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "User:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

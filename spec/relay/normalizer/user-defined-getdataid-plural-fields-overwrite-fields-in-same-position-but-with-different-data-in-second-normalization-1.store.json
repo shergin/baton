@@ -1,0 +1,7 @@
+{
+  "Page:1:Page": {"__typename": "Page", "id": "1", "name": "Page0"},
+  "User:1:User": {"__typename": "User", "actors": {"__refs": ["Page:1:Page"]}, "id": "1"},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "User:1:User"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

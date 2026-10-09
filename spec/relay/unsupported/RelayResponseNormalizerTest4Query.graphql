@@ -1,0 +1,29 @@
+query RelayResponseNormalizerTest4Query($id: ID!) {
+  node(id: $id) {
+    ...RelayResponseNormalizerTestFragment @alias
+  }
+}
+
+fragment RelayResponseNormalizerTestFragment on User {
+  id
+  nameRenderer @match {
+    ...RelayResponseNormalizerTestPlainUserNameRenderer_name
+      @module(name: "PlainUserNameRenderer.react")
+    ...RelayResponseNormalizerTestMarkdownUserNameRenderer_name
+      @module(name: "MarkdownUserNameRenderer.react")
+  }
+}
+
+fragment RelayResponseNormalizerTestPlainUserNameRenderer_name on PlainUserNameRenderer {
+  plaintext
+  data {
+    text
+  }
+}
+
+fragment RelayResponseNormalizerTestMarkdownUserNameRenderer_name on MarkdownUserNameRenderer {
+  markdown
+  data {
+    markup
+  }
+}

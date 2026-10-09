@@ -1,0 +1,16 @@
+{
+  "Comment:2": {"__typename": "Comment", "body": {"__ref": "Comment:2:body"}, "id": "2"},
+  "Comment:2:body": {"__typename": "Text", "text": "Hello World"},
+  "Comment:3": {"__typename": "Comment", "body": {"__ref": "Comment:3:body"}, "id": "3"},
+  "Comment:3:body": {"__typename": "Text", "text": "Hello World"},
+  "User:1": {"__typename": "User", "friends(first:2)": {"__ref": "User:1:friends(first:2)"}, "id": "1", "name": "Alice"},
+  "User:1:friends(first:2)": {"__typename": "FriendsConnection", "edges": {"__refs": ["User:1:friends(first:2):edges:0", "User:1:friends(first:2):edges:1"]}},
+  "User:1:friends(first:2):edges:0": {"__typename": "FriendsEdge", "node": {"__ref": "User:a"}},
+  "User:1:friends(first:2):edges:1": {"__typename": "FriendsEdge", "node": {"__ref": "User:a"}},
+  "User:a": {"__typename": "User", "comments(first:1)": {"__ref": "User:a:comments(first:1)"}, "firstName": "Bob", "id": "a"},
+  "User:a:comments(first:1)": {"__typename": "CommentsConnection", "edges": {"__refs": ["User:a:comments(first:1):edges:0"]}},
+  "User:a:comments(first:1):edges:0": {"__typename": "CommentsEdge", "node": {"__ref": "Comment:3"}},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "User:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

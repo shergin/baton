@@ -1,0 +1,27 @@
+query RelayResponseNormalizerTest26Query($id: ID) {
+  node(id: $id) {
+    id
+    __typename
+    ... on User {
+      name
+      friends(first: 2) {
+        edges {
+          node {
+            id
+            firstName
+            comments(first: 1) {
+              edges {
+                node {
+                  id
+                  body {
+                    text
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

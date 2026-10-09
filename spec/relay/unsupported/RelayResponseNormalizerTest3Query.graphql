@@ -1,0 +1,33 @@
+query RelayResponseNormalizerTest3Query(
+  $id: ID!
+  $orderBy: [String]
+  $isViewerFriend: Boolean
+) {
+  node(id: $id) {
+    id
+    __typename
+    ... on User {
+      friends(
+        first: 1
+        orderby: $orderBy
+        isViewerFriend: $isViewerFriend
+      )
+        @__clientField(
+          handle: "bestFriends"
+          key: "UserFriends_friends"
+          filters: ["orderby", "isViewerFriend"]
+        ) {
+        edges {
+          cursor
+          node {
+            id
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  }
+}

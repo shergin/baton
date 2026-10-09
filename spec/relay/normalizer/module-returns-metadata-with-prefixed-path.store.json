@@ -1,0 +1,7 @@
+{
+  "User:1": {"__typename": "User", "id": "1", "nameRenderer": {"__ref": "User:1:nameRenderer:MarkdownUserNameRenderer"}},
+  "User:1:nameRenderer:MarkdownUserNameRenderer": {"__module_component_RelayResponseNormalizerTest1Fragment": "MarkdownUserNameRenderer.react", "__module_operation_RelayResponseNormalizerTest1Fragment": "RelayResponseNormalizerTest1MarkdownUserNameRenderer_name$normalization.graphql", "__typename": "MarkdownUserNameRenderer"},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "User:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

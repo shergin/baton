@@ -1,0 +1,12 @@
+{
+  "data": {
+    "node": {
+      "id": "1",
+      "__typename": "User",
+      "nameRenderer": {
+        "__typename": "CustomNameRenderer",
+        "customField": "this is ignored!"
+      }
+    }
+  }
+}

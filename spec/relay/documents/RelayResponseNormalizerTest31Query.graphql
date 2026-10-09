@@ -1,0 +1,1 @@
+query RelayResponseNormalizerTest31Query{me{actors{__typename,id},id}}

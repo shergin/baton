@@ -1,0 +1,8 @@
+{
+  "User:friend1:User": {"__typename": "User", "id": "friend1", "name": "First Friend"},
+  "User:friend2:User": {"__typename": "User", "id": "friend2", "name": "Second Friend"},
+  "User:me:User": {"__typename": "User", "author": {"__ref": "User:friend2:User"}, "id": "me"},
+  "client:root": {"__typename": "Query", "me": {"__ref": "User:me:User"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

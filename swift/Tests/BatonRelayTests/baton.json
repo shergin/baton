@@ -1,0 +1,13 @@
+{
+  "schema": "../../../spec/relay/schema/testschema.graphql",
+  "schemaExtensions": [
+    "../../../spec/relay/schema/extensions"
+  ],
+  "identity": {
+    "types": {
+      "Node": [
+        "id"
+      ]
+    }
+  }
+}

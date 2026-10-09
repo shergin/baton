@@ -1,0 +1,13 @@
+{
+  "User:1": {"__typename": "User", "friends(first:4)": {"__ref": "User:1:friends(first:4)"}, "id": "1", "name": "Alice"},
+  "User:1:friends(first:4)": {"__typename": "FriendsConnection", "edges": {"__refs": ["User:1:friends(first:4):edges:0", "User:1:friends(first:4):edges:1", "User:1:friends(first:4):edges:2", "User:1:friends(first:4):edges:3"]}},
+  "User:1:friends(first:4):edges:0": {"__typename": "FriendsEdge", "node": {"__ref": "User:a"}},
+  "User:1:friends(first:4):edges:1": {"__typename": "FriendsEdge", "node": {"__ref": "User:b"}},
+  "User:1:friends(first:4):edges:2": {"__typename": "FriendsEdge", "node": {"__ref": "User:a"}},
+  "User:1:friends(first:4):edges:3": {"__typename": "FriendsEdge", "node": {"__ref": "User:a"}},
+  "User:a": {"__typename": "User", "firstName": "Shirley", "id": "a"},
+  "User:b": {"__typename": "User", "firstName": "Claire", "id": "b"},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "User:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

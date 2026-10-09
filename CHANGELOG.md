@@ -5,6 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `spec/relay/`: Relay v21.0.1's `RelayResponseNormalizer-test.js`
+  harvested into cases, its payloads and the records its tests expect
+  translated into Baton's keys by `scripts/relay-harvest/` and run by the
+  Swift test target `BatonRelayTests`. Relay's tests are measured against,
+  not obeyed: of 60, 13 agree with Relay and must pass; 10 carry a status
+  (`possible-bug`, `unspecified-behaviour`, `invalid-input`) and run with
+  their results ignored until they pass; 31 use features Baton does not have
+  and are kept out of the runs; 6 are not expressible yet.
+  `docs/decisions/relays-tests-are-measured-not-obeyed.md` is the record.
 - The compiler refuses `OptimisticResponse` as the name of a Kotlin
   fragment or operation, with a message at the name, as it refuses `Data`:
   the builder a mutation nests hid a mutation of that name inside its own
