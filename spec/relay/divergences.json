@@ -1,0 +1,12 @@
+{
+  "relay/normalizer/defer-returns-metadata-when-if-is-true-literal-value": "Relay skips a deferred fragment's fields when the initial payload already holds them and waits for the later part; Baton writes what the response holds.",
+  "relay/normalizer/defer-returns-metadata-when-if-is-true-variable-value": "Relay skips a deferred fragment's fields when the initial payload already holds them and waits for the later part; Baton writes what the response holds.",
+  "relay/normalizer/defer-returns-metadata-for-defer-within-a-plural": "Relay skips a deferred fragment's fields when the initial payload already holds them and waits for the later part; Baton writes what the response holds.",
+  "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload": "Relay keys an object whose id is the empty string by its path; Baton keys it `User:`, one record for every such object of the type.",
+  "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-same-id": "Relay keys an object whose id is the empty string by its path; Baton keys it `User:`, one record for every such object of the type.",
+  "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-for-list": "An `ID` the server sends as a number or a boolean: Relay keys the object by its path; Baton's ingest rejects the response.",
+  "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-multiple-field-errors": "Relay keeps every error of a field as a list of messages; Baton keeps one error a field, the last, with its absolute path.",
+  "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-field-errors-that-bubbled-up": "Relay keeps every error that bubbled to the nulled field, with paths relative to it; Baton keeps one, the last, with its absolute path.",
+  "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-disabled-ignores-field-errors-on-an-empty-list": "An error whose path ends at a list that is not null: Relay drops it; Baton places it on the list's field, the last field its path reaches.",
+  "relay/normalizer/prototype-less-objects-e-g-from-graphql-js-executor-normalizes-prototype-less-payloads-for-union-types": "The payload lacks the `__isNode` the server text asks for: Relay then skips `... on Node { id }` and stores no `id`; Baton knows from the schema that `Page` is a `Node` and stores it."
+}

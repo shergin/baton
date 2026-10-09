@@ -1,0 +1,19 @@
+query RelayResponseNormalizerTest38Query($id: ID!) {
+  node(id: $id) {
+    id
+    __typename
+    ... on User {
+      firstName
+      lastName
+      friends(first: 3) {
+        edges {
+          cursor
+          node {
+            firstName
+            lastName
+          }
+        }
+      }
+    }
+  }
+}

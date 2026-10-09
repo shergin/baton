@@ -1,0 +1,11 @@
+{
+  "data": {
+    "node": {
+      "id": "1",
+      "__typename": "User",
+      "profilePicture": {
+        "uri": "https://..."
+      }
+    }
+  }
+}

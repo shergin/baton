@@ -1,0 +1,1 @@
+query RelayResponseNormalizerTest32Query($id:ID){node(id:$id){id,__typename,...on User{name,friends(first:2){edges{node{id,firstName}}}}}}

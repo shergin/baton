@@ -1,0 +1,7 @@
+query RelayResponseNormalizerTest31Query {
+  me {
+    actors {
+      id
+    }
+  }
+}

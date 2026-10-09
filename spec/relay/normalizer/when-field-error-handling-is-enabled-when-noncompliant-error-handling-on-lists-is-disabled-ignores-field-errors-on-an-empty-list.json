@@ -1,0 +1,21 @@
+{
+  "data": {
+    "node": {
+      "id": "1",
+      "__typename": "User",
+      "friends": {
+        "edges": []
+      }
+    }
+  },
+  "errors": [
+    {
+      "message": "There was an error!",
+      "path": [
+        "node",
+        "friends",
+        "edges"
+      ]
+    }
+  ]
+}

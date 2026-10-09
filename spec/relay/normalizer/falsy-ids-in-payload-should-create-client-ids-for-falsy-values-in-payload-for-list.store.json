@@ -1,0 +1,10 @@
+{
+  "User:my-id": {"__typename": "User", "actors": {"__refs": ["User:my-id:actors:0:User", "User:my-id:actors:1:User", "User:my-id:actors:2:User", "User:my-id:actors:3:User"]}, "id": "my-id"},
+  "User:my-id:actors:0:User": {"__typename": "User", "id": ""},
+  "User:my-id:actors:1:User": {"__typename": "User", "id": 0},
+  "User:my-id:actors:2:User": {"__typename": "User", "id": false},
+  "User:my-id:actors:3:User": {"__typename": "User", "id": null},
+  "client:root": {"__typename": "Query", "me": {"__ref": "User:my-id"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

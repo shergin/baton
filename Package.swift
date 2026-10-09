@@ -97,6 +97,15 @@ let package = Package(
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
         ),
+        // Relay's own store tests, harvested into `spec/relay/` by
+        // `scripts/relay-harvest/` and compiled against Relay's test schema.
+        .testTarget(
+            name: "BatonRelayTests",
+            dependencies: ["Baton", "BatonInspector", "BatonSpec"],
+            path: "swift/Tests/BatonRelayTests",
+            swiftSettings: [.swiftLanguageMode(.v6)],
+            plugins: ["BatonPlugin"]
+        ),
         // The emitter's goldens, compiled as an app compiles them with the
         // Xcode template's default of main-actor isolation: generated code
         // states its isolation, so it builds under either default.

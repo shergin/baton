@@ -1,0 +1,46 @@
+{
+  "data": {
+    "node": {
+      "id": "1",
+      "__typename": "User",
+      "firstName": "Jerry",
+      "lastName": "Seinfeld",
+      "friends": null
+    }
+  },
+  "errors": [
+    {
+      "message": "No one knows Kramer's first name until season six!",
+      "path": [
+        "node",
+        "friends",
+        "edges",
+        1,
+        "node",
+        "firstName"
+      ]
+    },
+    {
+      "message": "There was another error!",
+      "path": [
+        "node",
+        "friends",
+        "edges",
+        1,
+        "node",
+        "firstName"
+      ]
+    },
+    {
+      "message": "No one knows Newman's first name!",
+      "path": [
+        "node",
+        "friends",
+        "edges",
+        2,
+        "node",
+        "firstName"
+      ]
+    }
+  ]
+}

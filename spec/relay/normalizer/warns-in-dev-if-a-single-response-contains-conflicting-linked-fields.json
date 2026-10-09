@@ -1,0 +1,49 @@
+{
+  "data": {
+    "node": {
+      "id": "1",
+      "__typename": "User",
+      "name": "Alice",
+      "friends": {
+        "edges": [
+          {
+            "node": {
+              "id": "a",
+              "firstName": "Bob",
+              "comments": {
+                "edges": [
+                  {
+                    "node": {
+                      "id": "2",
+                      "body": {
+                        "text": "Hello World"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "a",
+              "firstName": "Bob",
+              "comments": {
+                "edges": [
+                  {
+                    "node": {
+                      "id": "3",
+                      "body": {
+                        "text": "Hello World"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

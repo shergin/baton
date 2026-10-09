@@ -1,0 +1,12 @@
+query RelayResponseNormalizerTest42Query($id: ID!) {
+  node(id: $id) {
+    ...RelayResponseNormalizerTest42Fragment
+  }
+}
+
+fragment RelayResponseNormalizerTest42Fragment on Node {
+  id
+  ... on User {
+    name
+  }
+}

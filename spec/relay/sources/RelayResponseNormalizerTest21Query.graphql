@@ -1,0 +1,8 @@
+query RelayResponseNormalizerTest21Query {
+  named {
+    name
+    ... on Node {
+      id
+    }
+  }
+}

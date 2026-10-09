@@ -1,0 +1,7 @@
+{
+  "client:root": {"__typename": "Query", "me": {"__ref": "client:root:me"}},
+  "client:root:me": {"__typename": "User", "author": {"__ref": "client:root:me:author"}, "id": ""},
+  "client:root:me:author": {"__typename": "User", "id": ""},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

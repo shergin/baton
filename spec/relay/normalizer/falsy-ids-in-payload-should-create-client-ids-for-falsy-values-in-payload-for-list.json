@@ -1,0 +1,26 @@
+{
+  "data": {
+    "me": {
+      "__typename": "User",
+      "id": "my-id",
+      "actors": [
+        {
+          "__typename": "User",
+          "id": ""
+        },
+        {
+          "__typename": "User",
+          "id": 0
+        },
+        {
+          "__typename": "User",
+          "id": false
+        },
+        {
+          "__typename": "User",
+          "id": null
+        }
+      ]
+    }
+  }
+}

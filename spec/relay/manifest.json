@@ -1,0 +1,327 @@
+{
+  "format": 3,
+  "sources": {
+    "config": "relay/baton.json",
+    "directory": "relay/sources"
+  },
+  "cases": [
+    {
+      "name": "relay/normalizer/normalizes-queries",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer normalizes queries",
+      "operation": "RelayResponseNormalizerTest1Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest1Query.graphql",
+      "variables": {
+        "id": "1",
+        "size": 32
+      },
+      "responses": [
+        "relay/normalizer/normalizes-queries.json"
+      ],
+      "records": "relay/normalizer/normalizes-queries.store.json"
+    },
+    {
+      "name": "relay/normalizer/defer-normalizes-when-if-condition-is-false",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer normalizes when if condition is false",
+      "operation": "RelayResponseNormalizerTest6Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest6Query.graphql",
+      "variables": {
+        "id": "1",
+        "enableDefer": false
+      },
+      "responses": [
+        "relay/normalizer/defer-normalizes-when-if-condition-is-false.json"
+      ],
+      "records": "relay/normalizer/defer-normalizes-when-if-condition-is-false.store.json"
+    },
+    {
+      "name": "relay/normalizer/defer-returns-metadata-when-if-is-true-literal-value",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer returns metadata when `if` is true (literal value)",
+      "operation": "RelayResponseNormalizerTest7Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest7Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/defer-returns-metadata-when-if-is-true-literal-value.json"
+      ],
+      "records": "relay/normalizer/defer-returns-metadata-when-if-is-true-literal-value.store.json"
+    },
+    {
+      "name": "relay/normalizer/defer-returns-metadata-when-if-is-true-variable-value",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer returns metadata when `if` is true (variable value)",
+      "operation": "RelayResponseNormalizerTest8Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest8Query.graphql",
+      "variables": {
+        "id": "1",
+        "enableDefer": true
+      },
+      "responses": [
+        "relay/normalizer/defer-returns-metadata-when-if-is-true-variable-value.json"
+      ],
+      "records": "relay/normalizer/defer-returns-metadata-when-if-is-true-variable-value.store.json"
+    },
+    {
+      "name": "relay/normalizer/defer-returns-metadata-for-defer-within-a-plural",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer returns metadata for @defer within a plural",
+      "operation": "RelayResponseNormalizerTest9Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest9Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/defer-returns-metadata-for-defer-within-a-plural.json"
+      ],
+      "records": "relay/normalizer/defer-returns-metadata-for-defer-within-a-plural.store.json"
+    },
+    {
+      "name": "relay/normalizer/defer-returns-metadata-with-prefixed-path",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @defer returns metadata with prefixed path",
+      "operation": "RelayResponseNormalizerTest10Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest10Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/defer-returns-metadata-with-prefixed-path.json"
+      ],
+      "records": "relay/normalizer/defer-returns-metadata-with-prefixed-path.store.json"
+    },
+    {
+      "name": "relay/normalizer/warns-in-dev-if-payload-data-is-missing-an-expected-field",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer warns in __DEV__ if payload data is missing an expected field",
+      "operation": "RelayResponseNormalizerTest20Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest20Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/warns-in-dev-if-payload-data-is-missing-an-expected-field.json"
+      ],
+      "records": "relay/normalizer/warns-in-dev-if-payload-data-is-missing-an-expected-field.store.json"
+    },
+    {
+      "name": "relay/normalizer/does-not-warn-in-dev-if-payload-data-is-missing-for-an-abstract-field",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer does not warn in __DEV__ if payload data is missing for an abstract field",
+      "operation": "RelayResponseNormalizerTest21Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest21Query.graphql",
+      "responses": [
+        "relay/normalizer/does-not-warn-in-dev-if-payload-data-is-missing-for-an-abstract-field.json"
+      ],
+      "records": "relay/normalizer/does-not-warn-in-dev-if-payload-data-is-missing-for-an-abstract-field.store.json"
+    },
+    {
+      "name": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-fields-with-the-same-id",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer warns in __DEV__ if a single response contains conflicting fields with the same id",
+      "operation": "RelayResponseNormalizerTest22Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest22Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-fields-with-the-same-id.json"
+      ],
+      "records": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-fields-with-the-same-id.store.json"
+    },
+    {
+      "name": "relay/normalizer/does-not-warn-if-a-single-response-contains-the-same-fields-with-the-same-id",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer does not warn if a single response contains the same fields with the same id",
+      "operation": "RelayResponseNormalizerTest32Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest32Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/does-not-warn-if-a-single-response-contains-the-same-fields-with-the-same-id.json"
+      ],
+      "records": "relay/normalizer/does-not-warn-if-a-single-response-contains-the-same-fields-with-the-same-id.store.json"
+    },
+    {
+      "name": "relay/normalizer/does-not-warn-if-a-single-response-contains-the-same-scalar-array-value",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer does not warn if a single response contains the same scalar array value",
+      "operation": "RelayResponseNormalizerTest23Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest23Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/does-not-warn-if-a-single-response-contains-the-same-scalar-array-value.json"
+      ],
+      "records": "relay/normalizer/does-not-warn-if-a-single-response-contains-the-same-scalar-array-value.store.json"
+    },
+    {
+      "name": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-fields-with-multiple-same-ids",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer warns in __DEV__ if a single response contains conflicting fields with multiple same ids",
+      "operation": "RelayResponseNormalizerTest24Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest24Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-fields-with-multiple-same-ids.json"
+      ],
+      "records": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-fields-with-multiple-same-ids.store.json"
+    },
+    {
+      "name": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-linked-fields",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer warns in __DEV__ if a single response contains conflicting linked fields",
+      "operation": "RelayResponseNormalizerTest25Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest25Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-linked-fields.json"
+      ],
+      "records": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-linked-fields.store.json"
+    },
+    {
+      "name": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-linked-fields-with-null-values",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer warns in __DEV__ if a single response contains conflicting linked fields with null values",
+      "operation": "RelayResponseNormalizerTest26Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest26Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-linked-fields-with-null-values.json"
+      ],
+      "records": "relay/normalizer/warns-in-dev-if-a-single-response-contains-conflicting-linked-fields-with-null-values.store.json"
+    },
+    {
+      "name": "relay/normalizer/leaves-undefined-fields-unset",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer leaves undefined fields unset",
+      "operation": "RelayResponseNormalizerTest29Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest29Query.graphql",
+      "variables": {
+        "id": "1",
+        "size": 32
+      },
+      "responses": [
+        "relay/normalizer/leaves-undefined-fields-unset.json"
+      ],
+      "records": "relay/normalizer/leaves-undefined-fields-unset.store.json"
+    },
+    {
+      "name": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload",
+      "operation": "RelayResponseNormalizerTest30Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest30Query.graphql",
+      "responses": [
+        "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload.json"
+      ],
+      "records": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload.store.json"
+    },
+    {
+      "name": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-same-id",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload - same id",
+      "operation": "RelayResponseNormalizerTest30Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest30Query.graphql",
+      "responses": [
+        "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-same-id.json"
+      ],
+      "records": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-same-id.store.json"
+    },
+    {
+      "name": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-for-list",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer \"falsy\" IDs in payload should create client IDs for \"falsy\" values in payload for list",
+      "operation": "RelayResponseNormalizerTest31Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest31Query.graphql",
+      "responses": [
+        "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-for-list.json"
+      ],
+      "records": "relay/normalizer/falsy-ids-in-payload-should-create-client-ids-for-falsy-values-in-payload-for-list.store.json"
+    },
+    {
+      "name": "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-multiple-field-errors",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled normalizes queries with multiple field errors",
+      "operation": "RelayResponseNormalizerTest37Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest37Query.graphql",
+      "variables": {
+        "id": "1",
+        "size": 32
+      },
+      "responses": [
+        "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-multiple-field-errors.json"
+      ],
+      "records": "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-multiple-field-errors.store.json"
+    },
+    {
+      "name": "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-field-errors-that-bubbled-up",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled normalizes queries with field errors that bubbled up",
+      "operation": "RelayResponseNormalizerTest38Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest38Query.graphql",
+      "variables": {
+        "id": "1",
+        "size": 32
+      },
+      "responses": [
+        "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-field-errors-that-bubbled-up.json"
+      ],
+      "records": "relay/normalizer/when-field-error-handling-is-enabled-normalizes-queries-with-field-errors-that-bubbled-up.store.json"
+    },
+    {
+      "name": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-disabled-ignores-field-errors-on-an-empty-list",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when field error handling is enabled when noncompliant error handling on lists is disabled ignores field errors on an empty list",
+      "operation": "RelayResponseNormalizerTest39Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest39Query.graphql",
+      "variables": {
+        "id": "1",
+        "size": 32
+      },
+      "responses": [
+        "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-disabled-ignores-field-errors-on-an-empty-list.json"
+      ],
+      "records": "relay/normalizer/when-field-error-handling-is-enabled-when-noncompliant-error-handling-on-lists-is-disabled-ignores-field-errors-on-an-empty-list.store.json"
+    },
+    {
+      "name": "relay/normalizer/prototype-less-objects-e-g-from-graphql-js-executor-normalizes-prototype-less-payloads-with-type-discriminator",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer Prototype-less objects (e.g., from graphql-js executor) normalizes prototype-less payloads with type discriminator",
+      "operation": "RelayResponseNormalizerTest42Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest42Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/prototype-less-objects-e-g-from-graphql-js-executor-normalizes-prototype-less-payloads-with-type-discriminator.json"
+      ],
+      "records": "relay/normalizer/prototype-less-objects-e-g-from-graphql-js-executor-normalizes-prototype-less-payloads-with-type-discriminator.store.json"
+    },
+    {
+      "name": "relay/normalizer/prototype-less-objects-e-g-from-graphql-js-executor-normalizes-prototype-less-payloads-for-union-types",
+      "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer Prototype-less objects (e.g., from graphql-js executor) normalizes prototype-less payloads for union types",
+      "operation": "RelayResponseNormalizerTest43Query",
+      "kind": "query",
+      "document": "relay/documents/RelayResponseNormalizerTest43Query.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "relay/normalizer/prototype-less-objects-e-g-from-graphql-js-executor-normalizes-prototype-less-payloads-for-union-types.json"
+      ],
+      "records": "relay/normalizer/prototype-less-objects-e-g-from-graphql-js-executor-normalizes-prototype-less-payloads-for-union-types.store.json"
+    }
+  ],
+  "scripts": []
+}

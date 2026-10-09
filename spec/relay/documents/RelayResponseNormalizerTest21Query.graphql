@@ -1,0 +1,1 @@
+query RelayResponseNormalizerTest21Query{named{__typename,name,...on Node{__isNode:__typename,id}}}

@@ -1,0 +1,37 @@
+{
+  "data": {
+    "node": {
+      "id": "1",
+      "__typename": "User",
+      "name": "Alice",
+      "friends": {
+        "edges": [
+          {
+            "node": {
+              "id": "a",
+              "firstName": "Bob"
+            }
+          },
+          {
+            "node": {
+              "id": "b",
+              "firstName": "Claire"
+            }
+          },
+          {
+            "node": {
+              "id": "a",
+              "firstName": "Carlos"
+            }
+          },
+          {
+            "node": {
+              "id": "a",
+              "firstName": "Shirley"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

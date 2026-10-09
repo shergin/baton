@@ -1,0 +1,1 @@
+query RelayResponseNormalizerTest24Query($id:ID){node(id:$id){id,__typename,...on User{name,friends(first:4){edges{node{id,firstName}}}}}}

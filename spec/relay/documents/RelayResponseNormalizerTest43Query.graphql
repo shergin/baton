@@ -1,0 +1,1 @@
+query RelayResponseNormalizerTest43Query($id:ID!){userOrPage(id:$id){__typename,...on User{id},...on Node{__isNode:__typename,id}}}

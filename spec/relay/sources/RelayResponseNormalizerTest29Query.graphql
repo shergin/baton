@@ -1,0 +1,12 @@
+query RelayResponseNormalizerTest29Query($id: ID, $size: [Int]) {
+  node(id: $id) {
+    id
+    __typename
+    ... on User {
+      firstName
+      profilePicture(size: $size) {
+        uri
+      }
+    }
+  }
+}

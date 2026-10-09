@@ -1,0 +1,12 @@
+{
+  "User:1": {"__typename": "User", "firstName": "Alice", "friends(first:3)": {"__ref": "User:1:friends(first:3)"}, "id": "1", "profilePicture(size:32)": {"__ref": "User:1:profilePicture(size:32)"}},
+  "User:1:friends(first:3)": {"__typename": "FriendsConnection", "edges": {"__refs": ["User:1:friends(first:3):edges:0", null, "User:1:friends(first:3):edges:2"]}},
+  "User:1:friends(first:3):edges:0": {"__typename": "FriendsEdge", "cursor": "cursor:2", "node": {"__ref": "User:2"}},
+  "User:1:friends(first:3):edges:2": {"__typename": "FriendsEdge", "cursor": "cursor:3", "node": {"__ref": "User:3"}},
+  "User:1:profilePicture(size:32)": {"__typename": "Image", "uri": "https://..."},
+  "User:2": {"__typename": "User", "firstName": "Bob", "id": "2"},
+  "User:3": {"__typename": "User", "firstName": "Claire", "id": "3"},
+  "client:root": {"__typename": "Query", "node(id:\"1\")": {"__ref": "User:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}
