@@ -845,3 +845,10 @@ The Swift runtime relies on these, and a second runtime need not:
   contiguous array. Of the representations, two reach the contract because
   they reach the dumps: the rendering of a float and the escaping of a
   string in a storage key (section 1).
+- **A repeated object.** Both runtimes read an entity object whose bytes
+  equal, byte for byte, an earlier object's under the same selection
+  without parsing it: the entries the earlier object produced are appended
+  again in its place, so the change set is the one a parse would make and
+  the last entry per record and slot (section 4) stays the last. A
+  selection under which a field records an edit is always parsed. The
+  compare is the runtime's, and a runtime need not make it.

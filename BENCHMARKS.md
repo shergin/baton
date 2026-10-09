@@ -21,6 +21,123 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, a repeated object read by one compare — 2026-10-09
+
+Revision: `7428900` on top of `d15658a`, in both runtimes: `daa21e8` in
+Swift, `cc13d3c` in Kotlin, `7428900` their tests. The cursor keeps the
+first printing of each entity object by its selection and a hash of its
+first 64 bytes, and reads a later object with the same bytes under the
+same selection as that record, with one compare (`memcmp` in Swift, a
+byte loop in Kotlin): the first printing's entries appended again, and a
+jump past the bytes. In the fixture 652 of the 1,557 entity objects are
+such repeats, 85% of its 686,254 bytes; `ChangeSet.repeats` counts them.
+
+The Swift suite, `swift run -c release BatonBenchmarks`, on the Apple M1
+Pro (MacBook Pro, 32 GB), macOS 26.5.2 (25F84), Xcode 26.6 (17F113),
+Swift 6.3.3; best, with the median in parentheses. The machine was not
+the quiet one of the 8 October entry: an Android emulator idling, two
+other agents relaunching a Node server every few seconds, WindowServer
+and Photos busy, load averages of 9 to 16, and another session building
+and testing in the main checkout, whose Gradle build and `swift test`
+ended before the alternated runs below and whose compile was running as
+the first alternated run of the change ended. The suite ran twice at
+`d15658a` and three times at `7428900`, each sitting right after its
+build; the first run of the change overlapped a burst of Spotlight
+indexing (load average 90), read 773 µs (863) on the ingest and 502 µs
+(534) on the commit, and is left out. Since two rows read slower in those
+runs, the two binaries, copied out of `.build/release`, then ran
+alternately, `d15658a` first, twice each. A cell gives the two runs of the
+first sitting, then the two alternated runs.
+
+| Measurement | `d15658a` | `7428900` |
+|---|---|---|
+| Response bytes into a change set | 1.76 ms (1.85), 1.71 ms (1.80); 1.72 ms (1.83), 1.75 ms (1.79) | 531 µs (560), 540 µs (562); 542 µs (548), 535 µs (574) |
+| The same, a field error on every row's image | 1.77 ms (1.83), 1.73 ms (1.81); 1.74 ms (1.82), 1.78 ms (1.90) | 547 µs (566), 550 µs (583); 556 µs (565), 547 µs (560) |
+| 899 objects under a union, none repeated | 398 µs (403), 392 µs (404); 388 µs (390), 396 µs (413) | 420 µs (454), 419 µs (433); 426 µs (434), 416 µs (422) |
+| Commit into an empty store, 899 records | 480 µs (512), 464 µs (492); 485 µs (516), 492 µs (517) | 471 µs (489), 469 µs (493); 478 µs (490), 480 µs (518) |
+| Commit of the same payload again | 117 µs (120), 114 µs (114); 116 µs (121), 116 µs (118) | 114 µs (114), 114 µs (117); 116 µs (117), 117 µs (117) |
+| Commit with one field changed, 20 rows observing | 120 µs (122), 116 µs (117); 117 µs (120), 120 µs (121) | 117 µs (124), 117 µs (122); 118 µs (121), 117 µs (121) |
+| The check of the fixture plan against the store | 129 µs (134), 127 µs (131); 127 µs (127), 131 µs (135) | 134 µs (134), 134 µs (138); 136 µs (140), 134 µs (137) |
+| Hydration of 898 rows | 1.93 ms (1.99), 1.85 ms (2.01); 1.79 ms (1.87), 1.82 ms (1.94) | 1.79 ms (1.88), 1.79 ms (1.88); 1.84 ms (1.94), 1.79 ms (2.02) |
+| Untracked lens read, per field | 20.8 ns (21.0), 20.3 ns (20.4); 20.7 ns (20.8), 20.7 ns (20.8) | 20.3 ns (20.5), 20.4 ns (20.4); 21.0 ns (21.1), 20.4 ns (20.8) |
+| A pass over one root reaching 50,004 records | 1.62 ms (1.80), 1.59 ms (1.92); 1.55 ms (1.65), 1.62 ms (1.64) | 1.61 ms (1.78), 1.65 ms (1.98); 1.74 ms (2.00), 1.66 ms (1.94) |
+| A pass over 301 roots, 50,304 records | 1.84 ms (1.95), 1.69 ms (1.89); 1.62 ms (1.75), 1.65 ms (1.68) | 1.64 ms (1.74), 1.70 ms (2.00); 1.81 ms (1.90), 1.72 ms (1.96) |
+| A pass over 300 roots reaching one record each | 25.1 µs (25.3), 25.2 µs (25.3); 23.8 µs (24.0), 24.2 µs (24.3) | 24.0 µs (24.1), 25.4 µs (26.3); 24.5 µs (24.8), 24.5 µs (24.7) |
+| A pass that keeps none of 50,000 records | 23.68 ms (26.71), 27.75 ms (31.38); 22.48 ms (25.16), 22.45 ms (25.81) | 22.53 ms (26.11), 21.32 ms (23.76); 29.22 ms (31.42), 22.40 ms (26.71) |
+
+The Kotlin `IngestBenchmark` on the Google Pixel 9 (Tensor G4), Android
+17 (API 37, build CP3A.260905.009), from the release build that is not
+debuggable: built and installed at each revision with `gradle
+:benchmarks:android:installRelease
+:benchmarks:android:installReleaseAndroidTest`, then three runs of 300
+after 200 warm-ups with `adb shell am instrument -w -e class
+baton.IngestBenchmark
+baton.benchmarks.test/androidx.test.runner.AndroidJUnitRunner`. The
+allocation columns and the store's heap read the same in all three runs.
+
+| Revision | Ingest | Commit | Ingest allocates | Commit allocates | A store holds |
+|---|---|---|---|---|---|
+| `d15658a` | 4.27, 4.31, 4.29 ms | 0.95, 0.96, 0.96 ms | 1,604 KB | 448 KB | 328 KB |
+| `7428900` | 2.86, 2.83, 2.85 ms | 0.96, 0.95, 0.95 ms | 1,480 KB | 448 KB | 328 KB |
+
+`IngestTiming` on the JVM, for scale and not a benchmark: `gradle
+--no-daemon :baton:jvmTest --tests 'baton.IngestTiming' --rerun` three
+times at each revision, OpenJDK 27 (Homebrew) on the same Mac, the
+medians of 100 runs after 200.
+
+| Revision | Ingest | Commit |
+|---|---|---|
+| `d15658a` | 1.24, 1.29, 1.14 ms | 0.23, 0.28, 0.21 ms |
+| `7428900` | 0.97, 0.99, 0.91 ms | 0.26, 0.24, 0.21 ms |
+
+The Apollo Kotlin comparison at `7428900`, run as the entry of 2026-10-08
+describes and the entry below repeated it: `runComparison` on the JVM
+(OpenJDK 27, the same Mac) three times, and the instrumented
+`ComparisonBenchmark` of the release-built application on the Pixel 9
+three times, all three runs in a cell; Apollo Kotlin 5.2.0 and the
+normalized cache 1.0.9, medians of 300 runs after 200. Apollo's device
+rows, its `JsonReader` control among them, are within two percent of the
+entry below, the device standing still; the JVM control is within three
+percent of it.
+
+| Step | Baton, JVM | Apollo Kotlin, JVM | Baton, Pixel 9 | Apollo Kotlin, Pixel 9 | Ratio, Pixel 9 |
+|---|---|---|---|---|---|
+| Response bytes → change set / records | 876, 896, 831 µs | 7.56, 7.64, 8.16 ms (parse 2.20, 2.19, 2.20 + normalize 5.36, 5.45, 5.96) | 2.80, 2.82, 2.88 ms | 41.5, 41.3, 41.8 ms (parse 11.81, 11.92, 12.06 + normalize 29.66, 29.37, 29.73) | 14.7× |
+| Commit / merge into an empty store | 161, 168, 164 µs | 670, 674, 697 µs (`MemoryCache`) | 942, 961, 973 µs | 2.23, 2.26, 2.31 ms | 2.4× |
+| Bytes → data in the store, in one run | 1.05 ms, 1.07 ms, 995 µs | 8.30, 8.39, 8.91 ms | 3.75, 3.77, 3.85 ms | 43.83, 43.92, 44.32 ms | 11.6× |
+| Same payload again, nothing changes | 176, 175, 180 µs | 251, 340, 268 µs (the records merged again) | 297, 310, 320 µs | 1.11, 1.14, 1.13 ms | 3.6× |
+| From the store to readable data | 0 + 130, 129, 129 µs availability check | 5.76, 5.65, 6.07 ms (`readOperation`) | 0 + 702, 740, 741 µs | 24.75, 25.03, 24.89 ms | — |
+| One field read, per field | 22.2, 22.1, 22.1 ns (lens, untracked) | 5.34, 5.43, 5.68 ns | 45.8, 44.9, 44.6 ns | 1.68, 2.01, 1.65 ns | 0.04× |
+| Apollo's `JsonReader` alone, every token read, for scale | 1.51, 1.54, 1.50 ms (686 KB) | 1.88, 1.92, 1.86 ms (849 KB) | 8.31, 8.32, 8.34 ms | 10.61, 10.67, 10.68 ms | — |
+
+`writeOperation` whole into an empty cache took 6.10, 6.35 and 6.78 ms on
+the JVM and 31.27, 31.77 and 31.68 ms on the Pixel 9; the same data
+written again through it 5.75, 5.86 and 6.39 ms, and 31.10, 31.12 and
+31.43 ms.
+
+The fixture's ingest in Swift takes about a third of the time it took:
+531 to 542 µs best where the baseline read 1.71 to 1.76 ms in the same
+sittings, and the fixture with a field error on every row's image 547 to
+556 µs where it read 1.73 to 1.78 ms. On the Pixel 9 it takes two
+thirds, 2.83 to 2.86 ms where it took 4.27 to 4.31, and allocates 124 KB
+less; the JVM timing reads 0.91 to 0.99 ms where it read 1.14 to 1.29.
+In the comparison the response is in the store on the Pixel 9 in 3.75 to
+3.85 ms where the entry below had 5.32 to 5.35, 11.6 times as fast as
+Apollo Kotlin's where it was 8.4. The commits, hydration, the lens read
+and the collection passes stay within the spread of the baseline's runs,
+and on the device the commit, its allocation and the store's 328 KB do
+not move. Two Swift rows read slower at `7428900` in every run, the
+alternated ones included: the ingest of 899 objects under a union, none
+of which repeats, by about 7% (416 to 426 µs best against 388 to 398),
+and the check of the fixture plan by about 4% (133.5 to 136.4 µs against
+127.0 to 131.0); the same check on a store hydrated from the image, in
+the persistence section, reads 131.5 to 134.3 µs against 125.3 to 133.0.
+The union row is the mechanism's cost on a response without repeats: a
+hash of 64 bytes and a probe per entity object, some 30 ns each, which a
+response with repeats pays back many times over and one without does
+not. The check's path is untouched by the change; what moved it is not
+known, and is left for a profile.
+
 ## Unreleased, the entity key once per record, by the profile — 2026-10-09
 
 Revision: the working tree on top of `419e08e`, in both runtimes. The

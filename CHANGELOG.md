@@ -5,6 +5,25 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The ingest reads an entity object printed before under the same
+  selection, byte for byte, as that record, without parsing it: the cursor
+  keeps the first printing of each entity object by its selection and a
+  hash of its first 64 bytes, and a later object with the same bytes is one
+  compare, the first printing's entries appended again in its place, and a
+  jump past the bytes. The change set is the one a parse would have made,
+  entry for entry, so the last entry per record and slot still wins and
+  the stores the fixtures produce are unchanged. A nested graph prints an
+  entity under every parent that reaches it; in the fixture 652 of the
+  1,557 entity objects are such repeats, 85 % of its bytes, most of them
+  the 51 episodes printed under each of their characters. A selection
+  under which a field records an edit, a connection's merge or an edge
+  directive, is always read in full, so the edits are recorded as the
+  response asks. Both runtimes. On the M1 Pro the Swift ingest of the
+  fixture takes 0.54 ms where it took 1.73; on the Pixel 9 the Kotlin
+  ingest takes 2.85 ms where it took 4.3, allocating 124 KB less, and the
+  response is in the store in 3.8 ms against Apollo Kotlin's 43.9. A
+  response without repeats pays a hash and a probe per entity object, 7 %
+  on the union fixture (`BENCHMARKS.md`).
 - The UIKit half of `docs/recipes/uikit.md`, compiled: a
   `UIViewController` over a handle, a `UITableViewController` whose cells
   bind a lens, and the app's lifecycle on the application's background and
