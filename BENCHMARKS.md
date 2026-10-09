@@ -21,6 +21,46 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, Apollo Kotlin again after the record's channels — 2026-10-08
+
+Revision: `86ca4c2`. The comparison of the 7 October entry run again the
+same way (`kotlin/benchmarks/apollo-comparison`: `runComparison` on the
+JVM, and the instrumented test of its release-built application on the
+Pixel 9, which `dumpsys package` shows without a `DEBUGGABLE` flag; 300
+runs after 200 warm-up runs; each machine twice, both runs in a cell),
+after the two commits that made a record's cells plain values with a
+channel per slot read (`939b525`) and sized its arrays by what it holds
+(`86ca4c2`). Apollo Kotlin 5.2.0 and the normalized cache 1.0.9, as
+before. The Pixel 9 (Tensor G4, Android 17, API 37) is the device of the
+7 October entry on the same OS, so its columns compare across the two
+entries; the JVM is OpenJDK 27 (Homebrew) where that entry ran
+OpenJDK 21.0.12.1, on the same Apple M1 Pro under macOS 26.5.2, so the
+JVM columns compare within this entry only.
+
+| Step | Baton, JVM | Apollo Kotlin, JVM | Ratio | Baton, Pixel 9 | Apollo Kotlin, Pixel 9 | Ratio |
+|---|---|---|---|---|---|---|
+| Response bytes → change set / records | 1.21, 1.21 ms | 8.81, 8.50 ms (parse 2.67, 2.65 + normalize 6.14, 5.85) | 7.2× | 5.28, 5.26 ms | 42.2, 42.5 ms (parse 12.01, 12.10 + normalize 30.23, 30.41) | 8.0× |
+| Commit / merge into an empty store | 165, 168 µs | 656, 667 µs (`MemoryCache`) | 4.0× | 985, 957 µs | 2.24, 2.28 ms | 2.3× |
+| Bytes → data in the store, in one run | 1.38, 1.38 ms | 9.48, 9.17 ms | 6.8× | 6.27, 6.22 ms | 44.61, 44.83 ms | 7.2× |
+| Same payload again, nothing changes | 178, 180 µs | 260, 322 µs (the records merged again) | 1.6× | 310, 316 µs | 1.13, 1.12 ms | 3.6× |
+| From the store to readable data | 0 (lenses read slots) + 128, 129 µs availability check | 5.96, 6.47 ms (`readOperation`, the whole query into models) | — | 0 + 737, 758 µs | 24.57, 24.70 ms | — |
+| One field read, per field | 21.9, 21.6 ns (lens, untracked) | 5.55, 5.50 ns (a property of the read `Data`) | 0.25× | 46.6, 47.7 ns | 1.65, 1.68 ns | 0.04× |
+| Apollo's `JsonReader` alone, every token read, for scale | 1.91, 1.89 ms (686 KB) | 2.42, 2.41 ms (849 KB) | — | 8.32, 8.36 ms | 10.63, 10.69 ms | — |
+
+`writeOperation` whole into an empty cache took 6.73 and 6.72 ms on the
+JVM and 32.22 and 32.50 ms on the Pixel 9; the same data written again
+through it 6.24 and 6.19 ms, and 31.73 and 32.00 ms.
+
+What moved on the phone since 7 October, on Baton's side: the commit, 985
+and 957 µs where it was 1.28 and 1.37 ms; the availability check, 737 and
+758 µs where it was 1.20 and 1.22 ms, since the store's own reads of a
+record no longer go through snapshot state either; and so the response
+into the store, 6.27 and 6.22 ms where it was 6.38 and 6.62 ms. The
+untracked field read pays for the second array it loads, the channel's
+beside the value's: 46.6 and 47.7 ns where it was 43.2 and 43.8 ns.
+Apollo's side is within a percent or two of 7 October on every row, which
+is the device standing still.
+
 ## Unreleased, the Kotlin record's channels and sizing on a device — 2026-10-08
 
 Revision: the working tree on top of `47bdcca`. The Kotlin `IngestBenchmark`

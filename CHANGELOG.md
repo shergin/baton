@@ -37,7 +37,11 @@ are expected and listed without apology.
   spec's scripts. On a Pixel 9 the commit of the 899-record fixture takes
   0.95 ms where it took 1.35 ms, allocates 448 KB where it allocated
   672 KB, and a store holds 896 KB where it held 1,100 KB; the ingest does
-  not move (`BENCHMARKS.md`).
+  not move. The availability check, which reads records the same way,
+  takes 0.74 ms where it took 1.2 ms, and the untracked field read pays
+  about 3 ns for the second array it loads, 47 ns where it was 43. Against
+  Apollo Kotlin on the same phone the response is in the store in 6.3 ms
+  against 44.6 ms (`BENCHMARKS.md`).
 - A Kotlin record's array of values is sized by what the record holds: a
   commit reserves the highest slot its change set writes to the record,
   and a write past the end grows it. Before, every record allocated an
