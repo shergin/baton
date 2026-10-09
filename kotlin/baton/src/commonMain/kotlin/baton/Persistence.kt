@@ -85,9 +85,9 @@ class Persistence(
     }
 
     private val disk = Disk(canonicalImagePath(path), version, sizeLimit)
-    private val diskLock = imageLock()
+    private val diskLock = Lock()
     /** Guards the queue, the ages, the memberships and the log, which the store's thread and the writer share. */
-    private val stateLock = imageLock()
+    private val stateLock = Lock()
     private val pending = Pending()
     private val ages = Ages()
     private val memberships = ArrayList<Pair<String, String>>()

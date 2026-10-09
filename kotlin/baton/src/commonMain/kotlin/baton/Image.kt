@@ -37,11 +37,3 @@ internal expect fun imageDirectory(): String
 
 /** The dispatcher an image's writer runs on: a thread of its own, off the store's. */
 internal expect fun imageWriterDispatcher(): CoroutineDispatcher
-
-/** A lock the store's thread and the writer take in turn. */
-internal interface ImageLock {
-    fun <T> withLock(body: () -> T): T
-}
-
-/** A new lock: the platform's, since common Kotlin has none. */
-internal expect fun imageLock(): ImageLock

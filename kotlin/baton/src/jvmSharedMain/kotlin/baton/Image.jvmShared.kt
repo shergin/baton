@@ -1,14 +1,12 @@
 package baton
 
 import java.io.File
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
 // The image's platform piece the JVM and Android share: the file operations
-// over `java.io`, the writer's thread and the lock. The driver, and where an
-// image named but not placed lives, are each target's own.
+// over `java.io` and the writer's thread. The driver, and where an image
+// named but not placed lives, are each target's own.
 
 internal actual fun imageFileExists(path: String): Boolean = File(path).exists()
 
@@ -40,9 +38,3 @@ internal actual fun canonicalImagePath(path: String): String {
 }
 
 internal actual fun imageWriterDispatcher(): CoroutineDispatcher = Dispatchers.IO.limitedParallelism(1)
-
-internal actual fun imageLock(): ImageLock = object : ImageLock {
-    private val lock = ReentrantLock()
-
-    override fun <T> withLock(body: () -> T): T = lock.withLock(body)
-}
