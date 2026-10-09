@@ -14,6 +14,15 @@ are expected and listed without apology.
   their results ignored until they pass; 31 use features Baton does not have
   and are kept out of the runs; 6 are not expressible yet.
   `docs/decisions/relays-tests-are-measured-not-obeyed.md` is the record.
+- The compiler refuses `OptimisticResponse` as the name of a Kotlin
+  fragment or operation, with a message at the name, as it refuses `Data`:
+  the builder a mutation nests hid a mutation of that name inside its own
+  body, and the Kotlin written for it did not compile. An enum or an input
+  object of the name takes the suffix the package's kept names take. The
+  Swift emitter accepts the name, as before.
+
+## 0.13.0 (Bublik) — 2026-10-09
+
 - The Kotlin runtime on Maven Central: `com.shergin.baton:baton`,
   `baton-testing` and `baton-inspector`, Kotlin Multiplatform artifacts for
   the JVM and Android, versioned with the release; and the Gradle plugin
@@ -88,6 +97,14 @@ are expected and listed without apology.
   takes 1.6 ms where it took 4.7 ms, the availability check 138 µs where it
   took 605 µs, hydration 1.9 ms where it took 2.4 ms, and the ingest a
   tenth less; the session's footprint is 8 MB smaller (`BENCHMARKS.md`).
+- The ingest reads a matched field's members through the plan's list and
+  never copies the field, which a profile found copying its lists once
+  per JSON key; the record's value array and the store's table skip the
+  dynamic exclusivity checks that main-actor isolation makes redundant,
+  and the table is reserved for a change set's records before a commit
+  grows it. On an M1 Pro the response is in a change set in 2.06 ms where
+  it took 2.92, the commit into an empty store takes 470 µs where it took
+  600, and an untracked lens read 21 ns where it took 26 (`BENCHMARKS.md`).
 
 ## 0.12.0 (Palianytsia) — 2026-10-08
 

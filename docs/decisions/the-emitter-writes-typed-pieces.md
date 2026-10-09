@@ -111,6 +111,9 @@ than fifty lines.
   the code names their class (`Unit`, `OptIn`, `JvmField`, `listOf`,
   `anchor`, `equals`, `fieldErrors`, `name`, `text`, `data`, `Data`,
   `invoke`, `bound`, `errors` among them), which the package now refuses.
+  Run again on 2026-10-09 with the compiler Gradle caches, the sweep
+  added `OptimisticResponse` to them: the builder a mutation nests hid a
+  mutation of that name inside its own body.
   A fragment named like an operation's numbered selection, `selection0`,
   is a known defect. Beside the names, a value's reading constructor with
   some two hundred linked fields passes the size the JVM allows a method.

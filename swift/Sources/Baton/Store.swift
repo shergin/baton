@@ -18,6 +18,9 @@ public final class Store {
     package let mutationRoot: Record
     /// The record subscription payloads hang off.
     package let subscriptionRoot: Record
+    /// Every record by key. Isolated to the main actor, so the dynamic
+    /// exclusivity check each lookup would pay is left out.
+    @exclusivity(unchecked)
     private var records: [String: Record] = [:]
     /// Whether the store's session has ended: it holds nothing, commits
     /// nothing more and reports nothing.
@@ -720,6 +723,10 @@ public final class Store {
         }
         var objects = ContiguousArray<Record>()
         objects.reserveCapacity(changes.recordKeys.count)
+        // Room for every record the change set may add, so the table grows
+        // once here rather than at each doubling along the way.
+        let needed = records.count + changes.recordKeys.count
+        if records.capacity < needed { records.reserveCapacity(needed) }
         var created = [Bool](repeating: false, count: changes.recordKeys.count)
         for index in 0..<changes.recordKeys.count {
             let found = record(key: changes.recordKeys[index], type: changes.recordTypes[index], idOffset: changes.recordIDOffsets[index]) as (record: Record, created: Bool)

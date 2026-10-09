@@ -706,11 +706,11 @@ package enum Ingest {
                 var matched: Int = -1
                 let keyLength = keyEnd - keyStart
                 if !keyEscaped {
-                    if expected < fieldCount, fields[expected].keyBytes.count == keyLength, keyMatches(fields[expected], keyStart) {
+                    if expected < fieldCount, fields[expected].keyBytes.count == keyLength, keyMatches(fields, expected, keyStart) {
                         matched = expected
                         expected += 1
                     } else {
-                        for index in 0..<fieldCount where fields[index].keyBytes.count == keyLength && keyMatches(fields[index], keyStart) {
+                        for index in 0..<fieldCount where fields[index].keyBytes.count == keyLength && keyMatches(fields, index, keyStart) {
                             matched = index
                             expected = index + 1
                             break
@@ -719,9 +719,8 @@ package enum Ingest {
                 }
                 guard matched >= 0 else { try skipValue(); continue }
                 if complete { seen[depth][matched] = true }
-                let field = fields[matched]
-
-                switch field.kind {
+                // The matched field is read in place: a copy would retain each of its lists.
+                switch fields[matched].kind {
                 case .scalar(let scalar, let list):
                     if peek() == 0x6E {
                         try literal("null")
@@ -746,20 +745,20 @@ package enum Ingest {
                             let value = try scalarValue(scalar)
                             changes.scalars.append(value)
                             items += 1
-                            if let edit = field.edit { deletion(edit, value) }
+                            if let edit = fields[matched].edit { deletion(edit, value) }
                         }
                         scratch[depth].append((matched, .list(start: start, count: Int32(items))))
                         continue
                     }
                     let start = position
                     let value = try scalarValue(scalar)
-                    if field.keyIndex >= 0, record < 0, keyParts[depth][Int(field.keyIndex)] == nil {
+                    if fields[matched].keyIndex >= 0, record < 0, keyParts[depth][Int(fields[matched].keyIndex)] == nil {
                         // A key's value is its text: a string's contents, or
                         // a number as the server wrote it.
                         if case .string(let start, let end, let escaped) = value {
-                            keyParts[depth][Int(field.keyIndex)] = (Int(start), Int(end), escaped)
+                            keyParts[depth][Int(fields[matched].keyIndex)] = (Int(start), Int(end), escaped)
                         } else {
-                            keyParts[depth][Int(field.keyIndex)] = (start, position, false)
+                            keyParts[depth][Int(fields[matched].keyIndex)] = (start, position, false)
                         }
                         found += 1
                         if found == keys.count {
@@ -767,7 +766,7 @@ package enum Ingest {
                         }
                     }
                     scratch[depth].append((matched, value))
-                    if let edit = field.edit { deletion(edit, value) }
+                    if let edit = fields[matched].edit { deletion(edit, value) }
                 case .linked(let child, let plural, _, let connection):
                     if peek() == 0x6E {
                         try literal("null")
@@ -790,18 +789,18 @@ package enum Ingest {
                             if next == 0x5D { position += 1; break }
                             if next == 0x2C { position += 1; continue }
                             if next == 0x6E { try literal("null"); linked[depth].append(-1); index += 1; continue }
-                            let target = try object(plan: child, parent: record, storageKey: field.storageKey, listIndex: index, depth: depth + 1, fixedRecord: nil)
+                            let target = try object(plan: child, parent: record, storageKey: fields[matched].storageKey, listIndex: index, depth: depth + 1, fixedRecord: nil)
                             linked[depth].append(target)
                             index += 1
                         }
                         let start = Int32(changes.refs.count)
                         changes.refs.append(contentsOf: linked[depth])
                         scratch[depth].append((matched, .refs(start: start, count: Int32(linked[depth].count))))
-                        if let edit = field.edit {
+                        if let edit = fields[matched].edit {
                             for target in linked[depth] where target >= 0 { insertion(edit, target) }
                         }
                     } else {
-                        let childRecord = try object(plan: child, parent: record, storageKey: field.storageKey, listIndex: nil, depth: depth + 1, fixedRecord: nil)
+                        let childRecord = try object(plan: child, parent: record, storageKey: fields[matched].storageKey, listIndex: nil, depth: depth + 1, fixedRecord: nil)
                         scratch[depth].append((matched, .ref(childRecord)))
                         if let connection {
                             // The page is the server's field; the connection record it
@@ -810,7 +809,7 @@ package enum Ingest {
                             extra[depth].append((connection.storageKey, connection.slot, .ref(connectionRecord)))
                             changes.edits.append(.merge(connection: connectionRecord, page: childRecord, slots: connection.slots, mode: connection.mode))
                         }
-                        if let edit = field.edit { insertion(edit, childRecord) }
+                        if let edit = fields[matched].edit { insertion(edit, childRecord) }
                     }
                 }
             }
@@ -867,8 +866,10 @@ package enum Ingest {
         }
 
         @inline(__always)
-        func keyMatches(_ field: ResolvedField, _ keyStart: Int) -> Bool {
-            field.keyBytes.withUnsafeBufferPointer { key in
+        /// Whether the field's key is at `keyStart`; the field is read in
+        /// place, since a copy of it would retain each of its lists.
+        func keyMatches(_ fields: [ResolvedField], _ index: Int, _ keyStart: Int) -> Bool {
+            fields[index].keyBytes.withUnsafeBufferPointer { key in
                 memcmp(base + keyStart, key.baseAddress!, key.count) == 0
             }
         }

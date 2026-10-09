@@ -23,7 +23,9 @@ public final class Record: Observable {
     /// The collection pass that last reached the record, the store's epoch:
     /// a pass marks with a number and keeps no set.
     var mark: UInt32 = 0
-    /// The values of the dense slots, by index.
+    /// The values of the dense slots, by index. Isolated to the main actor,
+    /// so the dynamic exclusivity check each write would pay is left out.
+    @exclusivity(unchecked)
     private var values: ContiguousArray<Value>
     /// The keys numbered apart that were written to the record, as `~index`
     /// in ascending order, and their values beside them. A session renders
@@ -37,6 +39,10 @@ public final class Record: Observable {
     private var renderedValues: ContiguousArray<Value> = []
     /// Field errors by slot index; allocated when the first error lands.
     private var errors: [Int32: FieldError]?
+    /// The registrar a tracked read registers with, one per record, made
+    /// with it: its layout is its library's, and every spelling that makes
+    /// it later, an optional, a box or a flag beside it, was measured to
+    /// cost a read 45 to 150 ns over the constant used where it lies.
     nonisolated private let registrar = ObservationRegistrar()
 
     /// Values are sized by what is written, not by how many storage keys the
