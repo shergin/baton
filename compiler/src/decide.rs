@@ -23,6 +23,7 @@ mod lens;
 mod members;
 mod operation;
 mod reader;
+mod selections;
 
 pub use collect::{InputField, Shared};
 pub use keys::{KeyPart, SlotRef, constant_json};
@@ -33,6 +34,7 @@ pub use lens::{
     SpreadForm, SpreadGuard, SpreadRead, TypeTest,
 };
 pub use operation::{BuilderPlan, BuilderValue, OperationValue, VariableBase, VariableValue};
+pub use selections::SelectionTable;
 
 use crate::naming::{NameError, Naming, Position, Reserved, Written};
 use crate::pipeline::{

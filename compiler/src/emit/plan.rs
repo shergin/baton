@@ -1,56 +1,40 @@
 //! The normalization plan as `Baton.Plan` static data.
 
-use std::collections::HashMap;
 use std::fmt::Write as _;
 
 use super::swift::{
     constant_text, keyed_types_reference, slot_path, swift_literal, type_reference,
 };
 use crate::decide::{
-    self, Guard, NormalizationField, NormalizationKind, NormalizationSelection, SlotRef,
+    self, Guard, NormalizationField, NormalizationKind, NormalizationSelection, SelectionTable,
+    SlotRef,
 };
 use crate::names::guard_name;
 use crate::pipeline::{
     ArgumentValuePlan, ConnectionPlan, ConstantPlan, EditPlan, LookupPlan, StorageKeyPlan, TypeKind,
 };
 
-/// The selections of a normalization plan, each written once. A selection
-/// that recurs, as a fragment spread on every member of a union does, is
-/// one declaration every field that selects it refers to, and each
-/// declaration states its type, so Swift checks the plan a declaration at a
-/// time. Written as one nested expression, the plan grew with the product of
-/// its spreads, and checking it could exhaust the compiler's memory.
-pub(super) struct PlanSelections {
-    /// The initializer of each declaration, in the order written: a
-    /// selection before any that refers to it, so the root is last.
-    initializers: Vec<Initializer>,
-    /// The index of each initializer written so far: an equal initializer
-    /// is an equal selection.
-    indices: HashMap<Initializer, usize>,
+/// The selections of a normalization plan, each written once, as
+/// `SelectionTable` numbers them. A selection that recurs, as a fragment
+/// spread on every member of a union does, is one declaration every field
+/// that selects it refers to, and each declaration states its type, so
+/// Swift checks the plan a declaration at a time. Written as one nested
+/// expression, the plan grew with the product of its spreads, and checking
+/// it could exhaust the compiler's memory.
+pub(super) struct PlanSelections<'a> {
+    table: SelectionTable<'a>,
     /// The depth the declarations are written at.
     depth: usize,
 }
 
-/// A selection's initializer before its declarations are numbered: its text,
-/// and where in it each selection it refers to goes, by the index that
-/// selection was written at.
-#[derive(Clone, PartialEq, Eq, Hash)]
-struct Initializer {
-    text: String,
-    references: Vec<(usize, usize)>,
-}
-
-impl PlanSelections {
+impl<'a> PlanSelections<'a> {
     /// The selections of the plan rooted at `root`, for declarations written
     /// at `depth`.
-    pub(super) fn new(root: &NormalizationSelection, depth: usize) -> PlanSelections {
-        let mut selections = PlanSelections {
-            initializers: Vec::new(),
-            indices: HashMap::new(),
+    pub(super) fn new(root: &'a NormalizationSelection, depth: usize) -> PlanSelections<'a> {
+        PlanSelections {
+            table: SelectionTable::of(root),
             depth,
-        };
-        selections.reference(root);
-        selections
+        }
     }
 
     /// The name of the root selection, the plan's.
@@ -62,20 +46,11 @@ impl PlanSelections {
     /// selection after the first that refers to it, so the plan reads from
     /// the top down.
     pub(super) fn declarations(&self) -> Vec<(String, String)> {
-        let last = self.initializers.len() - 1;
-        self.initializers
-            .iter()
-            .rev()
-            .enumerate()
-            .map(|(number, initializer)| {
-                let mut text = String::with_capacity(initializer.text.len());
-                let mut written = 0;
-                for (offset, index) in &initializer.references {
-                    text.push_str(&initializer.text[written..*offset]);
-                    text.push_str(&PlanSelections::name(last - index));
-                    written = *offset;
-                }
-                text.push_str(&initializer.text[written..]);
+        self.table
+            .declarations()
+            .map(|(number, selection)| {
+                let mut text = String::new();
+                self.write_selection(&mut text, selection);
                 (PlanSelections::name(number), text)
             })
             .collect()
@@ -91,30 +66,13 @@ impl PlanSelections {
         format!("selection{number}")
     }
 
-    /// The index `selection`'s initializer is written at, once when no equal
-    /// selection has been.
-    fn reference(&mut self, selection: &NormalizationSelection) -> usize {
-        let mut initializer = Initializer {
-            text: String::new(),
-            references: Vec::new(),
-        };
-        self.write_selection(&mut initializer, selection);
-        if let Some(index) = self.indices.get(&initializer) {
-            return *index;
-        }
-        let index = self.initializers.len();
-        self.indices.insert(initializer.clone(), index);
-        self.initializers.push(initializer);
-        index
-    }
-
     /// Writes a selection: its fields when every type reads the same, else
     /// its variants.
-    fn write_selection(&mut self, output: &mut Initializer, selection: &NormalizationSelection) {
+    fn write_selection(&self, output: &mut String, selection: &NormalizationSelection) {
         let type_name = &selection.type_name;
         let pad = "    ".repeat(self.depth);
         let _ = write!(
-            output.text,
+            output,
             "Baton.Selection(type: {}, key: {}, abstract: {}",
             type_reference(type_name),
             key_expression(&selection.key),
@@ -132,17 +90,17 @@ impl PlanSelections {
                     )
                 })
                 .collect();
-            let _ = write!(output.text, ", memberships: [{}]", answers.join(", "));
+            let _ = write!(output, ", memberships: [{}]", answers.join(", "));
         }
         if let [only] = selection.variants.as_slice()
             && only.types.is_none()
         {
-            output.text.push_str(", fields: [");
+            output.push_str(", fields: [");
             self.plan_fields(output, only.slot_type(selection), &only.fields, 0);
-            output.text.push_str("])");
+            output.push_str("])");
             return;
         }
-        output.text.push_str(", variants: [");
+        output.push_str(", variants: [");
         for variant in &selection.variants {
             let types = match &variant.types {
                 Some(types) => {
@@ -163,27 +121,27 @@ impl PlanSelections {
                 .map(|condition| format!(", condition: {}", type_reference(condition)))
                 .unwrap_or_default();
             let _ = write!(
-                output.text,
+                output,
                 "\n{pad}    .init(types: {types}{key}{condition}, fields: ["
             );
             self.plan_fields(output, variant.slot_type(selection), &variant.fields, 1);
-            output.text.push_str("]),");
+            output.push_str("]),");
         }
-        let _ = write!(output.text, "\n{pad}])");
+        let _ = write!(output, "\n{pad}])");
     }
 
     /// The fields of one variant, their slots on `type_name`, `indent`
     /// levels inside the declaration.
     fn plan_fields(
-        &mut self,
-        output: &mut Initializer,
+        &self,
+        output: &mut String,
         type_name: &str,
         fields: &[NormalizationField],
         indent: usize,
     ) {
         let pad = "    ".repeat(self.depth + indent);
         for field in fields {
-            let _ = write!(output.text, "\n{pad}    ");
+            let _ = write!(output, "\n{pad}    ");
             let slot = plan_key(type_name, &field.key);
             let edit_argument = field
                 .edit
@@ -214,7 +172,7 @@ impl PlanSelections {
                         _ => "custom",
                     };
                     let _ = write!(
-                        output.text,
+                        output,
                         ".scalar({}, key: {slot}, kind: .{kind}, list: {list}{edit_argument}{deferred_argument}{caught_argument}{client_argument}{transient_argument}{guards_argument}),",
                         swift_literal(&field.response_key)
                     );
@@ -242,18 +200,16 @@ impl PlanSelections {
                         })
                         .unwrap_or_default();
                     let _ = write!(
-                        output.text,
-                        ".linked({}, key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{edit_argument}{deferred_argument}{caught_argument}{client_argument}{transient_argument}{guards_argument}, selection: ",
-                        swift_literal(&field.response_key)
+                        output,
+                        ".linked({}, key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{edit_argument}{deferred_argument}{caught_argument}{client_argument}{transient_argument}{guards_argument}, selection: {}),",
+                        swift_literal(&field.response_key),
+                        PlanSelections::name(self.table.number(selection))
                     );
-                    let index = self.reference(selection);
-                    output.references.push((output.text.len(), index));
-                    output.text.push_str("),");
                 }
             }
         }
         if !fields.is_empty() {
-            let _ = write!(output.text, "\n{pad}");
+            let _ = write!(output, "\n{pad}");
         }
     }
 }

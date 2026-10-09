@@ -34,6 +34,12 @@ expression of 1.2 MB from a document of 5 KB; Swift was killed at 12 GB.
   identity, so a selection several fields refer to is one object, and a
   selection that reads no variables keeps one resolution for all of them.
   The format does not change: the generated code names what it named.
+- Amended 2026-10-09: which selections are distinct and which number each
+  takes is decided once, in `compiler/src/decide/selections.rs`, by the
+  facts the normalization decided (the type, key, fields, slots, guards,
+  labels and the selections below), and both emitters print that table;
+  the Kotlin plan takes the same numbers. Neither emitter's goldens
+  changed by a byte, so the sameness is the one stated above.
 
 ## Evidence
 
