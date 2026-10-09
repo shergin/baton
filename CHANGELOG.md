@@ -5,6 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `docs/recipes/uikit.md` quotes compiled code: the `Controllers` target
+  under `examples/Controllers`, an `NSViewController` over a handle, a
+  table whose cells bind a lens, and the app's lifecycle told to the
+  environment, proven by `ControllersTests`. The recipe's controller
+  observed `handle.phase` alone and read the fields in the loop's body,
+  which renders the first response and never a later change to a field;
+  the closure now computes what the controller shows, and the first frame
+  is read synchronously rather than one suspension later. A controller's
+  operations live in a `.graphql` file, since `@Query` is a view's storage.
 - `spec/relay/`: Relay v21.0.1's `RelayResponseNormalizer-test.js` and
   `DataChecker-test.js` harvested into cases, translated into Baton's keys
   by `scripts/relay-harvest/` and run by the Swift test target

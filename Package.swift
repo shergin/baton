@@ -142,6 +142,24 @@ let package = Package(
             path: "examples/Exchange",
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
+        // The AppKit controllers of `docs/recipes/uikit.md`: a handle held
+        // by a controller, a table cell bound to a lens and the app's
+        // lifecycle told to the environment, compiled here so the recipe
+        // quotes code that builds and the tests prove it.
+        .target(
+            name: "Controllers",
+            dependencies: ["Baton"],
+            path: "examples/Controllers",
+            exclude: ["baton.json"],
+            swiftSettings: [.swiftLanguageMode(.v6)],
+            plugins: ["BatonPlugin"]
+        ),
+        .testTarget(
+            name: "ControllersTests",
+            dependencies: ["Controllers", "Baton", "BatonTesting", "BatonSpec"],
+            path: "swift/Tests/ControllersTests",
+            swiftSettings: [.swiftLanguageMode(.v6)]
+        ),
         .executableTarget(
             name: "GitHubTriage",
             dependencies: ["Baton", "Exchange"],

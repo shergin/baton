@@ -1,0 +1,20 @@
+# A controller is not a view, so its operations are declared here rather
+# than with `@Query` on a property; the cell's fragment stays with the cell.
+
+query CharactersQuery($page: Int) {
+  characters(page: $page) {
+    results {
+      id
+      ...CharacterCell_character
+    }
+  }
+}
+
+query CharacterQuery($id: ID!) {
+  character(id: $id) {
+    name
+    status
+    species
+    origin { name }
+  }
+}
