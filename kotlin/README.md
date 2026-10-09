@@ -13,6 +13,9 @@ API is designed in the private notes before it is built.
 
 ## Using it
 
+The runtime's files mirror the Swift runtime's, a file per concept, as
+[`docs/runtimes.md`](../docs/runtimes.md) maps them.
+
 From 0.13.0 the runtime is on Maven Central, `com.shergin.baton:baton`
 (JVM and Android), with `baton-testing` (JVM) and `baton-inspector` (JVM
 and Android) beside it, and the Gradle plugin `com.shergin.baton` runs the

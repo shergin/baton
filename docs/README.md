@@ -16,6 +16,9 @@ What to read when.
 - **What does this word mean?**
   [terminology.md](terminology.md) — the vocabulary contract, updated in the
   same change as the code. Concepts marked *(planned)* do not exist yet.
+- **Where is it, in each runtime?**
+  [runtimes.md](runtimes.md) — the map of both trees, a file per concept,
+  checked by the boundary script.
 - **How do I…** — [recipes/](recipes/), one page per composition of what
   ships: [the exchange](recipes/exchange.md), a challenge, a retry and a
   deadline over the transport's one verb, [`batonc`](recipes/batonc.md),

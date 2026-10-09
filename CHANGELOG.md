@@ -63,6 +63,17 @@ are expected and listed without apology.
   the store in 5.3 ms against Apollo Kotlin's 44.7; on an M1 Pro the Swift
   ingest takes 1.73 ms where it took 2.06 (`BENCHMARKS.md`).
 
+- `docs/runtimes.md` maps the two runtimes' files to the vocabulary, a
+  file per concept, and both trees now match it: the Swift runtime gained
+  `Availability.swift`, `Resolution.swift`, `Handle.swift` and
+  `Subscription.swift` out of the files that held them, the Kotlin one
+  `Connections.kt` and `Membership.kt`; moves, no logic. The boundary
+  script checks the map and reads the Kotlin tree as it reads the Swift
+  one: the common source set imports no platform, the testing module
+  reaches the public surface alone, and every name generated Kotlin may
+  spell is declared in the runtime. CI runs the Kotlin hostile-name sweep,
+  over a `kotlinc` Gradle writes from the embedded compiler.
+
 ## 0.13.0 (Bublik) — 2026-10-09
 
 - The Kotlin runtime on Maven Central: `com.shergin.baton:baton`,

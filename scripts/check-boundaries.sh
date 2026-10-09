@@ -9,6 +9,20 @@
 #   5. The runtime imports only Foundation, Observation, Synchronization and,
 #      in the two files above, SQLite3 and SwiftUI.
 #
+# The Kotlin runtime's, by the same decision and the common-first one
+# (docs/decisions/the-kotlin-runtime-is-common-first.md):
+#
+#   6. The common source set imports no platform: nothing from java, javax
+#      or android; the platform's pieces are the actuals of jvmMain,
+#      jvmSharedMain and androidMain.
+#   7. The testing module reaches the runtime's public surface alone: no
+#      friend paths, no visibility suppressions.
+#   8. Every name generated Kotlin may spell, RUNTIME_NAMES in the
+#      compiler's kotlin_names.rs, is declared in the common source set.
+#
+# And both runtimes hold the files docs/runtimes.md maps, and nothing the
+# map does not name.
+#
 # Comments may name anything; only code counts. The violations listed below
 # are tolerated today, each with the step of the plan that removes it. The
 # script fails on a violation that is not listed and on a listed one that
@@ -51,10 +65,10 @@ note() {
   found="$found
 $1 names $2"
 }
-for file in Record.swift Plan.swift Ingest.swift; do
+for file in Record.swift Plan.swift Resolution.swift Ingest.swift; do
   code "$file" | grep -qw Store && note "$file" Store
 done
-for file in Store.swift Hydration.swift Connections.swift Roots.swift Keys.swift; do
+for file in Store.swift Availability.swift Hydration.swift Connections.swift Roots.swift Keys.swift; do
   code "$file" | grep -qw Environment && note "$file" Environment
   code "$file" | grep -q Transport && note "$file" Transport
 done
@@ -77,5 +91,52 @@ if [ -n "$problems" ]; then
   failures=$((failures + 1))
 fi
 
+# Rule 6: the common source set's imports.
+kotlin="$root/kotlin/baton/src"
+for file in "$kotlin"/commonMain/kotlin/baton/*.kt; do
+  name="$(basename "$file")"
+  grep -E '^import (java|javax|android)\.' "$file" | while IFS= read -r line; do
+    fail "commonMain/$name has \`$line\`; the platform's pieces are actuals of a platform source set"
+  done
+done
+
+# Rule 7: the testing module's reach.
+if grep -rqE 'friendPaths|INVISIBLE_MEMBER|INVISIBLE_REFERENCE' "$root/kotlin/baton-testing" --include='*.kt' --include='*.kts'; then
+  fail "kotlin/baton-testing reaches past the runtime's public surface"
+fi
+
+# Rule 8: the names the generated Kotlin may spell.
+for name in $(awk '/pub const RUNTIME_NAMES/,/^\];/' "$root/compiler/src/kotlin_names.rs" | grep -o '"[A-Za-z]*"' | tr -d '"'); do
+  grep -rqE "(class|interface|object|typealias) $name\b" "$kotlin"/commonMain/kotlin/baton \
+    || fail "the compiler's RUNTIME_NAMES has $name, which the Kotlin runtime does not declare"
+done
+
+# The map: every file it names exists, and every source file is on it.
+map="$root/docs/runtimes.md"
+for file in $(grep -o '`[A-Za-z]*\.swift`' "$map" | tr -d '`' | sort -u); do
+  [ -f "$root/swift/Sources/Baton/$file" ] || fail "docs/runtimes.md names $file, which swift/Sources/Baton lacks"
+done
+for file in "$root"/swift/Sources/Baton/*.swift; do
+  name="$(basename "$file")"
+  grep -q "\`$name\`" "$map" || fail "swift/Sources/Baton/$name is not on docs/runtimes.md"
+done
+for file in $(grep -o '`[A-Za-z/.]*\.kt`' "$map" | tr -d '`' | sort -u); do
+  case "$file" in
+    */*) path="$kotlin/${file%%/*}/kotlin/baton/${file#*/}" ;;
+    *) path="$kotlin/commonMain/kotlin/baton/$file" ;;
+  esac
+  [ -f "$path" ] || fail "docs/runtimes.md names $file, which the Kotlin runtime lacks"
+done
+for set in commonMain jvmSharedMain jvmMain androidMain; do
+  for file in "$kotlin/$set"/kotlin/baton/*.kt; do
+    name="$(basename "$file")"
+    case "$set" in
+      commonMain) listed="$name" ;;
+      *) listed="$set/$name" ;;
+    esac
+    grep -q "\`$listed\`" "$map" || fail "kotlin/baton/src/$set/kotlin/baton/$name is not on docs/runtimes.md"
+  done
+done
+
 [ "$failures" -eq 0 ] || exit 1
-echo "check-boundaries: the runtime's boundaries hold"
+echo "check-boundaries: the runtimes' boundaries hold"

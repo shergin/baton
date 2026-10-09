@@ -132,7 +132,12 @@ jobs:
           :benchmarks:android:build :benchmarks:android:assembleReleaseAndroidTest
           :benchmarks:apollo-comparison:build :benchmarks:apollo-comparison:android:build
           :benchmarks:apollo-comparison:android:assembleReleaseAndroidTest
+          writeKotlincShim
         working-directory: kotlin
+      # The names of fragments and operations the Kotlin corpus tests prove
+      # accepted but cannot compile, compiled one position at a time against
+      # the runtime just built, with the kotlinc the build wrote.
+      - run: KOTLINC=kotlin/build/kotlinc python3 scripts/hostile-name-sweep-kotlin.py
 
   # The package on the current Xcode. Every target builds with warnings as
   # errors: the runtime, the macros, both samples, the benchmarks and the

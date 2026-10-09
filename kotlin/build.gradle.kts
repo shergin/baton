@@ -57,6 +57,34 @@ subprojects {
     }
 }
 
+// A `kotlinc` for `scripts/hostile-name-sweep-kotlin.py` where none is
+// installed, as on CI: the embedded compiler of the version the modules
+// build with, resolved by Gradle, written as a shell script over the JVM
+// that runs Gradle. `KOTLINC=kotlin/build/kotlinc` names it to the sweep.
+val kotlinCompiler: Configuration by configurations.creating {
+    isCanBeConsumed = false
+}
+dependencies {
+    kotlinCompiler("org.jetbrains.kotlin:kotlin-compiler-embeddable:${libs.versions.kotlin.get()}")
+}
+tasks.register("writeKotlincShim") {
+    description = "Writes build/kotlinc, a kotlinc over the embedded compiler, for the hostile-name sweep."
+    val classpath = kotlinCompiler
+    val java = providers.systemProperty("java.home").map { "$it/bin/java" }
+    val shim = layout.buildDirectory.file("kotlinc")
+    inputs.files(classpath)
+    outputs.file(shim)
+    doLast {
+        val file = shim.get().asFile
+        file.writeText(
+            "#!/bin/sh\n" +
+                "exec \"${java.get()}\" -Xmx3g -Xss4m -cp '${classpath.asPath}' " +
+                "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler -no-stdlib -no-reflect \"$@\"\n",
+        )
+        file.setExecutable(true)
+    }
+}
+
 // The Compose compiler's reports, which say whether a class is stable and a
 // composable skippable and restartable, off by default: `-PcomposeReports=true`
 // writes them under each module's `build/compose-reports`.

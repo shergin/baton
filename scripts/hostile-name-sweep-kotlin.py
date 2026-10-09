@@ -24,6 +24,8 @@ From the repository's root, after `scripts/build-compiler.sh`:
 `--refused` prints each refused name with batonc's error besides.
 
 It needs kotlinc (`brew install kotlin`), or the command `KOTLINC` names,
+such as the shim `gradle writeKotlincShim` writes to `kotlin/build/kotlinc`
+over the embedded compiler of the modules' Kotlin version,
 and the classpath the goldens compile against, which it asks Gradle for
 (`:goldens:printCompileClasspath`, with a JDK 21 and Gradle 9 as
 `scripts/check-kotlin-goldens.sh` finds them) unless
