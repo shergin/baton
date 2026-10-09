@@ -1,0 +1,10 @@
+query RelayReaderRequiredFieldsTest24Query {
+  nodes(ids: ["1", "2"]) {
+    ...RelayReaderRequiredFieldsTest6Fragment
+  }
+}
+
+fragment RelayReaderRequiredFieldsTest6Fragment on User
+@relay(plural: true) {
+  username @required(action: LOG)
+}

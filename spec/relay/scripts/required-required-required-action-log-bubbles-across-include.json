@@ -1,0 +1,25 @@
+{
+  "name": "required-required-required-action-log-bubbles-across-include",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required @required(action: LOG) bubbles across @include",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest15Query",
+        "variables": {
+          "include": true
+        },
+        "response": "relay/required/required-required-action-log-bubbles-across-include.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest15Query",
+          "variables": {
+            "include": true
+          },
+          "path": "me",
+          "value": null
+        }
+      ]
+    }
+  ]
+}

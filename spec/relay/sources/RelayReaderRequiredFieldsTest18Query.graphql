@@ -1,0 +1,5 @@
+query RelayReaderRequiredFieldsTest18Query {
+  me {
+    client_nickname @required(action: LOG)
+  }
+}

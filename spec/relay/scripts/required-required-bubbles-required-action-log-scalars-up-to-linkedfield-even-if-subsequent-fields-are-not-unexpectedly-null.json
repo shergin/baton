@@ -1,0 +1,19 @@
+{
+  "name": "required-required-bubbles-required-action-log-scalars-up-to-linkedfield-even-if-subsequent-fields-are-not-unexpectedly-null",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) scalars up to LinkedField even if subsequent fields are not unexpectedly null",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest4Query",
+        "response": "relay/required/required-bubbles-required-action-log-scalars-up-to-linkedfield-even-if-subsequent-fields-are-not-unexpectedly-null.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest4Query",
+          "path": "me",
+          "value": null
+        }
+      ]
+    }
+  ]
+}

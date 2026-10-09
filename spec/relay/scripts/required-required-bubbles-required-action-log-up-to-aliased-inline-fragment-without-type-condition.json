@@ -1,0 +1,19 @@
+{
+  "name": "required-required-bubbles-required-action-log-up-to-aliased-inline-fragment-without-type-condition",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) up to aliased inline fragment without type condition",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithoutTypeQuery",
+        "response": "relay/required/required-bubbles-required-action-log-up-to-aliased-inline-fragment-without-type-condition.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithoutTypeQuery",
+          "path": "me.requiredFields",
+          "value": null
+        }
+      ]
+    }
+  ]
+}

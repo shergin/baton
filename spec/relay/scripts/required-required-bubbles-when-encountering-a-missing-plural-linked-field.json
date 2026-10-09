@@ -1,0 +1,19 @@
+{
+  "name": "required-required-bubbles-when-encountering-a-missing-plural-linked-field",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles when encountering a missing plural linked field",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest11Query",
+        "response": "relay/required/required-bubbles-when-encountering-a-missing-plural-linked-field.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest11Query",
+          "path": "viewer",
+          "value": null
+        }
+      ]
+    }
+  ]
+}

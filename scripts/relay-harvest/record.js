@@ -139,11 +139,15 @@ function synthesize(source, node, variables) {
     return result;
   }
 
+  // A stored error's path is the rest of the response path below the field,
+  // as the normalizer writes it, or the whole path, as a test seeds it.
   function fieldErrors(record, storageKey, here) {
     const all = record.__errors && record.__errors[storageKey];
     for (const error of all || []) {
-      const entry = Object.assign({}, error, {path: here.concat(error.path || [])});
-      errors.push(entry);
+      const stored = error.path || [];
+      const whole =
+        stored.length >= here.length && here.every((part, index) => stored[index] === part);
+      errors.push(Object.assign({}, error, {path: whole ? stored : here.concat(stored)}));
     }
   }
 

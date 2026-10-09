@@ -1,0 +1,19 @@
+{
+  "name": "required-required-only-bubbles-required-action-log-scalars-up-to-the-parent-linkedfield",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required only bubbles @required(action: LOG) scalars up to the parent LinkedField",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest5Query",
+        "response": "relay/required/required-only-bubbles-required-action-log-scalars-up-to-the-parent-linkedfield.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest5Query",
+          "path": "me.backgroundImage",
+          "value": null
+        }
+      ]
+    }
+  ]
+}

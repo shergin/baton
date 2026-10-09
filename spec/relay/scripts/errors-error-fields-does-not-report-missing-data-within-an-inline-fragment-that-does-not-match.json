@@ -1,0 +1,13 @@
+{
+  "name": "errors-error-fields-does-not-report-missing-data-within-an-inline-fragment-that-does-not-match",
+  "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields does not report missing data within an inline fragment that does not match",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRelayErrorHandlingTestInlineFragmentQuery",
+        "response": "relay/errors/error-fields-does-not-report-missing-data-within-an-inline-fragment-that-does-not-match.json"
+      },
+      "reads": []
+    }
+  ]
+}

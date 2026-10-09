@@ -1,0 +1,7 @@
+query RelayReaderCatchFieldsTestCatchMissingInInlineFragmentToNullErrorQuery {
+  me {
+    ... @catch(to: NULL) @alias(as: "myAlias") {
+      firstName
+    }
+  }
+}

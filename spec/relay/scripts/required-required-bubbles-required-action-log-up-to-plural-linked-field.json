@@ -1,0 +1,24 @@
+{
+  "name": "required-required-bubbles-required-action-log-up-to-plural-linked-field",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) up to plural linked field",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest8Query",
+        "response": "relay/required/required-bubbles-required-action-log-up-to-plural-linked-field.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest8Query",
+          "path": "me.screennames.0.name",
+          "value": "neo"
+        },
+        {
+          "operation": "RelayReaderRequiredFieldsTest8Query",
+          "path": "me.screennames.0.service",
+          "value": "IRC"
+        }
+      ]
+    }
+  ]
+}

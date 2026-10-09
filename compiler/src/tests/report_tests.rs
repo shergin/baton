@@ -1,12 +1,14 @@
 //! Tests of the report: what an operation and a fragment reach, the order by
 //! name, the types of variables as the schema writes them, the id under
-//! `persistConfig`, sources relative to the root, the printed texts, and the
-//! JSON `generate` writes.
+//! `persistConfig`, sources relative to the root, the printed texts, the
+//! lenses as the decided program reads them, and the JSON `generate`
+//! writes.
 
 use std::path::PathBuf;
 
 use crate::config::Config;
 use crate::documents::Document;
+use crate::names::SwiftNaming;
 use crate::pipeline::compile;
 
 use super::*;
@@ -53,6 +55,40 @@ fn compiled(texts: &[&str]) -> Plan {
 /// The report of `plan` from a root nothing lies under.
 fn reported(plan: &Plan) -> Report {
     report(plan, Path::new("/nowhere"))
+}
+
+/// The program decided for `plan` in Swift's names, without configuration.
+fn decided(plan: &Plan) -> Program {
+    crate::decide::program(plan, &SwiftNaming::default())
+        .unwrap_or_else(|errors| panic!("{errors:?}"))
+}
+
+/// The report of `plan` with its lenses, from a root nothing lies under.
+fn reported_with_lenses(plan: &Plan) -> Report {
+    let mut report = reported(plan);
+    with_lenses(&mut report, &decided(plan));
+    report
+}
+
+/// The report's text as `generate` writes it for `plan`.
+fn written(plan: &Plan) -> String {
+    text(plan, Path::new("/nowhere"), &decided(plan))
+}
+
+/// The accessor of `lens` named `name`.
+fn accessor<'a>(lens: &'a LensReport, name: &str) -> &'a AccessorReport {
+    lens.accessors
+        .iter()
+        .find(|accessor| accessor.name == name)
+        .unwrap_or_else(|| panic!("the lens of `{}` has no accessor `{name}`", lens.type_name))
+}
+
+/// The lens an accessor reads.
+fn nested(accessor: &AccessorReport) -> &LensReport {
+    accessor
+        .lens
+        .as_deref()
+        .unwrap_or_else(|| panic!("`{}` reads no lens", accessor.name))
 }
 
 fn operation<'a>(report: &'a Report, name: &str) -> &'a OperationReport {
@@ -167,7 +203,7 @@ fn variables_are_typed_as_the_schema_writes_them() {
         ]
     );
     let json: serde_json::Value =
-        serde_json::from_str(&text(&plan, Path::new("/nowhere"))).expect("the report is JSON");
+        serde_json::from_str(&written(&plan)).expect("the report is JSON");
     assert_eq!(
         json["operations"][0]["variables"][3],
         serde_json::json!({"name": "ids", "type": "[ID!]!"})
@@ -186,7 +222,7 @@ fn an_operation_carries_an_id_under_persist_config_and_none_without() {
     let report = reported(&persisted);
     assert_eq!(operation(&report, "Persisted").id, expected);
     let json: serde_json::Value =
-        serde_json::from_str(&text(&persisted, Path::new("/nowhere"))).expect("the report is JSON");
+        serde_json::from_str(&written(&persisted)).expect("the report is JSON");
     assert_eq!(
         json["operations"][0]["id"].as_str(),
         expected.as_deref(),
@@ -197,7 +233,7 @@ fn an_operation_carries_an_id_under_persist_config_and_none_without() {
     let report = reported(&plain);
     assert_eq!(operation(&report, "Persisted").id, None);
     let json: serde_json::Value =
-        serde_json::from_str(&text(&plain, Path::new("/nowhere"))).expect("the report is JSON");
+        serde_json::from_str(&written(&plain)).expect("the report is JSON");
     assert!(json["operations"][0].get("id").is_none(), "{json}");
 }
 
@@ -259,7 +295,7 @@ fn the_text_is_json_with_camel_case_keys_lowercase_kinds_and_one_final_newline()
         "mutation Write($id: ID!) { setFavorite(id: $id, favorite: true) { character { id } } }",
         "subscription Watch($id: ID!) { noteAdded(characterId: $id) { character { id } } }",
     ]);
-    let written = text(&plan, Path::new("/nowhere"));
+    let written = written(&plan);
     assert!(written.ends_with("}\n"), "{written}");
     assert!(!written.ends_with("\n\n"), "{written}");
     let json: serde_json::Value = serde_json::from_str(&written).expect("the report is JSON");
@@ -333,5 +369,123 @@ fn a_fragment_with_argument_definitions_prints_under_its_own_name_with_its_defin
     assert_eq!(
         fragment(&report, "Parameterized").operations,
         vec!["Spreading"]
+    );
+}
+
+#[test]
+fn a_lens_names_each_accessor_with_the_response_key_it_reads() {
+    let report = reported_with_lenses(&compiled(&[
+        "query Keys { hero: character(id: \"1\") { title: name status } }",
+    ]));
+    let lens = operation(&report, "Keys")
+        .lens
+        .as_ref()
+        .expect("a decided operation has a lens");
+    assert_eq!(lens.type_name, "Query");
+    let hero = accessor(lens, "hero");
+    assert_eq!(hero.key.as_deref(), Some("hero"));
+    assert_eq!(hero.read, ReadKind::Linked);
+    assert!(hero.optional, "a nullable link reads absent");
+    let character = nested(hero);
+    assert_eq!(character.type_name, "Character");
+    assert_eq!(accessor(character, "title").key.as_deref(), Some("title"));
+    assert_eq!(accessor(character, "status").key.as_deref(), Some("status"));
+}
+
+#[test]
+fn an_accessor_s_shape_says_what_its_directives_make_of_the_read() {
+    let report = reported_with_lenses(&compiled(&["query Shapes { character(id: \"1\") { \
+         name @required(action: THROW) \
+         status @catch \
+         type @catch(to: NULL) \
+         origin @catch { name } \
+         episode { name } \
+         gender @include(if: true) } }"]));
+    let lens = operation(&report, "Shapes").lens.as_ref().expect("a lens");
+    let character = nested(accessor(lens, "character"));
+
+    let name = accessor(character, "name");
+    assert!(name.throws && !name.optional && name.caught.is_none());
+
+    let status = accessor(character, "status");
+    let caught = status.caught.as_ref().expect("`@catch` reads a result");
+    assert!(
+        caught.optional,
+        "a nullable field's result holds an optional value"
+    );
+    assert!(!status.optional && !status.throws);
+
+    let type_ = accessor(character, "type");
+    assert!(
+        type_.optional && type_.caught.is_none(),
+        "`@catch(to: NULL)` reads optional"
+    );
+
+    let origin = accessor(character, "origin");
+    assert_eq!(origin.read, ReadKind::Linked);
+    assert!(origin.caught.as_ref().expect("a caught link").optional);
+
+    let episode = accessor(character, "episode");
+    let list = episode.list.as_ref().expect("a plural link is a list");
+    assert!(
+        !list.optional_elements,
+        "a list of links drops its null elements"
+    );
+    assert!(!episode.optional, "the schema types `episode` non-null");
+
+    assert!(accessor(character, "gender").optional);
+}
+
+#[test]
+fn a_type_condition_reads_for_its_types_and_a_spread_names_its_fragment() {
+    let report = reported_with_lenses(&compiled(&[
+        "query Found { search(name: \"a\") { ... on Character { name } } \
+         character(id: \"1\") { ...Person } }",
+        "fragment Person on Character { status }",
+    ]));
+    let lens = operation(&report, "Found").lens.as_ref().expect("a lens");
+    let search = accessor(lens, "search");
+    assert!(search.list.is_some() && search.optional);
+    let result = nested(search);
+    let condition = result
+        .accessors
+        .iter()
+        .find(|accessor| accessor.read == ReadKind::Condition)
+        .expect("the type condition has an accessor");
+    assert_eq!(
+        condition.types.as_deref(),
+        Some(&["Character".to_string()][..])
+    );
+    assert!(condition.optional && condition.key.is_none());
+    assert_eq!(
+        accessor(nested(condition), "name").key.as_deref(),
+        Some("name")
+    );
+    let spread = nested(accessor(lens, "character"))
+        .accessors
+        .iter()
+        .find(|accessor| accessor.read == ReadKind::Spread)
+        .expect("the spread has an accessor");
+    assert_eq!(spread.fragment.as_deref(), Some("Person"));
+    assert!(spread.key.is_none() && !spread.optional);
+    let person = fragment(&report, "Person")
+        .lens
+        .as_ref()
+        .expect("a fragment's lens");
+    assert_eq!(person.type_name, "Character");
+    assert_eq!(accessor(person, "status").key.as_deref(), Some("status"));
+}
+
+#[test]
+fn a_report_of_the_plan_alone_has_no_lenses_and_the_json_leaves_them_out() {
+    let plan = compiled(&["query Plain { character(id: \"1\") { name } }"]);
+    assert!(operation(&reported(&plan), "Plain").lens.is_none());
+    let json = serde_json::to_value(reported(&plan)).expect("the report is JSON");
+    assert!(json["operations"][0].get("lens").is_none(), "{json}");
+    let written: serde_json::Value =
+        serde_json::from_str(&written(&plan)).expect("the report is JSON");
+    assert_eq!(
+        written["operations"][0]["lens"]["accessors"][0]["name"],
+        serde_json::json!("character")
     );
 }

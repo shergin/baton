@@ -1200,6 +1200,980 @@
       "calls": 1,
       "status": "not-ingested",
       "note": "the store holds what a `ClientEdgeToClientObject` selection writes, which no response does"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader reads query data",
+      "origin": "RelayReader-test.js: RelayReader reads query data",
+      "operation": "RelayReaderTestReadsQueryDataFooQuery",
+      "calls": 1,
+      "name": "relay/scripts/reader-reads-query-data.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader reads fragment data",
+      "origin": "RelayReader-test.js: RelayReader reads fragment data",
+      "operation": "RelayReaderTestReadsFragmentData",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader creates fragment pointers with fragment owner when owner is provided",
+      "origin": "RelayReader-test.js: RelayReader creates fragment pointers with fragment owner when owner is provided",
+      "operation": "RelayReaderTestCreatesFragmentPointersWithFragmentOwnerWhenOwnerIsProvidedUserProfile",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader creates fragment pointers with variable @arguments",
+      "origin": "RelayReader-test.js: RelayReader creates fragment pointers with variable @arguments",
+      "operation": "RelayReaderTestCreatesFragmentPointersWithVariableArgumentsUserProfile",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader creates fragment pointers with literal @arguments",
+      "origin": "RelayReader-test.js: RelayReader creates fragment pointers with literal @arguments",
+      "operation": "RelayReaderTestCreatesFragmentPointersWithLiteralArgumentsUserProfile",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader @inline reads a basic fragment",
+      "origin": "RelayReader-test.js: RelayReader @inline reads a basic fragment",
+      "operation": "RelayReaderTestReadsBasicFragmentUserProfile",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader reads data when the root is deleted",
+      "origin": "RelayReader-test.js: RelayReader reads data when the root is deleted",
+      "operation": "RelayReaderTestReadsDataWhenTheRootIsDeletedUserProfile",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `4`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader reads data when the root is unfetched",
+      "origin": "RelayReader-test.js: RelayReader reads data when the root is unfetched",
+      "operation": "RelayReaderTestReadsDataWhenTheRootIsUnfetchedUserProfile",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `4`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader reads \"handle\" fields for query root fragments",
+      "origin": "RelayReader-test.js: RelayReader reads \"handle\" fields for query root fragments",
+      "operation": "RelayReaderTestReadsHandleFieldsForQueryRootFragmentsUserFriendsQuery",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the response the seeded store stands for gives Relay another answer"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader reads \"handle\" fields for fragments",
+      "origin": "RelayReader-test.js: RelayReader reads \"handle\" fields for fragments",
+      "operation": "RelayReaderTestReadsHandleFieldsForFragmentsUserFriends",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader when @match directive is present creates fragment and module pointers for fragment that matches resolved type (1)",
+      "origin": "RelayReader-test.js: RelayReader when @match directive is present creates fragment and module pointers for fragment that matches resolved type (1)",
+      "operation": "RelayReaderTestWhenMatchDirectiveIsPresentBarFragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader when @match directive is present creates fragment and module pointers for fragment that matches resolved type (2)",
+      "origin": "RelayReader-test.js: RelayReader when @match directive is present creates fragment and module pointers for fragment that matches resolved type (2)",
+      "operation": "RelayReaderTestWhenMatchDirectiveIsPresentBarFragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader when @match directive is present reads data correctly when the resolved type does not match any of the specified cases",
+      "origin": "RelayReader-test.js: RelayReader when @match directive is present reads data correctly when the resolved type does not match any of the specified cases",
+      "operation": "RelayReaderTestWhenMatchDirectiveIsPresentBarFragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader when @match directive is present reads data correctly when the match field record is null",
+      "origin": "RelayReader-test.js: RelayReader when @match directive is present reads data correctly when the match field record is null",
+      "operation": "RelayReaderTestWhenMatchDirectiveIsPresentBarFragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader when @match directive is present reads data correctly when the match field record is missing",
+      "origin": "RelayReader-test.js: RelayReader when @match directive is present reads data correctly when the match field record is missing",
+      "operation": "RelayReaderTestWhenMatchDirectiveIsPresentBarFragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader @module creates fragment and module pointers when the type matches a @module selection (1)",
+      "origin": "RelayReader-test.js: RelayReader @module creates fragment and module pointers when the type matches a @module selection (1)",
+      "operation": "RelayReaderTestWhenMatchDirectiveIsPresentNoModuleBarFragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader @module creates fragment and module pointers when the type matches a @module selection (2)",
+      "origin": "RelayReader-test.js: RelayReader @module creates fragment and module pointers when the type matches a @module selection (2)",
+      "operation": "RelayReaderTestWhenMatchDirectiveIsPresentNoModuleBarFragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader @module reads data correctly when the resolved type does not match any of the @module selections",
+      "origin": "RelayReader-test.js: RelayReader @module reads data correctly when the resolved type does not match any of the @module selections",
+      "operation": "RelayReaderTestWhenMatchDirectiveIsPresentNoModuleBarFragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field readScalar should have `isMissingData = false` if data is available",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field readScalar should have `isMissingData = false` if data is available",
+      "operation": "RelayReaderTestReadScalarProfile",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field readScalar should have `isMissingData = true` if data is missing",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field readScalar should have `isMissingData = true` if data is missing",
+      "operation": "RelayReaderTestShouldHaveIsmissingdataTrueIfDataIsMissingUserProfile",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field readLink should have `isMissingData = false` if data is available",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field readLink should have `isMissingData = false` if data is available",
+      "operation": "RelayReaderTestShouldHaveIsmissingdataFalseIfDataIsAvailableProfilePicture",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field readLink should have `isMissingData = true` if data is missing",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field readLink should have `isMissingData = true` if data is missing",
+      "operation": "RelayReaderTestShouldHaveIsmissingdataTrueIfDataIsMissingAddress",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field readLink should have `isMissingData = true` if data is missing (variables)",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field readLink should have `isMissingData = true` if data is missing (variables)",
+      "operation": "RelayReaderTestShouldHaveIsmissingdataTrueIfDataIsMissingVariablesProfilePicture",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field readPluralLink should have `isMissingData = false` if data is available",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field readPluralLink should have `isMissingData = false` if data is available",
+      "operation": "RelayReaderTestShouldHaveIsmissingdataFalseIfDataIsAvailableUserFriends",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field readPluralLink should have `isMissingData = true` if data is missing in the node",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field readPluralLink should have `isMissingData = true` if data is missing in the node",
+      "operation": "RelayReaderTestShouldHaveIsmissingdataTrueIfDataIsMissingInTheNodeUserFriends",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field readPluralLink should have `isMissingData = true` if data is missing for connection",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field readPluralLink should have `isMissingData = true` if data is missing for connection",
+      "operation": "RelayReaderTestShouldHaveIsmissingdataTrueIfDataIsMissingForConnectionUserFriends",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `2`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field readPluralLink should have `isMissingData = true` if data is missing for edge in the connection",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field readPluralLink should have `isMissingData = true` if data is missing for edge in the connection",
+      "operation": "RelayReaderTestShouldHaveIsmissingdataTrueIfDataIsMissingForEdgeInTheConnectionUserFriends",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `3`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field readPluralLink should not have missing data if missing fields are client fields",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field readPluralLink should not have missing data if missing fields are client fields",
+      "operation": "RelayReaderTestShouldNotHaveMissingDataIfMissingFieldsAreClientFieldsUserProfile",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field readPluralLink should not consider data missing if the fragment type does not match the data",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field readPluralLink should not consider data missing if the fragment type does not match the data",
+      "operation": "RelayReaderTestShouldNotConsiderDataMissingIfTheFragmentTypeDoesNotMatchTheDataUserProfile",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field readPluralLink should consider data missing if the fragment type is abstract",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field readPluralLink should consider data missing if the fragment type is abstract",
+      "operation": "RelayReaderTestShouldConsiderDataMissingIfTheFragmentTypeIsAbstractActorProfile",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field readPluralLink should consider data missing if the fragment is concrete but on the root",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field readPluralLink should consider data missing if the fragment is concrete but on the root",
+      "operation": "RelayReaderTestShouldConsiderDataMissingIfTheFragmentIsConcreteButOnTheRootRootFragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a selector that is not a query"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field @stream_connection should not have missing data if all data is fetched",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field @stream_connection should not have missing data if all data is fetched",
+      "operation": "RelayReaderTestStreamConnectionUserProfile",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field @stream_connection should not have missing data when all edge data is fetched by pageInfo is missing",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field @stream_connection should not have missing data when all edge data is fetched by pageInfo is missing",
+      "operation": "RelayReaderTestStreamConnectionUserProfile",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader `isMissingData` field @stream_connection should have missing data if an edge is missing data",
+      "origin": "RelayReader-test.js: RelayReader `isMissingData` field @stream_connection should have missing data if an edge is missing data",
+      "operation": "RelayReaderTestStreamConnectionUserProfile",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-test",
+      "test": "RelayReader does not record a dependency on type records for abstract type discriminators",
+      "origin": "RelayReader-test.js: RelayReader does not record a dependency on type records for abstract type discriminators",
+      "operation": "RelayReaderTestDoesNotRecordADependencyOnTypeRecordsForAbstractTypeDiscriminatorsFragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required bubbles @required(action: LOG) scalars up to LinkedField",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) scalars up to LinkedField",
+      "operation": "RelayReaderRequiredFieldsTest2Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-bubbles-required-action-log-scalars-up-to-linkedfield.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required bubbles @required(action: LOG) up to aliased inline fragment without type condition",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) up to aliased inline fragment without type condition",
+      "operation": "RelayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithoutTypeQuery",
+      "calls": 1,
+      "name": "relay/scripts/required-required-bubbles-required-action-log-up-to-aliased-inline-fragment-without-type-condition.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required bubbles @required(action: LOG) up to aliased inline fragment _with_ type condition",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) up to aliased inline fragment _with_ type condition",
+      "operation": "RelayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithTypeQuery",
+      "calls": 1,
+      "name": "relay/scripts/required-required-bubbles-required-action-log-up-to-aliased-inline-fragment-with-type-condition.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required if two @required(action: THROW) errors cascade, report the more deeply nested one",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required if two @required(action: THROW) errors cascade, report the more deeply nested one",
+      "operation": "RelayReaderRequiredFieldsTest3Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-if-two-required-action-throw-errors-cascade-report-the-more-deeply-nested-one.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required bubbles @required(action: LOG) scalars up to LinkedField even if subsequent fields are not unexpectedly null",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) scalars up to LinkedField even if subsequent fields are not unexpectedly null",
+      "operation": "RelayReaderRequiredFieldsTest4Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-bubbles-required-action-log-scalars-up-to-linkedfield-even-if-subsequent-fields-are-not-unexpectedly-null.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required only bubbles @required(action: LOG) scalars up to the parent LinkedField",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required only bubbles @required(action: LOG) scalars up to the parent LinkedField",
+      "operation": "RelayReaderRequiredFieldsTest5Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-only-bubbles-required-action-log-scalars-up-to-the-parent-linkedfield.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required bubbles @required(action: LOG) through @required(action: LOG) LinkedField",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) through @required(action: LOG) LinkedField",
+      "operation": "RelayReaderRequiredFieldsTest6Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-bubbles-required-action-log-through-required-action-log-linkedfield.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required bubbles @required(action: LOG) scalars up to the query root",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) scalars up to the query root",
+      "operation": "RelayReaderRequiredFieldsTest7Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-bubbles-required-action-log-scalars-up-to-the-query-root.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required bubbles @required(action: LOG) up to plural linked field",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) up to plural linked field",
+      "operation": "RelayReaderRequiredFieldsTest8Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-bubbles-required-action-log-up-to-plural-linked-field.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required bubbles @required(action: LOG) on plural scalar field up to the parent",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) on plural scalar field up to the parent",
+      "operation": "RelayReaderRequiredFieldsTest9Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-bubbles-required-action-log-on-plural-scalar-field-up-to-the-parent.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required does _not_ bubbles @required(action: LOG) on plural linked field up to the parent",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required does _not_ bubbles @required(action: LOG) on plural linked field up to the parent",
+      "operation": "RelayReaderRequiredFieldsTest10Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-does-not-bubbles-required-action-log-on-plural-linked-field-up-to-the-parent.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required bubbles when encountering a missing plural linked field",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles when encountering a missing plural linked field",
+      "operation": "RelayReaderRequiredFieldsTest11Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-bubbles-when-encountering-a-missing-plural-linked-field.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required @required(action: LOG) within an inline fragment on a concrete type bubbles if the type matches",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required @required(action: LOG) within an inline fragment on a concrete type bubbles if the type matches",
+      "operation": "RelayReaderRequiredFieldsTest12Query",
+      "calls": 1,
+      "status": "possible-bug",
+      "note": "A `@required` field inside a type condition does not bubble: the generated `satisfied` of `maybeNodeInterface`'s lens returns true without testing the condition's fields, so the link reads present, and `name` reads as a non-optional `String` while it is null. Relay nulls `maybeNodeInterface`, as Baton's own rule for `@required` says it should.",
+      "decision": "Open.",
+      "name": "relay/scripts/required-required-required-action-log-within-an-inline-fragment-on-a-concrete-type-bubbles-if-the-type-matches.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required @required(action: LOG) within an inline fragment does not bubble if type does not match",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required @required(action: LOG) within an inline fragment does not bubble if type does not match",
+      "operation": "RelayReaderRequiredFieldsTest13Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-required-action-log-within-an-inline-fragment-does-not-bubble-if-type-does-not-match.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required @required(action: LOG) bubbles across @skip",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required @required(action: LOG) bubbles across @skip",
+      "operation": "RelayReaderRequiredFieldsTest14Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-required-action-log-bubbles-across-skip.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required @required(action: LOG) bubbles across @include",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required @required(action: LOG) bubbles across @include",
+      "operation": "RelayReaderRequiredFieldsTest15Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-required-action-log-bubbles-across-include.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required @required(action: LOG) does not bubble if @required field is not @included",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required @required(action: LOG) does not bubble if @required field is not @included",
+      "operation": "RelayReaderRequiredFieldsTest16Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-required-action-log-does-not-bubble-if-required-field-is-not-included.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required @required(action: LOG) does not bubble if @required field is @skipped",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required @required(action: LOG) does not bubble if @required field is @skipped",
+      "operation": "RelayReaderRequiredFieldsTest17Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-required-action-log-does-not-bubble-if-required-field-is-skipped.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required @required(action: LOG) bubbles client extension fields",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required @required(action: LOG) bubbles client extension fields",
+      "operation": "RelayReaderRequiredFieldsTest18Query",
+      "calls": 1,
+      "name": "relay/scripts/required-required-required-action-log-bubbles-client-extension-fields.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required bubbles @required(action: LOG) on Scalar up to parent fragment",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) on Scalar up to parent fragment",
+      "operation": "RelayReaderRequiredFieldsTest1Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required bubbles @required(action: LOG) on LinkedField up to parent fragment",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) on LinkedField up to parent fragment",
+      "operation": "RelayReaderRequiredFieldsTest2Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required bubbles @required(action: LOG) on LinkedField up to parent fragment on Query",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) on LinkedField up to parent fragment on Query",
+      "operation": "RelayReaderRequiredFieldsTest3Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a selector that is not a query"
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required does not allow unexpected nulls to escape fragment boundaries",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required does not allow unexpected nulls to escape fragment boundaries",
+      "operation": "RelayReaderRequiredFieldsTest22Query",
+      "calls": 2,
+      "status": "not-ingested",
+      "note": "several reads in one test"
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required bubbles nulls if the value is \"missing\" (still in the process of being loaded)",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles nulls if the value is \"missing\" (still in the process of being loaded)",
+      "operation": "RelayReaderRequiredFieldsTest5Fragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a fragment at `1`; a Baton case reads from a response's root"
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required bubbles to list item when used in plural fragment",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles to list item when used in plural fragment",
+      "operation": "RelayReaderRequiredFieldsTest24Query",
+      "calls": 3,
+      "status": "unsupported-feature",
+      "note": "batonc: `@relay` on a fragment definition has no meaning in Baton",
+      "name": "relay/scripts/required-required-bubbles-to-list-item-when-used-in-plural-fragment.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required client edge with @required when CATCH is enabled caught missing required field error when action:THROW under a @catch",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required client edge with @required when CATCH is enabled caught missing required field error when action:THROW under a @catch",
+      "operation": "RelayReaderRequiredFieldsTest29Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ClientEdgeToClientObject` selection writes, which no response does"
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required client edge with @required throws when missing required field",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required client edge with @required throws when missing required field",
+      "operation": "RelayReaderRequiredFieldsTest25Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ClientEdgeToClientObject` selection writes, which no response does"
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required client edge with @required does not throw when required field is present",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required client edge with @required does not throw when required field is present",
+      "operation": "RelayReaderRequiredFieldsTest26Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ClientEdgeToClientObject` selection writes, which no response does"
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required client edge with @required does not throw when required plural field is present",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required client edge with @required does not throw when required plural field is present",
+      "operation": "RelayReaderRequiredFieldsTest27Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ClientEdgeToClientObject` selection writes, which no response does"
+    },
+    {
+      "suite": "RelayReader-RequiredFields-test",
+      "test": "RelayReader @required client edge with @required does not throw when @live required field is suspended",
+      "origin": "RelayReader-RequiredFields-test.js: RelayReader @required client edge with @required does not throw when @live required field is suspended",
+      "operation": "RelayReaderRequiredFieldsTest28Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `RelayResolver` selection writes, which no response does"
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch if scalar has @catch(to: NULL) - scalar value should be null, and nothing should throw or catch",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch if scalar has @catch(to: NULL) - scalar value should be null, and nothing should throw or catch",
+      "operation": "RelayReaderCatchFieldsTest00Query",
+      "calls": 1,
+      "name": "relay/scripts/catch-catch-if-scalar-has-catch-to-null-scalar-value-should-be-null-and-nothing-should-throw-or-catch.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch if scalar has catch to RESULT - scalar value should provide the error",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch if scalar has catch to RESULT - scalar value should provide the error",
+      "operation": "RelayReaderCatchFieldsTest01Query",
+      "calls": 1,
+      "name": "relay/scripts/catch-catch-if-scalar-has-catch-to-result-scalar-value-should-provide-the-error.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch if preceding scalar sibling has error, catch to RESULT should not catch that error",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch if preceding scalar sibling has error, catch to RESULT should not catch that error",
+      "operation": "RelayReaderCatchFieldsTestSiblingErrorQuery",
+      "calls": 1,
+      "name": "relay/scripts/catch-catch-if-preceding-scalar-sibling-has-error-catch-to-result-should-not-catch-that-error.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch if preceding scalar sibling has a logged missing required field, an THROW required field inside a subsequent @catch should not delete that log",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch if preceding scalar sibling has a logged missing required field, an THROW required field inside a subsequent @catch should not delete that log",
+      "operation": "RelayReaderCatchFieldsTestSiblingLogRequiredErrorQuery",
+      "calls": 1,
+      "name": "relay/scripts/catch-catch-if-preceding-scalar-sibling-has-a-logged-missing-required-field-an-throw-required-field-inside-a-subsequent-catch-should-not-delete-that-log.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch @catch(to: NULL) catching a @required(action: THROW) returns null",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: NULL) catching a @required(action: THROW) returns null",
+      "operation": "RelayReaderCatchFieldsTestRequiredCatchToNullErrorQuery",
+      "calls": 1,
+      "status": "possible-bug",
+      "note": "`@catch(to: NULL)` on a link or an aliased inline fragment: Relay reads the selection as null when a field error or a `@required(action: THROW)` is below it; Baton reads `to: NULL` as the plain optional accessor (docs/decisions/error-directives-in-swift.md), so the selection reads present and the error stays below.",
+      "decision": "Open.",
+      "name": "relay/scripts/catch-catch-catch-to-null-catching-a-required-action-throw-returns-null.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch @catch(to: NULL) catching missing data returns null",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: NULL) catching missing data returns null",
+      "operation": "RelayReaderCatchFieldsTestCatchMissingToNullErrorQuery",
+      "calls": 1,
+      "status": "unspecified-behaviour",
+      "note": "Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it.",
+      "decision": "Open.",
+      "name": "relay/scripts/catch-catch-catch-to-null-catching-missing-data-returns-null.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch @catch(to: NULL) on query catching missing data returns null",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: NULL) on query catching missing data returns null",
+      "operation": "RelayReaderCatchFieldsTestCatchMissingInQueryToNullErrorQuery",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "batonc: `@catch` on a query has no meaning in Baton",
+      "name": "relay/scripts/catch-catch-catch-to-null-on-query-catching-missing-data-returns-null.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch @catch(to: RESULT) on query catching missing data returns error",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: RESULT) on query catching missing data returns error",
+      "operation": "RelayReaderCatchFieldsTestCatchMissingInQueryToResultErrorQuery",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "batonc: `@catch` on a query has no meaning in Baton",
+      "name": "relay/scripts/catch-catch-catch-to-result-on-query-catching-missing-data-returns-error.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch @catch(to: NULL) on fragment catching missing data returns null",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: NULL) on fragment catching missing data returns null",
+      "operation": "RelayReaderCatchFieldsTestCatchToNullFragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a selector that is not a query"
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch @catch(to: RESULT) on fragment catching missing data returns error",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: RESULT) on fragment catching missing data returns error",
+      "operation": "RelayReaderCatchFieldsTestCatchToResultFragment",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "a read of a selector that is not a query"
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch @catch(to: NULL) on aliased inline fragment catching missing data returns null",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: NULL) on aliased inline fragment catching missing data returns null",
+      "operation": "RelayReaderCatchFieldsTestCatchMissingInInlineFragmentToNullErrorQuery",
+      "calls": 1,
+      "status": "unspecified-behaviour",
+      "note": "Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it.",
+      "decision": "Open.",
+      "name": "relay/scripts/catch-catch-catch-to-null-on-aliased-inline-fragment-catching-missing-data-returns-null.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch @catch(to: RESULT) on aliased inline fragment catching missing data returns error",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: RESULT) on aliased inline fragment catching missing data returns error",
+      "operation": "RelayReaderCatchFieldsTestCatchMissingInInlineFragmentToResultErrorQuery",
+      "calls": 1,
+      "status": "unspecified-behaviour",
+      "note": "Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it.",
+      "decision": "Open.",
+      "name": "relay/scripts/catch-catch-catch-to-result-on-aliased-inline-fragment-catching-missing-data-returns-error.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch @catch(to: RESULT) on aliased inline fragment with field error returns error",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: RESULT) on aliased inline fragment with field error returns error",
+      "operation": "RelayReaderCatchFieldsTestCatchErrorInAliasedInlineFragmentToResultQuery",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the read: a caught error the response does not hold"
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch @catch(to: NULL) on aliased inline fragment with field error returns null",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: NULL) on aliased inline fragment with field error returns null",
+      "operation": "RelayReaderCatchFieldsTestCatchErrorInAliasedInlineFragmentToNullQuery",
+      "calls": 1,
+      "status": "possible-bug",
+      "note": "`@catch(to: NULL)` on a link or an aliased inline fragment: Relay reads the selection as null when a field error or a `@required(action: THROW)` is below it; Baton reads `to: NULL` as the plain optional accessor (docs/decisions/error-directives-in-swift.md), so the selection reads present and the error stays below.",
+      "decision": "Open.",
+      "name": "relay/scripts/catch-catch-catch-to-null-on-aliased-inline-fragment-with-field-error-returns-null.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch @catch(to: RESULT) on aliased inline fragment with no error returns ok result",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: RESULT) on aliased inline fragment with no error returns ok result",
+      "operation": "RelayReaderCatchFieldsTestCatchOkInAliasedInlineFragmentToResultQuery",
+      "calls": 1,
+      "name": "relay/scripts/catch-catch-catch-to-result-on-aliased-inline-fragment-with-no-error-returns-ok-result.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch if scalar has catch to RESULT - but no error, response should reflect",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch if scalar has catch to RESULT - but no error, response should reflect",
+      "operation": "RelayReaderCatchFieldsTest09Query",
+      "calls": 1,
+      "name": "relay/scripts/catch-catch-if-scalar-has-catch-to-result-but-no-error-response-should-reflect.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch if linked has catch to RESULT - but no error, response should reflect",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch if linked has catch to RESULT - but no error, response should reflect",
+      "operation": "RelayReaderCatchFieldsTest010Query",
+      "calls": 1,
+      "name": "relay/scripts/catch-catch-if-linked-has-catch-to-result-but-no-error-response-should-reflect.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch if linked has catch to RESULT - with error, response should reflect",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch if linked has catch to RESULT - with error, response should reflect",
+      "operation": "RelayReaderCatchFieldsTest07Query",
+      "calls": 1,
+      "name": "relay/scripts/catch-catch-if-linked-has-catch-to-result-with-error-response-should-reflect.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-CatchFields-test",
+      "test": "RelayReader @catch if scalar has catch to RESULT with nested required",
+      "origin": "RelayReader-CatchFields-test.js: RelayReader @catch if scalar has catch to RESULT with nested required",
+      "operation": "RelayReaderCatchFieldsTest02Query",
+      "calls": 1,
+      "name": "relay/scripts/catch-catch-if-scalar-has-catch-to-result-with-nested-required.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields adds the errors to fieldErrors",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields adds the errors to fieldErrors",
+      "operation": "RelayReaderRelayErrorHandlingTest1Query",
+      "calls": 1,
+      "name": "relay/scripts/errors-error-fields-adds-the-errors-to-fielderrors.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields adds the errors to fieldErrors including missingData - without @catch",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields adds the errors to fieldErrors including missingData - without @catch",
+      "operation": "RelayReaderRelayErrorHandlingTest4Query",
+      "calls": 1,
+      "name": "relay/scripts/errors-error-fields-adds-the-errors-to-fielderrors-including-missingdata-without-catch.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields adds the errors to fieldErrors including missingData within plural fields - without @catch",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields adds the errors to fieldErrors including missingData within plural fields - without @catch",
+      "operation": "RelayReaderRelayErrorHandlingTestMissingPluralQuery",
+      "calls": 1,
+      "name": "relay/scripts/errors-error-fields-adds-the-errors-to-fielderrors-including-missingdata-within-plural-fields-without-catch.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields adds the errors to fieldErrors including missingData - with @catch",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields adds the errors to fieldErrors including missingData - with @catch",
+      "operation": "RelayReaderRelayErrorHandlingTest3Query",
+      "calls": 1,
+      "status": "unspecified-behaviour",
+      "note": "Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it.",
+      "decision": "Open.",
+      "name": "relay/scripts/errors-error-fields-adds-the-errors-to-fielderrors-including-missingdata-with-catch.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields @throwOnFieldError on a resolver rootFragment that reads field error will cause that resolver to be treated as a field error by the reader",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields @throwOnFieldError on a resolver rootFragment that reads field error will cause that resolver to be treated as a field error by the reader",
+      "operation": "RelayReaderRelayErrorHandlingTest2Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `RelayResolver` selection writes, which no response does"
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields @throwOnFieldError reading a resolver with @throwOnFieldError on its rootFragment that reads field error will cause that resolver to be treated as a field error by the reader",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields @throwOnFieldError reading a resolver with @throwOnFieldError on its rootFragment that reads field error will cause that resolver to be treated as a field error by the reader",
+      "operation": "RelayReaderRelayErrorHandlingTest5Query",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `RelayResolver` selection writes, which no response does"
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields @throwOnFieldError reading a client edge resolver which points to a record with missing data logs the correct path",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields @throwOnFieldError reading a client edge resolver which points to a record with missing data logs the correct path",
+      "operation": "RelayReaderRelayErrorHandlingTestResolverClientEdgeWithMissingDataQuery",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `RelayResolver` selection writes, which no response does"
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields @throwOnFieldError reading a client edge to client object resolver which points to a record with missing data logs the correct path",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields @throwOnFieldError reading a client edge to client object resolver which points to a record with missing data logs the correct path",
+      "operation": "RelayReaderRelayErrorHandlingTestResolverClientEdgeClientObjectWithMissingDataQuery",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ClientEdgeToClientObject` selection writes, which no response does"
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields @throwOnFieldError reading a client edge to PLURAL client object resolver which points to records with missing data logs the correct paths with index segments",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields @throwOnFieldError reading a client edge to PLURAL client object resolver which points to records with missing data logs the correct paths with index segments",
+      "operation": "RelayReaderRelayErrorHandlingTestResolverClientPluralEdgeClientObjectWithMissingDataQuery",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ClientEdgeToClientObject` selection writes, which no response does"
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields @catch(to: NULL) on a client edge to server object returns data when available",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields @catch(to: NULL) on a client edge to server object returns data when available",
+      "operation": "RelayReaderRelayErrorHandlingTestCatchOnClientEdgeDataAvailableQuery",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `RelayResolver` selection writes, which no response does"
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields @catch(to: NULL) on a client edge to server object returns null when data is missing instead of throwing",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields @catch(to: NULL) on a client edge to server object returns null when data is missing instead of throwing",
+      "operation": "RelayReaderRelayErrorHandlingTestCatchOnClientEdgeMissingDataQuery",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `RelayResolver` selection writes, which no response does"
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields @catch(to: NULL) on a client edge to server object returns null when field has errors instead of throwing",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields @catch(to: NULL) on a client edge to server object returns null when field has errors instead of throwing",
+      "operation": "RelayReaderRelayErrorHandlingTestCatchOnClientEdgeFieldErrorQuery",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `RelayResolver` selection writes, which no response does"
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields @catch(to: NULL) on a client edge to client object returns null when data is missing instead of throwing",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields @catch(to: NULL) on a client edge to client object returns null when data is missing instead of throwing",
+      "operation": "RelayReaderRelayErrorHandlingTestCatchOnClientEdgeClientObjectQuery",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the store holds what a `ClientEdgeToClientObject` selection writes, which no response does"
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields does not report missing data within an inline fragment that does not match",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields does not report missing data within an inline fragment that does not match",
+      "operation": "RelayReaderRelayErrorHandlingTestInlineFragmentQuery",
+      "calls": 1,
+      "name": "relay/scripts/errors-error-fields-does-not-report-missing-data-within-an-inline-fragment-that-does-not-match.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields does report missing data within an inline fragment that does match",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields does report missing data within an inline fragment that does match",
+      "operation": "RelayReaderRelayErrorHandlingTestInlineFragmentMatchesQuery",
+      "calls": 1,
+      "status": "not-ingested",
+      "note": "the response the seeded store stands for gives Relay another answer"
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields Reports missing fields in topological order",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields Reports missing fields in topological order",
+      "operation": "RelayReaderRelayErrorHandlingTestErrorOrderQuery",
+      "calls": 1,
+      "status": "unspecified-behaviour",
+      "note": "Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it.",
+      "decision": "Open.",
+      "name": "relay/scripts/errors-error-fields-reports-missing-fields-in-topological-order.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields when noncompliant error handling on lists is enabled when query has @throwOnFieldError directive has errors that will throw when the linked field is an empty list",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields when noncompliant error handling on lists is enabled when query has @throwOnFieldError directive has errors that will throw when the linked field is an empty list",
+      "operation": "RelayReaderRelayErrorHandlingTestNoncompliantEmptyLinkedFieldWithThrowOnFieldErrorQuery",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS`",
+      "name": "relay/scripts/errors-error-fields-when-noncompliant-error-handling-on-lists-is-enabled-when-query-has-throwonfielderror-directive-has-errors-that-will-throw-when-the-linked-field-is-an-empty-list.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields when noncompliant error handling on lists is enabled when query has @throwOnFieldError directive has errors that will throw when the scalar field is an empty list",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields when noncompliant error handling on lists is enabled when query has @throwOnFieldError directive has errors that will throw when the scalar field is an empty list",
+      "operation": "RelayReaderRelayErrorHandlingTestNoncompliantEmptyScalarFieldWithThrowOnFieldErrorQuery",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS`",
+      "name": "relay/scripts/errors-error-fields-when-noncompliant-error-handling-on-lists-is-enabled-when-query-has-throwonfielderror-directive-has-errors-that-will-throw-when-the-scalar-field-is-an-empty-list.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields when noncompliant error handling on lists is enabled when query does not have the @throwOnFieldError directive has errors that wont throw when the linked field is an empty list",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields when noncompliant error handling on lists is enabled when query does not have the @throwOnFieldError directive has errors that wont throw when the linked field is an empty list",
+      "operation": "RelayReaderRelayErrorHandlingTestNoncompliantEmptyLinkedFieldWithoutThrowOnFieldErrorQuery",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS`",
+      "name": "relay/scripts/errors-error-fields-when-noncompliant-error-handling-on-lists-is-enabled-when-query-does-not-have-the-throwonfielderror-directive-has-errors-that-wont-throw-when-the-linked-field-is-an-empty-list.json",
+      "script": true
+    },
+    {
+      "suite": "RelayReader-RelayErrorHandling-test",
+      "test": "RelayReader error fields when noncompliant error handling on lists is enabled when query does not have the @throwOnFieldError directive has errors that wont throw when the scalar field is an empty list",
+      "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields when noncompliant error handling on lists is enabled when query does not have the @throwOnFieldError directive has errors that wont throw when the scalar field is an empty list",
+      "operation": "RelayReaderRelayErrorHandlingTestNoncompliantEmptyScalarFieldWithoutThrowOnFieldErrorQuery",
+      "calls": 1,
+      "status": "unsupported-feature",
+      "note": "a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS`",
+      "name": "relay/scripts/errors-error-fields-when-noncompliant-error-handling-on-lists-is-enabled-when-query-does-not-have-the-throwonfielderror-directive-has-errors-that-wont-throw-when-the-scalar-field-is-an-empty-list.json",
+      "script": true
     }
   ]
 }

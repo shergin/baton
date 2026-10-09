@@ -657,6 +657,527 @@ struct RelayDocuments {
         }
         """)
     var dataCheckerTest6Fragment: DataCheckerTest6Fragment
+
+    @Query("""
+        query RelayReaderTestReadsQueryDataFooQuery($id: ID, $size: [Int]) {
+          node(id: $id) {
+            id
+            __typename
+            ... on Page {
+              actors {
+                name
+              }
+            }
+            ... on User {
+              firstName
+              friends(first: 3) {
+                edges {
+                  cursor
+                  node {
+                    id
+                    firstName
+                  }
+                }
+              }
+              profilePicture(size: $size) {
+                uri
+              }
+            }
+          }
+        }
+        """)
+    var relayReaderTestReadsQueryDataFooQuery: RelayReaderTestReadsQueryDataFooQuery
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest2Query {
+          me {
+            firstName
+            lastName @required(action: LOG)
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest2Query: RelayReaderRequiredFieldsTest2Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithoutTypeQuery {
+          me {
+            ... @alias(as: "requiredFields") {
+              backgroundImage @required(action: LOG) {
+                uri @required(action: LOG)
+              }
+            }
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithoutTypeQuery: RelayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithoutTypeQuery
+
+    @Query("""
+        query RelayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithTypeQuery {
+          me {
+            ... on User @alias(as: "requiredFields") {
+              backgroundImage @required(action: LOG) {
+                uri @required(action: LOG)
+              }
+            }
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithTypeQuery: RelayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithTypeQuery
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest3Query {
+          me @required(action: THROW) {
+            lastName @required(action: THROW)
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest3Query: RelayReaderRequiredFieldsTest3Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest4Query {
+          me {
+            lastName @required(action: LOG)
+            firstName @required(action: LOG)
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest4Query: RelayReaderRequiredFieldsTest4Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest5Query {
+          me {
+            backgroundImage {
+              uri @required(action: LOG)
+            }
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest5Query: RelayReaderRequiredFieldsTest5Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest6Query {
+          me {
+            backgroundImage @required(action: LOG) {
+              uri @required(action: LOG)
+            }
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest6Query: RelayReaderRequiredFieldsTest6Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest7Query {
+          me @required(action: LOG) {
+            lastName @required(action: LOG)
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest7Query: RelayReaderRequiredFieldsTest7Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest8Query {
+          me {
+            screennames {
+              name
+              service @required(action: LOG)
+            }
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest8Query: RelayReaderRequiredFieldsTest8Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest9Query {
+          me {
+            emailAddresses @required(action: LOG)
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest9Query: RelayReaderRequiredFieldsTest9Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest10Query {
+          me {
+            screennames @required(action: LOG) {
+              name
+              service @required(action: LOG)
+            }
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest10Query: RelayReaderRequiredFieldsTest10Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest11Query {
+          viewer {
+            allTimezones @required(action: NONE) {
+              timezone
+            }
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest11Query: RelayReaderRequiredFieldsTest11Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest12Query {
+          maybeNodeInterface {
+            ... on NonNodeNoID {
+              name @required(action: LOG)
+            }
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest12Query: RelayReaderRequiredFieldsTest12Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest13Query {
+          maybeNodeInterface {
+            ... on Story {
+              # Weird that a story has a last name. Probably just test data being silly.
+              lastName @required(action: LOG)
+            }
+            name
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest13Query: RelayReaderRequiredFieldsTest13Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest14Query($skip: Boolean!) {
+          me {
+            emailAddresses @skip(if: $skip) @required(action: LOG)
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest14Query: RelayReaderRequiredFieldsTest14Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest15Query($include: Boolean!) {
+          me {
+            emailAddresses @include(if: $include) @required(action: LOG)
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest15Query: RelayReaderRequiredFieldsTest15Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest16Query($include: Boolean!) {
+          me {
+            emailAddresses @include(if: $include) @required(action: LOG)
+            name
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest16Query: RelayReaderRequiredFieldsTest16Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest17Query($skip: Boolean!) {
+          me {
+            emailAddresses @skip(if: $skip) @required(action: LOG)
+            name
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest17Query: RelayReaderRequiredFieldsTest17Query
+
+    @Query("""
+        query RelayReaderRequiredFieldsTest18Query {
+          me {
+            client_nickname @required(action: LOG)
+          }
+        }
+        """)
+    var relayReaderRequiredFieldsTest18Query: RelayReaderRequiredFieldsTest18Query
+
+    @Query("""
+        query RelayReaderCatchFieldsTest00Query {
+          me {
+            lastName @catch(to: NULL)
+          }
+        }
+        """)
+    var relayReaderCatchFieldsTest00Query: RelayReaderCatchFieldsTest00Query
+
+    @Query("""
+        query RelayReaderCatchFieldsTest01Query {
+          me {
+            lastName @catch(to: RESULT)
+          }
+        }
+        """)
+    var relayReaderCatchFieldsTest01Query: RelayReaderCatchFieldsTest01Query
+
+    @Query("""
+        query RelayReaderCatchFieldsTestSiblingErrorQuery {
+          me {
+            lastName # this field is in an error state and should not be caught
+            firstName @catch(to: RESULT)
+          }
+        }
+        """)
+    var relayReaderCatchFieldsTestSiblingErrorQuery: RelayReaderCatchFieldsTestSiblingErrorQuery
+
+    @Query("""
+        query RelayReaderCatchFieldsTestSiblingLogRequiredErrorQuery {
+          alsoMe: me {
+            lastName @required(action: LOG)
+          }
+          me @catch(to: RESULT) {
+            # Despite being more destructive, the THROW here should not overwrite
+            # the LOG, since it gets caught.
+            firstName @required(action: THROW)
+          }
+        }
+        """)
+    var relayReaderCatchFieldsTestSiblingLogRequiredErrorQuery: RelayReaderCatchFieldsTestSiblingLogRequiredErrorQuery
+
+    @Query("""
+        query RelayReaderCatchFieldsTestRequiredCatchToNullErrorQuery {
+          me @catch(to: NULL) {
+            firstName @required(action: THROW)
+          }
+        }
+        """)
+    var relayReaderCatchFieldsTestRequiredCatchToNullErrorQuery: RelayReaderCatchFieldsTestRequiredCatchToNullErrorQuery
+
+    @Query("""
+        query RelayReaderCatchFieldsTestCatchMissingToNullErrorQuery {
+          me @catch(to: NULL) {
+            firstName
+          }
+        }
+        """)
+    var relayReaderCatchFieldsTestCatchMissingToNullErrorQuery: RelayReaderCatchFieldsTestCatchMissingToNullErrorQuery
+
+    @Query("""
+        query RelayReaderCatchFieldsTestCatchMissingInInlineFragmentToNullErrorQuery {
+          me {
+            ... @catch(to: NULL) @alias(as: "myAlias") {
+              firstName
+            }
+          }
+        }
+        """)
+    var relayReaderCatchFieldsTestCatchMissingInInlineFragmentToNullErrorQuery: RelayReaderCatchFieldsTestCatchMissingInInlineFragmentToNullErrorQuery
+
+    @Query("""
+        query RelayReaderCatchFieldsTestCatchMissingInInlineFragmentToResultErrorQuery {
+          me {
+            ... @catch(to: RESULT) @alias(as: "myAlias") {
+              firstName
+            }
+          }
+        }
+        """)
+    var relayReaderCatchFieldsTestCatchMissingInInlineFragmentToResultErrorQuery: RelayReaderCatchFieldsTestCatchMissingInInlineFragmentToResultErrorQuery
+
+    @Query("""
+        query RelayReaderCatchFieldsTestCatchErrorInAliasedInlineFragmentToResultQuery {
+          me {
+            ... @catch(to: RESULT) @alias(as: "myAlias") {
+              lastName
+            }
+          }
+        }
+        """)
+    var relayReaderCatchFieldsTestCatchErrorInAliasedInlineFragmentToResultQuery: RelayReaderCatchFieldsTestCatchErrorInAliasedInlineFragmentToResultQuery
+
+    @Query("""
+        query RelayReaderCatchFieldsTestCatchErrorInAliasedInlineFragmentToNullQuery {
+          me {
+            ... @catch(to: NULL) @alias(as: "myAlias") {
+              lastName
+            }
+          }
+        }
+        """)
+    var relayReaderCatchFieldsTestCatchErrorInAliasedInlineFragmentToNullQuery: RelayReaderCatchFieldsTestCatchErrorInAliasedInlineFragmentToNullQuery
+
+    @Query("""
+        query RelayReaderCatchFieldsTestCatchOkInAliasedInlineFragmentToResultQuery {
+          me {
+            ... @catch(to: RESULT) @alias(as: "myAlias") {
+              lastName
+            }
+          }
+        }
+        """)
+    var relayReaderCatchFieldsTestCatchOkInAliasedInlineFragmentToResultQuery: RelayReaderCatchFieldsTestCatchOkInAliasedInlineFragmentToResultQuery
+
+    @Query("""
+        query RelayReaderCatchFieldsTest09Query {
+          me {
+            lastName @catch(to: RESULT)
+          }
+        }
+        """)
+    var relayReaderCatchFieldsTest09Query: RelayReaderCatchFieldsTest09Query
+
+    @Query("""
+        query RelayReaderCatchFieldsTest010Query {
+          me @catch {
+            lastName
+          }
+        }
+        """)
+    var relayReaderCatchFieldsTest010Query: RelayReaderCatchFieldsTest010Query
+
+    @Query("""
+        query RelayReaderCatchFieldsTest07Query {
+          me @catch {
+            lastName
+          }
+        }
+        """)
+    var relayReaderCatchFieldsTest07Query: RelayReaderCatchFieldsTest07Query
+
+    @Query("""
+        query RelayReaderCatchFieldsTest02Query {
+          me @catch {
+            lastName @required(action: THROW)
+          }
+        }
+        """)
+    var relayReaderCatchFieldsTest02Query: RelayReaderCatchFieldsTest02Query
+
+    @Query("""
+        query RelayReaderRelayErrorHandlingTest1Query {
+          me {
+            lastName
+          }
+        }
+        """)
+    var relayReaderRelayErrorHandlingTest1Query: RelayReaderRelayErrorHandlingTest1Query
+
+    @Query("""
+        query RelayReaderRelayErrorHandlingTest4Query($size: [Int])
+        @throwOnFieldError {
+          me {
+            lastName
+            profilePicture(size: $size) {
+              uri
+            }
+          }
+        }
+        """)
+    var relayReaderRelayErrorHandlingTest4Query: RelayReaderRelayErrorHandlingTest4Query
+
+    @Query("""
+        query RelayReaderRelayErrorHandlingTestMissingPluralQuery($size: [Int])
+        @throwOnFieldError {
+          nodes {
+            lastName
+            profilePicture(size: $size) {
+              uri
+            }
+          }
+        }
+        """)
+    var relayReaderRelayErrorHandlingTestMissingPluralQuery: RelayReaderRelayErrorHandlingTestMissingPluralQuery
+
+    @Query("""
+        query RelayReaderRelayErrorHandlingTest3Query($size: [Int]) {
+          me @catch {
+            lastName
+            profilePicture(size: $size) {
+              uri
+            }
+          }
+        }
+        """)
+    var relayReaderRelayErrorHandlingTest3Query: RelayReaderRelayErrorHandlingTest3Query
+
+    @Query("""
+        query RelayReaderRelayErrorHandlingTestInlineFragmentQuery
+        @throwOnFieldError {
+          node(id: "4") {
+            # GraphQL lets us spread this here as long as there is at least one
+            # type that overlaps
+            ... on MaybeNodeInterface {
+              name
+            }
+          }
+        }
+        """)
+    var relayReaderRelayErrorHandlingTestInlineFragmentQuery: RelayReaderRelayErrorHandlingTestInlineFragmentQuery
+
+    @Query("""
+        query RelayReaderRelayErrorHandlingTestErrorOrderQuery
+        @throwOnFieldError {
+          also_me: me {
+            name
+            nearest_neighbor {
+              name
+            }
+          }
+          me {
+            name
+          }
+        }
+        """)
+    var relayReaderRelayErrorHandlingTestErrorOrderQuery: RelayReaderRelayErrorHandlingTestErrorOrderQuery
+
+    @Query("""
+        query RelayReaderRelayErrorHandlingTestNoncompliantEmptyLinkedFieldWithThrowOnFieldErrorQuery
+        @throwOnFieldError {
+          node(id: "1") {
+            id
+            __typename
+            ... on User {
+              friends(first: 3) {
+                edges {
+                  cursor
+                }
+              }
+            }
+          }
+        }
+        """)
+    var relayReaderRelayErrorHandlingTestNoncompliantEmptyLinkedFieldWithThrowOnFieldErrorQuery: RelayReaderRelayErrorHandlingTestNoncompliantEmptyLinkedFieldWithThrowOnFieldErrorQuery
+
+    @Query("""
+        query RelayReaderRelayErrorHandlingTestNoncompliantEmptyScalarFieldWithThrowOnFieldErrorQuery
+        @throwOnFieldError {
+          node(id: "1") {
+            id
+            __typename
+            ... on User {
+              emailAddresses
+            }
+          }
+        }
+        """)
+    var relayReaderRelayErrorHandlingTestNoncompliantEmptyScalarFieldWithThrowOnFieldErrorQuery: RelayReaderRelayErrorHandlingTestNoncompliantEmptyScalarFieldWithThrowOnFieldErrorQuery
+
+    @Query("""
+        query RelayReaderRelayErrorHandlingTestNoncompliantEmptyLinkedFieldWithoutThrowOnFieldErrorQuery {
+          node(id: "1") {
+            id
+            __typename
+            ... on User {
+              friends(first: 3) {
+                edges {
+                  cursor
+                }
+              }
+            }
+          }
+        }
+        """)
+    var relayReaderRelayErrorHandlingTestNoncompliantEmptyLinkedFieldWithoutThrowOnFieldErrorQuery: RelayReaderRelayErrorHandlingTestNoncompliantEmptyLinkedFieldWithoutThrowOnFieldErrorQuery
+
+    @Query("""
+        query RelayReaderRelayErrorHandlingTestNoncompliantEmptyScalarFieldWithoutThrowOnFieldErrorQuery {
+          node(id: "1") {
+            id
+            __typename
+            ... on User {
+              emailAddresses
+            }
+          }
+        }
+        """)
+    var relayReaderRelayErrorHandlingTestNoncompliantEmptyScalarFieldWithoutThrowOnFieldErrorQuery: RelayReaderRelayErrorHandlingTestNoncompliantEmptyScalarFieldWithoutThrowOnFieldErrorQuery
 }
 
 extension RelayDocuments {
@@ -696,5 +1217,50 @@ extension RelayDocuments {
         "RelayResponseNormalizerTest43Query": RelayResponseNormalizerTest43Query.self,
         "DataCheckerTestQuery": DataCheckerTestQuery.self,
         "DataCheckerTest9Query": DataCheckerTest9Query.self,
+        "RelayReaderTestReadsQueryDataFooQuery": RelayReaderTestReadsQueryDataFooQuery.self,
+        "RelayReaderRequiredFieldsTest2Query": RelayReaderRequiredFieldsTest2Query.self,
+        "RelayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithoutTypeQuery": RelayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithoutTypeQuery.self,
+        "RelayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithTypeQuery": RelayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithTypeQuery.self,
+        "RelayReaderRequiredFieldsTest3Query": RelayReaderRequiredFieldsTest3Query.self,
+        "RelayReaderRequiredFieldsTest4Query": RelayReaderRequiredFieldsTest4Query.self,
+        "RelayReaderRequiredFieldsTest5Query": RelayReaderRequiredFieldsTest5Query.self,
+        "RelayReaderRequiredFieldsTest6Query": RelayReaderRequiredFieldsTest6Query.self,
+        "RelayReaderRequiredFieldsTest7Query": RelayReaderRequiredFieldsTest7Query.self,
+        "RelayReaderRequiredFieldsTest8Query": RelayReaderRequiredFieldsTest8Query.self,
+        "RelayReaderRequiredFieldsTest9Query": RelayReaderRequiredFieldsTest9Query.self,
+        "RelayReaderRequiredFieldsTest10Query": RelayReaderRequiredFieldsTest10Query.self,
+        "RelayReaderRequiredFieldsTest11Query": RelayReaderRequiredFieldsTest11Query.self,
+        "RelayReaderRequiredFieldsTest12Query": RelayReaderRequiredFieldsTest12Query.self,
+        "RelayReaderRequiredFieldsTest13Query": RelayReaderRequiredFieldsTest13Query.self,
+        "RelayReaderRequiredFieldsTest14Query": RelayReaderRequiredFieldsTest14Query.self,
+        "RelayReaderRequiredFieldsTest15Query": RelayReaderRequiredFieldsTest15Query.self,
+        "RelayReaderRequiredFieldsTest16Query": RelayReaderRequiredFieldsTest16Query.self,
+        "RelayReaderRequiredFieldsTest17Query": RelayReaderRequiredFieldsTest17Query.self,
+        "RelayReaderRequiredFieldsTest18Query": RelayReaderRequiredFieldsTest18Query.self,
+        "RelayReaderCatchFieldsTest00Query": RelayReaderCatchFieldsTest00Query.self,
+        "RelayReaderCatchFieldsTest01Query": RelayReaderCatchFieldsTest01Query.self,
+        "RelayReaderCatchFieldsTestSiblingErrorQuery": RelayReaderCatchFieldsTestSiblingErrorQuery.self,
+        "RelayReaderCatchFieldsTestSiblingLogRequiredErrorQuery": RelayReaderCatchFieldsTestSiblingLogRequiredErrorQuery.self,
+        "RelayReaderCatchFieldsTestRequiredCatchToNullErrorQuery": RelayReaderCatchFieldsTestRequiredCatchToNullErrorQuery.self,
+        "RelayReaderCatchFieldsTestCatchMissingToNullErrorQuery": RelayReaderCatchFieldsTestCatchMissingToNullErrorQuery.self,
+        "RelayReaderCatchFieldsTestCatchMissingInInlineFragmentToNullErrorQuery": RelayReaderCatchFieldsTestCatchMissingInInlineFragmentToNullErrorQuery.self,
+        "RelayReaderCatchFieldsTestCatchMissingInInlineFragmentToResultErrorQuery": RelayReaderCatchFieldsTestCatchMissingInInlineFragmentToResultErrorQuery.self,
+        "RelayReaderCatchFieldsTestCatchErrorInAliasedInlineFragmentToResultQuery": RelayReaderCatchFieldsTestCatchErrorInAliasedInlineFragmentToResultQuery.self,
+        "RelayReaderCatchFieldsTestCatchErrorInAliasedInlineFragmentToNullQuery": RelayReaderCatchFieldsTestCatchErrorInAliasedInlineFragmentToNullQuery.self,
+        "RelayReaderCatchFieldsTestCatchOkInAliasedInlineFragmentToResultQuery": RelayReaderCatchFieldsTestCatchOkInAliasedInlineFragmentToResultQuery.self,
+        "RelayReaderCatchFieldsTest09Query": RelayReaderCatchFieldsTest09Query.self,
+        "RelayReaderCatchFieldsTest010Query": RelayReaderCatchFieldsTest010Query.self,
+        "RelayReaderCatchFieldsTest07Query": RelayReaderCatchFieldsTest07Query.self,
+        "RelayReaderCatchFieldsTest02Query": RelayReaderCatchFieldsTest02Query.self,
+        "RelayReaderRelayErrorHandlingTest1Query": RelayReaderRelayErrorHandlingTest1Query.self,
+        "RelayReaderRelayErrorHandlingTest4Query": RelayReaderRelayErrorHandlingTest4Query.self,
+        "RelayReaderRelayErrorHandlingTestMissingPluralQuery": RelayReaderRelayErrorHandlingTestMissingPluralQuery.self,
+        "RelayReaderRelayErrorHandlingTest3Query": RelayReaderRelayErrorHandlingTest3Query.self,
+        "RelayReaderRelayErrorHandlingTestInlineFragmentQuery": RelayReaderRelayErrorHandlingTestInlineFragmentQuery.self,
+        "RelayReaderRelayErrorHandlingTestErrorOrderQuery": RelayReaderRelayErrorHandlingTestErrorOrderQuery.self,
+        "RelayReaderRelayErrorHandlingTestNoncompliantEmptyLinkedFieldWithThrowOnFieldErrorQuery": RelayReaderRelayErrorHandlingTestNoncompliantEmptyLinkedFieldWithThrowOnFieldErrorQuery.self,
+        "RelayReaderRelayErrorHandlingTestNoncompliantEmptyScalarFieldWithThrowOnFieldErrorQuery": RelayReaderRelayErrorHandlingTestNoncompliantEmptyScalarFieldWithThrowOnFieldErrorQuery.self,
+        "RelayReaderRelayErrorHandlingTestNoncompliantEmptyLinkedFieldWithoutThrowOnFieldErrorQuery": RelayReaderRelayErrorHandlingTestNoncompliantEmptyLinkedFieldWithoutThrowOnFieldErrorQuery.self,
+        "RelayReaderRelayErrorHandlingTestNoncompliantEmptyScalarFieldWithoutThrowOnFieldErrorQuery": RelayReaderRelayErrorHandlingTestNoncompliantEmptyScalarFieldWithoutThrowOnFieldErrorQuery.self,
     ]
 }

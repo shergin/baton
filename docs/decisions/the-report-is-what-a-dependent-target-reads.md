@@ -1,6 +1,7 @@
 # The report is what a dependent target's compilation would read
 
-Status: accepted, 2026-10-11. Answers
+Status: accepted, 2026-10-11; extended by
+[The report holds each lens](the-report-holds-each-lens.md). Answers
 [#17](https://github.com/shergin/baton/issues/17)'s compile report and the
 manifest side of [#7](https://github.com/shergin/baton/issues/7), and
 settles the shape of the report before fragments across modules need it.

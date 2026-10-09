@@ -1,0 +1,33 @@
+{
+  "name": "errors-error-fields-adds-the-errors-to-fielderrors-including-missingdata-without-catch",
+  "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields adds the errors to fieldErrors including missingData - without @catch",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRelayErrorHandlingTest4Query",
+        "variables": {
+          "size": 42
+        },
+        "response": "relay/errors/error-fields-adds-the-errors-to-fielderrors-including-missingdata-without-catch.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRelayErrorHandlingTest4Query",
+          "variables": {
+            "size": 42
+          },
+          "path": "me.lastName",
+          "value": null
+        },
+        {
+          "operation": "RelayReaderRelayErrorHandlingTest4Query",
+          "variables": {
+            "size": 42
+          },
+          "path": "",
+          "throws": "fieldErrors"
+        }
+      ]
+    }
+  ]
+}

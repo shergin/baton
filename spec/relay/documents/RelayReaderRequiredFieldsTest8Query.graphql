@@ -1,0 +1,1 @@
+query RelayReaderRequiredFieldsTest8Query{me{screennames{name,service},id}}

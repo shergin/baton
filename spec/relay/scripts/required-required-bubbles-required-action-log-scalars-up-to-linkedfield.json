@@ -1,0 +1,19 @@
+{
+  "name": "required-required-bubbles-required-action-log-scalars-up-to-linkedfield",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) scalars up to LinkedField",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest2Query",
+        "response": "relay/required/required-bubbles-required-action-log-scalars-up-to-linkedfield.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest2Query",
+          "path": "me",
+          "value": null
+        }
+      ]
+    }
+  ]
+}

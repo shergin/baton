@@ -1,0 +1,19 @@
+{
+  "data": {
+    "me": {
+      "__typename": "User",
+      "lastName": null,
+      "firstName": "Elizabeth",
+      "id": "1"
+    }
+  },
+  "errors": [
+    {
+      "message": "There was an error!",
+      "path": [
+        "me",
+        "lastName"
+      ]
+    }
+  ]
+}

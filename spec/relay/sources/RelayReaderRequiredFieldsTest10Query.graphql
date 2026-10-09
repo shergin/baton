@@ -1,0 +1,8 @@
+query RelayReaderRequiredFieldsTest10Query {
+  me {
+    screennames @required(action: LOG) {
+      name
+      service @required(action: LOG)
+    }
+  }
+}

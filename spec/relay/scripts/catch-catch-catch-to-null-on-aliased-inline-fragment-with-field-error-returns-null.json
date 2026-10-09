@@ -1,0 +1,22 @@
+{
+  "name": "catch-catch-catch-to-null-on-aliased-inline-fragment-with-field-error-returns-null",
+  "origin": "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: NULL) on aliased inline fragment with field error returns null",
+  "status": "possible-bug",
+  "note": "`@catch(to: NULL)` on a link or an aliased inline fragment: Relay reads the selection as null when a field error or a `@required(action: THROW)` is below it; Baton reads `to: NULL` as the plain optional accessor (docs/decisions/error-directives-in-swift.md), so the selection reads present and the error stays below.",
+  "decision": "Open.",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderCatchFieldsTestCatchErrorInAliasedInlineFragmentToNullQuery",
+        "response": "relay/catch/catch-catch-to-null-on-aliased-inline-fragment-with-field-error-returns-null.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderCatchFieldsTestCatchErrorInAliasedInlineFragmentToNullQuery",
+          "path": "me.myAlias",
+          "value": null
+        }
+      ]
+    }
+  ]
+}

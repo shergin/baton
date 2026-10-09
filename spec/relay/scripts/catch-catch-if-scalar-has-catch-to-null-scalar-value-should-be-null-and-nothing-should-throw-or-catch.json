@@ -1,0 +1,19 @@
+{
+  "name": "catch-catch-if-scalar-has-catch-to-null-scalar-value-should-be-null-and-nothing-should-throw-or-catch",
+  "origin": "RelayReader-CatchFields-test.js: RelayReader @catch if scalar has @catch(to: NULL) - scalar value should be null, and nothing should throw or catch",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderCatchFieldsTest00Query",
+        "response": "relay/catch/catch-if-scalar-has-catch-to-null-scalar-value-should-be-null-and-nothing-should-throw-or-catch.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderCatchFieldsTest00Query",
+          "path": "me.lastName",
+          "value": null
+        }
+      ]
+    }
+  ]
+}

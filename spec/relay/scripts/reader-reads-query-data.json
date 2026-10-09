@@ -1,0 +1,99 @@
+{
+  "name": "reader-reads-query-data",
+  "origin": "RelayReader-test.js: RelayReader reads query data",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderTestReadsQueryDataFooQuery",
+        "variables": {
+          "id": "1",
+          "size": 32
+        },
+        "response": "relay/reader/reads-query-data.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderTestReadsQueryDataFooQuery",
+          "variables": {
+            "id": "1",
+            "size": 32
+          },
+          "path": "node.id",
+          "value": "1"
+        },
+        {
+          "operation": "RelayReaderTestReadsQueryDataFooQuery",
+          "variables": {
+            "id": "1",
+            "size": 32
+          },
+          "path": "node.firstName",
+          "value": "Alice"
+        },
+        {
+          "operation": "RelayReaderTestReadsQueryDataFooQuery",
+          "variables": {
+            "id": "1",
+            "size": 32
+          },
+          "path": "node.friends.edges.0.cursor",
+          "value": "cursor:2"
+        },
+        {
+          "operation": "RelayReaderTestReadsQueryDataFooQuery",
+          "variables": {
+            "id": "1",
+            "size": 32
+          },
+          "path": "node.friends.edges.0.node.id",
+          "value": "2"
+        },
+        {
+          "operation": "RelayReaderTestReadsQueryDataFooQuery",
+          "variables": {
+            "id": "1",
+            "size": 32
+          },
+          "path": "node.friends.edges.0.node.firstName",
+          "value": "Bob"
+        },
+        {
+          "operation": "RelayReaderTestReadsQueryDataFooQuery",
+          "variables": {
+            "id": "1",
+            "size": 32
+          },
+          "path": "node.friends.edges.1.cursor",
+          "value": "cursor:3"
+        },
+        {
+          "operation": "RelayReaderTestReadsQueryDataFooQuery",
+          "variables": {
+            "id": "1",
+            "size": 32
+          },
+          "path": "node.friends.edges.1.node.id",
+          "value": "3"
+        },
+        {
+          "operation": "RelayReaderTestReadsQueryDataFooQuery",
+          "variables": {
+            "id": "1",
+            "size": 32
+          },
+          "path": "node.friends.edges.1.node.firstName",
+          "value": "Claire"
+        },
+        {
+          "operation": "RelayReaderTestReadsQueryDataFooQuery",
+          "variables": {
+            "id": "1",
+            "size": 32
+          },
+          "path": "node.profilePicture.uri",
+          "value": "https://example.com/32.png"
+        }
+      ]
+    }
+  ]
+}

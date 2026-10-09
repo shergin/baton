@@ -412,18 +412,18 @@ fn compile_documents(options: &Options) -> Result<Compilation, DriverError> {
 /// The code of a compilation in the language of its run, decided in the
 /// target's names and printed by it, or the name errors printed and
 /// reported.
-fn emitted(compilation: &Compilation) -> Result<emit::Output, DriverError> {
+fn emitted(compilation: &Compilation) -> Result<(emit::Output, decide::Program), DriverError> {
     let config = &compilation.sources.config;
     match config.language {
         Language::Swift => {
             let target = emit::Swift::new(config);
             let program = decided(compilation, target.naming())?;
-            Ok(target.emit(&program))
+            Ok((target.emit(&program), program))
         }
         Language::Kotlin => {
             let target = emit::Kotlin::new(config, kotlin_packages(&compilation.documents));
             let program = decided(compilation, target.naming())?;
-            Ok(target.emit(&program))
+            Ok((target.emit(&program), program))
         }
     }
 }
@@ -559,7 +559,7 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
     let (documents, plan) = (&compilation.documents, &compilation.plan);
     let outputs = outputs(compilation.sources.config.language);
     check_kotlin_package(&compilation, shared_path.is_some() || out_dir.is_some())?;
-    let output = emitted(&compilation)?;
+    let (output, program) = emitted(&compilation)?;
 
     let root = std::env::current_dir().unwrap_or_default();
     let mut targets: Vec<(PathBuf, PathBuf)> = options.emits.clone();
@@ -626,7 +626,10 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
     // The report: what this target compiled, for the people who register
     // operations and review contract changes.
     if let Some(report_path) = options.values.get("report") {
-        planned.push((PathBuf::from(report_path), report::text(plan, &root)));
+        planned.push((
+            PathBuf::from(report_path),
+            report::text(plan, &root, &program),
+        ));
     }
 
     if options.flags.contains("check") {

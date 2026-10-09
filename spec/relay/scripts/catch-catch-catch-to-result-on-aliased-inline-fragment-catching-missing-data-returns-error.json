@@ -1,0 +1,27 @@
+{
+  "name": "catch-catch-catch-to-result-on-aliased-inline-fragment-catching-missing-data-returns-error",
+  "origin": "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: RESULT) on aliased inline fragment catching missing data returns error",
+  "status": "unspecified-behaviour",
+  "note": "Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it.",
+  "decision": "Open.",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderCatchFieldsTestCatchMissingInInlineFragmentToResultErrorQuery",
+        "response": "relay/catch/catch-catch-to-result-on-aliased-inline-fragment-catching-missing-data-returns-error.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderCatchFieldsTestCatchMissingInInlineFragmentToResultErrorQuery",
+          "path": "me.myAlias",
+          "result": {
+            "ok": false,
+            "errors": [
+              "myAlias.firstName"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

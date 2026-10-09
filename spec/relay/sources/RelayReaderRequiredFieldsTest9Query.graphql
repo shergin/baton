@@ -1,0 +1,5 @@
+query RelayReaderRequiredFieldsTest9Query {
+  me {
+    emailAddresses @required(action: LOG)
+  }
+}

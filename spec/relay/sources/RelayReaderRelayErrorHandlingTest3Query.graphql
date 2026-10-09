@@ -1,0 +1,8 @@
+query RelayReaderRelayErrorHandlingTest3Query($size: [Int]) {
+  me @catch {
+    lastName
+    profilePicture(size: $size) {
+      uri
+    }
+  }
+}

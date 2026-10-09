@@ -1,0 +1,5 @@
+query RelayReaderCatchFieldsTest02Query {
+  me @catch {
+    lastName @required(action: THROW)
+  }
+}

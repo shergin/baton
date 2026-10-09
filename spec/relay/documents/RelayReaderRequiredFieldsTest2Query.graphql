@@ -1,0 +1,1 @@
+query RelayReaderRequiredFieldsTest2Query{me{firstName,lastName,id}}

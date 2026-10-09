@@ -1,0 +1,12 @@
+{
+  "data": {
+    "me": {
+      "__typename": "User",
+      "backgroundImage": {
+        "__typename": "Image",
+        "uri": null
+      },
+      "id": "1"
+    }
+  }
+}

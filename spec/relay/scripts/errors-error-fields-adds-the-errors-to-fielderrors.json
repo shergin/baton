@@ -1,0 +1,19 @@
+{
+  "name": "errors-error-fields-adds-the-errors-to-fielderrors",
+  "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields adds the errors to fieldErrors",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRelayErrorHandlingTest1Query",
+        "response": "relay/errors/error-fields-adds-the-errors-to-fielderrors.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRelayErrorHandlingTest1Query",
+          "path": "me.lastName",
+          "value": null
+        }
+      ]
+    }
+  ]
+}

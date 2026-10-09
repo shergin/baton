@@ -90,10 +90,36 @@ public struct Manifest: Decodable, Sendable {
     public struct Read: Decodable, Sendable {
         /// Response keys and list indices from the root, joined by dots.
         public let path: String
+        /// What the read yields; null when the row says it throws.
         public let value: Value
+        /// What the read throws instead of yielding: `requiredField` or
+        /// `fieldErrors`. At the empty path, what the operation itself
+        /// fails with.
+        public let `throws`: String?
+        /// A `@catch` read's result: `{"ok": true, "value": …}`, the value
+        /// left out for a lens, or `{"ok": false, "errors": [path, …]}`.
+        public let result: Value?
         /// Why the value is not the response's leaf, when it is not: the
         /// runtime's rule that reads it so.
         public let note: String?
+
+        private enum CodingKeys: String, CodingKey {
+            case path, value, `throws`, result, note
+        }
+
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            path = try container.decode(String.self, forKey: .path)
+            `throws` = try container.decodeIfPresent(String.self, forKey: .throws)
+            result = try container.decodeIfPresent(Value.self, forKey: .result)
+            // A row that throws or reads a result needs no value.
+            if `throws` == nil && result == nil {
+                value = try container.decode(Value.self, forKey: .value)
+            } else {
+                value = try container.decodeIfPresent(Value.self, forKey: .value) ?? .null
+            }
+            note = try container.decodeIfPresent(String.self, forKey: .note)
+        }
     }
 
     /// A JSON value as the manifest spells it: what a variable is given and
@@ -403,11 +429,16 @@ extension Manifest {
         public let operation: String?
         public let variables: [String: Value]
         public let path: String
+        /// What the read yields; null when the row says it throws.
         public let value: Value
+        /// What the read throws instead, as a case's row says it.
+        public let `throws`: String?
+        /// A `@catch` read's result, as a case's row says it.
+        public let result: Value?
         public let note: String?
 
         private enum CodingKeys: String, CodingKey {
-            case handle, operation, variables, path, value, note
+            case handle, operation, variables, path, value, `throws`, result, note
         }
 
         public init(from decoder: any Decoder) throws {
@@ -416,7 +447,13 @@ extension Manifest {
             operation = try container.decodeIfPresent(String.self, forKey: .operation)
             variables = try container.decodeIfPresent([String: Value].self, forKey: .variables) ?? [:]
             path = try container.decode(String.self, forKey: .path)
-            value = try container.decode(Value.self, forKey: .value)
+            `throws` = try container.decodeIfPresent(String.self, forKey: .throws)
+            result = try container.decodeIfPresent(Value.self, forKey: .result)
+            if `throws` == nil && result == nil {
+                value = try container.decode(Value.self, forKey: .value)
+            } else {
+                value = try container.decodeIfPresent(Value.self, forKey: .value) ?? .null
+            }
             note = try container.decodeIfPresent(String.self, forKey: .note)
         }
     }

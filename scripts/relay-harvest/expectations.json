@@ -53,5 +53,45 @@
     "status": "by-design",
     "note": "The deferred fragment's fields are not in the store. Relay's check answers missing; Baton's answers from the selection outside the deferred parts, which checks them apart, and the operation fetches either way (spec/runtime.md, 'The deferred parts are checked apart').",
     "decision": "Open. The recommendation is no change, since the answer only decides whether the rest renders while the deferred part is fetched."
+  },
+  "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: NULL) catching a @required(action: THROW) returns null": {
+    "status": "possible-bug",
+    "note": "`@catch(to: NULL)` on a link or an aliased inline fragment: Relay reads the selection as null when a field error or a `@required(action: THROW)` is below it; Baton reads `to: NULL` as the plain optional accessor (docs/decisions/error-directives-in-swift.md), so the selection reads present and the error stays below.",
+    "decision": "Open."
+  },
+  "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: NULL) on aliased inline fragment with field error returns null": {
+    "status": "possible-bug",
+    "note": "`@catch(to: NULL)` on a link or an aliased inline fragment: Relay reads the selection as null when a field error or a `@required(action: THROW)` is below it; Baton reads `to: NULL` as the plain optional accessor (docs/decisions/error-directives-in-swift.md), so the selection reads present and the error stays below.",
+    "decision": "Open."
+  },
+  "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: NULL) catching missing data returns null": {
+    "status": "unspecified-behaviour",
+    "note": "Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it.",
+    "decision": "Open."
+  },
+  "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: NULL) on aliased inline fragment catching missing data returns null": {
+    "status": "unspecified-behaviour",
+    "note": "Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it.",
+    "decision": "Open."
+  },
+  "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: RESULT) on aliased inline fragment catching missing data returns error": {
+    "status": "unspecified-behaviour",
+    "note": "Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it.",
+    "decision": "Open."
+  },
+  "RelayReader-RelayErrorHandling-test.js: RelayReader error fields adds the errors to fieldErrors including missingData - with @catch": {
+    "status": "unspecified-behaviour",
+    "note": "Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it.",
+    "decision": "Open."
+  },
+  "RelayReader-RelayErrorHandling-test.js: RelayReader error fields Reports missing fields in topological order": {
+    "status": "unspecified-behaviour",
+    "note": "Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it.",
+    "decision": "Open."
+  },
+  "RelayReader-RequiredFields-test.js: RelayReader @required @required(action: LOG) within an inline fragment on a concrete type bubbles if the type matches": {
+    "status": "possible-bug",
+    "note": "A `@required` field inside a type condition does not bubble: the generated `satisfied` of `maybeNodeInterface`'s lens returns true without testing the condition's fields, so the link reads present, and `name` reads as a non-optional `String` while it is null. Relay nulls `maybeNodeInterface`, as Baton's own rule for `@required` says it should.",
+    "decision": "Open."
   }
 }

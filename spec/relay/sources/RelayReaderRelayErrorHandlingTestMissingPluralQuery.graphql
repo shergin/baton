@@ -1,0 +1,9 @@
+query RelayReaderRelayErrorHandlingTestMissingPluralQuery($size: [Int])
+@throwOnFieldError {
+  nodes {
+    lastName
+    profilePicture(size: $size) {
+      uri
+    }
+  }
+}

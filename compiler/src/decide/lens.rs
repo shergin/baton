@@ -257,11 +257,15 @@ impl SlotAccess {
     }
 }
 
-/// One accessor: its name, unescaped, the conditions it reads under, and
-/// what it reads.
+/// One accessor: its name, unescaped, the response key it reads, the
+/// conditions it reads under, and what it reads.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Accessor {
     pub name: String,
+    /// The key of the response the accessor reads under: a field's alias or
+    /// name, an aliased selection's alias; none for a spread or a type
+    /// condition, which read the parent's object.
+    pub key: Option<String>,
     pub guards: Vec<Vec<Guard>>,
     pub read: Read,
 }

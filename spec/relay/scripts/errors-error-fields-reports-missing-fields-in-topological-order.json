@@ -1,0 +1,22 @@
+{
+  "name": "errors-error-fields-reports-missing-fields-in-topological-order",
+  "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields Reports missing fields in topological order",
+  "status": "unspecified-behaviour",
+  "note": "Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it.",
+  "decision": "Open.",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRelayErrorHandlingTestErrorOrderQuery",
+        "response": "relay/errors/error-fields-reports-missing-fields-in-topological-order.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRelayErrorHandlingTestErrorOrderQuery",
+          "path": "",
+          "throws": "missingData"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "required-required-bubbles-required-action-log-on-plural-scalar-field-up-to-the-parent",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) on plural scalar field up to the parent",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest9Query",
+        "response": "relay/required/required-bubbles-required-action-log-on-plural-scalar-field-up-to-the-parent.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest9Query",
+          "path": "me",
+          "value": null
+        }
+      ]
+    }
+  ]
+}

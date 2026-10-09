@@ -1,0 +1,5 @@
+query RelayReaderRequiredFieldsTest15Query($include: Boolean!) {
+  me {
+    emailAddresses @include(if: $include) @required(action: LOG)
+  }
+}

@@ -1,0 +1,5 @@
+query RelayReaderCatchFieldsTestRequiredCatchToNullErrorQuery {
+  me @catch(to: NULL) {
+    firstName @required(action: THROW)
+  }
+}

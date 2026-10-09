@@ -1,0 +1,18 @@
+{
+  "data": {
+    "node": {
+      "__typename": "User",
+      "id": "1",
+      "emailAddresses": []
+    }
+  },
+  "errors": [
+    {
+      "message": "There was an error!",
+      "path": [
+        "node",
+        "emailAddresses"
+      ]
+    }
+  ]
+}

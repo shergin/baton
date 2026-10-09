@@ -1,0 +1,19 @@
+{
+  "name": "required-required-required-action-log-within-an-inline-fragment-does-not-bubble-if-type-does-not-match",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required @required(action: LOG) within an inline fragment does not bubble if type does not match",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest13Query",
+        "response": "relay/required/required-required-action-log-within-an-inline-fragment-does-not-bubble-if-type-does-not-match.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest13Query",
+          "path": "maybeNodeInterface.name",
+          "value": "I am not a node"
+        }
+      ]
+    }
+  ]
+}

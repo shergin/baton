@@ -1,0 +1,1 @@
+query RelayReaderRequiredFieldsTest12Query{maybeNodeInterface{__typename,...on NonNodeNoID{name},...on Node{__isNode:__typename,id}}}

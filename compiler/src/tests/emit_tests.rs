@@ -359,9 +359,11 @@ fn report_swift_tests() -> BTreeMap<String, String> {
         .retain(|fragment| fragment.source != hostile_names::CORPUS);
     plan.operations
         .retain(|operation| operation.source != hostile_names::CORPUS);
+    let program = crate::decide::program(&plan, &SwiftNaming::new(&swift_tests_config()))
+        .unwrap_or_else(|errors| panic!("the test documents emit: {errors:?}"));
     BTreeMap::from([(
         "BatonTests.report.json".to_string(),
-        crate::report::text(&plan, &repository()),
+        crate::report::text(&plan, &repository(), &program),
     )])
 }
 

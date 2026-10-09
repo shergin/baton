@@ -1,0 +1,24 @@
+{
+  "name": "catch-catch-if-scalar-has-catch-to-result-scalar-value-should-provide-the-error",
+  "origin": "RelayReader-CatchFields-test.js: RelayReader @catch if scalar has catch to RESULT - scalar value should provide the error",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderCatchFieldsTest01Query",
+        "response": "relay/catch/catch-if-scalar-has-catch-to-result-scalar-value-should-provide-the-error.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderCatchFieldsTest01Query",
+          "path": "me.lastName",
+          "result": {
+            "ok": false,
+            "errors": [
+              "me.lastName"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

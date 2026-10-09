@@ -1,0 +1,33 @@
+{
+  "name": "errors-error-fields-adds-the-errors-to-fielderrors-including-missingdata-within-plural-fields-without-catch",
+  "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields adds the errors to fieldErrors including missingData within plural fields - without @catch",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRelayErrorHandlingTestMissingPluralQuery",
+        "variables": {
+          "size": 42
+        },
+        "response": "relay/errors/error-fields-adds-the-errors-to-fielderrors-including-missingdata-within-plural-fields-without-catch.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRelayErrorHandlingTestMissingPluralQuery",
+          "variables": {
+            "size": 42
+          },
+          "path": "nodes.0.lastName",
+          "value": null
+        },
+        {
+          "operation": "RelayReaderRelayErrorHandlingTestMissingPluralQuery",
+          "variables": {
+            "size": 42
+          },
+          "path": "",
+          "throws": "fieldErrors"
+        }
+      ]
+    }
+  ]
+}

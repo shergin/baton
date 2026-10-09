@@ -1,0 +1,25 @@
+{
+  "name": "required-required-required-action-log-bubbles-across-skip",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required @required(action: LOG) bubbles across @skip",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest14Query",
+        "variables": {
+          "skip": false
+        },
+        "response": "relay/required/required-required-action-log-bubbles-across-skip.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest14Query",
+          "variables": {
+            "skip": false
+          },
+          "path": "me",
+          "value": null
+        }
+      ]
+    }
+  ]
+}

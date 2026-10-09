@@ -1,0 +1,26 @@
+{
+  "name": "catch-catch-catch-to-result-on-aliased-inline-fragment-with-no-error-returns-ok-result",
+  "origin": "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: RESULT) on aliased inline fragment with no error returns ok result",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderCatchFieldsTestCatchOkInAliasedInlineFragmentToResultQuery",
+        "response": "relay/catch/catch-catch-to-result-on-aliased-inline-fragment-with-no-error-returns-ok-result.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderCatchFieldsTestCatchOkInAliasedInlineFragmentToResultQuery",
+          "path": "me.myAlias",
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "operation": "RelayReaderCatchFieldsTestCatchOkInAliasedInlineFragmentToResultQuery",
+          "path": "me.myAlias.lastName",
+          "value": "Big Bird"
+        }
+      ]
+    }
+  ]
+}
