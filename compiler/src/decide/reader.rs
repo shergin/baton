@@ -627,8 +627,19 @@ impl<'a> Readers<'a> {
                     unreachable!("members turns conditions into guards")
                 }
             };
+            let key = match &member.selection {
+                SelectionPlan::Scalar { name, alias, .. }
+                | SelectionPlan::Linked { name, alias, .. } => {
+                    Some(alias.clone().unwrap_or_else(|| name.clone()))
+                }
+                SelectionPlan::Inline { alias, .. } if matches!(read, Read::Aliased(_)) => {
+                    alias.clone()
+                }
+                _ => None,
+            };
             accessors.push(Accessor {
                 name: member.accessor_name().to_string(),
+                key,
                 guards: member.guards.clone(),
                 read,
             });

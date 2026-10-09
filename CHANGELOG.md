@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The report `batonc generate --report` writes, `Baton.report.json` under
+  the build plugin, lists each operation's and fragment's lens: every
+  accessor's name, the response key it reads, and its shape, whether it
+  reads absent, a `@catch` result, a throwing read or a list, with the lens
+  it nests. A renamed accessor or a field that starts throwing now shows in
+  the report's diff.
 - The UIKit half of `docs/recipes/uikit.md`, compiled: a
   `UIViewController` over a handle, a `UITableViewController` whose cells
   bind a lens, and the app's lifecycle on the application's background and

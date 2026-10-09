@@ -89,7 +89,8 @@ Writes, and writes nothing when a document has an error:
   before it reads the configuration; else under `--out` when given; else
   beside the configuration. `--persisted` without `persistConfig` is an
   error.
-- **The report**, `--report <file>`: what the target compiled, as JSON. See
+- **The report**, `--report <file>`: what the target compiled, as JSON,
+  each lens with its accessors' names, keys and shapes. See
   [Report](../terminology.md#compiler).
 
 `--check` writes nothing: every output is computed and compared with the

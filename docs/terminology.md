@@ -857,9 +857,13 @@ Here: what the compiler compiled for one target, written by
 build's output directory as `Baton.report.json`: the schema's digest; every
 operation with its name, kind, source, id when persisted, variables as the
 schema types them, the fragments it reaches directly or through other
-fragments, and its text; every fragment with its name, type condition,
-source, the operations that reach it, and its definition as the author
-wrote it, printed before the transforms. Deterministic, by name, with
+fragments, its text and its lens; every fragment with its name, type
+condition, source, the operations that reach it, its definition as the
+author wrote it, printed before the transforms, and its lens. A lens is
+listed as the target's language reads it: each accessor's name, the
+response key it reads, and its shape, whether it reads absent, a `@catch`
+result, a throwing read or a list, and the nested lens it reads; see
+[the lens decision](decisions/the-report-holds-each-lens.md). Deterministic, by name, with
 sources relative to the working directory, so the diff of two builds'
 reports is the contract's change. `validate`, `print` and
 `generate --check` are the same compilation with another output, and
