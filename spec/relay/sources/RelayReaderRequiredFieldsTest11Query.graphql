@@ -1,0 +1,7 @@
+query RelayReaderRequiredFieldsTest11Query {
+  viewer {
+    allTimezones @required(action: NONE) {
+      timezone
+    }
+  }
+}

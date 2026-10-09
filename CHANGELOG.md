@@ -27,17 +27,22 @@ are expected and listed without apology.
   the closure now computes what the controller shows, and the first frame
   is read synchronously rather than one suspension later. A controller's
   operations live in a `.graphql` file, since `@Query` is a view's storage.
-- `spec/relay/`: Relay v21.0.1's `RelayResponseNormalizer-test.js` and
-  `DataChecker-test.js` harvested into cases, translated into Baton's keys
-  by `scripts/relay-harvest/` and run by the Swift test target
-  `BatonRelayTests`. A checker test's hand-seeded store becomes the response
-  it stands for, kept only when Relay answers the same from it. Relay's
-  tests are measured against, not obeyed: of 123, 15 agree with Relay and
-  must pass; 11 carry a status (`possible-bug`, `unspecified-behaviour`,
+- `spec/relay/`: Relay v21.0.1's `RelayResponseNormalizer-test.js`,
+  `DataChecker-test.js` and its four reader suites (`RelayReader`,
+  `RequiredFields`, `CatchFields`, `RelayErrorHandling`) harvested into
+  cases, translated into Baton's keys by `scripts/relay-harvest/` and run
+  by the Swift test target `BatonRelayTests`. A hand-seeded store becomes
+  the response it stands for, kept only when Relay answers the same from
+  it; a reader test's answer becomes `reads` rows read through the lenses
+  the compiler reports, with `throws` and `result` rows for
+  `@required(action: THROW)`, `@throwOnFieldError` and `@catch`. Relay's
+  tests are measured against, not obeyed: of 227, 47 agree with Relay and
+  must pass; 19 carry a status (`possible-bug`, `unspecified-behaviour`,
   `invalid-input`, `by-design`) and run with their results ignored until
-  they pass; 44 use features Baton does not have and are kept out of the
-  runs; 53 are not expressible yet.
-  `docs/decisions/relays-tests-are-measured-not-obeyed.md` is the record.
+  they pass; 51 use features Baton does not have and are kept out of the
+  runs; 110 are not expressible yet, most of them a fragment read or
+  checked at a record. `docs/decisions/relays-tests-are-measured-not-obeyed.md`
+  is the record.
 - The compiler refuses `OptimisticResponse` as the name of a Kotlin
   fragment or operation, with a message at the name, as it refuses `Data`:
   the builder a mutation nests hid a mutation of that name inside its own

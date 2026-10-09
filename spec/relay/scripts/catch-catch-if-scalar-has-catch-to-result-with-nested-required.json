@@ -1,0 +1,24 @@
+{
+  "name": "catch-catch-if-scalar-has-catch-to-result-with-nested-required",
+  "origin": "RelayReader-CatchFields-test.js: RelayReader @catch if scalar has catch to RESULT with nested required",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderCatchFieldsTest02Query",
+        "response": "relay/catch/catch-if-scalar-has-catch-to-result-with-nested-required.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderCatchFieldsTest02Query",
+          "path": "me",
+          "result": {
+            "ok": false,
+            "errors": [
+              "me.lastName"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

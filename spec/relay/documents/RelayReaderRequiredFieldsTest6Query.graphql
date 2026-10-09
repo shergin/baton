@@ -1,0 +1,1 @@
+query RelayReaderRequiredFieldsTest6Query{me{backgroundImage{uri},id}}

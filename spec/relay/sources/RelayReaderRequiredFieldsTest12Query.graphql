@@ -1,0 +1,7 @@
+query RelayReaderRequiredFieldsTest12Query {
+  maybeNodeInterface {
+    ... on NonNodeNoID {
+      name @required(action: LOG)
+    }
+  }
+}

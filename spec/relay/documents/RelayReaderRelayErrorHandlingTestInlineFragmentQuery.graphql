@@ -1,0 +1,1 @@
+query RelayReaderRelayErrorHandlingTestInlineFragmentQuery{node(id:"4"){__typename,...on MaybeNodeInterface{__isMaybeNodeInterface:__typename,name},id}}

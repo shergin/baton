@@ -1,0 +1,16 @@
+{
+  "data": {
+    "also_me": {
+      "__typename": "User",
+      "nearest_neighbor": {
+        "__typename": "User",
+        "id": "4"
+      },
+      "id": "4"
+    },
+    "me": {
+      "__typename": "User",
+      "id": "4"
+    }
+  }
+}

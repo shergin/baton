@@ -1,0 +1,26 @@
+{
+  "name": "catch-catch-if-linked-has-catch-to-result-but-no-error-response-should-reflect",
+  "origin": "RelayReader-CatchFields-test.js: RelayReader @catch if linked has catch to RESULT - but no error, response should reflect",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderCatchFieldsTest010Query",
+        "response": "relay/catch/catch-if-linked-has-catch-to-result-but-no-error-response-should-reflect.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderCatchFieldsTest010Query",
+          "path": "me",
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "operation": "RelayReaderCatchFieldsTest010Query",
+          "path": "me.lastName",
+          "value": "Big Bird"
+        }
+      ]
+    }
+  ]
+}

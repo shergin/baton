@@ -8,8 +8,10 @@ makes them and translates the records into Baton's keys. The tests,
 `testschema.graphql` and the client extensions are Relay's, MIT licensed,
 copyright Meta Platforms, Inc. and affiliates.
 
-The harvest covers `RelayResponseNormalizer-test.js` and
-`DataChecker-test.js`. Relay's tests are
+The harvest covers `RelayResponseNormalizer-test.js`, `DataChecker-test.js`,
+`RelayReader-test.js`, `RelayReader-RequiredFields-test.js`,
+`RelayReader-CatchFields-test.js` and `RelayReader-RelayErrorHandling-test.js`.
+Relay's tests are
 measured against, not obeyed
 ([docs/decisions/relays-tests-are-measured-not-obeyed.md](../../docs/decisions/relays-tests-are-measured-not-obeyed.md)):
 each case carries a status, and a case whose status is not `passes` says
@@ -29,6 +31,9 @@ never its dump. The statuses are written in
 - `checker/`: the responses the availability checks' seeded stores stand
   for; each is a script of a `payload` step and a `check` step with Relay's
   answer, `available` as `memory` and `missing` as `miss`.
+- `reader/`, `required/`, `catch/`, `errors/`: the responses the reader
+  tests' seeded stores stand for; each is a script of one `payload` step
+  whose `reads` say what Relay's reader read, in Baton's terms (below).
 - `sources/`: each operation as the test's author wrote it, with its
   fragments; `documents/`: the text the compiler generated from it;
   `unsupported/`: the documents batonc rejects, kept for when it does not.
@@ -37,7 +42,8 @@ never its dump. The statuses are written in
 - `harvest.json`: every test with what became of it.
 
 The Swift test target `BatonRelayTests` compiles `sources/` (generated into
-`RelayDocuments.swift`) against the schema and runs every case but the
+`RelayDocuments.swift`, the reads into `RelayReads.swift`) against the
+schema and runs every case but the
 unsupported ones, each with a status as a known issue: it commits
 the responses as payloads and compares the store with the dump.
 
@@ -52,6 +58,33 @@ is kept only when the two answers agree. The case then compares Baton and
 Relay on one response a server could send. A check of a fragment at a
 record has no counterpart: a Baton fragment has no plan of its own.
 
+## Reads
+
+Relay's `read` gives masked data and the field errors a component would
+act on; a Baton lens reads the same facts through accessors. A row is a
+response path with what the lens reads there:
+
+- a value, as Relay read it; a link Relay read as null is `null`;
+- a `@catch` field's result, `{"ok": true, "value": …}` (no value for a
+  lens) or `{"ok": false, "errors": [path, …]}`, each error by its dotted
+  path, a `@required` error's taken from Relay's message;
+- `"throws": "requiredField"` where Relay's component would throw for a
+  `@required(action: THROW)` field: Baton's accessor throws there, and the
+  nulls Relay wrote on the way up are not rows;
+- at the empty path, the operation's own outcome: `requiredField` when
+  Relay read no data because a `@required` field bubbled to the root, as a
+  Baton handle fails; `fieldErrors` where Relay would throw under
+  `@throwOnFieldError`; `missingData` where Relay would throw for data
+  missing under it, which Baton has no counterpart of.
+
+A list's indices count the records Baton's list keeps: Relay keeps a null
+element in place, Baton drops it. A type condition's fields are read
+through its accessor (`asUser`), chosen by the response's `__typename`, and
+a masked spread is no row. `RelayReads.swift` in the Swift test target is
+generated from the rows and from the compiler's report, which gives every
+accessor's name, the response key it reads and its shape, so each row is
+read as the lens reads it, with `?.`, `try` or a result's `get()`.
+
 ## Running the harvest again
 
 In a checkout of Relay v21.0.1 outside this repository, install and build
@@ -59,7 +92,8 @@ its JavaScript (`yarn install --ignore-scripts`, then
 `node_modules/.bin/gulp dist`), record the calls, and translate them:
 
 ```sh
-for suite in RelayResponseNormalizer DataChecker; do
+for suite in RelayResponseNormalizer DataChecker RelayReader \
+    RelayReader-RequiredFields RelayReader-CatchFields RelayReader-RelayErrorHandling; do
   HARVEST_OUT=/tmp/harvest NODE_ENV=test OSS=true node_modules/.bin/jest \
     packages/relay-runtime/store/__tests__/$suite-test.js \
     --setupFilesAfterEnv <baton>/scripts/relay-harvest/record.js
@@ -74,17 +108,17 @@ BATON_COMPILER=local BATON_BLESS=1 swift test --filter BatonRelayTests
 The translator writes this table.
 
 <!-- harvest -->
-123 tests harvested.
+227 tests harvested.
 
-| Status | Meaning | `RelayResponseNormalizer` | `DataChecker` |
-|---|---|---|---|
-| `passes` | Baton agrees with Relay; the case must pass. | 13 | 2 |
-| `possible-bug` | Baton is probably wrong; the case runs and its result is ignored. | 2 | 0 |
-| `unspecified-behaviour` | GraphQL does not say, and Relay chose; the case runs and its result is ignored. | 7 | 0 |
-| `invalid-input` | the payload is one a conforming server does not send; the case runs and its result is ignored. | 1 | 0 |
-| `by-design` | Baton parts from Relay on purpose, by a decision; the case runs and its result is ignored. | 0 | 1 |
-| `unsupported-feature` | Relay has something Baton does not; the case is ingested and left out of the runs. | 31 | 13 |
-| `not-ingested` | the harvest cannot express the test yet; nothing is written. | 6 | 47 |
+| Status | Meaning | `RelayResponseNormalizer` | `DataChecker` | `RelayReader` | `RelayReader-RequiredFields` | `RelayReader-CatchFields` | `RelayReader-RelayErrorHandling` |
+|---|---|---|---|---|---|---|---|
+| `passes` | Baton agrees with Relay; the case must pass. | 13 | 2 | 1 | 18 | 9 | 4 |
+| `possible-bug` | Baton is probably wrong; the case runs and its result is ignored. | 2 | 0 | 0 | 1 | 2 | 0 |
+| `unspecified-behaviour` | GraphQL does not say, and Relay chose; the case runs and its result is ignored. | 7 | 0 | 0 | 0 | 3 | 2 |
+| `invalid-input` | the payload is one a conforming server does not send; the case runs and its result is ignored. | 1 | 0 | 0 | 0 | 0 | 0 |
+| `by-design` | Baton parts from Relay on purpose, by a decision; the case runs and its result is ignored. | 0 | 1 | 0 | 0 | 0 | 0 |
+| `unsupported-feature` | Relay has something Baton does not; the case is ingested and left out of the runs. | 31 | 13 | 0 | 1 | 2 | 4 |
+| `not-ingested` | the harvest cannot express the test yet; nothing is written. | 6 | 47 | 34 | 10 | 3 | 10 |
 
 ### `RelayResponseNormalizer-test.js`
 
@@ -218,6 +252,130 @@ The translator writes this table.
 | exec time resolvers client query should return available when only client data is missing | `not-ingested` | the store holds what a `ClientEdgeToClientObject` selection writes, which no response does |
 | exec time resolvers server and client query should return available when server data is available | `not-ingested` | the store holds what a `ClientEdgeToClientObject` selection writes, which no response does |
 | exec time resolvers server and client query should return missing when server data is missing | `not-ingested` | the store holds what a `ClientEdgeToClientObject` selection writes, which no response does |
+
+### `RelayReader-test.js`
+
+| Test | Status | Note |
+|---|---|---|
+| reads query data | `passes` |  |
+| reads fragment data | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| creates fragment pointers with fragment owner when owner is provided | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| creates fragment pointers with variable @arguments | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| creates fragment pointers with literal @arguments | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| @inline reads a basic fragment | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| reads data when the root is deleted | `not-ingested` | a read of a fragment at `4`; a Baton case reads from a response's root |
+| reads data when the root is unfetched | `not-ingested` | a read of a fragment at `4`; a Baton case reads from a response's root |
+| reads "handle" fields for query root fragments | `not-ingested` | the response the seeded store stands for gives Relay another answer |
+| reads "handle" fields for fragments | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| when @match directive is present creates fragment and module pointers for fragment that matches resolved type (1) | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| when @match directive is present creates fragment and module pointers for fragment that matches resolved type (2) | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| when @match directive is present reads data correctly when the resolved type does not match any of the specified cases | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| when @match directive is present reads data correctly when the match field record is null | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| when @match directive is present reads data correctly when the match field record is missing | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| @module creates fragment and module pointers when the type matches a @module selection (1) | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| @module creates fragment and module pointers when the type matches a @module selection (2) | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| @module reads data correctly when the resolved type does not match any of the @module selections | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| `isMissingData` field readScalar should have `isMissingData = false` if data is available | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| `isMissingData` field readScalar should have `isMissingData = true` if data is missing | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| `isMissingData` field readLink should have `isMissingData = false` if data is available | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| `isMissingData` field readLink should have `isMissingData = true` if data is missing | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| `isMissingData` field readLink should have `isMissingData = true` if data is missing (variables) | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| `isMissingData` field readPluralLink should have `isMissingData = false` if data is available | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| `isMissingData` field readPluralLink should have `isMissingData = true` if data is missing in the node | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| `isMissingData` field readPluralLink should have `isMissingData = true` if data is missing for connection | `not-ingested` | a read of a fragment at `2`; a Baton case reads from a response's root |
+| `isMissingData` field readPluralLink should have `isMissingData = true` if data is missing for edge in the connection | `not-ingested` | a read of a fragment at `3`; a Baton case reads from a response's root |
+| `isMissingData` field readPluralLink should not have missing data if missing fields are client fields | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| `isMissingData` field readPluralLink should not consider data missing if the fragment type does not match the data | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| `isMissingData` field readPluralLink should consider data missing if the fragment type is abstract | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| `isMissingData` field readPluralLink should consider data missing if the fragment is concrete but on the root | `not-ingested` | a read of a selector that is not a query |
+| `isMissingData` field @stream_connection should not have missing data if all data is fetched | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| `isMissingData` field @stream_connection should not have missing data when all edge data is fetched by pageInfo is missing | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| `isMissingData` field @stream_connection should have missing data if an edge is missing data | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| does not record a dependency on type records for abstract type discriminators | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+
+### `RelayReader-RequiredFields-test.js`
+
+| Test | Status | Note |
+|---|---|---|
+| @required bubbles @required(action: LOG) scalars up to LinkedField | `passes` |  |
+| @required bubbles @required(action: LOG) up to aliased inline fragment without type condition | `passes` |  |
+| @required bubbles @required(action: LOG) up to aliased inline fragment _with_ type condition | `passes` |  |
+| @required if two @required(action: THROW) errors cascade, report the more deeply nested one | `passes` |  |
+| @required bubbles @required(action: LOG) scalars up to LinkedField even if subsequent fields are not unexpectedly null | `passes` |  |
+| @required only bubbles @required(action: LOG) scalars up to the parent LinkedField | `passes` |  |
+| @required bubbles @required(action: LOG) through @required(action: LOG) LinkedField | `passes` |  |
+| @required bubbles @required(action: LOG) scalars up to the query root | `passes` |  |
+| @required bubbles @required(action: LOG) up to plural linked field | `passes` |  |
+| @required bubbles @required(action: LOG) on plural scalar field up to the parent | `passes` |  |
+| @required does _not_ bubbles @required(action: LOG) on plural linked field up to the parent | `passes` |  |
+| @required bubbles when encountering a missing plural linked field | `passes` |  |
+| @required @required(action: LOG) within an inline fragment on a concrete type bubbles if the type matches | `possible-bug` | A `@required` field inside a type condition does not bubble: the generated `satisfied` of `maybeNodeInterface`'s lens returns true without testing the condition's fields, so the link reads present, and `name` reads as a non-optional `String` while it is null. Relay nulls `maybeNodeInterface`, as Baton's own rule for `@required` says it should. Decision: Open. |
+| @required @required(action: LOG) within an inline fragment does not bubble if type does not match | `passes` |  |
+| @required @required(action: LOG) bubbles across @skip | `passes` |  |
+| @required @required(action: LOG) bubbles across @include | `passes` |  |
+| @required @required(action: LOG) does not bubble if @required field is not @included | `passes` |  |
+| @required @required(action: LOG) does not bubble if @required field is @skipped | `passes` |  |
+| @required @required(action: LOG) bubbles client extension fields | `passes` |  |
+| @required bubbles @required(action: LOG) on Scalar up to parent fragment | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| @required bubbles @required(action: LOG) on LinkedField up to parent fragment | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| @required bubbles @required(action: LOG) on LinkedField up to parent fragment on Query | `not-ingested` | a read of a selector that is not a query |
+| @required does not allow unexpected nulls to escape fragment boundaries | `not-ingested` | several reads in one test |
+| @required bubbles nulls if the value is "missing" (still in the process of being loaded) | `not-ingested` | a read of a fragment at `1`; a Baton case reads from a response's root |
+| @required bubbles to list item when used in plural fragment | `unsupported-feature` | batonc: `@relay` on a fragment definition has no meaning in Baton |
+| @required client edge with @required when CATCH is enabled caught missing required field error when action:THROW under a @catch | `not-ingested` | the store holds what a `ClientEdgeToClientObject` selection writes, which no response does |
+| @required client edge with @required throws when missing required field | `not-ingested` | the store holds what a `ClientEdgeToClientObject` selection writes, which no response does |
+| @required client edge with @required does not throw when required field is present | `not-ingested` | the store holds what a `ClientEdgeToClientObject` selection writes, which no response does |
+| @required client edge with @required does not throw when required plural field is present | `not-ingested` | the store holds what a `ClientEdgeToClientObject` selection writes, which no response does |
+| @required client edge with @required does not throw when @live required field is suspended | `not-ingested` | the store holds what a `RelayResolver` selection writes, which no response does |
+
+### `RelayReader-CatchFields-test.js`
+
+| Test | Status | Note |
+|---|---|---|
+| @catch if scalar has @catch(to: NULL) - scalar value should be null, and nothing should throw or catch | `passes` |  |
+| @catch if scalar has catch to RESULT - scalar value should provide the error | `passes` |  |
+| @catch if preceding scalar sibling has error, catch to RESULT should not catch that error | `passes` |  |
+| @catch if preceding scalar sibling has a logged missing required field, an THROW required field inside a subsequent @catch should not delete that log | `passes` |  |
+| @catch @catch(to: NULL) catching a @required(action: THROW) returns null | `possible-bug` | `@catch(to: NULL)` on a link or an aliased inline fragment: Relay reads the selection as null when a field error or a `@required(action: THROW)` is below it; Baton reads `to: NULL` as the plain optional accessor (docs/decisions/error-directives-in-swift.md), so the selection reads present and the error stays below. Decision: Open. |
+| @catch @catch(to: NULL) catching missing data returns null | `unspecified-behaviour` | Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it. Decision: Open. |
+| @catch @catch(to: NULL) on query catching missing data returns null | `unsupported-feature` | batonc: `@catch` on a query has no meaning in Baton |
+| @catch @catch(to: RESULT) on query catching missing data returns error | `unsupported-feature` | batonc: `@catch` on a query has no meaning in Baton |
+| @catch @catch(to: NULL) on fragment catching missing data returns null | `not-ingested` | a read of a selector that is not a query |
+| @catch @catch(to: RESULT) on fragment catching missing data returns error | `not-ingested` | a read of a selector that is not a query |
+| @catch @catch(to: NULL) on aliased inline fragment catching missing data returns null | `unspecified-behaviour` | Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it. Decision: Open. |
+| @catch @catch(to: RESULT) on aliased inline fragment catching missing data returns error | `unspecified-behaviour` | Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it. Decision: Open. |
+| @catch @catch(to: RESULT) on aliased inline fragment with field error returns error | `not-ingested` | the read: a caught error the response does not hold |
+| @catch @catch(to: NULL) on aliased inline fragment with field error returns null | `possible-bug` | `@catch(to: NULL)` on a link or an aliased inline fragment: Relay reads the selection as null when a field error or a `@required(action: THROW)` is below it; Baton reads `to: NULL` as the plain optional accessor (docs/decisions/error-directives-in-swift.md), so the selection reads present and the error stays below. Decision: Open. |
+| @catch @catch(to: RESULT) on aliased inline fragment with no error returns ok result | `passes` |  |
+| @catch if scalar has catch to RESULT - but no error, response should reflect | `passes` |  |
+| @catch if linked has catch to RESULT - but no error, response should reflect | `passes` |  |
+| @catch if linked has catch to RESULT - with error, response should reflect | `passes` |  |
+| @catch if scalar has catch to RESULT with nested required | `passes` |  |
+
+### `RelayReader-RelayErrorHandling-test.js`
+
+| Test | Status | Note |
+|---|---|---|
+| error fields adds the errors to fieldErrors | `passes` |  |
+| error fields adds the errors to fieldErrors including missingData - without @catch | `passes` |  |
+| error fields adds the errors to fieldErrors including missingData within plural fields - without @catch | `passes` |  |
+| error fields adds the errors to fieldErrors including missingData - with @catch | `unspecified-behaviour` | Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it. Decision: Open. |
+| error fields @throwOnFieldError on a resolver rootFragment that reads field error will cause that resolver to be treated as a field error by the reader | `not-ingested` | the store holds what a `RelayResolver` selection writes, which no response does |
+| error fields @throwOnFieldError reading a resolver with @throwOnFieldError on its rootFragment that reads field error will cause that resolver to be treated as a field error by the reader | `not-ingested` | the store holds what a `RelayResolver` selection writes, which no response does |
+| error fields @throwOnFieldError reading a client edge resolver which points to a record with missing data logs the correct path | `not-ingested` | the store holds what a `RelayResolver` selection writes, which no response does |
+| error fields @throwOnFieldError reading a client edge to client object resolver which points to a record with missing data logs the correct path | `not-ingested` | the store holds what a `ClientEdgeToClientObject` selection writes, which no response does |
+| error fields @throwOnFieldError reading a client edge to PLURAL client object resolver which points to records with missing data logs the correct paths with index segments | `not-ingested` | the store holds what a `ClientEdgeToClientObject` selection writes, which no response does |
+| error fields @catch(to: NULL) on a client edge to server object returns data when available | `not-ingested` | the store holds what a `RelayResolver` selection writes, which no response does |
+| error fields @catch(to: NULL) on a client edge to server object returns null when data is missing instead of throwing | `not-ingested` | the store holds what a `RelayResolver` selection writes, which no response does |
+| error fields @catch(to: NULL) on a client edge to server object returns null when field has errors instead of throwing | `not-ingested` | the store holds what a `RelayResolver` selection writes, which no response does |
+| error fields @catch(to: NULL) on a client edge to client object returns null when data is missing instead of throwing | `not-ingested` | the store holds what a `ClientEdgeToClientObject` selection writes, which no response does |
+| error fields does not report missing data within an inline fragment that does not match | `passes` |  |
+| error fields does report missing data within an inline fragment that does match | `not-ingested` | the response the seeded store stands for gives Relay another answer |
+| error fields Reports missing fields in topological order | `unspecified-behaviour` | Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it. Decision: Open. |
+| error fields when noncompliant error handling on lists is enabled when query has @throwOnFieldError directive has errors that will throw when the linked field is an empty list | `unsupported-feature` | a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS` |
+| error fields when noncompliant error handling on lists is enabled when query has @throwOnFieldError directive has errors that will throw when the scalar field is an empty list | `unsupported-feature` | a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS` |
+| error fields when noncompliant error handling on lists is enabled when query does not have the @throwOnFieldError directive has errors that wont throw when the linked field is an empty list | `unsupported-feature` | a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS` |
+| error fields when noncompliant error handling on lists is enabled when query does not have the @throwOnFieldError directive has errors that wont throw when the scalar field is an empty list | `unsupported-feature` | a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS` |
 
 The client extension files batonc rejects, left out of `schema/extensions/`:
 

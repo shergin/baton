@@ -1,0 +1,10 @@
+query RelayReaderCatchFieldsTestSiblingLogRequiredErrorQuery {
+  alsoMe: me {
+    lastName @required(action: LOG)
+  }
+  me @catch(to: RESULT) {
+    # Despite being more destructive, the THROW here should not overwrite
+    # the LOG, since it gets caught.
+    firstName @required(action: THROW)
+  }
+}

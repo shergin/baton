@@ -1,0 +1,14 @@
+{
+  "name": "catch-catch-catch-to-null-on-query-catching-missing-data-returns-null",
+  "origin": "RelayReader-CatchFields-test.js: RelayReader @catch @catch(to: NULL) on query catching missing data returns null",
+  "status": "unsupported-feature",
+  "note": "batonc: `@catch` on a query has no meaning in Baton",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderCatchFieldsTestCatchMissingInQueryToNullErrorQuery",
+        "response": "relay/catch/catch-catch-to-null-on-query-catching-missing-data-returns-null.json"
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+query RelayReaderRequiredFieldsTest3Query {
+  me @required(action: THROW) {
+    lastName @required(action: THROW)
+  }
+}

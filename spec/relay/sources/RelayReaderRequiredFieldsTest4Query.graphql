@@ -1,0 +1,6 @@
+query RelayReaderRequiredFieldsTest4Query {
+  me {
+    lastName @required(action: LOG)
+    firstName @required(action: LOG)
+  }
+}

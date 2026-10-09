@@ -1,0 +1,20 @@
+{
+  "data": {
+    "me": {
+      "__typename": "User",
+      "screennames": [
+        {
+          "__typename": "Screenname",
+          "name": "neo",
+          "service": "IRC"
+        },
+        {
+          "__typename": "Screenname",
+          "name": "beast",
+          "service": null
+        }
+      ],
+      "id": "1"
+    }
+  }
+}

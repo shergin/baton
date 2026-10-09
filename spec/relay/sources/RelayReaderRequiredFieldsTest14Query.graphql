@@ -1,0 +1,5 @@
+query RelayReaderRequiredFieldsTest14Query($skip: Boolean!) {
+  me {
+    emailAddresses @skip(if: $skip) @required(action: LOG)
+  }
+}

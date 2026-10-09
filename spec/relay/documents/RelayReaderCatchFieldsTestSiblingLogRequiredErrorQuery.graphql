@@ -1,0 +1,1 @@
+query RelayReaderCatchFieldsTestSiblingLogRequiredErrorQuery{alsoMe:me{lastName,id},me{firstName,id}}

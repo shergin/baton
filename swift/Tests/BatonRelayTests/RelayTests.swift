@@ -85,7 +85,7 @@ struct RelayTests {
         }
     }
 
-    @Test("payloads Relay's tests commit in a row leave the records Relay's test expects, and a check after them gives Relay's answer", arguments: RelayScript.all)
+    @Test("payloads Relay's tests commit in a row leave the records Relay's test expects, a check after them gives Relay's answer, and a lens reads what Relay's reader reads", arguments: RelayScript.all)
     func payloadsInARowLeaveWhatRelayExpects(_ relay: RelayScript) throws {
         let script = try Manifest.Script.load(relay.path)
         try measured(relay.marks) {
@@ -106,6 +106,9 @@ struct RelayTests {
                 }
                 if let records = step.records {
                     expectDump(store, records, context: "after step \(index + 1): ")
+                }
+                if !step.reads.isEmpty {
+                    try expectReads(step.reads, in: store, script: relay.path, context: "after step \(index + 1): ")
                 }
             }
         }
@@ -142,6 +145,52 @@ struct RelayTests {
     }
 
     // MARK: Helpers
+
+    /// Compares what the generated lens reads at each row with the row: its
+    /// value, its `@catch` result, or what it throws. The row at the empty
+    /// path is the operation's own outcome, and without one the operation
+    /// reads.
+    func expectReads(_ rows: [Manifest.ScriptRead], in store: Store, script: String, context: String) throws {
+        guard let name = rows.first?.operation else {
+            Issue.record("\(context)a read names no operation")
+            return
+        }
+        let variables = Variables((rows.first?.variables ?? [:]).mapValues(\.variable))
+        let anchor = Anchor(record: store.root, variables: variables, store: store)
+        let outcome = Self.outcome(try Self.operation(name), anchor)
+        let expected = rows.first { $0.path.isEmpty }?.throws
+        #expect(outcome == expected, "\(context)the operation \(outcome.map { "fails with \($0)" } ?? "reads") where Relay's \(expected.map { "fails with \($0)" } ?? "reads")")
+        for row in rows where !row.path.isEmpty {
+            guard let read = RelayReads.readers[script] else {
+                Issue.record("\(context)no generated reads for \(script)")
+                return
+            }
+            let actual: RelayRead
+            do {
+                guard let value = try read(anchor, row.path) else {
+                    Issue.record("\(context)no generated read of \(row.path)")
+                    continue
+                }
+                actual = .value(value)
+            } catch is RequiredFieldError {
+                actual = .threw("requiredField")
+            } catch is FieldErrors {
+                actual = .threw("fieldErrors")
+            } catch {
+                actual = .threw("\(error)")
+            }
+            let wanted: RelayRead = row.throws.map(RelayRead.threw) ?? .value(row.result ?? row.value)
+            #expect(actual.isSame(as: wanted), "\(context)the lens reads \(row.path) as \(actual) where Relay reads \(wanted)")
+        }
+    }
+
+    /// What an operation's own read fails with: a `@required` field that
+    /// bubbled to its root, or field errors under `@throwOnFieldError`.
+    static func outcome<Op: Baton.Operation>(_ operation: Op.Type, _ anchor: Anchor) -> String? {
+        if !Op.Data.satisfied(anchor) { return "requiredField" }
+        if Op.throwsOnFieldError, !Op.Data.fieldErrors(anchor).isEmpty { return "fieldErrors" }
+        return nil
+    }
 
     /// Runs a case's body, as a known issue when the harvest gives it a
     /// status: its result is then ignored until it passes.
@@ -185,7 +234,47 @@ struct RelayTests {
     }
 }
 
+/// What a read gave: a value in the manifest's spelling, or the kind of
+/// error it threw.
+enum RelayRead: CustomStringConvertible {
+    case value(Manifest.Value)
+    case threw(String)
+
+    var description: String {
+        switch self {
+        case .value(let value): "\(value)"
+        case .threw(let kind): "a thrown \(kind)"
+        }
+    }
+
+    func isSame(as other: RelayRead) -> Bool {
+        switch (self, other) {
+        case (.value(let value), .value(let expected)): value.isSameJSON(as: expected)
+        case (.threw(let kind), .threw(let expected)): kind == expected
+        default: false
+        }
+    }
+}
+
+/// The reads the translator generates for each script, in `RelayReads.swift`.
+enum RelayReads {}
+
 extension Manifest.Value {
+    /// Whether two values are the same JSON: a number is one number however
+    /// it is spelled, and an object's members compare by name.
+    func isSameJSON(as other: Manifest.Value) -> Bool {
+        switch (self, other) {
+        case (.int(let int), .double(let double)), (.double(let double), .int(let int)):
+            return Double(int) == double
+        case (.list(let items), .list(let others)):
+            return items.count == others.count && zip(items, others).allSatisfy { $0.isSameJSON(as: $1) }
+        case (.object(let members), .object(let others)):
+            return members.count == others.count && members.allSatisfy { key, value in others[key].map(value.isSameJSON) ?? false }
+        default:
+            return self == other
+        }
+    }
+
     /// The value as an operation variable.
     var variable: Variable {
         switch self {

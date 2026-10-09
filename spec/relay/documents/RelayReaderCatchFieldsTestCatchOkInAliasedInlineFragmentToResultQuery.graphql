@@ -1,0 +1,1 @@
+query RelayReaderCatchFieldsTestCatchOkInAliasedInlineFragmentToResultQuery{me{lastName,id}}

@@ -1,0 +1,24 @@
+{
+  "name": "required-required-does-not-bubbles-required-action-log-on-plural-linked-field-up-to-the-parent",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required does _not_ bubbles @required(action: LOG) on plural linked field up to the parent",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest10Query",
+        "response": "relay/required/required-does-not-bubbles-required-action-log-on-plural-linked-field-up-to-the-parent.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest10Query",
+          "path": "me.screennames.0.name",
+          "value": "neo"
+        },
+        {
+          "operation": "RelayReaderRequiredFieldsTest10Query",
+          "path": "me.screennames.0.service",
+          "value": "IRC"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+query RelayReaderRequiredFieldsTest13Query {
+  maybeNodeInterface {
+    ... on Story {
+      # Weird that a story has a last name. Probably just test data being silly.
+      lastName @required(action: LOG)
+    }
+    name
+  }
+}

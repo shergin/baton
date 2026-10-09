@@ -1,0 +1,1 @@
+query RelayReaderCatchFieldsTest01Query{me{lastName,id}}

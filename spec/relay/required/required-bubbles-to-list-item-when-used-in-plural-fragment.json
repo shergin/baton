@@ -1,0 +1,16 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "__typename": "User",
+        "username": "Wendy",
+        "id": "1"
+      },
+      {
+        "__typename": "User",
+        "username": null,
+        "id": "2"
+      }
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "data": {
+    "node": {
+      "__typename": "User",
+      "id": "1",
+      "friends": {
+        "__typename": "FriendsConnection",
+        "edges": []
+      }
+    }
+  },
+  "errors": [
+    {
+      "message": "There was an error!",
+      "path": [
+        "node",
+        "friends",
+        "edges"
+      ]
+    }
+  ]
+}

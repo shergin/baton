@@ -1,0 +1,19 @@
+{
+  "name": "required-required-bubbles-required-action-log-scalars-up-to-the-query-root",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) scalars up to the query root",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest7Query",
+        "response": "relay/required/required-bubbles-required-action-log-scalars-up-to-the-query-root.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest7Query",
+          "path": "",
+          "throws": "requiredField"
+        }
+      ]
+    }
+  ]
+}

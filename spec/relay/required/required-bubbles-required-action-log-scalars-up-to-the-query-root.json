@@ -1,0 +1,9 @@
+{
+  "data": {
+    "me": {
+      "__typename": "User",
+      "lastName": null,
+      "id": "1"
+    }
+  }
+}

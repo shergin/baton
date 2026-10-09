@@ -1,0 +1,7 @@
+query RelayReaderRequiredFieldsTest6Query {
+  me {
+    backgroundImage @required(action: LOG) {
+      uri @required(action: LOG)
+    }
+  }
+}

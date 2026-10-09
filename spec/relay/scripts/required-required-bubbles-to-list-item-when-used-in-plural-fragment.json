@@ -1,0 +1,14 @@
+{
+  "name": "required-required-bubbles-to-list-item-when-used-in-plural-fragment",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles to list item when used in plural fragment",
+  "status": "unsupported-feature",
+  "note": "batonc: `@relay` on a fragment definition has no meaning in Baton",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest24Query",
+        "response": "relay/required/required-bubbles-to-list-item-when-used-in-plural-fragment.json"
+      }
+    }
+  ]
+}

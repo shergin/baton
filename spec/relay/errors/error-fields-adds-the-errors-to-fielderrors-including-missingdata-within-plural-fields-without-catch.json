@@ -1,0 +1,23 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "__typename": "User",
+        "lastName": null,
+        "id": "1"
+      }
+    ]
+  },
+  "errors": [
+    {
+      "message": "There was an error!",
+      "path": [
+        "nodes",
+        0,
+        "lastName",
+        "me",
+        "lastName"
+      ]
+    }
+  ]
+}

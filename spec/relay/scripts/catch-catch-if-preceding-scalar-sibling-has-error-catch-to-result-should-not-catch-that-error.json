@@ -1,0 +1,27 @@
+{
+  "name": "catch-catch-if-preceding-scalar-sibling-has-error-catch-to-result-should-not-catch-that-error",
+  "origin": "RelayReader-CatchFields-test.js: RelayReader @catch if preceding scalar sibling has error, catch to RESULT should not catch that error",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderCatchFieldsTestSiblingErrorQuery",
+        "response": "relay/catch/catch-if-preceding-scalar-sibling-has-error-catch-to-result-should-not-catch-that-error.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderCatchFieldsTestSiblingErrorQuery",
+          "path": "me.lastName",
+          "value": null
+        },
+        {
+          "operation": "RelayReaderCatchFieldsTestSiblingErrorQuery",
+          "path": "me.firstName",
+          "result": {
+            "ok": true,
+            "value": "Elizabeth"
+          }
+        }
+      ]
+    }
+  ]
+}

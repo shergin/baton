@@ -1,0 +1,19 @@
+{
+  "name": "required-required-if-two-required-action-throw-errors-cascade-report-the-more-deeply-nested-one",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required if two @required(action: THROW) errors cascade, report the more deeply nested one",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest3Query",
+        "response": "relay/required/required-if-two-required-action-throw-errors-cascade-report-the-more-deeply-nested-one.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest3Query",
+          "path": "me.lastName",
+          "throws": "requiredField"
+        }
+      ]
+    }
+  ]
+}

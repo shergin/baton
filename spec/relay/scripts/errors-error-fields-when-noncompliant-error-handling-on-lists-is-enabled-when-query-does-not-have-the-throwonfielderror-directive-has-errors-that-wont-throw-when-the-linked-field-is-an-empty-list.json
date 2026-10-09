@@ -1,0 +1,21 @@
+{
+  "name": "errors-error-fields-when-noncompliant-error-handling-on-lists-is-enabled-when-query-does-not-have-the-throwonfielderror-directive-has-errors-that-wont-throw-when-the-linked-field-is-an-empty-list",
+  "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields when noncompliant error handling on lists is enabled when query does not have the @throwOnFieldError directive has errors that wont throw when the linked field is an empty list",
+  "status": "unsupported-feature",
+  "note": "a Relay feature flag: `ENABLE_NONCOMPLIANT_ERROR_HANDLING_ON_LISTS`",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRelayErrorHandlingTestNoncompliantEmptyLinkedFieldWithoutThrowOnFieldErrorQuery",
+        "response": "relay/errors/error-fields-when-noncompliant-error-handling-on-lists-is-enabled-when-query-does-not-have-the-throwonfielderror-directive-has-errors-that-wont-throw-when-the-linked-field-is-an-empty-list.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRelayErrorHandlingTestNoncompliantEmptyLinkedFieldWithoutThrowOnFieldErrorQuery",
+          "path": "node.id",
+          "value": "1"
+        }
+      ]
+    }
+  ]
+}

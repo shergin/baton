@@ -1,0 +1,10 @@
+{
+  "data": {
+    "me": {
+      "__typename": "User",
+      "firstName": "Alice",
+      "lastName": null,
+      "id": "1"
+    }
+  }
+}

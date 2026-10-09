@@ -1,0 +1,25 @@
+{
+  "name": "required-required-required-action-log-does-not-bubble-if-required-field-is-skipped",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required @required(action: LOG) does not bubble if @required field is @skipped",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest17Query",
+        "variables": {
+          "skip": true
+        },
+        "response": "relay/required/required-required-action-log-does-not-bubble-if-required-field-is-skipped.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest17Query",
+          "variables": {
+            "skip": true
+          },
+          "path": "me.name",
+          "value": "Zucc"
+        }
+      ]
+    }
+  ]
+}

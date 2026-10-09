@@ -1,0 +1,1 @@
+query RelayReaderRequiredFieldsTest13Query{maybeNodeInterface{__typename,...on Story{lastName},name,...on Node{__isNode:__typename,id}}}

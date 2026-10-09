@@ -1,0 +1,6 @@
+query RelayReaderCatchFieldsTestSiblingErrorQuery {
+  me {
+    lastName # this field is in an error state and should not be caught
+    firstName @catch(to: RESULT)
+  }
+}

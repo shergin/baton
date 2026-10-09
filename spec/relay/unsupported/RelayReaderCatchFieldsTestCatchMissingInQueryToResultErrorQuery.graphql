@@ -1,0 +1,6 @@
+query RelayReaderCatchFieldsTestCatchMissingInQueryToResultErrorQuery
+@catch {
+  me {
+    firstName
+  }
+}

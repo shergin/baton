@@ -1,0 +1,19 @@
+{
+  "name": "required-required-bubbles-required-action-log-through-required-action-log-linkedfield",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required bubbles @required(action: LOG) through @required(action: LOG) LinkedField",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest6Query",
+        "response": "relay/required/required-bubbles-required-action-log-through-required-action-log-linkedfield.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest6Query",
+          "path": "me",
+          "value": null
+        }
+      ]
+    }
+  ]
+}

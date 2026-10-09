@@ -1,0 +1,9 @@
+query RelayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithTypeQuery {
+  me {
+    ... on User @alias(as: "requiredFields") {
+      backgroundImage @required(action: LOG) {
+        uri @required(action: LOG)
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "required-required-required-action-log-within-an-inline-fragment-on-a-concrete-type-bubbles-if-the-type-matches",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required @required(action: LOG) within an inline fragment on a concrete type bubbles if the type matches",
+  "status": "possible-bug",
+  "note": "A `@required` field inside a type condition does not bubble: the generated `satisfied` of `maybeNodeInterface`'s lens returns true without testing the condition's fields, so the link reads present, and `name` reads as a non-optional `String` while it is null. Relay nulls `maybeNodeInterface`, as Baton's own rule for `@required` says it should.",
+  "decision": "Open.",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest12Query",
+        "response": "relay/required/required-required-action-log-within-an-inline-fragment-on-a-concrete-type-bubbles-if-the-type-matches.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest12Query",
+          "path": "maybeNodeInterface",
+          "value": null
+        }
+      ]
+    }
+  ]
+}

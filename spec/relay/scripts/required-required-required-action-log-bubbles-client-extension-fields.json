@@ -1,0 +1,19 @@
+{
+  "name": "required-required-required-action-log-bubbles-client-extension-fields",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required @required(action: LOG) bubbles client extension fields",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest18Query",
+        "response": "relay/required/required-required-action-log-bubbles-client-extension-fields.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest18Query",
+          "path": "me",
+          "value": null
+        }
+      ]
+    }
+  ]
+}

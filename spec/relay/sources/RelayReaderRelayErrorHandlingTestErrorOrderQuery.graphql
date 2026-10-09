@@ -1,0 +1,12 @@
+query RelayReaderRelayErrorHandlingTestErrorOrderQuery
+@throwOnFieldError {
+  also_me: me {
+    name
+    nearest_neighbor {
+      name
+    }
+  }
+  me {
+    name
+  }
+}

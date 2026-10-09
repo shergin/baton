@@ -1,0 +1,10 @@
+query RelayReaderRelayErrorHandlingTestInlineFragmentQuery
+@throwOnFieldError {
+  node(id: "4") {
+    # GraphQL lets us spread this here as long as there is at least one
+    # type that overlaps
+    ... on MaybeNodeInterface {
+      name
+    }
+  }
+}

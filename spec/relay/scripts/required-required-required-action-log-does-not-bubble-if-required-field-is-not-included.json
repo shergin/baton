@@ -1,0 +1,25 @@
+{
+  "name": "required-required-required-action-log-does-not-bubble-if-required-field-is-not-included",
+  "origin": "RelayReader-RequiredFields-test.js: RelayReader @required @required(action: LOG) does not bubble if @required field is not @included",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRequiredFieldsTest16Query",
+        "variables": {
+          "include": false
+        },
+        "response": "relay/required/required-required-action-log-does-not-bubble-if-required-field-is-not-included.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRequiredFieldsTest16Query",
+          "variables": {
+            "include": false
+          },
+          "path": "me.name",
+          "value": "Zucc"
+        }
+      ]
+    }
+  ]
+}

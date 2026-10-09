@@ -1,0 +1,7 @@
+query RelayReaderCatchFieldsTestCatchOkInAliasedInlineFragmentToResultQuery {
+  me {
+    ... @catch(to: RESULT) @alias(as: "myAlias") {
+      lastName
+    }
+  }
+}

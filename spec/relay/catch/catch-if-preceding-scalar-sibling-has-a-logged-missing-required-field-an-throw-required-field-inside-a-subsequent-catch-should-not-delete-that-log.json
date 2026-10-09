@@ -1,0 +1,14 @@
+{
+  "data": {
+    "alsoMe": {
+      "__typename": "User",
+      "lastName": null,
+      "id": "1"
+    },
+    "me": {
+      "__typename": "User",
+      "firstName": null,
+      "id": "1"
+    }
+  }
+}

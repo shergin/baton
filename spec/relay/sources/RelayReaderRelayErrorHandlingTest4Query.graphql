@@ -1,0 +1,9 @@
+query RelayReaderRelayErrorHandlingTest4Query($size: [Int])
+@throwOnFieldError {
+  me {
+    lastName
+    profilePicture(size: $size) {
+      uri
+    }
+  }
+}

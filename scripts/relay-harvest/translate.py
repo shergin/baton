@@ -33,7 +33,10 @@ written there: `possible-bug`, `unspecified-behaviour`, `invalid-input` or
 `by-design`, each run with its result ignored. The rest must pass. Cases
 are one `normalize` call; scripts of `payload` steps are several in a row.
 A DataChecker test is a script of the response its seeded store stands for
-(`record.js` writes it) and a `check` step with Relay's answer.
+(`record.js` writes it) and a `check` step with Relay's answer. A reader
+test is a script of that response and `reads` that say Relay's answer in
+Baton's terms (`reads.py`), read through the lenses the compiler's report
+lists for the compiled sources.
 A client extension file batonc rejects is left out of the schema, and the
 tests that need it become unsupported with batonc's reason.
 """
@@ -48,6 +51,8 @@ import sys
 import tempfile
 import textwrap
 
+from reads import Unreadable, reads_of, swift_reads
+
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SPEC = os.path.join(ROOT, 'spec')
 OUT = os.path.join(SPEC, 'relay')
@@ -61,6 +66,10 @@ SUBSCRIPTION_ROOT = 'client:root:subscription'
 SUITES = {
     'RelayResponseNormalizer-test': ('normalizer', 'normalize'),
     'DataChecker-test': ('checker', 'check'),
+    'RelayReader-test': ('reader', 'read'),
+    'RelayReader-RequiredFields-test': ('required', 'read'),
+    'RelayReader-CatchFields-test': ('catch', 'read'),
+    'RelayReader-RelayErrorHandling-test': ('errors', 'read'),
 }
 
 
@@ -467,6 +476,9 @@ class Harvest:
         self.expectations = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'expectations.json')))
         self.cases, self.scripts, self.table = [], [], []
         self.sources, self.unsupported, self.definitions = {}, {}, {}
+        # Reader tests wait for the report of the compiled sources, whose
+        # lenses their reads go through.
+        self.pending_reads = []
 
     def row(self, suite, test, operation, calls):
         origin = '%s: %s' % (suite + '.js', test)
@@ -495,8 +507,12 @@ class Harvest:
         row.update(marks)
         return path, marks
 
+    @staticmethod
+    def script_path(name):
+        return 'relay/scripts/%s.json' % name.replace('/', '-')
+
     def script(self, row, name, marks, steps):
-        path = 'relay/scripts/%s.json' % name.replace('/', '-')
+        path = self.script_path(name)
         script = {'name': name.replace('/', '-'), 'origin': row['origin']}
         script.update(marks)
         script['steps'] = steps
@@ -581,6 +597,50 @@ class Harvest:
             self.script(row, name, marks, [{'payload': payload}, {'check': reference, 'answer': answer}])
             row['document'] = document
 
+    def reader(self, suite, directory, definitions, calls_by_test):
+        """Each read becomes a script: the response the test's seeded store
+        stands for as a payload, and the rows Relay's answer says beside
+        it, once the report of the compiled sources gives the lenses."""
+        for test, calls in calls_by_test.items():
+            row = self.row(suite, test, calls[0]['operation'], len(calls))
+            status, note, call = reader_reason(calls)
+            if status == 'not-ingested':
+                row.update(status=status, note=note)
+                continue
+            row['operation'] = call['operation']
+            placed = self.document(row, call['operation'], definitions, status, note)
+            if placed is None:
+                continue
+            document, marks = placed
+            self.pending_reads.append((row, '%s/%s' % (directory, slug(test)), call, marks, document))
+
+    def finish_reads(self):
+        """Writes the reader tests' scripts, with rows read through the
+        lenses the compiler reports, and the Swift that reads each row."""
+        lenses = reported_lenses(self.arguments.batonc, self.config)
+        entries = []
+        for row, name, call, marks, document in self.pending_reads:
+            operation = call['operation']
+            reference = {'operation': operation}
+            if call['variables']:
+                reference['variables'] = call['variables']
+            step = {'payload': dict(reference, response='relay/%s.json' % name)}
+            if document.startswith('relay/documents/'):
+                try:
+                    reads = reads_of(call['answerFromResponse'], call['response'], lenses[operation])
+                except Unreadable as error:
+                    row.update(status='not-ingested', note='the read: %s' % error)
+                    row.pop('decision', None)
+                    continue
+                step['reads'] = [dict(reference, **read) for read in reads.rows]
+                swift = dict(reads.swift)
+                if swift:
+                    entries.append((self.script_path(name), operation, sorted(swift.items())))
+            write_json(os.path.join(OUT, name + '.json'), {key: value for key, value in call['response'].items() if value != []})
+            self.script(row, name, marks, [step])
+        with open(os.path.join(SWIFT, 'RelayReads.swift'), 'w') as file:
+            file.write(swift_reads(entries))
+
     def write(self, excluded):
         os.makedirs(os.path.join(OUT, 'unsupported'), exist_ok=True)
         for operation, names in self.unsupported.items():
@@ -590,10 +650,11 @@ class Harvest:
         for operation, names in self.sources.items():
             with open(os.path.join(OUT, 'sources', operation + '.graphql'), 'w') as file:
                 file.write('\n'.join(self.definitions[name] for name in names))
+        os.makedirs(SWIFT, exist_ok=True)
+        self.finish_reads()
         defined = []
         for names in self.sources.values():
             defined += [name for name in names if name not in defined]
-        os.makedirs(SWIFT, exist_ok=True)
         with open(os.path.join(SWIFT, 'RelayDocuments.swift'), 'w') as file:
             file.write(swift_documents(self.definitions, defined))
         write_json(os.path.join(OUT, 'manifest.json'), {
@@ -611,6 +672,57 @@ class Harvest:
         for row in self.table:
             counts[row.get('status', 'passes')] = counts.get(row.get('status', 'passes'), 0) + 1
         print('%d tests: %s' % (len(self.table), ', '.join('%d %s' % (count, status) for status, count in sorted(counts.items()))), file=sys.stderr)
+
+
+def reported_lenses(batonc, config):
+    """Each compiled operation's lens, by its name, from the report batonc
+    writes for `sources/`."""
+    with tempfile.TemporaryDirectory() as scratch:
+        report = os.path.join(scratch, 'report.json')
+        # From `spec/relay/`, so that the outputs are named for short paths.
+        sources = sorted(os.path.join('sources', name) for name in os.listdir(os.path.join(OUT, 'sources')))
+        result = subprocess.run(
+            [os.path.abspath(batonc), 'generate', '--config', os.path.abspath(config),
+             '--out', os.path.join(scratch, 'out'), '--report', report] + sources,
+            capture_output=True, text=True, cwd=OUT)
+        if result.returncode != 0:
+            raise SystemExit('batonc cannot compile spec/relay/sources:\n' + result.stderr)
+        return {operation['name']: operation['lens'] for operation in json.load(open(report))['operations']}
+
+
+def without_error_paths(value, in_errors=False):
+    """A read's answer without the paths of its errors, which a test seeds
+    whole and the normalizer stores below the field, and without the field
+    path Relay's reader takes from a stored error's path."""
+    if isinstance(value, list):
+        return [without_error_paths(item, in_errors) for item in value]
+    if isinstance(value, dict):
+        return {key: without_error_paths(item, in_errors or key in ('errors', 'error'))
+                for key, item in value.items()
+                if not (in_errors and key == 'path') and not (key == 'fieldPath' and 'error' in value)}
+    return value
+
+
+def reader_reason(calls):
+    """Why a reader test is not a plain script, as a status and a reason,
+    and the read it is made of."""
+    reads = [call for call in calls if call['dataID'] == 'client:root']
+    if not reads:
+        return 'not-ingested', 'a read of a fragment at `%s`; a Baton case reads from a response\'s root' % calls[0]['dataID'], None
+    if len(reads) > 1:
+        return 'not-ingested', 'several reads in one test', None
+    call = reads[0]
+    if call.get('unsynthesizable'):
+        if re.search(r'ModuleImport|ClientEdge|Resolver', call['unsynthesizable']):
+            return 'not-ingested', 'the store holds what %s writes, which no response does' % call['unsynthesizable'], None
+        return 'not-ingested', 'the seeded store stands for no response: %s' % call['unsynthesizable'], None
+    if 'answerFromResponse' not in call:
+        return 'not-ingested', 'a read of a selector that is not a query', None
+    if without_error_paths(call['answer']) != without_error_paths(call['answerFromResponse']):
+        return 'not-ingested', 'the response the seeded store stands for gives Relay another answer', None
+    if call['flags']:
+        return 'unsupported-feature', 'a Relay feature flag: %s' % ', '.join('`%s`' % flag for flag in sorted(call['flags'])), call
+    return None, None, call
 
 
 def checker_reason(calls):
@@ -679,8 +791,10 @@ def main():
                 calls_by_test.setdefault(call['test'], []).append(call)
         if function == 'normalize':
             harvest.normalizer(suite, directory, definitions, calls_by_test)
-        else:
+        elif function == 'check':
             harvest.checker(suite, directory, definitions, calls_by_test)
+        else:
+            harvest.reader(suite, directory, definitions, calls_by_test)
     harvest.write(excluded)
 
 

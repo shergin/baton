@@ -1,0 +1,34 @@
+{
+  "name": "errors-error-fields-adds-the-errors-to-fielderrors-including-missingdata-with-catch",
+  "origin": "RelayReader-RelayErrorHandling-test.js: RelayReader error fields adds the errors to fieldErrors including missingData - with @catch",
+  "status": "unspecified-behaviour",
+  "note": "Data missing from the store: Relay's reader reports it as an error, which `@catch` catches and `@throwOnFieldError` throws; Baton reads missing data as absent and refetches, since the check misses, and no read throws or fails for it.",
+  "decision": "Open.",
+  "steps": [
+    {
+      "payload": {
+        "operation": "RelayReaderRelayErrorHandlingTest3Query",
+        "variables": {
+          "size": 42
+        },
+        "response": "relay/errors/error-fields-adds-the-errors-to-fielderrors-including-missingdata-with-catch.json"
+      },
+      "reads": [
+        {
+          "operation": "RelayReaderRelayErrorHandlingTest3Query",
+          "variables": {
+            "size": 42
+          },
+          "path": "me",
+          "result": {
+            "ok": false,
+            "errors": [
+              "me.lastName",
+              "me.profilePicture"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
