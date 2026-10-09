@@ -1,5 +1,5 @@
 {
-  "name": "when-treatmissingfieldsasnull-is-true-skips-client-fields-not-present-in-the-payload-but-present-in-the-store",
+  "name": "normalizer-when-treatmissingfieldsasnull-is-true-skips-client-fields-not-present-in-the-payload-but-present-in-the-store",
   "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer when treatMissingFieldsAsNull is true skips client fields not present in the payload but present in the store",
   "status": "unsupported-feature",
   "note": "`treatMissingFieldsAsNull`: Baton has no option that writes a missing field as null",

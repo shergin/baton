@@ -1,0 +1,11 @@
+{
+  "data": {
+    "node": {
+      "__typename": "User",
+      "id": "1",
+      "nameRenderer": {
+        "__typename": "CustomNameRenderer"
+      }
+    }
+  }
+}

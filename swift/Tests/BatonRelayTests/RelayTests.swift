@@ -73,7 +73,7 @@ struct RelayError: Error, CustomStringConvertible {
 @MainActor
 @Suite("Relay's store tests")
 struct RelayTests {
-    @Test("a payload Relay's normalizer tests commit leaves the records Relay's test expects", arguments: RelayCase.all)
+    @Test("a payload Relay's tests commit leaves the records Relay's test expects", arguments: RelayCase.all)
     func aPayloadLeavesTheRecordsRelayExpects(_ relay: RelayCase) throws {
         try measured(relay.marks) {
             let store = Store()
@@ -85,18 +85,25 @@ struct RelayTests {
         }
     }
 
-    @Test("payloads Relay's normalizer tests commit in a row leave, after each, the records Relay's test expects", arguments: RelayScript.all)
-    func payloadsInARowLeaveTheRecordsRelayExpects(_ relay: RelayScript) throws {
+    @Test("payloads Relay's tests commit in a row leave the records Relay's test expects, and a check after them gives Relay's answer", arguments: RelayScript.all)
+    func payloadsInARowLeaveWhatRelayExpects(_ relay: RelayScript) throws {
         let script = try Manifest.Script.load(relay.path)
         try measured(relay.marks) {
             let store = Store()
             store.log = nil
             for (index, step) in script.steps.enumerated() {
-                guard case .payload(let operation, let response) = step.action else {
+                switch step.action {
+                case .payload(let operation, let response):
+                    try commit(operation.name, operation.variables, response, into: store)
+                case .check(let operation):
+                    let answer = store.check(try Self.operation(operation.name).plan.resolve(Variables(operation.variables.mapValues(\.variable)), in: store.keys))
+                    if let expected = step.answer {
+                        #expect("\(answer)" == expected.rawValue, "step \(index + 1): the check answers \(answer) where Relay's answer is \(expected.rawValue)")
+                    }
+                default:
                     Issue.record("\(relay.path): step \(index + 1) is a `\(step.action.kind)`, which the Relay scripts do not take")
                     return
                 }
-                try commit(operation.name, operation.variables, response, into: store)
                 if let records = step.records {
                     expectDump(store, records, context: "after step \(index + 1): ")
                 }
@@ -104,23 +111,33 @@ struct RelayTests {
         }
     }
 
-    @Test("every operation the Relay cases compile has its document under spec/relay/documents, equal to the text the compiler generated")
+    @Test("every operation the Relay cases and scripts compile has its document under spec/relay/documents, equal to the text the compiler generated")
     func theDocumentsAgreeWithTheGeneratedText() throws {
         let bless = ProcessInfo.processInfo.environment["BATON_BLESS"] != nil
-        for entry in Spec.relayManifest.cases where entry.document.hasPrefix("relay/documents/") {
-            let operation = try Self.operation(entry.operation)
+        var names = Set(Spec.relayManifest.cases.map(\.operation))
+        for path in Spec.relayManifest.scripts {
+            for step in try Manifest.Script.load(path).steps {
+                switch step.action {
+                case .payload(let operation, _), .check(let operation): names.insert(operation.name)
+                default: break
+                }
+            }
+        }
+        for name in names.sorted() {
+            guard let operation = RelayDocuments.operations[name] else { continue }
             let text = (operation.text ?? "") + "\n"
-            let url = Spec.directory.appendingPathComponent(entry.document)
+            let document = "relay/documents/\(name).graphql"
+            let url = Spec.directory.appendingPathComponent(document)
             if bless {
                 try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
                 try Data(text.utf8).write(to: url)
                 continue
             }
             guard let written = try? String(contentsOf: url, encoding: .utf8) else {
-                Issue.record("\(entry.document) is missing; run the tests with BATON_BLESS=1 to write it")
+                Issue.record("\(document) is missing; run the tests with BATON_BLESS=1 to write it")
                 continue
             }
-            #expect(written == text, "\(entry.document) differs from the text the compiler generated")
+            #expect(written == text, "\(document) differs from the text the compiler generated")
         }
     }
 

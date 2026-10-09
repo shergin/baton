@@ -1,0 +1,26 @@
+{
+  "name": "checker-reads-query-data",
+  "origin": "DataChecker-test.js: check() reads query data",
+  "steps": [
+    {
+      "payload": {
+        "operation": "DataCheckerTestQuery",
+        "variables": {
+          "id": "1",
+          "size": 32
+        },
+        "response": "relay/checker/reads-query-data.json"
+      }
+    },
+    {
+      "check": {
+        "operation": "DataCheckerTestQuery",
+        "variables": {
+          "id": "1",
+          "size": 32
+        }
+      },
+      "answer": "memory"
+    }
+  ]
+}

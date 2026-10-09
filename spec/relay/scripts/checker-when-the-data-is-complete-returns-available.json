@@ -1,0 +1,26 @@
+{
+  "name": "checker-when-the-data-is-complete-returns-available",
+  "origin": "DataChecker-test.js: check() when the data is complete returns available",
+  "steps": [
+    {
+      "payload": {
+        "operation": "DataCheckerTestQuery",
+        "variables": {
+          "id": "1",
+          "size": 32
+        },
+        "response": "relay/checker/when-the-data-is-complete-returns-available.json"
+      }
+    },
+    {
+      "check": {
+        "operation": "DataCheckerTestQuery",
+        "variables": {
+          "id": "1",
+          "size": 32
+        }
+      },
+      "answer": "memory"
+    }
+  ]
+}

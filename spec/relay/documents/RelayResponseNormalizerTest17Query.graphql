@@ -1,0 +1,1 @@
+query RelayResponseNormalizerTest17Query{me{author{id,name},id}}

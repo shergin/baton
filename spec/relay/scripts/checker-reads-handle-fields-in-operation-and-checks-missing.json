@@ -1,0 +1,20 @@
+{
+  "name": "checker-reads-handle-fields-in-operation-and-checks-missing",
+  "origin": "DataChecker-test.js: check() reads handle fields in operation and checks missing",
+  "status": "unsupported-feature",
+  "note": "batonc: `@__clientField` on a field has no meaning in Baton",
+  "steps": [
+    {
+      "payload": {
+        "operation": "DataCheckerTest7Query",
+        "response": "relay/checker/reads-handle-fields-in-operation-and-checks-missing.json"
+      }
+    },
+    {
+      "check": {
+        "operation": "DataCheckerTest7Query"
+      },
+      "answer": "miss"
+    }
+  ]
+}

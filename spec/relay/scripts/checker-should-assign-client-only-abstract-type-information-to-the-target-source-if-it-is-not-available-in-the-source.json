@@ -1,0 +1,20 @@
+{
+  "name": "checker-should-assign-client-only-abstract-type-information-to-the-target-source-if-it-is-not-available-in-the-source",
+  "origin": "DataChecker-test.js: check() should assign client-only abstract type information to the target source if it is not available in the source",
+  "status": "unsupported-feature",
+  "note": "batonc: Unknown type 'ClientInterface'. Did you mean `ClientObject`?",
+  "steps": [
+    {
+      "payload": {
+        "operation": "DataCheckerTestClientAbstractQuery",
+        "response": "relay/checker/should-assign-client-only-abstract-type-information-to-the-target-source-if-it-is-not-available-in-the-source.json"
+      }
+    },
+    {
+      "check": {
+        "operation": "DataCheckerTestClientAbstractQuery"
+      },
+      "answer": "memory"
+    }
+  ]
+}

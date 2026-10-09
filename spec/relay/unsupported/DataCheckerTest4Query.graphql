@@ -1,0 +1,29 @@
+query DataCheckerTest4Query($id: ID!) {
+  node(id: $id) {
+    ...DataCheckerTest4Fragment @alias
+  }
+}
+
+fragment DataCheckerTest4Fragment on User {
+  id
+  nameRenderer @match {
+    ...DataCheckerTestPlainUserNameRenderer_nameFragment
+      @module(name: "PlainUserNameRenderer.react")
+    ...DataCheckerTestMarkdownUserNameRenderer_nameFragment
+      @module(name: "MarkdownUserNameRenderer.react")
+  }
+}
+
+fragment DataCheckerTestPlainUserNameRenderer_nameFragment on PlainUserNameRenderer {
+  plaintext
+  data {
+    text
+  }
+}
+
+fragment DataCheckerTestMarkdownUserNameRenderer_nameFragment on MarkdownUserNameRenderer {
+  markdown
+  data {
+    markup
+  }
+}

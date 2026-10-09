@@ -1,0 +1,37 @@
+{
+  "data": {
+    "node": {
+      "__typename": "User",
+      "id": "1",
+      "firstName": "Alice",
+      "friends": {
+        "__typename": "FriendsConnection",
+        "edges": [
+          {
+            "__typename": "FriendsConnectionEdge",
+            "cursor": "cursor:2",
+            "node": {
+              "__typename": "User",
+              "id": "2",
+              "firstName": "Bob"
+            }
+          },
+          null,
+          {
+            "__typename": "FriendsConnectionEdge",
+            "cursor": "cursor:3",
+            "node": {
+              "__typename": "User",
+              "id": "3",
+              "firstName": "Claire"
+            }
+          }
+        ]
+      },
+      "profilePicture": {
+        "__typename": "Photo",
+        "uri": "https://..."
+      }
+    }
+  }
+}

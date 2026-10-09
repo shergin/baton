@@ -790,9 +790,25 @@
     }
   ],
   "scripts": [
-    "relay/scripts/normalizes-queries-with-filters.json",
-    "relay/scripts/user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization.json",
-    "relay/scripts/user-defined-getdataid-plural-fields-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization.json",
-    "relay/scripts/when-treatmissingfieldsasnull-is-true-skips-client-fields-not-present-in-the-payload-but-present-in-the-store.json"
+    "relay/scripts/normalizer-normalizes-queries-with-filters.json",
+    "relay/scripts/normalizer-user-defined-getdataid-single-field-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization.json",
+    "relay/scripts/normalizer-user-defined-getdataid-plural-fields-overwrite-fields-in-same-position-but-with-different-data-in-second-normalization.json",
+    "relay/scripts/normalizer-when-treatmissingfieldsasnull-is-true-skips-client-fields-not-present-in-the-payload-but-present-in-the-store.json",
+    "relay/scripts/checker-reads-query-data.json",
+    "relay/scripts/checker-reads-handle-fields-in-operation-and-checks-missing.json",
+    "relay/scripts/checker-reads-handle-fields-in-operation-and-checks-missing-sub-field.json",
+    "relay/scripts/checker-reads-scalar-handle-fields-in-operation-and-checks-missing.json",
+    "relay/scripts/checker-when-match-directive-is-present-returns-true-when-the-match-field-record-exist-but-do-not-match-a-supported-type.json",
+    "relay/scripts/checker-when-match-directive-is-present-returns-true-when-the-match-field-is-non-existent-null.json",
+    "relay/scripts/checker-when-match-directive-is-present-returns-false-when-the-match-field-is-not-fetched-undefined.json",
+    "relay/scripts/checker-when-module-directive-is-present-returns-true-when-the-field-record-exists-but-does-not-match-any-module-selection.json",
+    "relay/scripts/checker-when-defer-directive-is-present-returns-false-when-deferred-selections-are-not-fetched.json",
+    "relay/scripts/checker-when-stream-directive-is-present-returns-true-when-streamed-selections-are-fetched.json",
+    "relay/scripts/checker-when-stream-directive-is-present-returns-false-when-streamed-selections-are-not-fetched.json",
+    "relay/scripts/checker-when-the-data-is-complete-returns-available.json",
+    "relay/scripts/checker-when-individual-records-have-been-invalidated-when-data-is-complete-returns-correct-invalidation-epoch-in-result-when-record-was-invalidated.json",
+    "relay/scripts/checker-when-individual-records-have-been-invalidated-when-data-is-missing-returns-correct-invalidation-epoch-in-result-when-record-was-invalidated.json",
+    "relay/scripts/checker-when-individual-records-have-been-invalidated-when-data-is-missing-returns-null-invalidation-epoch-when-stale-record-is-unreachable.json",
+    "relay/scripts/checker-should-assign-client-only-abstract-type-information-to-the-target-source-if-it-is-not-available-in-the-source.json"
   ]
 }

@@ -1,0 +1,26 @@
+{
+  "name": "checker-when-module-directive-is-present-returns-true-when-the-field-record-exists-but-does-not-match-any-module-selection",
+  "origin": "DataChecker-test.js: check() when @module directive is present returns true when the field/record exists but does not match any @module selection",
+  "status": "unsupported-feature",
+  "note": "batonc: `@module` on a fragment spread has no meaning in Baton",
+  "steps": [
+    {
+      "payload": {
+        "operation": "DataCheckerTest5Query",
+        "variables": {
+          "id": "1"
+        },
+        "response": "relay/checker/when-module-directive-is-present-returns-true-when-the-field-record-exists-but-does-not-match-any-module-selection.json"
+      }
+    },
+    {
+      "check": {
+        "operation": "DataCheckerTest5Query",
+        "variables": {
+          "id": "1"
+        }
+      },
+      "answer": "memory"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+query DataCheckerTestQuery($id:ID,$size:[Int]){node(id:$id){id,__typename,...on Page{actors{__typename,name,id}},...on User{firstName,friends(first:3){edges{cursor,node{id,firstName}}},profilePicture(size:$size){uri}}}}

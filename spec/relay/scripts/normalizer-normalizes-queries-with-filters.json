@@ -1,5 +1,5 @@
 {
-  "name": "normalizes-queries-with-filters",
+  "name": "normalizer-normalizes-queries-with-filters",
   "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer normalizes queries with \"filters\"",
   "status": "unsupported-feature",
   "note": "batonc: `@__clientField` on a field has no meaning in Baton",

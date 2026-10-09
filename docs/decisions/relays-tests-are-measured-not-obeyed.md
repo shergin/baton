@@ -31,6 +31,11 @@ default; dropping every disagreeing case would lose the measure.
   issue: its result is ignored, and it fails when it starts passing, so the
   status is revisited. An `unsupported-feature` case is ingested, its
   document kept under `spec/relay/unsupported/`, and left out of the runs.
+- A test that seeds its store by hand is harvested as the response the
+  seeded store stands for, written by walking the query over the records,
+  and kept only when Relay, normalizing that response into an empty store,
+  answers as it did on the seeded one. Baton is compared with Relay on a
+  response, never on a store built by hand.
 - A status carries a note saying how Baton and Relay differ and, once the
   owner has decided, a decision saying what is to be done. The statuses live
   in `scripts/relay-harvest/expectations.json`; a harvested dump is never
