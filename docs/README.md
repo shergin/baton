@@ -27,7 +27,9 @@ What to read when.
   its command, [Gradle](recipes/gradle.md), the Kotlin runtime from Maven
   Central and the compiler as a task, and
   [previews and tests](recipes/testing.md), a store without a server,
-  [UIKit and AppKit](recipes/uikit.md), a handle held by a controller, and
+  [UIKit and AppKit](recipes/uikit.md), a handle held by a controller,
+  [views and view models](recipes/views.md), a Kotlin handle without a
+  composition, and
   [porting from Relay](recipes/porting-from-relay.md), Relay's words beside
   Baton's, and [derived state outside views](recipes/derived-state.md), a
   model over `Observations`, and [discover once, refresh through

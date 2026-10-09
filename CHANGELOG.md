@@ -114,6 +114,12 @@ are expected and listed without apology.
   process, so two environments over one schema share them, and two
   schemas in one process must not give two types one name.
 
+- The Kotlin environment sends the snapshot system's apply notifications
+  after the runtime's own writes, once per burst, posted behind the burst
+  on its main dispatcher, so a model over `snapshotFlow` sees a change
+  without Compose UI's frame clock; `docs/recipes/views.md` is the page, a
+  handle held by a view model and read as a flow of what the screen shows.
+
 ## 0.13.0 (Bublik) — 2026-10-09
 
 - The Kotlin runtime on Maven Central: `com.shergin.baton:baton`,

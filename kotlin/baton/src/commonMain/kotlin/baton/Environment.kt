@@ -1,11 +1,17 @@
 package baton
 
+import androidx.compose.runtime.snapshots.ObserverHandle
+import androidx.compose.runtime.snapshots.Snapshot
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration
 import kotlin.time.TimeSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
@@ -50,6 +56,32 @@ class Environment(
 ) {
     /** Where the environment's fetches, and the collector's passes, run: on the store's thread, ended with the session. */
     internal val scope = CoroutineScope(SupervisorJob() + mainDispatcher)
+
+    /**
+     * Sends the snapshot system's apply notifications after the runtime's
+     * own writes, which `snapshotFlow` and the other apply observers hear:
+     * once per burst, posted to the main dispatcher behind the burst, as
+     * Compose UI's frame clock sends them where a composition exists;
+     * without one nothing would, and a model over `snapshotFlow` would never
+     * see a change (`docs/recipes/views.md`). Compose UI's sending beside
+     * this one finds nothing left to send. The main dispatcher is one that
+     * posts, as the store's thread asks. Disposed at the end.
+     */
+    @OptIn(ExperimentalAtomicApi::class)
+    private val applyScheduled = AtomicBoolean(false)
+
+    @OptIn(ExperimentalAtomicApi::class)
+    private val applyObserver: ObserverHandle = Snapshot.registerGlobalWriteObserver {
+        if (applyScheduled.compareAndSet(expectedValue = false, newValue = true)) {
+            mainDispatcher.dispatch(
+                EmptyCoroutineContext,
+                Runnable {
+                    applyScheduled.store(false)
+                    Snapshot.sendApplyNotifications()
+                },
+            )
+        }
+    }
 
     init {
         store.scheduler = { pass -> scope.launch { pass() } }
@@ -170,6 +202,7 @@ class Environment(
             store.persistence?.close()
             store.end()
             scope.cancel()
+            applyObserver.dispose()
         }
     }
 
