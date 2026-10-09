@@ -20,6 +20,7 @@
 use std::collections::BTreeSet;
 use std::path::PathBuf;
 
+use crate::decide::{ListShape, Primitive, ScalarShape};
 use crate::documents::Document;
 use crate::kotlin_names::{
     BUILDER_RESERVED_NAMES, KEYWORDS, KotlinNaming, LENS_RESERVED_NAMES, MEMBER_NAMES,
@@ -906,9 +907,38 @@ fn naming_names() -> Vec<String> {
         .collect()
 }
 
+/// The readers `decide` names on the runtime's anchor rather than declares,
+/// one for each scalar shape. The generated code calls a reader as a member
+/// of an anchor, so a document's name never meets one in a scope.
+fn anchor_readers() -> Vec<&'static str> {
+    let primitives = [
+        Primitive::String,
+        Primitive::Int,
+        Primitive::Double,
+        Primitive::Bool,
+        Primitive::Mapped(String::new()),
+        Primitive::Enum(String::new()),
+    ];
+    let lists = [
+        None,
+        Some(ListShape { non_null: true }),
+        Some(ListShape { non_null: false }),
+    ];
+    primitives
+        .into_iter()
+        .flat_map(|primitive| {
+            lists.map(|list| {
+                let primitive = primitive.clone();
+                ScalarShape { primitive, list }.reader().name()
+            })
+        })
+        .collect()
+}
+
 /// The names `decide` declares in the scopes of lenses, operations and
 /// builders, read from its source.
 fn scope_names() -> Vec<String> {
+    let readers = anchor_readers();
     [
         include_str!("../decide/reader.rs"),
         include_str!("../decide/lens.rs"),
@@ -919,7 +949,11 @@ fn scope_names() -> Vec<String> {
     ]
     .into_iter()
     .flat_map(string_literals)
-    .filter(|literal| is_identifier(literal) && !MATCHED_FIELDS.contains(&literal.as_str()))
+    .filter(|literal| {
+        is_identifier(literal)
+            && !MATCHED_FIELDS.contains(&literal.as_str())
+            && !readers.contains(&literal.as_str())
+    })
     .collect()
 }
 

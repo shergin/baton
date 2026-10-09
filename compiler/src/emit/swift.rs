@@ -164,32 +164,6 @@ pub(super) fn input_field_type(field: &InputField) -> SwiftType {
     shape.optional_if(!type_.non_null())
 }
 
-/// The anchor's reader for a scalar: `string`, `ints`, `nullableInts` for a
-/// list whose elements the schema types nullable; `mapped` and its lists
-/// for a scalar converted at the read.
-pub(super) fn scalar_reader(shape: &ScalarShape) -> &'static str {
-    match (&shape.primitive, shape.list.map(|list| list.non_null)) {
-        (Primitive::String, None) => "string",
-        (Primitive::Int, None) => "int",
-        (Primitive::Double, None) => "double",
-        (Primitive::Bool, None) => "bool",
-        (Primitive::Mapped(_), None) => "mapped",
-        (Primitive::Enum(_), None) => "enumValue",
-        (Primitive::String, Some(true)) => "strings",
-        (Primitive::Int, Some(true)) => "ints",
-        (Primitive::Double, Some(true)) => "doubles",
-        (Primitive::Bool, Some(true)) => "bools",
-        (Primitive::Mapped(_), Some(true)) => "mappedList",
-        (Primitive::Enum(_), Some(true)) => "enumValues",
-        (Primitive::String, Some(false)) => "nullableStrings",
-        (Primitive::Int, Some(false)) => "nullableInts",
-        (Primitive::Double, Some(false)) => "nullableDoubles",
-        (Primitive::Bool, Some(false)) => "nullableBools",
-        (Primitive::Mapped(_), Some(false)) => "nullableMappedList",
-        (Primitive::Enum(_), Some(false)) => "nullableEnumValues",
-    }
-}
-
 /// A variable's type as the operation value stores it: a scalar as the
 /// accessors read it, an input object as the runtime's variable value,
 /// optional when the variable may be null.

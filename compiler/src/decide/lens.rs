@@ -336,6 +336,59 @@ impl Primitive {
     }
 }
 
+/// The anchor's reader a scalar field reads through, one per shape: the
+/// primitive's, its list, and its list whose elements the schema types
+/// nullable; `mapped` and its lists for a scalar converted at the read,
+/// `enumValue` and its lists for an enum. Both runtimes name the readers
+/// alike, so the name is decided here and each emitter spells it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ReaderKind {
+    String,
+    Int,
+    Double,
+    Bool,
+    Mapped,
+    EnumValue,
+    Strings,
+    Ints,
+    Doubles,
+    Bools,
+    MappedList,
+    EnumValues,
+    NullableStrings,
+    NullableInts,
+    NullableDoubles,
+    NullableBools,
+    NullableMappedList,
+    NullableEnumValues,
+}
+
+impl ReaderKind {
+    /// The reader's name on the anchor, as both runtimes declare it.
+    pub fn name(self) -> &'static str {
+        match self {
+            ReaderKind::String => "string",
+            ReaderKind::Int => "int",
+            ReaderKind::Double => "double",
+            ReaderKind::Bool => "bool",
+            ReaderKind::Mapped => "mapped",
+            ReaderKind::EnumValue => "enumValue",
+            ReaderKind::Strings => "strings",
+            ReaderKind::Ints => "ints",
+            ReaderKind::Doubles => "doubles",
+            ReaderKind::Bools => "bools",
+            ReaderKind::MappedList => "mappedList",
+            ReaderKind::EnumValues => "enumValues",
+            ReaderKind::NullableStrings => "nullableStrings",
+            ReaderKind::NullableInts => "nullableInts",
+            ReaderKind::NullableDoubles => "nullableDoubles",
+            ReaderKind::NullableBools => "nullableBools",
+            ReaderKind::NullableMappedList => "nullableMappedList",
+            ReaderKind::NullableEnumValues => "nullableEnumValues",
+        }
+    }
+}
+
 impl ScalarShape {
     /// The shape of a field of the type, a mapped scalar read as the host
     /// type `naming` names for it.
@@ -343,6 +396,30 @@ impl ScalarShape {
         ScalarShape {
             primitive: Self::primitive(type_, naming),
             list: ListShape::of(type_),
+        }
+    }
+
+    /// The reader the shape reads through.
+    pub fn reader(&self) -> ReaderKind {
+        match (&self.primitive, self.list.map(|list| list.non_null)) {
+            (Primitive::String, None) => ReaderKind::String,
+            (Primitive::Int, None) => ReaderKind::Int,
+            (Primitive::Double, None) => ReaderKind::Double,
+            (Primitive::Bool, None) => ReaderKind::Bool,
+            (Primitive::Mapped(_), None) => ReaderKind::Mapped,
+            (Primitive::Enum(_), None) => ReaderKind::EnumValue,
+            (Primitive::String, Some(true)) => ReaderKind::Strings,
+            (Primitive::Int, Some(true)) => ReaderKind::Ints,
+            (Primitive::Double, Some(true)) => ReaderKind::Doubles,
+            (Primitive::Bool, Some(true)) => ReaderKind::Bools,
+            (Primitive::Mapped(_), Some(true)) => ReaderKind::MappedList,
+            (Primitive::Enum(_), Some(true)) => ReaderKind::EnumValues,
+            (Primitive::String, Some(false)) => ReaderKind::NullableStrings,
+            (Primitive::Int, Some(false)) => ReaderKind::NullableInts,
+            (Primitive::Double, Some(false)) => ReaderKind::NullableDoubles,
+            (Primitive::Bool, Some(false)) => ReaderKind::NullableBools,
+            (Primitive::Mapped(_), Some(false)) => ReaderKind::NullableMappedList,
+            (Primitive::Enum(_), Some(false)) => ReaderKind::NullableEnumValues,
         }
     }
 

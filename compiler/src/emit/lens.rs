@@ -14,7 +14,7 @@
 
 use super::swift::{
     Computed, LocalAlias, SwiftType, argument_expression, check_head, possible_types_reference,
-    scalar_reader, scalar_type, slot_path, swift_literal, type_reference, variable_literal,
+    scalar_type, slot_path, swift_literal, type_reference, variable_literal,
 };
 use super::writer::Writer;
 use crate::decide::{
@@ -119,7 +119,7 @@ fn scalar_accessor(writer: &mut Writer, name: &str, read: &ScalarRead, condition
 /// What a scalar field reads: plain, `@required`, `@catch` or throwing.
 pub(super) fn scalar_piece(read: &ScalarRead) -> Piece {
     let slot = slot_expression(&read.slot);
-    let reader = scalar_reader(&read.shape);
+    let reader = read.shape.reader().name();
     let value = scalar_type(&read.shape);
     if read.shape.primitive.is_mapped() && read.shape.list.is_none() {
         return mapped_piece(read, slot, value);

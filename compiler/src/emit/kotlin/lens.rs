@@ -21,8 +21,8 @@ use super::shared::connection_member;
 use crate::decide::{
     Accessor, AliasGuard, AliasedRead, Binding, BoundArgument, ConditionRead, ConnectionMembers,
     ErrorCheck, ErrorLine, FragmentLens, Guard, Guarded, LinkedForm, LinkedRead, LoadMore,
-    Primitive, Read, ReaderPlan, RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead,
-    ScalarShape, Shared, SlotAccess, SpreadForm, SpreadGuard, SpreadRead, TypeTest,
+    Primitive, Read, ReaderPlan, RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead, Shared,
+    SlotAccess, SpreadForm, SpreadGuard, SpreadRead, TypeTest,
 };
 use crate::kotlin_names::{enum_type_name, escape, slot_name};
 use crate::names::{guard_name, possible_types};
@@ -314,7 +314,7 @@ impl Lenses<'_> {
         if read.shape.primitive.is_mapped() && read.shape.list.is_none() {
             return mapped_piece(read, &slot, value);
         }
-        let reader = scalar_reader(&read.shape);
+        let reader = read.shape.reader().name();
         let argument = reader_argument(&read.shape.primitive, hidden);
         let required = format!("required{}", capitalize(reader));
         match &read.form {
@@ -1146,33 +1146,6 @@ fn condition_piece(read: &ConditionRead, condition: Option<String>) -> (Piece, O
         Piece::expression(nested.clone(), format!("{nested}(anchor)")),
         Some(test),
     )
-}
-
-/// The anchor's reader for a scalar: `string`, `ints`, `nullableInts` for a
-/// list whose elements the schema types nullable; `mapped` and its lists
-/// for a scalar converted at the read, `enumValue` and its lists for an
-/// enum.
-fn scalar_reader(shape: &ScalarShape) -> &'static str {
-    match (&shape.primitive, shape.list.map(|list| list.non_null)) {
-        (Primitive::String, None) => "string",
-        (Primitive::Int, None) => "int",
-        (Primitive::Double, None) => "double",
-        (Primitive::Bool, None) => "bool",
-        (Primitive::Mapped(_), None) => "mapped",
-        (Primitive::Enum(_), None) => "enumValue",
-        (Primitive::String, Some(true)) => "strings",
-        (Primitive::Int, Some(true)) => "ints",
-        (Primitive::Double, Some(true)) => "doubles",
-        (Primitive::Bool, Some(true)) => "bools",
-        (Primitive::Mapped(_), Some(true)) => "mappedList",
-        (Primitive::Enum(_), Some(true)) => "enumValues",
-        (Primitive::String, Some(false)) => "nullableStrings",
-        (Primitive::Int, Some(false)) => "nullableInts",
-        (Primitive::Double, Some(false)) => "nullableDoubles",
-        (Primitive::Bool, Some(false)) => "nullableBools",
-        (Primitive::Mapped(_), Some(false)) => "nullableMappedList",
-        (Primitive::Enum(_), Some(false)) => "nullableEnumValues",
-    }
 }
 
 /// What a reader takes after the slot: an enum's `of`, or a mapped

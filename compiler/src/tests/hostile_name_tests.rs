@@ -17,6 +17,7 @@ use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
 use crate::config::Config;
+use crate::decide::{ListShape, Primitive, ScalarShape};
 use crate::documents::Document;
 use crate::names::{
     BUILDER_RESERVED_NAMES, RESERVED_TYPE_NAMES, STANDARD_LIBRARY_NAMES, call_label, escape,
@@ -784,10 +785,39 @@ fn local_aliases() -> Vec<String> {
     names
 }
 
+/// The readers `decide` names on the runtime's anchor rather than declares,
+/// one for each scalar shape. The generated code calls a reader as a member
+/// of an anchor, so a document's name never meets one in a scope.
+fn anchor_readers() -> Vec<&'static str> {
+    let primitives = [
+        Primitive::String,
+        Primitive::Int,
+        Primitive::Double,
+        Primitive::Bool,
+        Primitive::Mapped(String::new()),
+        Primitive::Enum(String::new()),
+    ];
+    let lists = [
+        None,
+        Some(ListShape { non_null: true }),
+        Some(ListShape { non_null: false }),
+    ];
+    primitives
+        .into_iter()
+        .flat_map(|primitive| {
+            lists.map(|list| {
+                let primitive = primitive.clone();
+                ScalarShape { primitive, list }.reader().name()
+            })
+        })
+        .collect()
+}
+
 /// The names `decide` declares in the scopes of lenses, operations,
 /// builders and the module, read from its source and from what Swift's
 /// naming answers it: `local_name` and the implementation of `Naming`.
 fn scope_names() -> Vec<String> {
+    let readers = anchor_readers();
     let names = include_str!("../names.rs");
     let start = names
         .find("pub fn local_name")
@@ -806,7 +836,11 @@ fn scope_names() -> Vec<String> {
     ]
     .into_iter()
     .flat_map(string_literals)
-    .filter(|literal| is_identifier(literal) && !MATCHED_FIELDS.contains(&literal.as_str()))
+    .filter(|literal| {
+        is_identifier(literal)
+            && !MATCHED_FIELDS.contains(&literal.as_str())
+            && !readers.contains(&literal.as_str())
+    })
     .collect()
 }
 

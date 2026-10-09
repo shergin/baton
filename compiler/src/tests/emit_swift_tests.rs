@@ -1,5 +1,5 @@
 //! Tests of the Swift pieces every printer writes through: a type as a
-//! structure, a scalar's type and reader, a variable's type, a computed
+//! structure, a scalar's type, a variable's type, a computed
 //! property in each of its forms, the local alias a body names a type by,
 //! and the head of a check.
 
@@ -162,81 +162,55 @@ fn shape_of(primitive: Primitive, elements_non_null: Option<bool>) -> ScalarShap
 }
 
 #[test]
-fn a_scalar_shape_is_spelled_as_swift_writes_it_and_read_by_its_matching_reader() {
+fn a_scalar_shape_is_spelled_as_swift_writes_it() {
     let shapes = [
-        (Primitive::String, None, "String", "string"),
-        (Primitive::Int, None, "Int", "int"),
-        (Primitive::Double, None, "Double", "double"),
-        (Primitive::Bool, None, "Bool", "bool"),
-        (Primitive::String, Some(true), "[String]", "strings"),
-        (Primitive::Int, Some(true), "[Int]", "ints"),
-        (Primitive::Double, Some(true), "[Double]", "doubles"),
-        (Primitive::Bool, Some(true), "[Bool]", "bools"),
-        (
-            Primitive::String,
-            Some(false),
-            "[String?]",
-            "nullableStrings",
-        ),
-        (Primitive::Int, Some(false), "[Int?]", "nullableInts"),
-        (
-            Primitive::Double,
-            Some(false),
-            "[Double?]",
-            "nullableDoubles",
-        ),
-        (Primitive::Bool, Some(false), "[Bool?]", "nullableBools"),
+        (Primitive::String, None, "String"),
+        (Primitive::Int, None, "Int"),
+        (Primitive::Double, None, "Double"),
+        (Primitive::Bool, None, "Bool"),
+        (Primitive::String, Some(true), "[String]"),
+        (Primitive::Int, Some(true), "[Int]"),
+        (Primitive::Double, Some(true), "[Double]"),
+        (Primitive::Bool, Some(true), "[Bool]"),
+        (Primitive::String, Some(false), "[String?]"),
+        (Primitive::Int, Some(false), "[Int?]"),
+        (Primitive::Double, Some(false), "[Double?]"),
+        (Primitive::Bool, Some(false), "[Bool?]"),
         (
             Primitive::Mapped("Foundation.Decimal".to_string()),
             None,
             "Foundation.Decimal",
-            "mapped",
         ),
         (
             Primitive::Mapped("Foundation.Decimal".to_string()),
             Some(true),
             "[Foundation.Decimal]",
-            "mappedList",
         ),
         (
             Primitive::Mapped("Foundation.Decimal".to_string()),
             Some(false),
             "[Foundation.Decimal?]",
-            "nullableMappedList",
         ),
-        (
-            Primitive::Enum("Status".to_string()),
-            None,
-            "Status",
-            "enumValue",
-        ),
+        (Primitive::Enum("Status".to_string()), None, "Status"),
         (
             Primitive::Enum("Status".to_string()),
             Some(true),
             "[Status]",
-            "enumValues",
         ),
         (
             Primitive::Enum("Status".to_string()),
             Some(false),
             "[Status?]",
-            "nullableEnumValues",
         ),
-        (
-            Primitive::Enum("Result".to_string()),
-            None,
-            "ResultEnum",
-            "enumValue",
-        ),
+        (Primitive::Enum("Result".to_string()), None, "ResultEnum"),
     ];
-    for (primitive, elements_non_null, swift_type, reader) in shapes {
+    for (primitive, elements_non_null, swift_type) in shapes {
         let shape = shape_of(primitive, elements_non_null);
         assert_eq!(
             scalar_type(&shape).to_string(),
             swift_type,
             "the type of {shape:?}"
         );
-        assert_eq!(scalar_reader(&shape), reader, "the reader of {shape:?}");
     }
 }
 

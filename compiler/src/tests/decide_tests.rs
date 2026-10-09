@@ -1,6 +1,6 @@
 //! Tests of the decide pass: documents compiled against the test schema, the
-//! variants and guards their normalization comes to, and what the store
-//! keeps a scalar as.
+//! variants and guards their normalization comes to, what the store keeps a
+//! scalar as, and the reader each scalar shape reads through.
 
 use std::path::{Path, PathBuf};
 
@@ -364,6 +364,39 @@ fn a_list_shape_follows_its_elements_nullability_not_its_own() {
             Some(expected),
             "{type_:?}"
         );
+    }
+}
+
+#[test]
+fn a_scalar_shape_picks_the_reader_both_runtimes_declare() {
+    let not_a_list = None;
+    let non_null_elements = Some(ListShape { non_null: true });
+    let nullable_elements = Some(ListShape { non_null: false });
+    let decimal = || Primitive::Mapped("Decimal".to_string());
+    let status = || Primitive::Enum("Status".to_string());
+    let readers = [
+        (Primitive::String, not_a_list, "string"),
+        (Primitive::String, non_null_elements, "strings"),
+        (Primitive::String, nullable_elements, "nullableStrings"),
+        (Primitive::Int, not_a_list, "int"),
+        (Primitive::Int, non_null_elements, "ints"),
+        (Primitive::Int, nullable_elements, "nullableInts"),
+        (Primitive::Double, not_a_list, "double"),
+        (Primitive::Double, non_null_elements, "doubles"),
+        (Primitive::Double, nullable_elements, "nullableDoubles"),
+        (Primitive::Bool, not_a_list, "bool"),
+        (Primitive::Bool, non_null_elements, "bools"),
+        (Primitive::Bool, nullable_elements, "nullableBools"),
+        (decimal(), not_a_list, "mapped"),
+        (decimal(), non_null_elements, "mappedList"),
+        (decimal(), nullable_elements, "nullableMappedList"),
+        (status(), not_a_list, "enumValue"),
+        (status(), non_null_elements, "enumValues"),
+        (status(), nullable_elements, "nullableEnumValues"),
+    ];
+    for (primitive, list, reader) in readers {
+        let shape = ScalarShape { primitive, list };
+        assert_eq!(shape.reader().name(), reader, "the reader of {shape:?}");
     }
 }
 
