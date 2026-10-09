@@ -1,6 +1,6 @@
 package baton
 
-import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.AtomicInt
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 /**
@@ -16,47 +16,50 @@ import kotlin.concurrent.atomics.ExperimentalAtomicApi
  * store writes together. The build's constants on a type are read into the
  * table as the registry interns them, so finding one names nothing new.
  *
- * A variant for a type the plan did not list is resolved where the response
- * is read, off the store's thread, so the state is an immutable snapshot
- * replaced by compare-and-set, as the registry's is. A collection frees the
+ * Locked, as the Swift runtime's table is, because a variant for a type the
+ * plan did not list is resolved where the response is read, off the store's
+ * thread. The tables change in place under the lock, so a session that
+ * renders many texts on one type pays for each once. A collection frees the
  * numbers nothing can name any more.
  */
 @OptIn(ExperimentalAtomicApi::class)
 internal class Keys {
-    private class Table(
+    /** The store's numbers on one type, read and written under the lock. */
+    private class Table {
         /** The store's number of each text it rendered on the type. */
-        val numbers: Map<String, Int>,
-        /** The text of each number; null for a number freed, which the next text takes, lowest first. */
-        val texts: List<String?>,
+        val numbers = HashMap<String, Int>()
+        /** The text of each number; null for a number freed. */
+        val texts = ArrayList<String?>()
+        /** The numbers freed and not taken again, the lowest last, so the next text takes the lowest. */
+        val free = ArrayList<Int>()
         /** The build's constants on the type, by text, as far as [scanned] reaches. */
-        val constants: Map<String, Int>,
+        val constants = HashMap<String, Int>()
         /** How many of the registry's slots on the type are read into [constants]. */
-        val scanned: Int,
-    )
+        var scanned = 0
+    }
 
-    private class State(val tables: Map<Int, Table>, val adoptions: List<Pair<Slot, Slot>>, val generation: Int)
-
-    private val state = AtomicReference(State(emptyMap(), emptyList(), 0))
+    private val lock = Lock()
+    /** The tables by `TypeID.raw`, under [lock]. */
+    private val tables = HashMap<Int, Table>()
+    /** The twins made since the store last took them, under [lock]. */
+    private val adoptions = ArrayList<Pair<Slot, Slot>>()
+    /** How many times numbers were freed or forgotten, read without the lock. */
+    private val generations = AtomicInt(0)
 
     /** The slot of a rendered key on [type]: the build's when it names the text, otherwise the store's number for it. */
-    fun slot(type: TypeID, text: String): Slot {
-        while (true) {
-            val current = state.load()
-            val (table, adoptions) = scanned(type, current.tables[type.raw] ?: EMPTY)
-            val dense = table.constants[text]
-            val known = table.numbers[text]
-            val free = if (dense != null || known != null) -1 else table.texts.indexOf(null)
-            val number = known ?: if (free >= 0) free else table.texts.size
-            val next = when {
-                dense != null || known != null -> table
-                free >= 0 -> Table(table.numbers + (text to number), table.texts.toMutableList().also { it[number] = text }, table.constants, table.scanned)
-                else -> Table(table.numbers + (text to number), table.texts + text, table.constants, table.scanned)
-            }
-            val slot = Slot(type, dense ?: number.inv())
-            if (next === current.tables[type.raw] && adoptions.isEmpty()) return slot
-            val updated = State(current.tables + (type.raw to next), current.adoptions + adoptions, current.generation)
-            if (state.compareAndSet(current, updated)) return slot
+    fun slot(type: TypeID, text: String): Slot = lock.withLock {
+        val table = tables.getOrPut(type.raw) { Table() }
+        scan(type, table)
+        table.constants[text]?.let { return Slot(type, it) }
+        table.numbers[text]?.let { return Slot(type, it.inv()) }
+        val number = if (table.free.isEmpty()) {
+            table.texts.add(text)
+            table.texts.lastIndex
+        } else {
+            table.free.removeAt(table.free.lastIndex).also { table.texts[it] = text }
         }
+        table.numbers[text] = number
+        Slot(type, number.inv())
     }
 
     /**
@@ -65,12 +68,12 @@ internal class Keys {
      * number it holds may have been freed and taken by another text: Kotlin
      * has no deinit to tell the keys a scope still holds one.
      */
-    val generation: Int get() = state.load().generation
+    val generation: Int get() = generations.load()
 
     /** The text of a slot: the build's for a dense one, the store's for one it numbered. */
     fun text(slot: Slot): String {
         if (slot.index >= 0) return Registry.storageKey(slot)
-        return state.load().tables[slot.type.raw]?.texts?.getOrNull(slot.index.inv()) ?: ""
+        return lock.withLock { tables[slot.type.raw]?.texts?.getOrNull(slot.index.inv()) ?: "" }
     }
 
     /**
@@ -80,36 +83,33 @@ internal class Keys {
      * number in use. Returns the freed slots, for the store to drop the
      * records' entries under them.
      */
-    fun free(kept: Set<Slot>): List<Slot> {
-        while (true) {
-            val current = state.load()
-            val freed = ArrayList<Slot>()
-            val tables = HashMap<Int, Table>(current.tables.size)
-            for ((raw, table) in current.tables) {
-                val type = TypeID(raw)
-                val texts = table.texts.toMutableList()
-                val numbers = HashMap(table.numbers)
-                for (number in texts.indices) {
-                    val text = texts[number] ?: continue
-                    val slot = Slot(type, number.inv())
-                    if (slot in kept) continue
-                    texts[number] = null
-                    numbers.remove(text)
-                    freed.add(slot)
-                }
-                while (texts.isNotEmpty() && texts.last() == null) texts.removeAt(texts.lastIndex)
-                tables[raw] = Table(numbers, texts, table.constants, table.scanned)
+    fun free(kept: Set<Slot>): List<Slot> = lock.withLock {
+        val freed = ArrayList<Slot>()
+        for ((raw, table) in tables) {
+            val type = TypeID(raw)
+            val texts = table.texts
+            for (number in texts.indices) {
+                val text = texts[number] ?: continue
+                val slot = Slot(type, number.inv())
+                if (slot in kept) continue
+                texts[number] = null
+                table.numbers.remove(text)
+                freed.add(slot)
             }
-            if (freed.isEmpty()) return freed
-            if (state.compareAndSet(current, State(tables, current.adoptions, current.generation + 1))) return freed
+            while (texts.isNotEmpty() && texts.last() == null) texts.removeAt(texts.lastIndex)
+            table.free.clear()
+            for (number in texts.indices.reversed()) if (texts[number] == null) table.free.add(number)
         }
+        if (freed.isNotEmpty()) generations.addAndFetch(1)
+        freed
     }
 
     /** Forgets every key: the session ended, and the process keeps no text it rendered. */
     fun clear() {
-        while (true) {
-            val current = state.load()
-            if (state.compareAndSet(current, State(emptyMap(), emptyList(), current.generation + 1))) return
+        lock.withLock {
+            tables.clear()
+            adoptions.clear()
+            generations.addAndFetch(1)
         }
     }
 
@@ -119,50 +119,36 @@ internal class Keys {
      * first. Called at every resolution; free when the build named nothing.
      */
     fun reconcile() {
-        while (true) {
-            val current = state.load()
-            var tables = current.tables
-            var adoptions = current.adoptions
-            for ((raw, table) in current.tables) {
-                if (table.numbers.isEmpty() || table.scanned == Registry.slotCount(TypeID(raw))) continue
-                val (next, fresh) = scanned(TypeID(raw), table)
-                tables = tables + (raw to next)
-                adoptions = adoptions + fresh
+        lock.withLock {
+            for ((raw, table) in tables) {
+                if (table.numbers.isEmpty()) continue
+                scan(TypeID(raw), table)
             }
-            if (tables === current.tables) return
-            if (state.compareAndSet(current, State(tables, adoptions, current.generation))) return
         }
     }
 
     /** The twins made since the store last took them: the store's slot and the constant's. */
-    fun takeAdoptions(): List<Pair<Slot, Slot>> {
-        while (true) {
-            val current = state.load()
-            if (current.adoptions.isEmpty()) return emptyList()
-            if (state.compareAndSet(current, State(current.tables, emptyList(), current.generation))) return current.adoptions
-        }
+    fun takeAdoptions(): List<Pair<Slot, Slot>> = lock.withLock {
+        if (adoptions.isEmpty()) return emptyList()
+        val taken = ArrayList(adoptions)
+        adoptions.clear()
+        taken
     }
 
     /** How many keys the store numbers on the type; for tests. */
-    fun count(type: TypeID): Int = state.load().tables[type.raw]?.numbers?.size ?: 0
+    fun count(type: TypeID): Int = lock.withLock { tables[type.raw]?.numbers?.size ?: 0 }
 
-    /** The table with the registry's slots on the type read in, and the twins the newly read constants make. */
-    private fun scanned(type: TypeID, table: Table): Pair<Table, List<Pair<Slot, Slot>>> {
+    /** Reads the registry's slots on the type past [Table.scanned] into the constants, making a twin of each text the store rendered first. */
+    private fun scan(type: TypeID, table: Table) {
         val total = Registry.slotCount(type)
-        if (table.scanned == total) return table to emptyList()
-        val constants = HashMap(table.constants)
-        val adoptions = ArrayList<Pair<Slot, Slot>>()
+        if (table.scanned == total) return
         for (index in table.scanned until total) {
             val text = Registry.storageKey(Slot(type, index))
-            if (constants.containsKey(text)) continue
-            constants[text] = index
+            if (table.constants.containsKey(text)) continue
+            table.constants[text] = index
             val number = table.numbers[text] ?: continue
             adoptions.add(Slot(type, number.inv()) to Slot(type, index))
         }
-        return Table(table.numbers, table.texts, constants, total) to adoptions
-    }
-
-    private companion object {
-        val EMPTY = Table(emptyMap(), emptyList(), emptyMap(), 0)
+        table.scanned = total
     }
 }

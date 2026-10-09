@@ -17,6 +17,12 @@ are expected and listed without apology.
   into `kotlin/release.properties`. The checkout's own modules generate
   through it. The release workflow publishes the artifacts and the plugin
   from the tag, and `docs/recipes/gradle.md` is the page.
+- The Kotlin store's keys live in a table under a lock, changed in place,
+  as the Swift store's do. The table was an immutable snapshot replaced by
+  compare-and-set: every new text a session rendered copied the type's
+  whole table and scanned it for a freed number first, quadratic in the
+  texts a type renders, a search field's terms for one. The image's locks
+  are the same `Lock` now, in `Threads.kt`.
 
 ## 0.12.0 (Palianytsia) — 2026-10-08
 

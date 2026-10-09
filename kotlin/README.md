@@ -221,7 +221,8 @@ host markers (`Markers.kt`), the generated-code marker and the format
 
 The store and the ingest, to the dump. A record's cells are Compose
 snapshot state, one per slot (`Record.kt`); the store numbers the keys a
-session renders and adopts a constant the build names after (`Keys.kt`);
+session renders, under a lock the ingest shares, and adopts a constant the
+build names after (`Keys.kt`);
 a plan is resolved under the store's keys (`Resolution.kt`); a response's
 bytes become a change set by the plan with no tree between
 (`Ingest.kt`, `Cursor.kt`, `ChangeSet.kt`), deferred parts by their paths

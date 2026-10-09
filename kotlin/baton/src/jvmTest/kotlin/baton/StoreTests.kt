@@ -1,6 +1,8 @@
 package baton
 
 import androidx.compose.runtime.snapshots.Snapshot
+import baton.spec.Slots
+import baton.spec.Types
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -98,6 +100,43 @@ class StoreTests {
         val line = store.dump().lines().single { it.contains("\"client:root\"") }
         assertEquals(1, Regex("kotlinTwinProbe").findAll(line).count(), line)
         assertTrue(line.contains("\"kotlinTwinProbe(id:\\\"1\\\")\": \"second\""), line)
+    }
+
+    @Test
+    fun `a number the keys freed goes to the next new text, the lowest first, and a kept text keeps its own`() {
+        val keys = Keys()
+        val query = Types.Query
+        fun probe(term: String): Slot = keys.slot(query, "keysProbe(term:\"$term\")")
+        val numbered = listOf("a", "b", "c", "d").map(::probe)
+        assertEquals(listOf(0, 1, 2, 3), numbered.map { it.index.inv() }, "the store numbers new texts from zero")
+        val (first, second, kept, fourth) = numbered
+        val generation = keys.generation
+
+        // The kept number sits above two freed ones, so they are holes the table keeps.
+        assertEquals(listOf(first, second, fourth), keys.free(setOf(kept)))
+        assertEquals(1, keys.count(query))
+        assertEquals(generation + 1, keys.generation, "a free that freed numbers advances the generation once")
+        assertEquals("", keys.text(first), "a freed number names no text")
+        assertEquals("keysProbe(term:\"c\")", keys.text(kept))
+        assertEquals(kept, probe("c"), "a kept text keeps its number")
+
+        assertEquals(first, probe("e"), "the next new text takes the lowest freed number")
+        assertEquals(second, probe("f"))
+        assertEquals(fourth, probe("g"), "and once the holes are taken, the lowest number above the kept one")
+        assertEquals("keysProbe(term:\"e\")", keys.text(first))
+
+        assertEquals(emptyList<Slot>(), keys.free(setOf(first, second, kept, fourth)))
+        assertEquals(generation + 1, keys.generation, "a free that freed nothing leaves the generation alone")
+    }
+
+    @Test
+    fun `a text the build names as a constant takes the build's slot, which the store does not number`() {
+        val keys = Keys()
+        val constant = Slots.Character.name
+        val slot = keys.slot(Types.Character, "name")
+        assertEquals(constant, slot)
+        assertTrue(slot.index >= 0, "the build's slots are dense")
+        assertEquals(0, keys.count(Types.Character))
     }
 
     @Test
