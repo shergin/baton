@@ -36,6 +36,28 @@ val generateBenchmarkKotlin = tasks.register<BatonGenerate>("generateBenchmarkKo
     hosts.from(repository.resolve("spec/sources/Fixture.graphql"))
 }
 
+// Relay's own store tests, harvested into `spec/relay/`, read through the
+// Kotlin generated from Relay's test schema with the configuration the relay
+// manifest names, as the Swift target `BatonRelayTests` reads them;
+// `spec/relay/README.md` says what the harvest kept. An output is named
+// `spec_relay_sources_<Name>.graphql.baton.kt`.
+val generateRelayKotlin = tasks.register<BatonGenerate>("generateRelayKotlin") {
+    description = "Generates the Kotlin of spec/relay/sources with batonc."
+    workingDirectory.set(repository)
+    configuration.set(repository.resolve("spec/relay/baton.json"))
+    hosts.from(fileTree(repository.resolve("spec/relay/sources")) { include("*.graphql") })
+}
+
+// The documents an app writes against the server of fate's GraphQL template,
+// the host `FateDocuments.kt` beside the fate tests, compiled against the
+// schema that server exports under `spec/fate/` with the configuration beside
+// the host, as the Swift target `BatonFateTests` compiles its own.
+val generateFateKotlin = tasks.register<BatonGenerate>("generateFateKotlin") {
+    description = "Generates the Kotlin of the fate documents with batonc."
+    configuration.set(layout.projectDirectory.file("src/jvmTest/kotlin/baton/fate/baton.json"))
+    hosts.from(layout.projectDirectory.file("src/jvmTest/kotlin/baton/fate/FateDocuments.kt"))
+}
+
 kotlin {
     jvm()
     android {
@@ -111,6 +133,8 @@ kotlin {
         }
         jvmTest {
             kotlin.srcDir(generateSpecKotlin.flatMap { it.outputDirectory })
+            kotlin.srcDir(generateRelayKotlin.flatMap { it.outputDirectory })
+            kotlin.srcDir(generateFateKotlin.flatMap { it.outputDirectory })
             dependencies {
                 // The harness walks a `reads` row over a generated lens by its
                 // properties' Kotlin names.
@@ -129,6 +153,34 @@ kotlin {
         }
     }
 }
+
+// The registry numbers types by name for the whole process, one schema family
+// per process, and the test compilation holds three schemas that give one
+// name to different types: Relay's test schema and fate's both declare a
+// `User`. So each harness runs in a JVM of its own, from the one compilation:
+// the specification's cases and scripts in `jvmTest`, Relay's in
+// `jvmRelayTest` and fate's in `jvmFateTest`, by the package each lives in.
+val jvmTest = tasks.named<Test>("jvmTest") {
+    filter {
+        excludeTestsMatching("baton.relay.*")
+        excludeTestsMatching("baton.fate.*")
+    }
+}
+
+/** A test task over the JVM test compilation that runs one package of it, in a process of its own. */
+fun harness(name: String, packageName: String, what: String) = tasks.register<Test>(name) {
+    description = "Runs $what through the Kotlin test compilation, in a JVM of its own."
+    group = "verification"
+    testClassesDirs = files(jvmTest.map { it.testClassesDirs })
+    classpath = files(jvmTest.map { it.classpath })
+    useJUnit()
+    filter { includeTestsMatching("$packageName.*") }
+}
+
+val jvmRelayTest = harness("jvmRelayTest", "baton.relay", "the cases and scripts of spec/relay")
+val jvmFateTest = harness("jvmFateTest", "baton.fate", "the responses recorded under spec/fate")
+
+tasks.named("check") { dependsOn(jvmRelayTest, jvmFateTest) }
 
 // The runtime has no Compose resources. The Compose plugin, applied for the
 // desktop renderer the JVM tests compose on, would copy the device tests'

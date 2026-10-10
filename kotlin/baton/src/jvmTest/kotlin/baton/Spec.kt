@@ -24,7 +24,12 @@ internal object Spec {
     /** The leaves an optimistic response overrides, several when they are aliases of one storage key, and the value they read under it, as JSON read by `Json`. */
     class Override(val paths: List<String>, val value: Any?)
 
-    /** A case of the manifest: the responses an operation's server sent, the dump the store holds after them, and what a lens reads. */
+    /**
+     * A case of a manifest: the responses an operation's server sent, the
+     * dump the store holds after them, and what a lens reads; for a case of
+     * `relay/manifest.json`, the status the harvest gives it when Baton is
+     * not held to Relay's result, and why.
+     */
     class Case(
         val name: String,
         val operation: String,
@@ -34,9 +39,13 @@ internal object Spec {
         val records: String,
         val reads: List<Read>,
         val override: Override?,
+        /** The package the compiler generated the case's operation into. */
+        val packageName: String = "baton.spec",
+        val status: String? = null,
+        val note: String? = null,
     ) {
-        /** The generated operation the case runs, from `spec/sources`. */
-        val type: OperationType<*>? get() = operation(operation)
+        /** The generated operation the case runs, from the manifest's sources. */
+        val type: OperationType<*>? get() = operation(operation, packageName)
 
         val plan: Plan? get() = type?.plan
 
@@ -72,12 +81,19 @@ internal object Spec {
         override fun toString(): String = name
     }
 
-    val cases: List<Case> by lazy {
+    val cases: List<Case> by lazy { manifest("manifest.json", "baton.spec") }
+
+    /**
+     * The cases of the manifest at [path] under `spec/`, in format 3, their
+     * operations bound in the package [packageName] the compiler generated
+     * the manifest's sources into.
+     */
+    fun manifest(path: String, packageName: String): List<Case> {
         @Suppress("UNCHECKED_CAST")
-        val manifest = Json.parse(text("manifest.json")) as Map<String, Any?>
+        val manifest = Json.parse(text(path)) as Map<String, Any?>
         check(manifest["format"] == 3L) { "the harness reads format 3 of the manifest" }
         @Suppress("UNCHECKED_CAST")
-        (manifest["cases"] as List<Map<String, Any?>>).map { entry ->
+        return (manifest["cases"] as List<Map<String, Any?>>).map { entry ->
             @Suppress("UNCHECKED_CAST")
             val variables = (entry["variables"] as Map<String, Any?>?).orEmpty().mapValues { Json.variable(it.value) }
             Case(
@@ -94,6 +110,9 @@ internal object Spec {
                 override = (entry["override"] as Map<*, *>?)?.let { override ->
                     Override((override["paths"] as List<*>).map { it as String }, override["value"])
                 },
+                packageName = packageName,
+                status = entry["status"] as String?,
+                note = entry["note"] as String?,
             )
         }
     }
@@ -101,13 +120,14 @@ internal object Spec {
     fun case(name: String): Case = cases.first { it.name == name }
 
     /**
-     * The operation [name] as the compiler generated it from `spec/sources`
-     * into the package `baton.spec`: its class's companion, which holds the
-     * plan and builds the root lens; null when no source declares it.
+     * The operation [name] as the compiler generated it into the package
+     * [packageName], `baton.spec` for `spec/sources`: its class's companion,
+     * which holds the plan and builds the root lens; null when no source
+     * declares it.
      */
-    fun operation(name: String): OperationType<*>? {
+    fun operation(name: String, packageName: String = "baton.spec"): OperationType<*>? {
         val type = try {
-            Class.forName("baton.spec.$name")
+            Class.forName("$packageName.$name")
         } catch (_: ClassNotFoundException) {
             return null
         }

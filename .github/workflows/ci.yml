@@ -97,10 +97,10 @@ jobs:
 
   # The Kotlin runtime: the common module built and tested on the JVM, the
   # development target, the Kotlin emitter's goldens compiled against it,
-  # and the Gradle plugin built and tested. The tests run the specification
-  # through the code the compiler generates from it, so the compiler is
-  # built from the same checkout first. On Linux, since nothing in it is
-  # Apple's.
+  # and the Gradle plugin built and tested. The tests run the specification,
+  # Relay's harvested store tests and the fate recordings through the code
+  # the compiler generates from them, so the compiler is built from the same
+  # checkout first. On Linux, since nothing in it is Apple's.
   kotlin:
     runs-on: ubuntu-latest
     steps:
@@ -109,8 +109,9 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: compiler
-      # The Kotlin harness generates its test sources from spec/sources with
-      # the compiler, found at compiler/target/release/batonc.
+      # The Kotlin harness generates its test sources from spec/sources,
+      # spec/relay/sources and the fate documents with the compiler, found
+      # at compiler/target/release/batonc.
       - run: cargo build --release
         working-directory: compiler
       - uses: actions/setup-java@v4
@@ -126,7 +127,8 @@ jobs:
       # The device tests and the ingest benchmark need a device and do not
       # run here; the benchmark's APKs build.
       - run: >
-          gradle --no-daemon :baton-gradle:build :baton:build :baton-testing:build :baton-inspector:build :baton-okhttp:build
+          gradle --no-daemon :baton-gradle:build :baton:build :baton:jvmRelayTest :baton:jvmFateTest
+          :baton-testing:build :baton-inspector:build :baton-okhttp:build
           :goldens:compileKotlinJvm :samples:shared:build :samples:desktop:build
           :samples:exchange:build :samples:github:build :samples:android:assembleDebug
           :benchmarks:android:build :benchmarks:android:assembleReleaseAndroidTest

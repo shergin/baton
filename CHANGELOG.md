@@ -5,6 +5,17 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- An image's open no longer holds a read of a file it is making.
+  `Persistence` notes at construction whether its file exists; until the
+  writer's first open, a read of a file that did not answers from memory
+  alone, since the file holds nothing yet, while a file that did is
+  waited for, or opened by the read, as before, so a warm start's first
+  frame still has the list. On the Pixel 9 the sample's cold start with an
+  empty store slept 23 ms of its first composition behind the file's
+  creation, written through to flash; its first frame now comes 26 ms
+  sooner, level with the Apollo Kotlin twin's, and the list 24 ms sooner,
+  255 ms from the launch against the twin's 327 (`BENCHMARKS.md`,
+  9 October).
 - A response is read where it is parsed. The Kotlin environment awaits the
   transport's payload on the ingest dispatcher and the Swift environment on
   a concurrent task, so the store's thread is entered once, for the commit,
@@ -48,6 +59,21 @@ are expected and listed without apology.
   connection, `node(id:)`, `postAdd` with `@prependNode` and the
   graphql-sse stream of `fateLiveNode`, whose `JSON` payload lands at the
   subscription root and updates no record.
+- The Kotlin runtime runs `spec/relay/` and `spec/fate/` as the Swift
+  runtime does, so a fixture under either directory now holds both
+  runtimes, as `docs/principles/two-runtimes-one-compiler.md` asks.
+  `jvmRelayTest` compiles `spec/relay/sources` with `spec/relay/baton.json`
+  through the Gradle plugin, which now names the Kotlin package, and runs
+  every case and script but the unsupported ones under the same statuses as
+  `BatonRelayTests`: the responses committed as payloads into a bare store,
+  the dump compared with Relay's, a `check` step's answer compared, and each
+  `reads` row read by walking the generated lens, with `throws` and
+  `result` rows lifted as the Swift target's generated reads lift them; a
+  case with a status runs as a known issue that fails once it passes.
+  `jvmFateTest` proves the fate recordings through the Kotlin host
+  `FateDocuments.kt`, the twin of `FateDocuments.swift`. Each harness runs
+  in a JVM of its own, since the registry numbers types by name per process
+  and Relay's test schema and fate's both declare a `User`. CI runs both.
 - `docs/recipes/agents.md`, the page a coding agent reads first when it
   integrates Baton into an app: the reading order, the shape of a screen
   in Swift and Kotlin, what never to write, the compiler's diagnostics and

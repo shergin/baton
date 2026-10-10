@@ -37,27 +37,37 @@ internal fun walk(data: Lens, path: String): Any? {
  * the property that reads it, backticks and JVM names aside. A key the lens
  * does not read itself is read through what reads the same record: a
  * fragment's spread, an inline fragment's lens, an `@inline` fragment's
- * value.
+ * value. The generated code is the package of the lens being walked,
+ * `baton.spec` for the main manifest and `baton.relay` for Relay's.
  */
 internal object Walker {
     /** What a property read: its value, null where it read as absent. */
     class Found(val value: Any?)
 
-    fun field(owner: Any, key: String): Found? {
+    /**
+     * The property of [owner] that reads [key], or the one of a lens over
+     * the same record that does. Read leniently, a `Result` is its value and
+     * a getter that throws a field's error is absent; read [strict], the
+     * property that reads [key] gives its `Result` as it is and throws what
+     * its getter throws, while the lenses searched on the way are still read
+     * leniently.
+     */
+    fun field(owner: Any, key: String, strict: Boolean = false): Found? {
+        val generated = owner::class.java.packageName
         val properties = properties(owner::class)
-        properties[key]?.let { return Found(read(it, owner)) }
+        properties[key]?.let { return Found(if (strict) readStrictly(it, owner) else read(it, owner)) }
         var absent: Found? = null
         for (property in properties.values) {
             val inner = read(property, owner)
             if (inner == null) {
                 // A fragment that reads as absent, or throws, holds its
                 // fields absent: its class says which they are.
-                val fragment = fragmentClass(property)
-                if (fragment != null && declares(fragment, key)) absent = Found(null)
+                val fragment = fragmentClass(property, generated)
+                if (fragment != null && declares(fragment, key, generated)) absent = Found(null)
                 continue
             }
-            if (!reachesTheSameRecord(owner, inner)) continue
-            val found = field(inner, key) ?: continue
+            if (!reachesTheSameRecord(owner, inner, generated)) continue
+            val found = field(inner, key, strict) ?: continue
             if (found.value != null) return found
             absent = found
         }
@@ -73,22 +83,29 @@ internal object Walker {
     }
 
     /** The fragment's class a property reads, a `Result` of one among them, or null for anything else. */
-    private fun fragmentClass(property: KProperty1<Any, *>): KClass<*>? {
+    private fun fragmentClass(property: KProperty1<Any, *>, generated: String): KClass<*>? {
         var type = property.returnType
         if (type.classifier == Result::class) type = type.arguments.first().type ?: return null
         val classifier = type.classifier as? KClass<*> ?: return null
-        return classifier.takeIf { isFragment(it.java) }
+        return classifier.takeIf { isFragment(it.java, generated) }
     }
 
     /** Whether [type], a fragment's class, reads [key] itself or through a fragment it spreads. */
-    private fun declares(type: KClass<*>, key: String): Boolean {
+    private fun declares(type: KClass<*>, key: String, generated: String): Boolean {
         val properties = properties(type)
         if (key in properties) return true
-        return properties.values.any { property -> fragmentClass(property)?.let { declares(it, key) } ?: false }
+        return properties.values.any { property -> fragmentClass(property, generated)?.let { declares(it, key, generated) } ?: false }
     }
 
-    /** Whether [type] is a fragment's lens or value: a generated class at the top of its package. */
-    private fun isFragment(type: Class<*>): Boolean = type.packageName == "baton.spec" && type.enclosingClass == null
+    /** Whether [type] is a fragment's lens or value: a class at the top of the package [generated]. */
+    private fun isFragment(type: Class<*>, generated: String): Boolean = type.packageName == generated && type.enclosingClass == null
+
+    /** A property's value as its getter gives it: a `Result` kept, a thrown error thrown again as itself. */
+    private fun readStrictly(property: KProperty1<Any, *>, owner: Any): Any? = try {
+        property.get(owner)
+    } catch (error: InvocationTargetException) {
+        throw error.cause ?: error
+    }
 
     /** A property's value: a `Result` unwrapped, a failure or a thrown field error as absent. */
     private fun read(property: KProperty1<Any, *>, owner: Any): Any? {
@@ -111,10 +128,10 @@ internal object Walker {
      * over the same record, an inline fragment's. A nested lens over another
      * record is a link's.
      */
-    private fun reachesTheSameRecord(owner: Any, inner: Any): Boolean {
+    private fun reachesTheSameRecord(owner: Any, inner: Any, generated: String): Boolean {
         val type = inner::class.java
-        if (type.packageName != "baton.spec") return false
-        if (isFragment(type)) return true
+        if (type.packageName != generated) return false
+        if (isFragment(type, generated)) return true
         return inner is Lens && owner is Lens && inner.anchor.record === owner.anchor.record
     }
 }

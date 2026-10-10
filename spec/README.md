@@ -20,7 +20,9 @@ and the documents; `BATON_BLESS=1 cargo test` in `compiler/` writes
 - `rickandmorty/`: the public API's schema, three documents and their
   responses.
 - `fate/`: responses recorded from the server of fate's GraphQL template,
-  with the schema it exports; [`fate/README.md`](fate/README.md) says how.
+  with the schema it exports, proven by the Swift test target
+  `BatonFateTests` and by the Kotlin harness's `jvmFateTest`;
+  [`fate/README.md`](fate/README.md) says how they were made.
 - `tests/`: the responses the test documents read, recorded or shaped by
   hand to say one thing each, with the dump beside each one the oracle reads,
   the schema and its client extensions, and `baton.json`, the configuration
@@ -45,8 +47,10 @@ and the documents; `BATON_BLESS=1 cargo test` in `compiler/` writes
 - `scripts/`: the scripts, below: steps over time and what each leaves.
 - `relay/`: cases harvested from Relay's own store tests, with Relay's test
   schema, its own manifest in this format and the cases where Baton parts
-  from Relay; [`relay/README.md`](relay/README.md) says how they are made
-  and what the harvest kept.
+  from Relay, run by the Swift test target `BatonRelayTests` and by the
+  Kotlin harness's `jvmRelayTest`, case for case;
+  [`relay/README.md`](relay/README.md) says how they are made and what the
+  harvest kept.
 - `manifest.json`: the sources, the cases and the scripts, below.
 - `runtime.md`: the contract, one paragraph a rule, each ending with the
   fixture that holds it or the word *unheld*.

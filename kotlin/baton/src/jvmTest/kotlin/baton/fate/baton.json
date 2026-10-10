@@ -1,0 +1,12 @@
+{
+  "schema": "../../../../../../../spec/fate/schema.graphql",
+  "lookups": [
+    {
+      "field": "Query.node",
+      "argument": "id"
+    }
+  ],
+  "kotlin": {
+    "package": "baton.fate"
+  }
+}

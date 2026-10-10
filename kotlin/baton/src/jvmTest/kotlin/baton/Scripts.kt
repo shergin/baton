@@ -16,6 +16,12 @@ internal class Script(
     /** The store's default expiration in seconds, for an operation that states none. */
     val expiration: Double?,
     val steps: List<Step>,
+    /** For a script of `relay/manifest.json`, the status the harvest gives it when Baton is not held to Relay's result. */
+    val status: String? = null,
+    /** Why the script has its status. */
+    val note: String? = null,
+    /** For a script of `relay/manifest.json`, the Relay test it came from. */
+    val origin: String? = null,
 ) {
     /** An operation a step names: its name in its document and the variables it runs with, as JSON. */
     class Operation(val name: String, val variables: Map<String, Any?>)
@@ -66,8 +72,23 @@ internal class Script(
         override fun toString(): String = if (tagged) "$word(${kind ?: "null"})" else word
     }
 
-    /** A read a step expects: a case's row, through a handle's data or through a lens made by hand over the root of an operation's kind. */
-    class Read(val handle: String?, val operation: String?, val variables: Map<String, Any?>, val path: String, val value: Any?, val note: String?)
+    /**
+     * A read a step expects: a case's row, through a handle's data or
+     * through a lens made by hand over the root of an operation's kind. A
+     * row may say instead what the read throws, a failure's kind in
+     * [throws], or what a `@catch` read's result is, a JSON object in
+     * [result]; such a row needs no [value].
+     */
+    class Read(
+        val handle: String?,
+        val operation: String?,
+        val variables: Map<String, Any?>,
+        val path: String,
+        val value: Any?,
+        val note: String?,
+        val throws: String? = null,
+        val result: Any? = null,
+    )
 
     /** A field a batch notified: the record's key and the field's storage key. */
     data class Notification(val record: String, val field: String) {
@@ -109,10 +130,13 @@ internal class Script(
         private val answers = setOf("memory", "image", "miss")
 
         /** The scripts the manifest lists, in the order they run. */
-        val paths: List<String> by lazy {
+        val paths: List<String> by lazy { paths("manifest.json") }
+
+        /** The scripts the manifest at [manifest] under `spec/` lists, in the order they run. */
+        fun paths(manifest: String): List<String> {
             @Suppress("UNCHECKED_CAST")
-            val manifest = Json.parse(Spec.text("manifest.json")) as Map<String, Any?>
-            (manifest["scripts"] as List<*>).map { it as String }
+            val json = Json.parse(Spec.text(manifest)) as Map<String, Any?>
+            return (json["scripts"] as List<*>).map { it as String }
         }
 
         /** Reads a script by its path under `spec/`. */
@@ -124,6 +148,9 @@ internal class Script(
                 buffer = (json["buffer"] as Long?)?.toInt() ?: 10,
                 expiration = (json["expiration"] as Number?)?.toDouble(),
                 steps = (json["steps"] as List<*>).map { step(it as Map<*, *>) },
+                status = json["status"] as String?,
+                note = json["note"] as String?,
+                origin = json["origin"] as String?,
             )
         }
 
@@ -187,7 +214,16 @@ internal class Script(
         private fun read(json: Map<*, *>): Read {
             @Suppress("UNCHECKED_CAST")
             val variables = (json["variables"] as Map<String, Any?>?).orEmpty()
-            return Read(json["handle"] as String?, json["operation"] as String?, variables, json["path"] as String, json["value"], json["note"] as String?)
+            return Read(
+                handle = json["handle"] as String?,
+                operation = json["operation"] as String?,
+                variables = variables,
+                path = json["path"] as String,
+                value = json["value"],
+                note = json["note"] as String?,
+                throws = json["throws"] as String?,
+                result = json["result"],
+            )
         }
 
         private fun action(kind: String, arguments: Map<*, *>): Action {

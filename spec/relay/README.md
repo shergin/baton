@@ -38,14 +38,20 @@ never its dump. The statuses are written in
   fragments; `documents/`: the text the compiler generated from it;
   `unsupported/`: the documents batonc rejects, kept for when it does not.
 - `schema/`: Relay's `testschema.graphql` and the client extensions batonc
-  accepts; `baton.json` keys every `Node` by `id`.
+  accepts; `baton.json` keys every `Node` by `id` and names the package the
+  Kotlin harness generates into.
 - `harvest.json`: every test with what became of it.
 
 The Swift test target `BatonRelayTests` compiles `sources/` (generated into
 `RelayDocuments.swift`, the reads into `RelayReads.swift`) against the
 schema and runs every case but the
 unsupported ones, each with a status as a known issue: it commits
-the responses as payloads and compares the store with the dump.
+the responses as payloads and compares the store with the dump. The Kotlin
+harness, `jvmRelayTest` in `kotlin/baton`, compiles `sources/` with
+`baton.json` through the Gradle plugin and runs the same cases and scripts
+under the same statuses, reading each row by walking the generated lens;
+a case where the two runtimes legitimately differ is listed in its
+`RelayTests.kt` with the reason, and there is none today.
 
 ## Seeded stores
 

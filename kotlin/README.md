@@ -34,7 +34,8 @@ release.properties
                   the release the artifacts and the plugin are versioned with and its bundle's checksum,
                   stamped by the release workflow
 baton/            the runtime: commonMain; jvmSharedMain, what the JVM and Android share; jvmMain and
-                  androidMain; jvmTest runs the spec, androidDeviceTest the image and the ingest benchmark
+                  androidMain; jvmTest runs the spec, jvmRelayTest spec/relay and jvmFateTest spec/fate,
+                  androidDeviceTest the image and the ingest benchmark
 baton-testing/    the transports an app's tests run over: scripted, recorded, silent (JVM)
 baton-inspector/  StoreInspector, a live view of an environment's store for a debug pane, and StoreExport
 goldens/          compiles the Kotlin emitter's goldens, compiler/src/tests/goldens-kotlin, against the runtime,
@@ -106,6 +107,17 @@ JAVA_HOME=$(/usr/libexec/java_home -v 21) gradle :baton:build
 The modules generate through the Gradle plugin, built from `baton-gradle`
 as an included build; the root build points it at the checkout's compiler,
 where an adopter's build would fetch the release's bundle.
+
+`:baton:build` runs three JVM test tasks over one test compilation, each
+in a process of its own, because the registry numbers types by name for
+the whole process and Relay's test schema and fate's both declare a
+`User`: `jvmTest`, the specification's cases and scripts through the
+Kotlin generated from `spec/sources`; `jvmRelayTest`, the cases and
+scripts of `spec/relay` through the Kotlin generated from
+`spec/relay/sources` with `spec/relay/baton.json`; and `jvmFateTest`, the
+responses recorded under `spec/fate` through the Kotlin generated from the
+host `src/jvmTest/kotlin/baton/fate/FateDocuments.kt`. Each can be run
+alone.
 
 The Android targets need the Android SDK: `ANDROID_HOME`, or
 `sdk.dir=<path>` in `kotlin/local.properties`, which git ignores. The
@@ -349,7 +361,21 @@ the dump, the reads, the slots notified (through Compose's apply
 observer), the phases, fetches and streams, the log, the bodies sent, the
 check's answer and what the step threw; a script with an image runs over
 a file of its own, and its `relaunch` makes a new store and environment
-over it. All twelve scripts pass whole. `PersistenceTests` holds the
+over it. All twelve scripts pass whole. `jvmRelayTest` runs
+`spec/relay/manifest.json` as `swift/Tests/BatonRelayTests` runs it: every
+case and script but the unsupported ones, each response committed as a
+payload into a bare store, the dump compared with Relay's, a `check` step's
+answer compared with Relay's, and each `reads` row read by walking the
+generated lens, a link lifted to an empty object, a `@catch` result to its
+`ok` and `value` or `errors`, a thrown `RequiredFieldError` or
+`FieldErrors` to the kind the row names, and the operation's own outcome
+from `missingRequiredField` and `fieldErrors`; a case with a status runs
+as a known issue, which fails once it passes, so the two runtimes agree
+case for case, and `RelayTests.kt` lists any case where they legitimately
+differ, none today. `jvmFateTest` proves the responses recorded under
+`spec/fate` as `swift/Tests/BatonFateTests` proves them: the posts
+connection, `node(id:)`, `postAdd` with `@prependNode` and the graphql-sse
+stream of `fateLiveNode`. `PersistenceTests` holds the
 image across launches: the fixture read back, another version, the size
 limit, the transient rules, the names swept, the events and the removal.
 Every case with an

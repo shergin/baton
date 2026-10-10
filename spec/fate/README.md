@@ -7,7 +7,10 @@ over Prisma and Postgres 17, seeded with the template's own data, run as
 the template ships with no change. They are the server's bytes; the
 documents that asked for them are in
 `swift/Tests/BatonFateTests/FateDocuments.swift`, sent as `batonc print`
-writes them.
+writes them, and the same text is the Kotlin host
+`kotlin/baton/src/jvmTest/kotlin/baton/fate/FateDocuments.kt`; the Swift
+target `BatonFateTests` and the Kotlin harness's `jvmFateTest` prove the
+recordings.
 
 - `schema.graphql`: the SDL the server writes at start in development.
 - `posts-page-1.json`, `posts-page-2.json`: `FatePostsQuery` and
