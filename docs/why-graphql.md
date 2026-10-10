@@ -62,7 +62,7 @@ often feels like more work than REST.
 
 ## What Relay solves
 
-Relay, also from Facebook, puts the data a view reads beside the view:
+Relay puts the data a view reads beside the view:
 
 - **A fragment per view.** Each view declares the fields it reads, next to
   its body. The compiler assembles the screen's one query from the
