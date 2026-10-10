@@ -770,10 +770,14 @@ def main():
     for name in sorted(os.listdir(os.path.join(utils, 'schema-extensions'))):
         shutil.copy(os.path.join(utils, 'schema-extensions', name), extensions_directory)
     config = os.path.join(OUT, 'baton.json')
+    # The Kotlin harness compiles the sources with this configuration, so it
+    # names the package the generated Kotlin goes to; the Swift test target
+    # carries a copy of the configuration beside its documents.
     write_json(config, {
         'schema': 'schema/testschema.graphql',
         'schemaExtensions': ['schema/extensions'],
         'identity': {'types': {'Node': ['id']}},
+        'kotlin': {'package': 'baton.relay'},
     })
     excluded = exclude_rejected_extensions(arguments.batonc, config, extensions_directory)
     extension_paths = [os.path.join(extensions_directory, name) for name in sorted(os.listdir(extensions_directory))]
