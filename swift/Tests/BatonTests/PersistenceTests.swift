@@ -1916,6 +1916,8 @@ struct PersistenceTests {
         return URL(fileURLWithPath: path.hasPrefix("/private/") ? String(path.dropFirst("/private".count)) : "/private" + path)
     }
 
+    // An exit test runs a child process, which a device has no room for.
+    #if DEBUG && os(macOS)
     /// A file of its own for an exit test, made in the child process: the
     /// testing library of the oldest supported Xcode takes no capture list
     /// in an exit test's closure.
@@ -1923,7 +1925,6 @@ struct PersistenceTests {
         FileManager.default.temporaryDirectory.appending(path: "baton-claim-\(UUID().uuidString).sqlite")
     }
 
-    #if DEBUG
     @Test("a second image made on a file another image in the process holds stops a debug build where it is made")
     func aSecondImageStopsADebugBuild() async {
         await #expect(processExitsWith: .failure) {
@@ -1950,7 +1951,7 @@ struct PersistenceTests {
             withExtendedLifetime((first, second)) {}
         }
     }
-    #else
+    #elseif !DEBUG
     @Test("a second image made on a file another image in the process holds runs without it, and its close leaves the file to the first")
     func aSecondImageRunsWithoutTheFile() async throws {
         let first = launch()
