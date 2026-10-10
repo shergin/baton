@@ -3,7 +3,7 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
-## Unreleased
+## 0.14.0 (Kalach) — 2026-10-09
 
 - The report `batonc generate --report` writes, `Baton.report.json` under
   the build plugin, lists each operation's and fragment's lens: every
