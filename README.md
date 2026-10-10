@@ -392,7 +392,10 @@ Apollo Router, GraphQL Yoga, Hive Gateway, Hasura and any other
 spec-compliant server answer it as they are, with no plugin or adapter.
 Point the compiler at the schema, wherever it comes from, and build.
 `@defer`, subscriptions and persisted operations follow each server's own
-conventions, and a federated graph looks like any other server. A process
+conventions, and a federated graph looks like any other server. The
+server of fate's GraphQL template answers as it is, its posts connection,
+`node(id:)` and mutations included; its live subscriptions arrive over
+graphql-sse but carry a `JSON` scalar, so they update no record. A process
 holds one schema family: two environments may share it, and two schemas
 in one process must not give two types one name.
 

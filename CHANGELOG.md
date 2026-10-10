@@ -5,6 +5,11 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A Baton app is a client of the server of fate's GraphQL template as it
+  ships: responses recorded from it under `spec/fate/` prove its posts
+  connection, `node(id:)`, `postAdd` with `@prependNode` and the
+  graphql-sse stream of `fateLiveNode`, whose `JSON` payload lands at the
+  subscription root and updates no record.
 - `docs/recipes/agents.md`, the page a coding agent reads first when it
   integrates Baton into an app: the reading order, the shape of a screen
   in Swift and Kotlin, what never to write, the compiler's diagnostics and
