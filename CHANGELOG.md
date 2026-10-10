@@ -3,7 +3,7 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
-## Unreleased
+## 0.15.0 (Sushka) — 2026-10-09
 
 - An image's open no longer holds a read of a file it is making.
   `Persistence` notes at construction whether its file exists; until the

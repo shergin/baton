@@ -11,7 +11,7 @@ companies with the hardest performance problems built the client in-house.
 This page is the argument for choosing. The measurements Baton publishes are
 in [BENCHMARKS.md](../BENCHMARKS.md), with the machine, the OS and the date.
 Numbers below that are not in that file are someone else's, and they say so.
-Versions are current as of October 2026: Baton 0.14.0, Apollo iOS 2.4.0
+Versions are current as of October 2026: Baton 0.15.0, Apollo iOS 2.4.0
 (20 August 2026), Apollo Kotlin 5.2.0 (16 September 2026) with normalized
 cache 1.0.9 (28 September 2026), the versions both comparisons measured.
 Baton's Kotlin runtime, for the JVM and Android, is held to the same

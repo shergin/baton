@@ -372,7 +372,7 @@ handing a change back, is
 
 ## Status
 
-0.14.0 (Kalach). On Swift, reads, writes, lists, errors and persistence
+0.15.0 (Sushka). On Swift, reads, writes, lists, errors and persistence
 run through every layer, with tests and benchmarks behind the claims: cached
 data in the first body, one changed field re-rendering one row, optimistic
 responses that show at once and revert on failure, connections that merge
