@@ -3,6 +3,14 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
+## Unreleased
+
+- The README's examples are one screen over GitHub's GraphQL API, as the
+  GitHub samples and `docs/why-graphql.md` are: an issue row, a repository
+  screen whose query spreads it into the open issues, and the paging
+  connection the list grows into. The Rick and Morty row is gone from the
+  README; the benchmark page it names stays.
+
 ## 0.15.0 (Sushka) — 2026-10-09
 
 - An image's open no longer holds a read of a file it is making.

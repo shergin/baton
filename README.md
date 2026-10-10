@@ -140,11 +140,16 @@ same page in 1.1 ms.
 
 ## The feel
 
-SwiftUI on the left, from the sample. Compose on the right, from the Kotlin
-sample: the same documents, the same lenses and the same phase, in
-Kotlin's words. Both APIs will still move before 1.0.
+SwiftUI on the left and Compose on the right, over GitHub's GraphQL API, as
+in the two GitHub samples ([Swift](examples/GitHubTriage),
+[Kotlin](kotlin/samples/github)): the same documents, the same lenses and
+the same phase, in Kotlin's words. Both APIs will still move before 1.0.
 
-A fragment beside the view that renders it, and one query for the screen:
+A fragment beside the view that renders it, and one query for the screen.
+The row declares the fields it reads; the screen names the repository by
+its variables and spreads the row's fragment into its open issues. The
+compiler assembles the operation, and the row reads what it declared and
+nothing else:
 
 <table>
 <tr><th>SwiftUI</th><th>Compose</th></tr>
@@ -153,49 +158,53 @@ A fragment beside the view that renders it, and one query for the screen:
 <sub>
 
 ```swift
-struct CharacterRow: View {
+struct IssueRow: View {
     @Fragment("""
-    fragment CharacterRow_character on Character {
-      name
-      status
-      image
+    fragment IssueRow_issue on Issue {
+      number
+      title
+      author { login }
     }
     """)
-    var character: CharacterRow_character
+    var issue: IssueRow_issue
 
     var body: some View {
-        HStack {
-            Avatar(url: character.image)
-            Text(character.name ?? "Unknown")
-            Text(character.status ?? "")
+        VStack(alignment: .leading) {
+            Text("#\(issue.number) \(issue.title)")
+            Text(issue.author?.login ?? "ghost")
+                .foregroundStyle(.secondary)
         }
     }
 }
 
-struct CharactersScreen: View {
+struct RepositoryScreen: View {
     @Query("""
-    query CharactersScreenQuery($page: Int) {
-      characters(page: $page) {
-        results { id ...CharacterRow_character }
+    query RepositoryQuery($owner: String!, $name: String!) {
+      repository(owner: $owner, name: $name) {
+        nameWithOwner
+        issues(first: 20, states: OPEN) {
+          nodes { id ...IssueRow_issue }
+        }
       }
     }
     """)
-    var characters: CharactersScreenQuery
+    var repository: RepositoryQuery
 
     var body: some View {
-        switch characters.phase {
+        switch repository.phase {
         case .ready(let data):
-            List(data.characters?.results ?? []) {
-                CharacterRow(
-                    character: $0.characterRow
-                )
+            if let repo = data.repository {
+                List {
+                    ForEach(repo.issues.nodes ?? .empty) {
+                        IssueRow(issue: $0.issueRow)
+                    }
+                }
+                .navigationTitle(repo.nameWithOwner)
             }
         case .loading:
             ProgressView()
         case .failed(let error):
-            ErrorView(error) {
-                characters.retry()
-            }
+            ErrorView(error) { repository.retry() }
         }
     }
 }
@@ -208,40 +217,42 @@ struct CharactersScreen: View {
 
 ```kotlin
 @Fragment($$"""
-    fragment CharacterRow_character on Character {
-      name
-      status
-      image
+    fragment IssueRow_issue on Issue {
+      number
+      title
+      author { login }
     }
     """)
 @Composable
-fun CharacterRow(
-    character: CharacterRow_character,
-) {
-    Row {
-        Avatar(url = character.image)
-        Text(character.name ?: "Unknown")
-        Text(character.status ?: "")
+fun IssueRow(issue: IssueRow_issue) {
+    Column {
+        Text("#${issue.number} ${issue.title}")
+        Text(issue.author?.login ?: "ghost")
     }
 }
 
 @Query($$"""
-    query CharactersScreenQuery($page: Int) {
-      characters(page: $page) {
-        results { id ...CharacterRow_character }
+    query RepositoryQuery($owner: String!, $name: String!) {
+      repository(owner: $owner, name: $name) {
+        nameWithOwner
+        issues(first: 20, states: OPEN) {
+          nodes { id ...IssueRow_issue }
+        }
       }
     }
     """)
 @Composable
-fun CharactersScreen(page: Int) {
+fun RepositoryScreen(owner: String, name: String) {
     val query = rememberQuery(
-        CharactersScreenQuery(page = page),
+        RepositoryQuery(owner = owner, name = name),
     )
     when (val phase = query.phase) {
-        is Phase.Ready -> LazyColumn {
-            val characters = phase.data.characters
-            items(characters?.results.orEmpty()) {
-                CharacterRow(it.characterRow)
+        is Phase.Ready -> phase.data.repository?.let { repo ->
+            LazyColumn {
+                item { Text(repo.nameWithOwner) }
+                items(repo.issues.nodes.orEmpty()) {
+                    IssueRow(it.issueRow)
+                }
             }
         }
         Phase.Loading ->
@@ -258,8 +269,10 @@ fun CharactersScreen(page: Int) {
 </tr>
 </table>
 
-A list is a Relay connection. The fragment owns the pagination, the store
-owns the merged pages, and the view reads them like any other field:
+A list that pages is a Relay connection, in a fragment of its own that the
+screen's query spreads in place of its `issues` field. The fragment owns
+the pagination, the store owns the merged pages, and the view reads them
+like any other field:
 
 <table>
 <tr><th>SwiftUI</th><th>Compose</th></tr>
