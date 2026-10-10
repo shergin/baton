@@ -1,185 +1,135 @@
 # Why GraphQL
 
-This page is for iOS and Android engineers who have built apps on REST
-endpoints and view models, and who meet GraphQL for the first time through
-Baton. It says what GraphQL is, what it changes in the shape of an app,
-and what it does not change, by way of the questions such engineers ask
-first. The vocabulary is in [`terminology.md`](terminology.md); the
-argument for Baton's own design is in [`vision.md`](vision.md).
+For iOS and Android engineers who build on REST and view models. The words
+are defined in [`terminology.md`](terminology.md).
 
-GraphQL was made at Facebook in 2012 for a native app: the iOS News Feed,
-whose screens needed nested data from many endpoints and whose round trips
-on a phone network were the cost that mattered. Relay, the client that put
-a fragment beside every component, came from the same company in 2015. It is a
-mobile technology first, and the web adopted it after.
+## The problem
 
-## What it is
+Take an issue screen: the title, the author's name and avatar, and the
+comments, each with its author. On REST it takes:
 
-A server publishes a **schema**: every type it serves, every field on each
-type, which fields are nullable, which take arguments. A client sends a
-**document** that selects the fields it wants, nested as deep as the data
-goes, and the server answers with exactly that shape in JSON. One request
-asks for a repository, its open issues, each issue's author and the
-author's avatar; one response carries all of it.
+1. `GET /issues/42`, then, from its answer, `GET /users/7` and
+   `GET /issues/42/comments`, then the users of the comments. Round trips
+   in sequence, each waiting on the last, and each response carrying fields
+   the screen never shows.
+2. Model structs for each response, decoders, and a view model that calls
+   the endpoints, merges the answers and copies the fields each view needs
+   into its own properties.
+3. A cache keyed by URL, so the issue the list screen fetched and the issue
+   the detail screen fetched are two copies. Star it on one and the other
+   is wrong until someone writes the code that updates it.
+4. A contract the compiler never sees. A field the server renamed is a
+   decoding failure in production.
 
-Three properties follow, and the rest of this page is their consequences:
+None of this is the screen. It is plumbing, and it is most of the code.
 
-- **The client decides the shape of the response.** The server decides what
-  exists; the client decides what it receives.
-- **The schema is a typed contract.** A document can be checked against it
-  before anything is sent, so a misspelled field or a missing argument is a
-  build error, not a crash in production.
-- **Objects have identity.** Types that carry an `id` can be normalized: the
-  same user returned by two requests is one record, and a change to it
-  shows everywhere it is read.
+## What GraphQL solves
 
-## Questions mobile engineers ask
+The server publishes a **schema**: every type, every field, which are
+nullable. The client sends one document naming the fields it wants, nested
+as deep as it goes, and gets exactly that shape back:
 
-### Is GraphQL a database query language?
+```graphql
+query IssueQuery($id: ID!) {
+  issue(id: $id) {
+    title
+    author { name avatarUrl }
+    comments(first: 20) {
+      edges { node { body author { name avatarUrl } } }
+    }
+  }
+}
+```
 
-No. GraphQL is the language of an API, the layer a REST API occupies
-today. The server resolves each field however it likes: from a database,
-from other services, from existing REST endpoints. Nothing about the
-server's storage is exposed, and the client cannot ask for anything the
-schema does not declare.
+One round trip, nothing extra in it (problem 1). The document is checked
+against the schema at build time, so a misspelled or removed field is a
+build error (problem 4). Objects carry an `id`, so a client can store each
+object once, by type and id, rather than once per request.
 
-### Is it REST with one endpoint?
+GraphQL is the API layer, where REST is today; it is not a database
+language. The server resolves each field however it likes, and the request
+is still HTTP and JSON.
 
-The transport is the same, an HTTP request with a JSON body, and any
-server that follows the specification answers it
-([Works with your server](../README.md#works-with-your-server)). The
-difference is who owns the shape. With REST, the server fixes each
-endpoint's response, and a screen either takes more than it needs or
-calls several endpoints in sequence, each waiting on the last. With
-GraphQL, the screen's request names exactly the fields it reads, so a
-screen is one round trip with nothing extra in it.
+## What GraphQL alone does not solve
 
-### Where do my view models go?
+A query per screen moves the plumbing, it does not remove it. The screen's
+query lists the fields of every view on it, so a row that starts showing a
+date means editing a query in another file. The response is decoded into
+a model tree, a view model still copies from it, and the cache still needs
+someone to keep the list and the detail in agreement (problems 2 and 3).
+That is how most native GraphQL clients work, and why GraphQL on mobile
+often feels like more work than REST.
 
-Most of what a view model does in a REST app is data plumbing: call the
-endpoints, decode the responses into model structs, merge them, hold them,
-copy the fields a view needs into published properties, and remember to
-refresh them when another screen changes the same object. Under Baton
-none of that is written:
+## What Relay solves
 
-- The fields a view reads are declared in a [fragment](terminology.md#documents)
-  beside its body, and the view receives a typed
-  [lens](terminology.md#generated) that reads exactly those fields.
-- The screen's one request is assembled by the compiler from the fragments
-  of the views on it.
-- The response is normalized into a [store](terminology.md#store) of
-  records that SwiftUI's Observation or Compose's snapshot state observes,
-  so a view re-renders when a field it read changes, whichever request or
-  mutation changed it.
+Relay, also from Facebook, puts the data a view reads beside the view:
 
-What is left is what a view model is for when it is not plumbing: state
-that belongs to the user's interaction (a draft, a selection, a sheet that
-is open) and rules that compute something from the data. Those stay, in
-`@State`, in a model of the app's own, or in a function over a lens or an
-`@inline` fragment's value ([derived state](recipes/derived-state.md)).
-A Kotlin screen with no composition can still hold the handle in a
-`ViewModel` ([views and view models](recipes/views.md)). What goes away is
-the copy.
+- **A fragment per view.** Each view declares the fields it reads, next to
+  its body. The compiler assembles the screen's one query from the
+  fragments of its views. A row that shows a date adds `createdAt` to its
+  own fragment, and nothing else changes.
+- **A view reads only what it declared.** The parent hands the child a
+  reference, not data; the child reads its own fields through it.
+- **One store.** Every response is normalized into records by type and id.
+  The list and the detail read the same record, so a change shows in both.
+- **Declarative writes.** A mutation selects what it changed, names the
+  list it adds to with a directive, and may carry an optimistic response
+  that shows at once and reverts if the server refuses it. No code edits
+  the cache.
 
-### Where do my view controllers go?
+The view model's data work, the decoding and the cache updates are gone
+(problems 2 and 3).
 
-Nowhere; they are not about data. Navigation, presentation, containment
-and lifecycle are the platform's, as before. A screen in SwiftUI or Compose
-declares its query and its views declare their fragments; a UIKit or AppKit
-controller holds the same handle a view does
-([UIKit and AppKit](recipes/uikit.md)). GraphQL replaces the networking and
-model layer under the controllers, not the controllers.
+## What Baton adds
 
-### Where is my networking layer?
+Relay is for React. Baton brings it to SwiftUI and Compose, with the same
+compiler front end and the same directives:
 
-It shrinks to a [transport](terminology.md#runtime): one function that
-sends a request and yields its response. Authentication, retries and
-deadlines wrap that one function ([the exchange](recipes/exchange.md)).
-There are no per-endpoint clients, request builders or response decoders
-to write, because the compiler generates the reading side from the
-documents.
+```swift
+struct CommentRow: View {
+    @Fragment("""
+    fragment CommentRow_comment on IssueComment {
+      body
+      author { login }
+    }
+    """)
+    var comment: CommentRow_comment
 
-### Where is my model layer?
+    var body: some View {
+        Text(comment.author?.login ?? "ghost").font(.caption)
+        Text(comment.body)
+    }
+}
+```
 
-The schema is the model, and the compiler generates the types. A view
-cannot read a field it did not select, and nothing decodes a response into
-a tree of structs: the response goes into records, and lenses read them in
-place. There is no second definition of a user to keep in sync with the
-server's.
+The fragment compiles to a typed [lens](terminology.md#generated) over
+the store's records. SwiftUI's Observation and Compose's snapshot state
+observe the records directly, so a view re-renders when a field it read
+changes and at no other time, and a screen whose data is already in the
+store renders it in the first frame. No GraphQL is parsed on the device.
+The [README](../README.md) has the Compose spelling and the numbers.
 
-### How does caching work without HTTP caching?
+## What stays yours
 
-By identity rather than by URL. A REST cache keys a response by its
-request, so two endpoints that return the same user hold two copies that
-disagree as soon as one is refreshed. A normalized store keys each object
-by its type and id, so there is one copy, and every screen that shows it
-shows the latest. A screen whose data is already in the store renders it in
-the first frame, and the store can be kept on disk across launches
-([persistence](terminology.md#store)).
-
-### Who keeps the list up to date after a write?
-
-The write says so. A mutation selects the fields it changed, and those land
-in the store like any response; a mutation that adds to or removes from a
-list says which list with an [edge directive](terminology.md#lists); a
-write the user should see at once carries an
-[optimistic response](terminology.md#store) that is reverted if the server
-refuses it. No code edits a cache by hand.
-
-### Can a client ask for anything, including what is expensive?
-
-Only what the schema declares, and under persisted operations not even
-that: the build registers each operation's text with the server under a
-[persisted id](terminology.md#compiler), the app sends the id, and the
-server may refuse any document it has not seen. Every operation an app can
-send is known at build time; Baton has no API that builds one at run time.
-
-### What about versioning?
-
-A GraphQL API usually does not version. Fields are added; a field to be
-removed is marked `@deprecated` while clients move off it; and since each
-client names the fields it reads, the server knows which fields old app
-versions still use. That matters on mobile, where old builds stay installed
-for years.
-
-### What happens when part of the server fails?
-
-GraphQL can answer with partial data: the fields that resolved, and an
-error for each that did not, with the path to it. Baton keeps each
-[field error](terminology.md#store) beside its field, and a view says
-which fields it cannot do without (`@required`) and which errors it shows
-(`@catch`), so one failed field degrades one row instead of failing the
-screen.
-
-### Is GraphQL slow to parse on a device?
-
-Not under Baton: no GraphQL is parsed on the device. The compiler reads the
-documents at build time and emits the operation's text, or its persisted
-id, and a plan for the response. On the device, the response's JSON is
-decoded straight into the store; the measurements are in the
-[README](../README.md#by-the-numbers).
-
-### I tried a GraphQL client and it felt like more work than REST.
-
-Most native GraphQL clients generate one model tree per operation from a
-query file per screen, and leave the view model in place to copy from it:
-the cost of a schema without the benefit of fragments. Relay's shape is
-different: each view owns its fragment, the screen's query is assembled
-for it, and the store tells views what changed. That is the shape Baton
-brings to SwiftUI and Compose; [`comparison.md`](comparison.md) sets the
-two approaches side by side.
+Navigation, view controllers, presentation and lifecycle are the
+platform's, as before; a UIKit or AppKit controller holds the same handle a
+view does ([UIKit and AppKit](recipes/uikit.md)). State that belongs to the
+user's interaction, a draft, a selection, an open sheet, stays in the view
+or the app's own model. Authentication and retries wrap the one
+[transport](terminology.md#runtime) function
+([the exchange](recipes/exchange.md)).
 
 ## What it costs
 
-- **A server that speaks GraphQL.** If the backend is REST, a GraphQL
-  server has to stand in front of it, and someone owns that layer.
-- **A schema in the build.** The compiler needs the schema's SDL, fetched
-  or committed, and a change to it is a change the build sees.
-- **A different discipline on the server.** Because clients choose the
-  shape, a server has to guard against expensive selections and batch the
-  lookups behind nested fields; persisted operations narrow what it has to
-  guard against to what the apps actually send.
-- **New habits.** A fragment per view and no copied state is the point, and
-  it is unfamiliar at first. [`recipes/agents.md`](recipes/agents.md)
-  states the shape of a screen in a page, for a person as much as for an
-  agent.
+- **A GraphQL server.** If the backend is REST, a GraphQL layer stands in
+  front of it, and someone owns it. Any server that follows the
+  specification works ([your server](../README.md#works-with-your-server)).
+- **A schema in the build.** The compiler reads the schema's SDL; a change
+  to it is a change the build sees.
+- **Server discipline.** Clients choose the shape, so the server guards
+  against expensive selections. Persisted operations narrow that to the
+  documents the apps were built with
+  ([persisted id](terminology.md#compiler)).
+- **New habits.** A fragment per view and no copied state.
+  [`recipes/agents.md`](recipes/agents.md) states the shape of a screen in
+  one page.
