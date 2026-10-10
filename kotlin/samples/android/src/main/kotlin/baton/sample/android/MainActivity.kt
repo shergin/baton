@@ -32,8 +32,9 @@ import baton.Persistence
 import baton.Store
 import baton.macro.FixedServer
 import baton.macro.Sections
-import baton.sample.CharacterScreen
 import baton.sample.CharactersScreen
+import baton.sample.Destination
+import baton.sample.DestinationScreen
 import baton.sample.Measurement
 import baton.sample.SampleTheme
 import baton.sample.Types
@@ -44,7 +45,8 @@ import kotlinx.coroutines.launch
 /**
  * The sample on a phone: the public Rick and Morty API through Baton, the
  * characters a page at a time, and a character's detail when one is
- * selected; back returns to the list. The environment lives in a view
+ * selected, with the episodes and locations it opens; back returns one
+ * screen, then to the list. The environment lives in a view
  * model, so it outlives a rotation, and its store keeps its image in the
  * app's cache directory under the schema's digest, so the next launch shows
  * what this one fetched before the network answers.
@@ -114,13 +116,17 @@ class SampleModel(application: Application) : AndroidViewModel(application) {
     }
 }
 
-/** The list, or the detail of the character selected in it, one at a time. */
+/**
+ * The list, or the stack of screens opened from it, one at a time: the
+ * character selected, then what its screen opens. Back pops one, and the
+ * last pop returns to the list; the stack survives a recreation.
+ */
 @Composable
 private fun Characters(modifier: Modifier = Modifier) {
     var page by rememberSaveable { mutableStateOf(1) }
-    var selected by rememberSaveable { mutableStateOf<String?>(null) }
-    val id = selected
-    if (id == null) {
+    var stack by rememberSaveable(stateSaver = Destination.stackSaver) { mutableStateOf(emptyList<Destination>()) }
+    val top = stack.lastOrNull()
+    if (top == null) {
         CharactersScreen(
             page = page,
             onPage = {
@@ -129,16 +135,16 @@ private fun Characters(modifier: Modifier = Modifier) {
             },
             onSelect = {
                 Sections.begin(Sections.DETAIL_TAP_TO_FRAME)
-                selected = it
+                stack = listOf(Destination.Character(it))
             },
             modifier = modifier.fillMaxSize(),
         )
         return
     }
-    BackHandler { selected = null }
+    BackHandler { stack = stack.dropLast(1) }
     Column(modifier.fillMaxSize()) {
-        TextButton(onClick = { selected = null }) { Text("Characters") }
+        TextButton(onClick = { stack = stack.dropLast(1) }) { Text(if (stack.size > 1) "Back" else "Characters") }
         HorizontalDivider()
-        CharacterScreen(id = id)
+        DestinationScreen(top, onOpen = { stack = stack + it })
     }
 }

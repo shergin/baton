@@ -2,12 +2,15 @@ package baton.sample
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -29,25 +32,31 @@ fun SampleTheme(content: @Composable () -> Unit) {
 }
 
 /**
- * The list beside the detail of the character selected in it, for a wide
- * window, and the store inspector over [inspected] when it is given; a
- * selection to start from, for the screenshot.
+ * The list beside the detail pane, for a wide window, and the store
+ * inspector over [inspected] when it is given; a character to start from,
+ * for the screenshot. Selecting a character starts the pane's stack over;
+ * what a screen opens, an episode, a location, a cast member, is pushed on
+ * it, and Back pops.
  */
 @Composable
 fun Characters(initialSelection: String? = null, inspected: Environment? = null) {
     var page by remember { mutableStateOf(1) }
-    var selected by remember(initialSelection) { mutableStateOf(initialSelection) }
+    var stack by remember(initialSelection) { mutableStateOf(initialSelection?.let { listOf<Destination>(Destination.Character(it)) }.orEmpty()) }
     Row {
-        CharactersScreen(page = page, onPage = { page = it }, onSelect = { selected = it }, modifier = Modifier.width(360.dp).fillMaxHeight())
+        CharactersScreen(page = page, onPage = { page = it }, onSelect = { stack = listOf(Destination.Character(it)) }, modifier = Modifier.width(360.dp).fillMaxHeight())
         VerticalDivider()
-        Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
-            val id = selected
-            if (id == null) {
+        Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
+            val top = stack.lastOrNull()
+            if (top == null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("Select a character.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
-                CharacterScreen(id = id)
+                if (stack.size > 1) {
+                    TextButton(onClick = { stack = stack.dropLast(1) }) { Text("Back") }
+                    HorizontalDivider()
+                }
+                DestinationScreen(top, onOpen = { stack = stack + it })
             }
         }
         if (inspected != null) {

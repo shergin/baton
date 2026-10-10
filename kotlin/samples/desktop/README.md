@@ -5,7 +5,12 @@ through the Kotlin runtime, in Compose for Desktop; the Kotlin counterpart
 of `examples/RickAndMorty`. The characters, a page at a time, beside the
 detail of the one selected: its header, which the list fetched and the
 `character` lookup finds in the store, and its episodes, which only the
-detail fetches.
+detail fetches. An episode opens its screen, the episode's cast; the
+header's origin and last known location open the location's screen, its
+residents; a cast member or a resident opens the character's detail. The
+screens share one store, so a character seen in the list, in a cast and
+among residents is one record, and the pane keeps the screens opened from
+the list as a stack, which Back pops.
 
 - The screens are `../shared`, Compose Multiplatform in common code, which
   the Android app (`../android`) shows too; this module is the window, the
