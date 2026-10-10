@@ -83,11 +83,18 @@ let package = Package(
             dependencies: ["batonc"],
             path: "swift/Plugins/BatonPlugin"
         ),
-        // The fixtures under `spec/`, read in place by the tests and the
-        // benchmarks.
+        // The fixtures under `spec/`, carried as the target's resources so
+        // that the tests and the benchmarks read them wherever they run, on
+        // a device too; the door they read through sits beside them.
         .target(
             name: "BatonSpec",
-            path: "swift/Spec",
+            path: "spec",
+            exclude: ["README.md", "runtime.md"],
+            sources: ["Spec.swift", "Manifest.swift"],
+            resources: [
+                .copy("documents"), .copy("manifest.json"), .copy("relay"), .copy("rickandmorty"),
+                .copy("scripts"), .copy("sources"), .copy("tests"), .copy("tokenizer"),
+            ],
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         .testTarget(
