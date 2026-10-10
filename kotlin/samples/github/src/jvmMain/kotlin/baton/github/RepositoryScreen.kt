@@ -41,6 +41,7 @@ import kotlinx.coroutines.launch
       number
       title
       state
+      repository { nameWithOwner }
       author @required(action: LOG) { login }
     }
     """,
@@ -50,7 +51,7 @@ fun IssueRow(issue: IssueRow_issue, onClick: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 8.dp)) {
         Text(issue.title, style = MaterialTheme.typography.titleMedium)
         Text(
-            "#${issue.number} · ${issue.author.login} · ${issue.state.word}",
+            "${issue.repository.nameWithOwner} #${issue.number} · ${issue.author.login} · ${issue.state.word}",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

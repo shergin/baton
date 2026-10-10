@@ -81,7 +81,7 @@ class ScreenTests {
         rule.onNodeWithText(unstarred).assertExists()
         rule.onNodeWithText("6 open issues").assertExists()
         rule.onNodeWithText("Sixth issue").assertExists()
-        rule.onNodeWithText("#5 · hubot · open").assertExists()
+        rule.onNodeWithText("octocat/Hello-World #5 · hubot · open").assertExists()
         val variables = transport.requests.first().variables
         assertEquals(Variable.String("octocat"), variables["owner"])
         assertEquals(Variable.String("Hello-World"), variables["name"])
@@ -184,5 +184,66 @@ class ScreenTests {
         rule.onAllNodesWithTag("comment").assertCountEquals(3)
         rule.onAllNodesWithTag("comment").onLast().onChildren().assertAny(hasText("Looking into it."))
         rule.onAllNodesWithTag("comment").onLast().onChildren().assertAny(hasText("triager · 2026-10-07"))
+    }
+
+    @Test
+    fun the_triage_screen_shows_both_searches_with_their_counts_and_their_issue_and_pull_request_rows() {
+        val transport = ScriptedTransport(mapOf("TriageQuery" to response("triage")))
+        rule.setContent {
+            Provided(transport) { TriageScreen(onSelect = {}) }
+        }
+        waitForText("Assigned to triager · 2")
+        rule.onNodeWithText("Created by triager · 2").assertExists()
+        rule.onNodeWithText("Sixth issue").assertExists()
+        rule.onNodeWithText("octocat/Hello-World #6 · octocat · open").assertExists()
+        rule.onNodeWithText("Fifth issue").assertExists()
+        rule.onNodeWithText("octocat/Hello-World #5 · hubot · open").assertExists()
+        rule.onAllNodesWithTag("pull request").assertCountEquals(2)
+        rule.onNodeWithText("Add a README").assertExists()
+        rule.onNodeWithText("Draft").assertExists()
+        rule.onNodeWithText("octocat/Hello-World #7 · hubot").assertExists()
+        rule.onNodeWithText("Fix the build").assertExists()
+        rule.onNodeWithText("octocat/Hello-World #8 · ghost").assertExists()
+        rule.waitForIdle()
+        assertEquals(listOf("TriageQuery"), transport.requests.map { it.operationName })
+    }
+
+    @Test
+    fun refreshing_the_rows_asks_for_the_shown_ids_in_order_and_leaves_the_searches_alone() {
+        val transport = ScriptedTransport(
+            mapOf(
+                "TriageQuery" to response("triage"),
+                "RefreshRowsQuery" to response("refresh-rows"),
+            ),
+        )
+        rule.setContent {
+            Provided(transport) { TriageScreen(onSelect = {}) }
+        }
+        waitForText("Sixth issue")
+        rule.onNodeWithText("Refresh rows").performClick()
+        rule.waitUntil(5_000) { transport.requests.size == 2 }
+        val refresh = transport.requests.last()
+        assertEquals("RefreshRowsQuery", refresh.operationName)
+        assertEquals(
+            Variable.List(listOf("I_6", "PR_1", "I_5", "PR_2").map { Variable.String(it) }),
+            refresh.variables["ids"],
+        )
+
+        waitForText("Sixth issue, retitled")
+        rule.onNodeWithText("Sixth issue").assertDoesNotExist()
+        rule.waitForIdle()
+        assertEquals(listOf("TriageQuery", "RefreshRowsQuery"), transport.requests.map { it.operationName })
+    }
+
+    @Test
+    fun clicking_an_issue_row_in_the_triage_selects_that_issue() {
+        val transport = ScriptedTransport(mapOf("TriageQuery" to response("triage")))
+        val selected = mutableListOf<String>()
+        rule.setContent {
+            Provided(transport) { TriageScreen(onSelect = { selected += it }) }
+        }
+        waitForText("Fifth issue")
+        rule.onNodeWithText("Fifth issue").performClick()
+        rule.runOnIdle { assertEquals(listOf("I_5"), selected) }
     }
 }

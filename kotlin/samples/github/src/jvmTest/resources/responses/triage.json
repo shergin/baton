@@ -1,0 +1,19 @@
+{
+  "data": {
+    "viewer": { "login": "triager", "id": "U_2" },
+    "assigned": {
+      "issueCount": 2,
+      "nodes": [
+        { "__typename": "Issue", "id": "I_6", "number": 6, "title": "Sixth issue", "state": "OPEN", "repository": { "nameWithOwner": "octocat/Hello-World", "id": "R_1" }, "author": { "__typename": "User", "login": "octocat", "__isNode": "User", "id": "U_1" }, "__isNode": "Issue" },
+        { "__typename": "PullRequest", "id": "PR_1", "number": 7, "title": "Add a README", "isDraft": true, "repository": { "nameWithOwner": "octocat/Hello-World", "id": "R_1" }, "author": { "__typename": "User", "login": "hubot", "__isNode": "User", "id": "U_3" }, "__isNode": "PullRequest" }
+      ]
+    },
+    "created": {
+      "issueCount": 2,
+      "nodes": [
+        { "__typename": "Issue", "id": "I_5", "number": 5, "title": "Fifth issue", "state": "OPEN", "repository": { "nameWithOwner": "octocat/Hello-World", "id": "R_1" }, "author": { "__typename": "User", "login": "hubot", "__isNode": "User", "id": "U_3" }, "__isNode": "Issue" },
+        { "__typename": "PullRequest", "id": "PR_2", "number": 8, "title": "Fix the build", "isDraft": false, "repository": { "nameWithOwner": "octocat/Hello-World", "id": "R_1" }, "author": null, "__isNode": "PullRequest" }
+      ]
+    }
+  }
+}

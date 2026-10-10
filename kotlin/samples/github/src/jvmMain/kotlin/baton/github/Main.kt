@@ -13,6 +13,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -41,12 +44,12 @@ import baton.exchange.Exchange
 import kotlinx.coroutines.launch
 
 /**
- * The sample on GitHub's API: a repository with a star toggle and its open
- * issues a page at a time, beside an issue with its comments and a
- * composer. Reads, writes with optimistic responses, connections appended to
- * by a mutation's edge, interfaces, and a lookup by id, against a schema of
- * about 1,800 definitions. Needs a personal access token, which stays in
- * memory:
+ * The sample on GitHub's API: the viewer's triage, two searches over a
+ * union, or a repository with a star toggle and its open issues a page at
+ * a time, beside an issue with its comments and a composer. Reads, writes
+ * with optimistic responses, connections appended to by a mutation's edge,
+ * interfaces and a union, and a lookup by id, against a schema of about
+ * 1,800 definitions. Needs a personal access token, which stays in memory:
  *
  *     GITHUB_TOKEN=$(gh auth token) gradle :samples:github:run
  */
@@ -133,9 +136,16 @@ private fun SignedIn(token: String, onSignedOut: () -> Unit) {
     }
 }
 
-/** The repository named in the bar, its issues, and the issue selected in them. */
+/** What the left pane shows: the viewer's triage, or the repository named in the bar. */
+private enum class Pane { TRIAGE, REPOSITORY }
+
+/**
+ * The left pane, the triage or the repository named in the bar with its
+ * issues, and the issue selected in either on the right.
+ */
 @Composable
 fun Triage(onSignOut: () -> Unit, initialOwner: String = "octocat", initialName: String = "Hello-World") {
+    var pane by remember { mutableStateOf(Pane.TRIAGE) }
     var ownerField by remember { mutableStateOf(initialOwner) }
     var nameField by remember { mutableStateOf(initialName) }
     var shown by remember { mutableStateOf(initialOwner to initialName) }
@@ -146,22 +156,36 @@ fun Triage(onSignOut: () -> Unit, initialOwner: String = "octocat", initialName:
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            OutlinedTextField(ownerField, { ownerField = it }, label = { Text("Owner") }, singleLine = true, modifier = Modifier.width(200.dp))
-            OutlinedTextField(nameField, { nameField = it }, label = { Text("Name") }, singleLine = true, modifier = Modifier.width(240.dp))
-            Button(
-                onClick = {
-                    shown = ownerField.trim() to nameField.trim()
-                    selected = null
-                },
-                enabled = ownerField.isNotBlank() && nameField.isNotBlank(),
-            ) { Text("Open") }
+            SingleChoiceSegmentedButtonRow {
+                Pane.entries.forEachIndexed { index, entry ->
+                    SegmentedButton(
+                        selected = pane == entry,
+                        onClick = { pane = entry },
+                        shape = SegmentedButtonDefaults.itemShape(index = index, count = Pane.entries.size),
+                    ) { Text(if (entry == Pane.TRIAGE) "Triage" else "Repository") }
+                }
+            }
+            if (pane == Pane.REPOSITORY) {
+                OutlinedTextField(ownerField, { ownerField = it }, label = { Text("Owner") }, singleLine = true, modifier = Modifier.width(200.dp))
+                OutlinedTextField(nameField, { nameField = it }, label = { Text("Name") }, singleLine = true, modifier = Modifier.width(240.dp))
+                Button(
+                    onClick = {
+                        shown = ownerField.trim() to nameField.trim()
+                        selected = null
+                    },
+                    enabled = ownerField.isNotBlank() && nameField.isNotBlank(),
+                ) { Text("Open") }
+            }
             Box(modifier = Modifier.weight(1f))
             TextButton(onClick = onSignOut) { Text("Sign out") }
         }
         HorizontalDivider()
         Row {
             val (owner, name) = shown
-            RepositoryScreen(owner, name, onSelect = { selected = it }, modifier = Modifier.width(440.dp).fillMaxHeight())
+            when (pane) {
+                Pane.TRIAGE -> TriageScreen(onSelect = { selected = it }, modifier = Modifier.width(440.dp).fillMaxHeight())
+                Pane.REPOSITORY -> RepositoryScreen(owner, name, onSelect = { selected = it }, modifier = Modifier.width(440.dp).fillMaxHeight())
+            }
             VerticalDivider()
             val id = selected
             if (id == null) {

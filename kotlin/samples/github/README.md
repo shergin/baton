@@ -4,7 +4,8 @@ GitHub's GraphQL API (`https://api.github.com/graphql`) through the Kotlin
 runtime, in Compose for Desktop; the Kotlin counterpart of
 `examples/GitHubTriage`. Where the desktop sample only reads, this one
 writes: mutations with optimistic responses, a connection a mutation's
-edge is appended to, and a sign-out that throws the store away.
+edge is appended to, two searches over a union, and a sign-out that throws
+the store away.
 
 ## Running it
 
@@ -38,8 +39,19 @@ network.
   sent again, under a deadline, and a mutation never is. The image lives in
   the user's cache directory under the schema's digest, so a relaunch
   renders before the network answers.
-- **Repository** (left): owner and name fields, `octocat/Hello-World` to
-  start. The repository's name, description and forks, with `@catch`
+- **Triage** (left, to start): the viewer's open issues and pull requests,
+  assigned to and created by them, two aliased `search` fields over the
+  `SearchResultItem` union. The compiler adds `__typename` to each abstract
+  selection; the ingest keys each node by its concrete type, so an issue
+  seen here is the record the issue screen reads. An issue row requires an
+  author with `@required(action: LOG)` and reads the schema's `IssueState`
+  as a generated enum; a pull request row shows a ghost for an author who
+  is gone. Refresh fetches the searches again; Refresh rows asks for the
+  rows shown by id through `nodes(ids:)`, the pattern of
+  `docs/recipes/discover-once.md`, and the searches' own query is left
+  alone.
+- **Repository** (left, behind the bar's switch): owner and name fields,
+  `octocat/Hello-World` to start. The repository's name, description and forks, with `@catch`
   turning a missing repository's field error into the server's reason. The
   star button reads `viewerHasStarred` and `stargazerCount` and calls
   `addStar` or `removeStar` with an optimistic response that flips the star
@@ -49,8 +61,9 @@ network.
   fragment. The list's last item, a spinner, is composed only when the list
   is scrolled to its end, and calls `loadNext()` then; `hasNext` decides
   whether it is there at all.
-- **Issue** (right): the issue selected, looked up with `node(id:)`, which
-  finds the fields the list fetched in the store. Its title, author and
+- **Issue** (right): the issue selected in the triage or in the
+  repository, looked up with `node(id:)`, which finds the fields the list
+  fetched in the store. Its title, author and
   body, and its comments as a `@connection`, with a button for more. The
   composer calls `addComment` with `@appendEdge(connections: $connections)`,
   passing the comments connection's `connectionID`, and an optimistic
@@ -70,8 +83,9 @@ network.
   a lens, `@Query` on the one that resolves an operation with
   `rememberQuery`, `@Mutation` on the composable or function that holds the
   action; documents with a variable in `$$"""…"""` strings. The documents
-  are the Swift sample's, but for the triage searches, which this sample
-  leaves out, and the viewer query, which it adds.
+  are the Swift sample's, with the viewer query this sample adds; the
+  refresh of the rows is hosted on the function that sends it, since no
+  composable resolves it.
 - The `generateBaton` task, the Gradle plugin's, runs `batonc generate
   --language kotlin` over the hosts into `build/generated/baton`, as the
   desktop sample's does.
@@ -84,7 +98,9 @@ network.
   held, and kept when the server answers in kind; the second page asked
   for and appended when the list is scrolled to its end; a posted comment
   at the end of the comments at once, still there, once, when the server's
-  answer lands.
+  answer lands; the triage's two searches shown with an issue and a pull
+  request each, and the rows refreshed through `nodes(ids:)` with the ids
+  they show.
 
 ## What this sample asked of the runtime
 

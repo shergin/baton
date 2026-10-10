@@ -4,7 +4,7 @@ An app whose subjects arrive by natural key, a repository's owner and name
 and an issue's number from a notification, cannot ask for them in one
 operation: operations are fixed at build time, and the count of aliases
 cannot vary. The pattern every such app settles on has two halves, and the
-Swift GitHub sample shows both.
+GitHub samples, Swift and Kotlin, show both.
 
 ## Discover once, by natural key
 
@@ -42,7 +42,9 @@ let ids = rows.compactMap { $0.asIssue?.id ?? $0.asPullRequest?.id }
 try await environment.fetch(RefreshRowsQuery(ids: Array(ids.prefix(50))))
 ```
 
-In Kotlin the same two lines, `fetch` a `suspend` function:
+In Kotlin the same two lines, `fetch` a `suspend` function; the Kotlin
+sample hosts the query on the function that sends it, `Environment.refreshRows`
+in its `TriageScreen.kt`, since no composable resolves it:
 
 ```kotlin
 val ids = rows.mapNotNull { it.asIssue?.id ?: it.asPullRequest?.id }
