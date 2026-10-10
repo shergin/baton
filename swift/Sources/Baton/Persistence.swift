@@ -86,6 +86,12 @@ public final class Persistence: Sendable {
     }
 
     private let disk: Mutex<Disk>
+    /// Whether a read may meet the file: from the start when the file was
+    /// there when the image was made, else once the writer has opened it. A
+    /// file this image is making holds nothing a read could meet before
+    /// then, and its making, a few syncs of the disk, is not waited for on
+    /// the main actor.
+    private let ready: Atomic<Bool>
     private let pending = Mutex(Pending())
     /// The environment's log, the store's copy for the writer's thread.
     private let log = Mutex<(@Sendable (LogEvent) -> Void)?>(nil)
@@ -99,7 +105,11 @@ public final class Persistence: Sendable {
         self.version = version
         self.sizeLimit = sizeLimit
         self.protection = protection
-        disk = Mutex(Disk(path: Persistence.canonicalPath(of: url), version: version, sizeLimit: sizeLimit, protection: protection))
+        let path = Persistence.canonicalPath(of: url)
+        disk = Mutex(Disk(path: path, version: version, sizeLimit: sizeLimit, protection: protection))
+        ready = Atomic(FileManager.default.fileExists(atPath: path))
+        // A read before the open waits for it when the file was there, and
+        // answers from memory alone when the image is making it.
         Task.detached(priority: .userInitiated) { self.drain() }
     }
 
@@ -324,15 +334,16 @@ public final class Persistence: Sendable {
     }
 
     /// Runs `body` holding the connection, inside one read transaction. It
-    /// writes nothing first: a batch the writer is writing lands before the
-    /// lock is had, and the records of a batch still queued, with those its
-    /// root fields link to, are kept in memory by the collector, so a read
-    /// never meets an older row than memory held. False when the file
-    /// cannot be opened.
+    /// writes nothing first: the records of a batch queued or being written,
+    /// with those its root fields link to, are kept in memory by the
+    /// collector until the batch is in the file, so a read never meets an
+    /// older row than memory held. False when the file cannot be opened,
+    /// and before the writer has opened a file this image is making.
     /// `state` is the caller's, handed through rather than captured: a
     /// variable a closure captures is boxed, and its every `inout` pass pays
     /// a dynamic exclusivity check.
     func reading<State>(_ state: inout State, _ body: (Disk, inout State) -> Bool) -> Bool {
+        guard ready.load(ordering: .acquiring) else { return false }
         var used: Work?
         let result = disk.withLock { disk in
             guard opened(disk) else { return false }
@@ -362,15 +373,17 @@ public final class Persistence: Sendable {
         if start { Task.detached(priority: .utility) { self.drain() } }
     }
 
-    /// The records the queue has yet to write, which the collector keeps
-    /// until it has: those whose snapshots wait, and those a waiting root
-    /// field links to. The root drops its links to swept records, and a
-    /// field dropped before its row is written would be read back from the
-    /// row before it. A store made before the last removal has none.
+    /// The records the writer has yet to write, queued or taken and not yet
+    /// in the file, which the collector keeps until they are: those whose
+    /// snapshots wait, and those a waiting root field links to. The root
+    /// drops its links to swept records, and a field dropped before its row
+    /// is written would be read back from the row before it; a read while
+    /// the writer makes the file meets memory alone. A store made before the
+    /// last removal has none.
     func unwrittenRecords() -> [Record] {
         pending.withLock { pending in
             var kept: [Record] = []
-            for case .commit(let records, let root, _) in pending.work {
+            for case .commit(let records, let root, _) in pending.work + pending.writing {
                 for snapshot in records { kept.append(snapshot.record) }
                 for field in root {
                     switch field.value {
@@ -483,6 +496,7 @@ public final class Persistence: Sendable {
         case .unavailable:
             return false
         case .opened(let times, let learned):
+            ready.store(true, ordering: .releasing)
             log.withLock { $0?(.imageOpened) }
             ages.withLock { ages in
                 if ages.cleared { return }

@@ -4,6 +4,7 @@ import BatonTesting
 import Foundation
 import Observation
 import SQLite3
+import Synchronization
 import Testing
 
 /// A file for one test's image, removed with its journal when the test ends.
@@ -185,6 +186,87 @@ struct PersistenceTests {
         // The same question again is answered by memory alone.
         _ = try stored(Fixture(page: 1), in: environment)
         #expect(environment.store.hydratedRecords == 898)
+    }
+
+    @Test("an image made over a file that holds a record answers a read of it at once, with no flush or wait")
+    func an_image_made_over_a_file_that_holds_a_record_answers_a_read_of_it_at_once_with_no_flush_or_wait() async throws {
+        let first = launch()
+        first.store.commit(try Ingest.normalize(fixture("character-header-5"), plan: header("5", in: first.store)))
+        await finish(first)
+
+        // The file was there when the image was made, so the read waits for
+        // the writer's open or opens the file itself, whichever comes first.
+        let second = launch()
+        #expect(second.store.check(header("5", in: second.store)) == .image)
+        #expect(second.store.hydratedRecords == 2, "Jerry and his origin, read from the file")
+        #expect(try stored(TestHeaderQuery(id: "5"), in: second).character?.testHeader.name == "Jerry Smith")
+        await finish(second)
+    }
+
+    @Test("until the writer has made an image's file, reads answer from memory alone, and then from what was committed")
+    func until_the_writer_has_made_an_images_file_reads_answer_from_memory_alone_and_then_from_what_was_committed() async throws {
+        /// The events a log heard, each with whether it was heard on the
+        /// main thread, where the store reads; the writer never runs there.
+        final class Heard: Sendable {
+            private let events = Mutex<[(event: LogEvent, onTheMainThread: Bool)]>([])
+
+            var log: @Sendable (LogEvent) -> Void {
+                { event in
+                    let onTheMainThread = Thread.isMainThread
+                    self.events.withLock { $0.append((event, onTheMainThread)) }
+                }
+            }
+
+            func count(_ event: LogEvent) -> Int {
+                events.withLock { events in events.count { $0.event == event } }
+            }
+
+            func countOnTheMainThread(_ event: LogEvent) -> Int {
+                events.withLock { events in events.count { $0.event == event && $0.onTheMainThread } }
+            }
+        }
+
+        // The image's directory refuses the file until the log is set, so
+        // whichever drain makes the file, its open is heard. The flush waits
+        // for the writer to try the file and fail.
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("baton-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
+        defer {
+            try? permit(0o755, [directory.path])
+            try? FileManager.default.removeItem(at: directory)
+        }
+        try permit(0o555, [directory.path])
+        let url = directory.appendingPathComponent("image.sqlite")
+        let environment = launch(at: url)
+        let store = environment.store
+        let persistence = try #require(store.persistence)
+        let heard = Heard()
+        environment.log = heard.log
+        await persistence.flush()
+        try #require(heard.count(.imageUnavailable) > 0, "the writer could not make the file")
+        #expect(!FileManager.default.fileExists(atPath: url.path))
+
+        // Once the directory takes the file and the second the image waits
+        // before it tries again has passed, an open would make the file. The
+        // read makes none: until the writer has made it, the file holds
+        // nothing a read could meet.
+        try permit(0o755, [directory.path])
+        try await Task.sleep(for: .seconds(1.1))
+        #expect(store.check(header("5", in: store)) == .miss)
+        #expect(heard.countOnTheMainThread(.imageOpened) == 0, "the read opened no file")
+
+        store.commit(try Ingest.normalize(fixture("character-header-5"), plan: header("5", in: store)))
+        await persistence.flush()
+        #expect(heard.count(.imageOpened) == 1, "the writer made the file and opened it once")
+        #expect(heard.countOnTheMainThread(.imageOpened) == 0)
+
+        // Memory lets Jerry go, so only the file can answer.
+        store.collect()
+        #expect(store.existing("Character:5") == nil)
+        #expect(store.check(header("5", in: store)) == .image)
+        #expect(store.hydratedRecords == 2, "Jerry and his origin, read from the file")
+        #expect(try stored(TestHeaderQuery(id: "5"), in: environment).character?.testHeader.name == "Jerry Smith")
+        await finish(environment)
     }
 
     @Test("a payload committed by hand reaches the image, and the next launch answers its operation from it")

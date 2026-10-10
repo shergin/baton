@@ -1,5 +1,7 @@
 package baton
 
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.math.max
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -86,8 +88,18 @@ class Persistence(
         var cleared = false
     }
 
-    private val disk = Disk(canonicalImagePath(path), version, sizeLimit)
+    private val file = canonicalImagePath(path)
+    private val disk = Disk(file, version, sizeLimit)
     private val diskLock = Lock()
+    /**
+     * Whether a read may meet the file: from the start when the file was
+     * there when the image was made, else once the writer has opened it. A
+     * file this image is making holds nothing a read could meet before
+     * then, and its making, a few syncs of the disk, is not waited for on
+     * the store's thread.
+     */
+    @OptIn(ExperimentalAtomicApi::class)
+    private val ready = AtomicBoolean(imageFileExists(file))
     /** Guards the queue, the ages, the memberships and the log, which the store's thread and the writer share. */
     private val stateLock = Lock()
     private val pending = Pending()
@@ -98,7 +110,9 @@ class Persistence(
     private val writer = CoroutineScope(SupervisorJob() + dispatcher)
 
     init {
-        // The file is opened at once, off the caller's thread.
+        // The file is opened at once, off the caller's thread; a read before
+        // that waits for the open when the file was there, and answers from
+        // memory alone when the image is making it.
         writer.launch { drain() }
     }
 
@@ -229,12 +243,15 @@ class Persistence(
 
     /**
      * Runs [body] holding the connection, inside one read transaction. It
-     * writes nothing first: a batch the writer is writing lands before the
-     * lock is had, and the records of a batch still queued are kept in
-     * memory by the collector, so a read never meets an older row than
-     * memory held. False when the file cannot be opened.
+     * writes nothing first: the records of a batch queued or being written
+     * are kept in memory by the collector until the batch is in the file,
+     * so a read never meets an older row than memory held. False when the
+     * file cannot be opened, and before the writer has opened a file this
+     * image is making.
      */
+    @OptIn(ExperimentalAtomicApi::class)
     internal fun reading(body: (Disk) -> Boolean): Boolean {
+        if (!ready.load()) return false
         var used: Work? = null
         val result = diskLock.withLock {
             if (!opened() || !disk.beginRead()) return@withLock false
@@ -264,15 +281,16 @@ class Persistence(
     }
 
     /**
-     * The records the queue has yet to write, which the collector keeps until
-     * it has: those whose snapshots wait, and those a waiting root field
-     * links to. The root drops its links to swept records, and a field
-     * dropped before its row is written would be read back from the row
-     * before it.
+     * The records the writer has yet to write, queued or taken and not yet
+     * in the file, which the collector keeps until they are: those whose
+     * snapshots wait, and those a waiting root field links to. The root
+     * drops its links to swept records, and a field dropped before its row
+     * is written would be read back from the row before it; a read while
+     * the writer makes the file meets memory alone.
      */
     internal fun unwrittenRecords(): List<Record> = stateLock.withLock {
         val kept = ArrayList<Record>()
-        for (work in pending.work) {
+        for (work in pending.work + pending.writing) {
             if (work !is Work.Commit) continue
             for (snapshot in work.records) kept.add(snapshot.record)
             for (field in work.root) {
@@ -370,11 +388,13 @@ class Persistence(
     }
 
     /** Opens the file unless it is open; at the open, the file's fetch times and memberships are taken in. Called holding the disk's lock. */
+    @OptIn(ExperimentalAtomicApi::class)
     private fun opened(): Boolean {
         when (val opening = disk.open()) {
             Disk.Opening.Already -> return true
             Disk.Opening.Unavailable -> return false
             is Disk.Opening.Opened -> {
+                ready.store(true)
                 log(LogEvent.ImageOpened)
                 stateLock.withLock {
                     if (!ages.cleared) {

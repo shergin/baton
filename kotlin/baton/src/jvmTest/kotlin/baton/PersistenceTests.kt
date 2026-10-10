@@ -12,12 +12,14 @@ import baton.testing.RecordedTransport
 import baton.testing.SilentTransport
 import java.io.File
 import java.util.Collections
+import java.util.UUID
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
+import kotlin.test.assertNotSame
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -222,6 +224,50 @@ class PersistenceTests {
         assertTrue(written.all { (it.value as LogEvent.ImageWritten).batches >= 1 }, "an empty drain logs no write: $events")
         assertFalse(LogEvent.ImageUnavailable in events)
         assertFalse(LogEvent.ImageWriteFailed in events)
+    }
+
+    @Test
+    fun `an image made over a file that holds a record meets its row at the first read, before any flush, whether the read waits for the writer's open or opens the file itself`() = runTest {
+        seed(launch())
+        val persistence = Persistence(image.path)
+        // At once: the writer's open, begun at construction, is under way and
+        // the read waits for it, or not begun and the read opens the file.
+        val met = persistence.reading { disk -> disk.record("Character:1") {} }
+        persistence.close()
+        assertTrue(met, "the file was there when the image was made, so its first read meets the row")
+    }
+
+    @Test
+    fun `an image made where no file is answers a read as absent without opening the file, and once the writer has made and opened it a read meets what was committed and the open was logged once, by the writer`() = runTest {
+        // A plain file where the image's directory goes holds the writer's
+        // open back: no open makes the image's file while it is there, and a
+        // failed open leaves the image off for a second.
+        val blocker = File(System.getProperty("java.io.tmpdir"), "baton-${UUID.randomUUID()}")
+        val path = File(blocker, "image.sqlite").path
+        try {
+            assertTrue(blocker.createNewFile())
+            val environment = launch(path = path)
+            val persistence = assertNotNull(environment.store.persistence)
+            // The writer's open at construction runs first and fails.
+            persistence.flush()
+            val openers = Collections.synchronizedList(ArrayList<Thread>())
+            environment.log = { event -> if (event == LogEvent.ImageOpened) openers.add(Thread.currentThread()) }
+            blocker.delete()
+            // Past the second: an open now would make the file, and the writer has nothing queued.
+            Thread.sleep(1_100)
+            assertFalse(persistence.reading { disk -> disk.record("Character:1") {} }, "a read before the writer's open answers as absent")
+            assertFalse(File(path).exists(), "the read left the file to the writer")
+            assertTrue(openers.isEmpty())
+
+            commit(environment, Fixture(page = 1), "rickandmorty/characters-page-1.json")
+            persistence.flush()
+            assertTrue(persistence.reading { disk -> disk.record("Character:1") {} }, "a read after the writer's open meets what was committed")
+            assertEquals(1, openers.size, "the open is logged once")
+            assertNotSame(Thread.currentThread(), openers.single(), "by the writer, on its own thread")
+            environment.end()
+        } finally {
+            blocker.deleteRecursively()
+        }
     }
 
     @Test
