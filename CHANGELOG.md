@@ -74,6 +74,14 @@ are expected and listed without apology.
   `FateDocuments.kt`, the twin of `FateDocuments.swift`. Each harness runs
   in a JVM of its own, since the registry numbers types by name per process
   and Relay's test schema and fate's both declare a `User`. CI runs both.
+- The recipes say Kotlin where they said Swift alone:
+  `porting-from-relay.md` has a Kotlin column beside the Swift one for
+  every Relay word, `discover-once.md` the Kotlin twin of its refresh,
+  `derived-state.md` the `snapshotFlow` shape and a link to `views.md`,
+  which links back. The Gradle recipe and the Kotlin README say that
+  Baton needs no R8 or ProGuard rules and ships none, since the runtime,
+  its modules and the generated Kotlin use no reflection, no serialization
+  and no lookup by name.
 - `docs/terminology.md` has its Kotlin part on every entry that has a
   Swift one, as its preamble promised: the thirty-four that lacked one,
   from Spread and Required to Pagination and the edge directives, say how

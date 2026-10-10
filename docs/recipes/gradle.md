@@ -28,7 +28,10 @@ the variant a module compiles against:
 The runtime depends on the Compose runtime, which generated code names
 (`@Stable`), kotlinx-coroutines and the AndroidX SQLite driver API, with
 the bundled driver on the JVM; Compose UI is the app's own. On Android it
-starts at API 23. The AndroidX pieces
+starts at API 23, and it needs no R8 or ProGuard rules and ships none: the
+runtime, its modules and the generated Kotlin use no reflection, no
+serialization and no lookup of a class or a member by name, so a minified
+build keeps what the code calls. The AndroidX pieces
 are on Google's Maven repository, which Gradle does not search unless the
 build names it, so the settings name `google()` beside `mavenCentral()` for
 dependencies, as the snippet below does. The runtime is built with Kotlin

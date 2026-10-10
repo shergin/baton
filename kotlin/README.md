@@ -84,7 +84,10 @@ nothing else. `jvmMain` adds the bundled SQLite engine
 (`androidx.sqlite:sqlite-bundled`), since the JVM has none of its own;
 `androidMain` reaches the system's through `AndroidSQLiteDriver`
 (`androidx.sqlite:sqlite-framework`). The HTTP transport is `java.net`
-alone, in `jvmSharedMain`, which both targets compile.
+alone, in `jvmSharedMain`, which both targets compile. Nothing in the
+runtime, its modules or the generated Kotlin uses reflection, serialization
+or a lookup by name, so an app's R8 or ProGuard configuration needs no
+rules for Baton, and the artifacts ship none.
 
 On Android the runtime starts at API 23, the lowest the Compose runtime
 and AndroidX SQLite allow, and compiles against API 36. Modules with

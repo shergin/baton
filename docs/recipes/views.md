@@ -6,7 +6,9 @@ Android Views, a desktop window, a service, uses them without Compose UI:
 it asks the environment for the handle, holds the retention that keeps
 the handle's data alive, and reads what it shows through `snapshotFlow`,
 which emits again when a field it read changed. Nothing here is a second
-API; it is the same handle `rememberQuery` resolves.
+API; it is the same handle `rememberQuery` resolves. This is the Kotlin
+twin of [derived state outside views](derived-state.md), where Swift
+reads through `Observations`.
 
 The code below is compiled in this repository, as `ViewsTests` under
 `kotlin/baton/src/jvmTest`, which proves what this page says of it.

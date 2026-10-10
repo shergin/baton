@@ -4,7 +4,7 @@ An app whose subjects arrive by natural key, a repository's owner and name
 and an issue's number from a notification, cannot ask for them in one
 operation: operations are fixed at build time, and the count of aliases
 cannot vary. The pattern every such app settles on has two halves, and the
-GitHub sample shows both.
+Swift GitHub sample shows both.
 
 ## Discover once, by natural key
 
@@ -40,6 +40,13 @@ query RefreshRowsQuery($ids: [ID!]!) {
 ```swift
 let ids = rows.compactMap { $0.asIssue?.id ?? $0.asPullRequest?.id }
 try await environment.fetch(RefreshRowsQuery(ids: Array(ids.prefix(50))))
+```
+
+In Kotlin the same two lines, `fetch` a `suspend` function:
+
+```kotlin
+val ids = rows.mapNotNull { it.asIssue?.id ?: it.asPullRequest?.id }
+environment.fetch(RefreshRowsQuery(ids = ids.take(50)))
 ```
 
 The response commits into the records the lists already show, by identity,
