@@ -1,0 +1,2 @@
+with w as (select ts as start, ts + dur as finish from slice where name = 'ListLastByteToStore' limit 1), f as (select ts + dur as finish from slice where name = 'ListStoreToFrame' limit 1)
+select (s.ts - w.start) / 1000 as rel_us, s.dur / 1000 as dur_us, s.depth, s.name from w, f, slice s join thread_track tt on s.track_id = tt.id join thread t on t.utid = tt.utid join process p on p.upid = t.upid where p.name = 'baton.sample.android' and t.tid = p.pid and s.depth <= 1 and s.ts < f.finish and s.dur > 500000 order by s.ts;

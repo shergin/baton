@@ -21,6 +21,150 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, where the phone's cold start waits — 2026-10-09
+
+Revision: `8e587e7` for the traces, the Baton sample built on the working
+tree with the two commits before it, the last byte's section split at the
+store (`a000e91`) and the response read where it is parsed (`8e587e7`),
+and the Apollo twin as the 8 October entry had it; the fix at the end on
+the working tree on top of `8e587e7`. The same Pixel 9 (Tensor G4, Android
+17, API 37), the same apps, server, marks and runner as the 8 October
+entry, its cold start with an empty store, fifteen iterations per app,
+Baton's run and Apollo's an hour apart. That entry left two questions
+open: where Baton's 58 ms from the response's last byte to the list's
+frame go, and why its first frame comes 23 ms after Apollo's. The traces
+answer both.
+
+The marks and the reading. The last byte's section now ends at the store,
+where Baton's environment logs the server's batch committed
+(`LogEvent.Committed` of kind `SERVER`) and Apollo's `watch()` emits the
+response after its cache write (`Sections.stored()` in both apps), and a
+second section runs from there to the list's first draw. Each trace was
+then read on the phone with Perfetto's trace processor, the
+`trace_processor_shell` the Macrobenchmark library ships in the benchmark's
+assets (`androidx.benchmark:benchmark-macro` 1.5.0, Perfetto v56.0), given
+the SQL under `kotlin/benchmarks/macro/queries` over the `slice` and
+`thread_state` tables. The sections' medians are the runner's; the rest are
+medians of the fifteen traces, the minimum and maximum in parentheses.
+
+| Cold start, empty store | Baton | Apollo Kotlin |
+|---|---|---|
+| First frame (`timeToInitialDisplayMs`) | 238.0 ms (226.8–248.7) | 212.5 ms (202.6–224.6) |
+| The list on screen (`timeToFullDisplayMs`) | 278.7 ms (251.9–298.9) | 323.3 ms (307.7–343.9) |
+| Response's last byte to the data in the store | 35.3 ms (31.6–39.2) | 16.7 ms (10.8–22.3) |
+| The store to the list's frame | 20.6 ms (11.8–36.6) | 22.6 ms (12.3–29.0) |
+| Response's last byte to the list's frame | 55.1 ms (46.4–73.8) | 38.9 ms (23.3–47.2) |
+| Client construction | 2.17 ms (2.02–2.46) | 1.78 ms (1.74–1.84) |
+
+**From the last byte to the store.** In every one of Baton's fifteen
+traces the response's last byte lands while the main thread is inside the
+first `Choreographer#doFrame`: the frame began 56.5 ms (46.4–62.6) before
+the last byte and ends 32.1 ms (28.6–35.9) after it. The ingest runs
+meanwhile on a `DefaultDispatcher` worker, 5.1 ms (2.6–5.9) of running
+time inside the window in thirteen traces (in the other two the worker's
+span began before the last byte, the transport's read running into the
+parse without a switch, and the window's filter dropped it), and is done
+long before the frame ends. The commit then waits for the main thread: the
+store is marked 3.1 ms (2.9–3.8) after the frame ends, which the median
+trace shows as 2.7 ms of work queued ahead of it, the out-of-frame
+executor, class loading and an animation frame of 1.3 ms, then the commit,
+0.4 ms from the first `baton.Store` class loaded to the log event. Of
+Baton's 35 ms, five are the parse and the normalization, under one is the
+commit, and about thirty are the main thread's own first frame. In Apollo's
+traces no frame overlaps the last byte: its request leaves later (the
+8 October entry measured its first byte 59 ms after Baton's), the first
+frame is over when the response lands, and its 16.7 ms are its own work,
+15.5 ms (2.4–18.6) of a worker's running time for the parse, the
+normalization and the SQL cache's write, and 1.0 ms (0.6–2.5) on the main
+thread. The row sets five milliseconds of work against fifteen, and
+charges Baton thirty milliseconds of a frame it did not draw; the list on
+screen from launch, 279 ms against 323, is the row that counts.
+
+**The first frame.** Baton's first `Choreographer#doFrame` is 89.9 ms
+(77.5–94.7) against Apollo's 61.6 (57.2–67.1), and the difference is the
+first composition: `Compose:recompose` takes 38.2 ms (28.8–46.1) against
+12.0 (10.9–12.9). Inside Baton's composition the main thread runs 13.7 ms
+(13.2–16.3), Apollo's 11.1 (10.8–11.7): 2.6 ms more, the runtime's classes
+loaded (207 of the composition's 746 class loads in the median trace,
+0.9 ms of the 4.0 ms they take) and the handle made, its check run and its
+request sent. The rest is sleep. The main thread is off the CPU for
+23.4 ms (13.9–31.2) of Baton's composition and for none of Apollo's, while
+a thread of the process sits in uninterruptible wait for 19.5 ms
+(10.2–27.4) of it, in three spans in the median trace. That thread is the
+image's writer making the file: `Persistence` opens the file at
+construction on the writer's thread, holding the disk's lock, and the
+handle's availability check in the composition reads the image under the
+same lock, so the first read of a store that has nothing waits for a file
+to be created, the framework's `android_metadata` table, the switch to WAL
+and the schema's transaction, written through to flash. With `pm clear`
+before every iteration, every cold start here pays it, and so does every
+first launch of an app. (The frame's measure, 10 ms against 5 for the same
+spinner screen, is the next largest difference and was not traced
+further.)
+
+**Two changes, measured apart.** The response read where it is parsed
+(`8e587e7`, in the traces above): the environment awaited the transport's
+payload on the store's thread, so a response was a hop onto the main
+thread behind whatever frame it was drawing, then the ingest, then a
+second hop for the commit; now the payload is awaited on the ingest
+dispatcher, the parse overlaps the frame, and the commit is the one hop.
+The same marks on the build before it, both apps in one run that
+afternoon, gave Baton 37.2 ms to the store and 26.8 ms from the store to
+the frame (64.2 together) and Apollo 18.1 and 28.7 (45.0); the run above
+gives Baton 35.3 and 20.6 (55.1). The store half moved by about the
+ingest's length, within the spread of fifteen runs; the frame half moves
+with the vsync a commit lands before, and its spread is 25 ms.
+
+The image's open holds no read of a file it is making, in both runtimes:
+`Persistence` notes at construction whether the file exists; a read
+before the writer's first open answers from memory alone when it did not,
+since a file this image is making holds nothing a read could meet, and
+waits for or performs the open as before when it did, so a warm start's
+first frame still has the list.
+
+The same four cold starts after it, the working tree on top of `8e587e7`
+with the Baton sample reinstalled and the Apollo twin as before. The
+Apollo rows are from a run of its two tests on their own: in the four-test
+run both failed at their first launch, the list not on screen within the
+runner's ten seconds with the process alive, and passed fifteen of fifteen
+when run again.
+
+| Cold start | Baton, before | Baton, after | Apollo Kotlin |
+|---|---|---|---|
+| Empty store: first frame (`timeToInitialDisplayMs`) | 238.0 ms (226.8–248.7) | 212.0 ms (199.9–233.9) | 213.5 ms (199.8–239.3) |
+| Empty store: the list on screen (`timeToFullDisplayMs`) | 278.7 ms (251.9–298.9) | 254.6 ms (232.8–284.9) | 326.5 ms (289.4–346.6) |
+| Empty store: response's last byte to the data in the store | 35.3 ms (31.6–39.2) | 32.8 ms (30.7–39.7) | 16.5 ms (12.2–23.0) |
+| Empty store: the store to the list's frame | 20.6 ms (11.8–36.6) | 22.1 ms (12.0–33.5) | 22.3 ms (11.4–37.5) |
+| Empty store: response's last byte to the list's frame | 55.1 ms (46.4–73.8) | 56.8 ms (42.7–72.6) | 38.9 ms (27.0–57.9) |
+| Empty store: client construction | 2.17 ms (2.02–2.46) | 2.24 ms (2.13–3.70) | 1.80 ms (1.71–1.85) |
+| Warm store: first frame, with the list for Baton | 239.6 ms (226.4–266.6), 8 October | 237.7 ms (222.1–251.5) | 221.5 ms (207.5–247.3) |
+| Warm store: the list on screen | 239.6 ms, the first frame, 8 October | 237.7 ms, the first frame | 281.1 ms (270.8–305.7) |
+| Warm store: client construction | 2.10 ms (2.03–2.54), 8 October | 3.11 ms (2.32–3.47) | 1.82 ms (1.78–1.93) |
+
+Read again from the fifteen traces of the empty store: the first
+composition is 14.1 ms (12.8–18.5), the main thread running 13.3 ms
+(12.7–17.0) of it and off the CPU for 42 µs (17–92); the writer makes the
+file meanwhile, 5.5 ms (3.7–7.4) of uninterruptible wait that nothing
+waits for. The first frame is 66.7 ms (63.4–76.6) against Apollo's 61.6.
+The response still lands inside it, 36.6 ms (31.0–41.6) after the frame
+began and 29.6 ms (27.3–36.8) before it ends, since the request leaves as
+much sooner as the frame now ends: the worker's running time in the window
+is 7.2 ms (5.9–12.0) in fourteen traces, the store is marked 3.1 ms
+(2.8–4.3) after the frame ends, and the last byte's row does not move.
+What moves is the launch: the first frame comes 26 ms sooner, level with
+Apollo's, and the list 24 ms sooner, 255 ms from the launch against
+Apollo's 327. The warm start, whose file exists and is waited for as
+before, is where it was; its client construction, a millisecond over the
+8 October run's, holds nothing new in a trace but class loading and two
+reads from disk of a third of a millisecond together.
+
+Caveats: one device, one day, fifteen iterations per run, and Baton's
+and Apollo's runs an hour apart rather than one after the other in a run;
+the server is in the measured process; the worker's running time counts
+spans wholly inside the window, which drops a span that began before the
+last byte. To read a run's traces again, see
+`kotlin/benchmarks/macro/queries/README.md`.
+
 ## Unreleased, a cell judged by its kind in the check — 2026-10-09
 
 Revision: the working tree on top of `b41f2ca`. The availability walk

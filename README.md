@@ -80,8 +80,11 @@ emitted, or about 12 ms to a first render with the write deferred and
 Also measured: an optimistic write shows at once and the whole cycle costs
 0.4 ms; forty-two pages of scrolling plateau near five megabytes, since
 the store releases what no view holds; a launch with the image already
-open reads the page back in 1.78 ms before any request; on the JVM, the
-Kotlin runtime ingests the same page in 1.1 ms.
+open reads the page back in 1.78 ms before any request; end to end on the
+Pixel 9, the sample shows its list 255 ms after a cold launch with an
+empty store and 238 ms after one over its image, where the Apollo Kotlin
+twin takes 327 ms and 281 ms; on the JVM, the Kotlin runtime ingests the
+same page in 1.1 ms.
 
 ## What it is, and will be
 
