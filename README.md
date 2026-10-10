@@ -6,7 +6,8 @@
 
 **Baton brings Relay to SwiftUI and Compose.** A fragment beside every view,
 one request per screen, cached data in the first frame, and a re-render only
-where a field changed.
+where a field changed. New to GraphQL? [Why GraphQL](docs/why-graphql.md)
+answers what mobile engineers ask first.
 
 In Swift, UIKit and AppKit are supported too: a controller holds the same
 handle a view does ([the recipe](docs/recipes/uikit.md)).

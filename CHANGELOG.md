@@ -10,6 +10,10 @@ are expected and listed without apology.
   in Swift and Kotlin, what never to write, the compiler's diagnostics and
   what to run, and a review checklist. The README links it from "Try it
   on your app" and "Written by people, or by models".
+- `docs/why-graphql.md`, GraphQL for iOS and Android engineers who have
+  built on REST: what it is, where view models, view controllers and the
+  networking layer go, how a normalized store caches, and what GraphQL
+  costs. The README's first paragraph links it.
 
 ## 0.14.0 (Kalach) — 2026-10-09
 

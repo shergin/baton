@@ -4,6 +4,9 @@ What to read when.
 
 - **What is this, and why is it shaped this way?**
   [vision.md](vision.md) — the argument and the five rules.
+- **Why GraphQL at all, and where do my view models go?**
+  [why-graphql.md](why-graphql.md) — GraphQL for iOS and Android engineers
+  who have built on REST: what it is, what it changes, what it costs.
 - **Why is this decision the way it is?**
   [principles/](principles/) — one file per constraint: the failure mode it
   avoids, the idea, the consequences, the rejected alternatives, and how it
