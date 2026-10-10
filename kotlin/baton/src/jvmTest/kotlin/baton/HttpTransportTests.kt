@@ -85,7 +85,14 @@ class HttpTransportTests {
 
     private val textRequest = Request("Stub", OperationKind.QUERY, Document.Text("query Stub { a }"), Variables.none)
 
-    /** An environment on the calling thread, which owns its store, reading responses off it. */
+    /**
+     * An environment on the calling thread, which owns its store, reading
+     * responses off it. A test ends it in a `finally`: once `runBlocking`
+     * returns, its event loop hands what is dispatched to it to the default
+     * executor, where the write observer of an environment left running
+     * would send the apply notifications after every snapshot write the
+     * later tests make.
+     */
     private fun CoroutineScope.environment(transport: Transport, subscriptions: Transport? = null): Environment =
         Environment(transport, subscriptions, Store(), coroutineContext[ContinuationInterceptor] as CoroutineDispatcher, Dispatchers.Default)
 
@@ -125,10 +132,13 @@ class HttpTransportTests {
         // Seven bytes at a time, so parts and delimiters straddle the reads.
         val server = serve { answer(it, 200, "multipart/mixed; boundary=\"-\"; deferSpec=20220824", body, chunk = 7) }
         val environment = environment(HttpTransport(server.url))
-        environment.fetch(TestProfileQuery(id = "1"))
-        assertEquals("multipart/mixed; deferSpec=20220824, application/graphql-response+json, application/json", server.received.single().headers["accept"])
-        assertNull(case.difference(environment.store))
-        environment.end()
+        try {
+            environment.fetch(TestProfileQuery(id = "1"))
+            assertEquals("multipart/mixed; deferSpec=20220824, application/graphql-response+json, application/json", server.received.single().headers["accept"])
+            assertNull(case.difference(environment.store))
+        } finally {
+            environment.end()
+        }
     }
 
     @Test
@@ -140,15 +150,18 @@ class HttpTransportTests {
         }.encodeToByteArray()
         val server = serve { answer(it, 200, "text/event-stream", events, chunk = 5) }
         val environment = environment(HttpTransport("http://127.0.0.1:1/unused"), subscriptions = HttpTransport(server.url))
-        val handle = environment.subscriptionHandle(TestNoteAdded(characterId = "1", connections = emptyList()))
-        val hold = handle.retain()
-        assertTrue(wait({ handle.stream is Stream.Ended }), "the stream ended: ${handle.stream}")
-        assertEquals(Stream.Ended(null), handle.stream)
-        assertEquals(1, handle.events)
-        assertEquals("text/event-stream, application/graphql-response+json, application/json", server.received.single().headers["accept"])
-        assertEquals(1, server.received.size, "a completed stream is not opened again")
-        hold.release()
-        environment.end()
+        try {
+            val handle = environment.subscriptionHandle(TestNoteAdded(characterId = "1", connections = emptyList()))
+            val hold = handle.retain()
+            assertTrue(wait({ handle.stream is Stream.Ended }), "the stream ended: ${handle.stream}")
+            assertEquals(Stream.Ended(null), handle.stream)
+            assertEquals(1, handle.events)
+            assertEquals("text/event-stream, application/graphql-response+json, application/json", server.received.single().headers["accept"])
+            assertEquals(1, server.received.size, "a completed stream is not opened again")
+            hold.release()
+        } finally {
+            environment.end()
+        }
     }
 
     @Test
@@ -165,15 +178,18 @@ class HttpTransportTests {
         val refusal = "{\"errors\":[{\"message\":\"Cannot query field \\\"nope\\\" on type \\\"Query\\\".\",\"extensions\":{\"code\":\"GRAPHQL_VALIDATION_FAILED\"}}]}"
         val server = serve { answer(it, 400, "application/graphql-response+json; charset=utf-8", refusal.encodeToByteArray()) }
         val environment = environment(HttpTransport(server.url))
-        val handle = environment.handle(TestHeaderQuery(id = "5"))
-        val hold = handle.retain()
-        handle.settle()
-        val errors = assertIs<GraphQLErrors>(assertIs<Phase.Failed>(handle.phase).error)
-        assertEquals(listOf("Cannot query field \"nope\" on type \"Query\"."), errors.messages)
-        assertEquals(Variable.Object(mapOf("code" to Variable.String("GRAPHQL_VALIDATION_FAILED"))), errors.errors.single().extensions)
-        assertIs<Failure.Request>(handle.fetch.failure)
-        hold.release()
-        environment.end()
+        try {
+            val handle = environment.handle(TestHeaderQuery(id = "5"))
+            val hold = handle.retain()
+            handle.settle()
+            val errors = assertIs<GraphQLErrors>(assertIs<Phase.Failed>(handle.phase).error)
+            assertEquals(listOf("Cannot query field \"nope\" on type \"Query\"."), errors.messages)
+            assertEquals(Variable.Object(mapOf("code" to Variable.String("GRAPHQL_VALIDATION_FAILED"))), errors.errors.single().extensions)
+            assertIs<Failure.Request>(handle.fetch.failure)
+            hold.release()
+        } finally {
+            environment.end()
+        }
     }
 
     @Test

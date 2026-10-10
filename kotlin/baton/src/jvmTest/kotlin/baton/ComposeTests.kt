@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 
@@ -34,6 +35,19 @@ class ComposeTests {
 
     /** The environment the composition made, on its own thread and dispatcher, as an app makes one on its main thread. */
     private var environment: Environment? = null
+
+    /**
+     * Ends the environment on the composition's thread while the rule still
+     * holds the composition, however the test went. An environment left
+     * running keeps its write observer, which posts a send of the apply
+     * notifications to the event thread after every snapshot write the later
+     * tests make.
+     */
+    @After
+    fun endTheEnvironment() {
+        val made = environment ?: return
+        rule.onStoreThread { made.end() }
+    }
 
     /**
      * Provides an environment over [transport], made once on the composition's

@@ -217,7 +217,14 @@ class WebSocketTransportTests {
         assertEquals(0, failure.statusCode)
     }
 
-    /** An environment on the calling thread, which owns its store, reading responses off it. */
+    /**
+     * An environment on the calling thread, which owns its store, reading
+     * responses off it. A test ends it in a `finally`: once `runBlocking`
+     * returns, its event loop hands what is dispatched to it to the default
+     * executor, where the write observer of an environment left running
+     * would send the apply notifications after every snapshot write the
+     * later tests make.
+     */
     private fun CoroutineScope.environment(subscriptions: Transport): Environment =
         Environment(HttpTransport("http://127.0.0.1:1/unused"), subscriptions, Store(), coroutineContext[ContinuationInterceptor] as CoroutineDispatcher, Dispatchers.Default)
 
@@ -225,20 +232,23 @@ class WebSocketTransportTests {
     fun `an environment's subscription over the socket commits each event, and an error frame ends it with the request failure without reconnecting`() = runBlocking {
         val server = server()
         val environment = environment(GraphQLTransportWebSocket(server.url))
-        val handle = environment.subscriptionHandle(noteAdded)
-        val hold = handle.retain()
-        until("the subscription was sent") { server.count("subscribe") == 1 }
-        val id = server.ids("subscribe").single()
-        server.send("{\"id\":\"$id\",\"type\":\"next\",\"payload\":${Spec.text("tests/note-added-1.json").trim()}}")
-        until("the event was committed") { handle.events == 1 }
-        assertEquals(Stream.Open, handle.stream)
-        server.send("{\"id\":\"$id\",\"type\":\"error\",\"payload\":[{\"message\":\"bad subscription\"}]}")
-        until("the stream ended") { handle.stream is Stream.Ended }
-        val failure = assertIs<Failure.Request>(assertIs<Stream.Ended>(handle.stream).failure)
-        assertEquals(listOf("bad subscription"), failure.errors.messages)
-        assertEquals(0, handle.resumptions)
-        assertEquals(1, server.count("subscribe"))
-        hold.release()
-        environment.end()
+        try {
+            val handle = environment.subscriptionHandle(noteAdded)
+            val hold = handle.retain()
+            until("the subscription was sent") { server.count("subscribe") == 1 }
+            val id = server.ids("subscribe").single()
+            server.send("{\"id\":\"$id\",\"type\":\"next\",\"payload\":${Spec.text("tests/note-added-1.json").trim()}}")
+            until("the event was committed") { handle.events == 1 }
+            assertEquals(Stream.Open, handle.stream)
+            server.send("{\"id\":\"$id\",\"type\":\"error\",\"payload\":[{\"message\":\"bad subscription\"}]}")
+            until("the stream ended") { handle.stream is Stream.Ended }
+            val failure = assertIs<Failure.Request>(assertIs<Stream.Ended>(handle.stream).failure)
+            assertEquals(listOf("bad subscription"), failure.errors.messages)
+            assertEquals(0, handle.resumptions)
+            assertEquals(1, server.count("subscribe"))
+            hold.release()
+        } finally {
+            environment.end()
+        }
     }
 }

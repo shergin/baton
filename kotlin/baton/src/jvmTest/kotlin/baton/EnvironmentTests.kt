@@ -176,12 +176,12 @@ class EnvironmentTests {
     @Test
     fun `a suspending call made off the store's thread runs on it`() = runBlocking {
         val storeThread = newSingleThreadContext("store")
+        val transport = ScriptedTransport(
+            mapOf("TestHeaderQuery" to Spec.bytes("tests/character-header-5.json"), "TestRename" to Spec.bytes("tests/rename-1.json")),
+        )
+        // A store belongs to the thread that made it; every read below is made there too.
+        val environment = withContext(storeThread) { Environment(transport, null, Store(), storeThread, Dispatchers.Default) }
         try {
-            val transport = ScriptedTransport(
-                mapOf("TestHeaderQuery" to Spec.bytes("tests/character-header-5.json"), "TestRename" to Spec.bytes("tests/rename-1.json")),
-            )
-            // A store belongs to the thread that made it; every read below is made there too.
-            val environment = withContext(storeThread) { Environment(transport, null, Store(), storeThread, Dispatchers.Default) }
             val store = environment.store
             val name = Slots.Character.name
 
@@ -199,6 +199,11 @@ class EnvironmentTests {
             assertTrue(environment.ended)
             withContext(storeThread) { assertEquals(3, store.count, "the end left the three roots alone") }
         } finally {
+            // Ended before its thread closes, also when an assertion failed:
+            // a closed thread hands what is dispatched to it to the IO pool,
+            // where the environment's write observer would send the apply
+            // notifications after every snapshot write the later tests make.
+            environment.end()
             storeThread.close()
         }
     }
