@@ -1,11 +1,18 @@
 import Foundation
 
-/// The response fixtures under `spec/`, carried as this target's resources,
-/// so the tests and the benchmarks read them from the bundle they run in,
-/// on a device as on the Mac, with no working directory involved.
+/// The response fixtures under `spec/`: read in place on the Mac, from this
+/// file's own location, so a fixture added beside them needs no declaring;
+/// carried as this target's resources for a device, which cannot see the
+/// Mac's files, where a new folder of fixtures is listed in `Package.swift`.
 public enum Spec {
     /// The fixtures, laid out as `spec/` is.
-    public static let directory: URL = Bundle.module.resourceURL ?? Bundle.module.bundleURL
+    public static let directory: URL = {
+        #if os(macOS)
+        return URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+        #else
+        return Bundle.module.resourceURL ?? Bundle.module.bundleURL
+        #endif
+    }()
 
     /// The bytes of a fixture, by its path inside `spec/`:
     /// `rickandmorty/characters-page-1.json`.
