@@ -33,9 +33,11 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import baton.Environment
+import baton.HttpTransport
 import baton.LocalBaton
 import baton.Persistence
 import baton.Store
+import baton.exchange.Exchange
 import kotlinx.coroutines.launch
 
 /**
@@ -99,18 +101,21 @@ private fun SignIn(initialToken: String, onSignIn: (String) -> Unit) {
 
 /**
  * The environment of one sign-in, made in the composition on the event
- * thread the store belongs to. The store keeps its image in the user's
- * cache directory under the schema's digest, so a relaunch renders before
- * the network answers. Sign-out ends the environment, which cancels what it
- * started and closes the image, removes the image's file, and forgets the
- * token last.
+ * thread the store belongs to. It sends through the exchange of
+ * `docs/recipes/exchange.md` over GitHub's endpoint: a query the API refused
+ * with a 5xx or lost the connection of is sent again, under a deadline; a
+ * mutation never is. A personal access token is not renewed, so a 401 is
+ * sent once more with the same token. The store keeps its image in the
+ * user's cache directory under the schema's digest, so a relaunch renders
+ * before the network answers. Sign-out ends the environment, which cancels
+ * what it started and closes the image, removes the image's file, and
+ * forgets the token last.
  */
 @Composable
 private fun SignedIn(token: String, onSignedOut: () -> Unit) {
     val environment = remember(token) {
         Environment(
-            "https://api.github.com/graphql",
-            headers = mapOf("Authorization" to "Bearer $token"),
+            Exchange(HttpTransport("https://api.github.com/graphql", credentials = { mapOf("Authorization" to "Bearer $token") })),
             store = Store(persistence = Persistence.named("GitHubTriage", version = Types.schemaDigest)),
         )
     }

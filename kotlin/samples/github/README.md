@@ -19,9 +19,9 @@ The token is a personal access token with the `repo` scope (or a
 fine-grained one that may read the repository, star it and comment on its
 issues). The sign-in screen's field is prefilled from `GITHUB_TOKEN` when
 it is set, and empty otherwise. The token lives in the composition's state
-and in the `Authorization: Bearer` header the HTTP transport sends to
-`api.github.com`, and nowhere else: nothing writes it to disk, and the
-store's image holds records, not credentials.
+and in the `Authorization: Bearer` header the HTTP transport reads for each
+attempt and sends to `api.github.com`, and nowhere else: nothing writes it
+to disk, and the store's image holds records, not credentials.
 
 `gradle :samples:github:build` runs the tests, which need no token and no
 network.
@@ -30,11 +30,14 @@ network.
 
 - **Sign-in**: the token field. Signing in makes the environment in the
   composition, on the desktop's event thread the store belongs to:
-  `Environment("https://api.github.com/graphql", headers = …, store =
-  Store(persistence = Persistence.named("GitHubTriage", version =
-  Types.schemaDigest)))`. The image lives in the user's cache directory
-  under the schema's digest, so a relaunch renders before the network
-  answers.
+  `Environment(Exchange(HttpTransport("https://api.github.com/graphql",
+  credentials = …)), store = Store(persistence =
+  Persistence.named("GitHubTriage", version = Types.schemaDigest)))`. The
+  exchange is `samples/exchange`, the one `docs/recipes/exchange.md` walks
+  through: a query the API refused with a 5xx or lost the connection of is
+  sent again, under a deadline, and a mutation never is. The image lives in
+  the user's cache directory under the schema's digest, so a relaunch
+  renders before the network answers.
 - **Repository** (left): owner and name fields, `octocat/Hello-World` to
   start. The repository's name, description and forks, with `@catch`
   turning a missing repository's field error into the server's reason. The

@@ -20,6 +20,8 @@ kotlin {
             kotlin.srcDir(generateBaton.flatMap { it.outputDirectory })
             dependencies {
                 implementation(project(":baton"))
+                // The exchange of `docs/recipes/exchange.md`, which the app sends through.
+                implementation(project(":samples:exchange"))
                 implementation(compose.desktop.currentOs)
                 implementation(libs.compose.foundation)
                 implementation(libs.compose.material3)

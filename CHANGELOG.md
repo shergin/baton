@@ -5,6 +5,17 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The Kotlin twin of the exchange, `kotlin/samples/exchange`: an `Exchange`
+  over `baton.Transport` in common Kotlin, the wrapper a production
+  endpoint needs and the library does not ship. Credentials are the base
+  transport's, read per attempt; a 401 is replayed once after
+  `challenged()`; a query or a subscription refused with a 5xx or by a lost
+  connection is sent again with a doubling, jittered wait, as many times as
+  `attempts` allows and never past `deadline`; a mutation is never sent
+  twice; a stream that delivered is not sent again. The Kotlin GitHub
+  sample sends through it, as the Swift one sends through
+  `examples/Exchange`, and `docs/recipes/exchange.md` has its Kotlin half,
+  quoting the compiled loop.
 - Kotlin's `TransportError` carries the connection's own failure as its
   `cause` when there was no response: `HttpTransport`, `OkHttpTransport`
   and the socket clients pass the exception they caught, so a wrapper can

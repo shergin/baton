@@ -46,7 +46,10 @@ samples/android/  the Android app over them, for a phone
 samples/apollo-android/
                   the Apollo Kotlin twin of samples/android: the same two screens over Apollo Kotlin 5.2.0
                   and its normalized cache, for the end-to-end comparison
-samples/github/   a Compose for Desktop app over GitHub's API, with writes: the twin of examples/GitHubTriage
+samples/exchange/ the exchange of docs/recipes/exchange.md, a wrapper over the transport's one verb an app copies:
+                  credentials per attempt, one replay of a challenge, a bounded retry, a deadline; common Kotlin
+samples/github/   a Compose for Desktop app over GitHub's API, with writes: the twin of examples/GitHubTriage,
+                  sending through samples/exchange
 benchmarks/android/
                   the ingest benchmark, an instrumented test of a release build that is not debuggable
 benchmarks/apollo-comparison/
