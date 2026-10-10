@@ -3,6 +3,14 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
+## Unreleased
+
+- `docs/recipes/agents.md`, the page a coding agent reads first when it
+  integrates Baton into an app: the reading order, the shape of a screen
+  in Swift and Kotlin, what never to write, the compiler's diagnostics and
+  what to run, and a review checklist. The README links it from "Try it
+  on your app" and "Written by people, or by models".
+
 ## 0.14.0 (Kalach) — 2026-10-09
 
 - The report `batonc generate --report` writes, `Baton.report.json` under

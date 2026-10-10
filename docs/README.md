@@ -20,7 +20,8 @@ What to read when.
   [runtimes.md](runtimes.md) — the map of both trees, a file per concept,
   checked by the boundary script.
 - **How do I…** — [recipes/](recipes/), one page per composition of what
-  ships: [the exchange](recipes/exchange.md), a challenge, a retry and a
+  ships: [integrating Baton with a coding
+  agent](recipes/agents.md), the page an agent reads first, [the exchange](recipes/exchange.md), a challenge, a retry and a
   deadline over the transport's one verb, [`batonc`](recipes/batonc.md),
   the compiler's command line for a build outside SwiftPM,
   [Bazel](recipes/bazel.md), the compiler as a toolchain and one rule over

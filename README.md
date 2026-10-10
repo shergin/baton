@@ -38,6 +38,9 @@ the way, a blocker, a missing feature or a number that disappoints, belongs
 in an [issue](https://github.com/shergin/baton/issues). It is your chance to
 make the app faster and its GraphQL much more pleasant to work with, and to
 shape Baton while it is young.
+The agent's first page is
+[`docs/recipes/agents.md`](docs/recipes/agents.md): what to read, the
+shape of a screen, what never to write, and a review checklist.
 
 ## By the numbers
 
@@ -359,7 +362,9 @@ of it. The vocabulary is closed and short
 ([`docs/terminology.md`](docs/terminology.md)) and fits in a prompt; the
 compiler's diagnostics point at the character in the GraphQL text that is
 wrong, which is the feedback a model iterates on best. The result is code
-that is quick to generate, easy to review, and hard to get silently wrong.
+that is quick to generate, easy to review, and hard to get silently wrong. What an agent reads first, and checks before
+handing a change back, is
+[`docs/recipes/agents.md`](docs/recipes/agents.md).
 
 ## Status
 
