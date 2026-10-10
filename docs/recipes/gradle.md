@@ -5,8 +5,9 @@ Gradle: a task that runs `batonc generate` with every input and output
 declared and yields the generated Kotlin for the source set the adopter
 already has, over a compiler the plugin fetches from the release's artifact
 bundle. It lives under `kotlin/baton-gradle` in this repository and is
-versioned with Baton, so the plugin 0.13.0 fetches the bundle 0.13.0
-published and writes the format the runtime 0.13.0 reads. It holds no logic
+versioned with Baton, so the plugin 0.14.0 fetches the bundle 0.14.0
+published and writes the format the runtime 0.14.0 reads; the version the
+snippets below quote is the latest release, as `CHANGELOG.md` names it. It holds no logic
 of its own: which source writes which output, the header for a source
 without GraphQL, the shared file, staleness and diagnostics are the
 compiler's ([the decision](../decisions/a-build-integration-holds-no-logic.md)).
@@ -20,13 +21,14 @@ the variant a module compiles against:
 | Coordinate | What | Targets |
 |---|---|---|
 | `com.shergin.baton:baton` | the runtime: the store, the lenses, the environment, the transports, the image | JVM, Android |
-| `com.shergin.baton:baton-testing` | `ScriptedTransport`, `RecordedTransport`, `SilentTransport`, `wait` and the `SocketServer` double, for an app's tests | JVM, Android |
-| `com.shergin.baton:baton-okhttp` | `OkHttpTransport` and `OkHttpWebSocketClient`, the transports over an app's OkHttp client, and the socket Android's platform lacks | JVM, Android |
+| `com.shergin.baton:baton-testing` | `ScriptedTransport`, `RecordedTransport`, `SilentTransport`, `wait` and the `SocketServer` double, for an app's tests | JVM; Android from 0.14.0 |
+| `com.shergin.baton:baton-okhttp` | `OkHttpTransport` and `OkHttpWebSocketClient`, the transports over an app's OkHttp client, and the socket Android's platform lacks; from 0.14.0 | JVM, Android |
 | `com.shergin.baton:baton-inspector` | `StoreInspector`, a live Compose view of a store for a debug pane, and `StoreExport` | JVM, Android |
 
 The runtime depends on the Compose runtime, which generated code names
-(`@Stable`), kotlinx-coroutines and the AndroidX SQLite driver API; Compose
-UI is the app's own. On Android it starts at API 23. The AndroidX pieces
+(`@Stable`), kotlinx-coroutines and the AndroidX SQLite driver API, with
+the bundled driver on the JVM; Compose UI is the app's own. On Android it
+starts at API 23. The AndroidX pieces
 are on Google's Maven repository, which Gradle does not search unless the
 build names it, so the settings name `google()` beside `mavenCentral()` for
 dependencies, as the snippet below does. The runtime is built with Kotlin
@@ -67,7 +69,7 @@ import baton.gradle.BatonGenerate
 
 plugins {
     kotlin("multiplatform") version "2.4.20"
-    id("com.shergin.baton") version "0.13.0"
+    id("com.shergin.baton") version "0.14.0"
 }
 
 // The hosts: every Kotlin file the compiler scans for `@Fragment`, `@Query`,
@@ -77,11 +79,13 @@ val generateBaton = tasks.named<BatonGenerate>("generateBaton") {
 }
 
 kotlin {
+    // The module's targets; the generated Kotlin compiles for each.
+    jvm()
     sourceSets {
         commonMain {
             kotlin.srcDir(generateBaton.flatMap { it.outputDirectory })
             dependencies {
-                implementation("com.shergin.baton:baton:0.13.0")
+                implementation("com.shergin.baton:baton:0.14.0")
             }
         }
     }
@@ -109,7 +113,8 @@ The compiler is the release's: on first use the plugin downloads
 `batonc.artifactbundle.zip` of the release it is versioned with, the one
 file SwiftPM and Bazel download, checks it against the checksum the release
 wrote into `kotlin/release.properties`, unpacks it whole into
-`~/.gradle/caches/baton/<version>/`, once per machine, and runs the variant
+`caches/baton/<version>/batonc.artifactbundle/` under the Gradle user
+home, once per home, and runs the variant
 its `info.json` lists for the host, macOS or Linux, x86_64 or aarch64. A checkout that
 builds its own compiler names it instead, as `Package.swift` and the Bazel
 extension take `BATON_COMPILER`, a `batonc` binary or a bundle directory

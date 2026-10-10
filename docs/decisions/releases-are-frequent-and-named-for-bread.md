@@ -21,7 +21,9 @@ pick its name.
   local checks pass. It waits for no step, theme or batch of work.
 - The name is chosen automatically, not asked for: whoever cuts the
   release takes the first name in the list below that no release has used
-  and writes it into the changelog's heading. The release workflow takes no
+  and writes it into the changelog's heading. The same commit moves the
+  version the Gradle recipe quotes, `docs/recipes/gradle.md`, to the
+  release, since the workflow's commit touches the manifests alone. The release workflow takes no
   input: it reads the version and the name from that heading, and refuses
   a version already tagged or a name an earlier release used.
 - The names are breads of Russian, Ukrainian and Belarusian baking, and
