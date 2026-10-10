@@ -73,5 +73,8 @@ val Request.accept: String
     }
 
 /** The one payload of a request that answers once: the flow's first, or the failure a flow that delivers none is. */
-suspend fun Transport.payload(request: Request): ByteArray =
-    send(request).firstOrNull() ?: throw TransportError(0, "the transport delivered no payload for ${request.operationName}")
+suspend fun Transport.payload(request: Request): ByteArray = send(request).payload(request)
+
+/** The one payload of [request] in this flow, its first, or the failure a flow that delivers none is. */
+internal suspend fun Flow<ByteArray>.payload(request: Request): ByteArray =
+    firstOrNull() ?: throw TransportError(0, "the transport delivered no payload for ${request.operationName}")

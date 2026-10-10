@@ -374,7 +374,16 @@ class Environment(
         val request = request(type, variables)
         // The operation's root: a handle's, or one made here, which waits in the release buffer once dated if nothing retains it.
         val root = store.root(Store.rootKey(type.name, variables), resolved, store.root)
-        if (!type.hasDeferred) return commit(transport.payload(request), resolved, root)
+        if (!type.hasDeferred) {
+            // The request is sent from the store's thread, as every transport call is; the response is awaited where it is
+            // read, on the ingest dispatcher, so the store's thread is entered once, for the commit, and not first when the
+            // bytes arrive, when it may be drawing a frame. A fetch superseded while its response was on the way or being
+            // read must not land after the one that replaced it.
+            val payloads = transport.send(request)
+            val changes = withContext(ingestDispatcher) { Ingest.normalize(payloads.payload(request), resolved, root.record.key, complete = true) }
+            currentCoroutineContext().ensureActive()
+            return commit(changes, root)
+        }
         var committed = Committed()
         val delivery = Delivery(store, resolved)
         var first = true

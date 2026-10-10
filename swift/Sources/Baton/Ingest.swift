@@ -385,6 +385,15 @@ package enum Ingest {
         try normalize(data, plan: plan, rootKey: rootKey, complete: complete)
     }
 
+    /// The one payload of `payloads`, a transport's answer to `request`,
+    /// awaited and normalized off the caller's actor and inside the caller's
+    /// task: the actor is not entered when the bytes arrive, only for the
+    /// commit that follows.
+    @concurrent
+    nonisolated static func normalized(_ payloads: AsyncThrowingStream<Data, any Error>, for request: Request, plan: ResolvedSelection, rootKey: String) async throws -> ChangeSet {
+        try normalize(try await payloads.payload(for: request), plan: plan, rootKey: rootKey, complete: true)
+    }
+
     /// A response, or the first part of an incremental one, with what it
     /// says of the parts to follow.
     package static func normalizeFirstPart(_ data: Data, plan: ResolvedSelection, rootKey: String, complete: Bool = false) throws -> FirstPart {

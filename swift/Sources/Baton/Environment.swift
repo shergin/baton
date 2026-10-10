@@ -317,9 +317,15 @@ public final class Environment {
         // the release buffer once dated if nothing retains it.
         let root = store.root(Store.rootKey(Op.name, variables), resolved: resolved, record: store.root)
         if !Op.hasDeferred {
-            // A fetch superseded while its response was on the way or being
+            // The request is sent from the main actor, as every transport
+            // call is; the response is awaited where it is read, off the
+            // actor, so the actor is entered once, for the commit, and not
+            // first when the bytes arrive, when it may be drawing a frame. A
+            // fetch superseded while its response was on the way or being
             // read must not land after the one that replaced it.
-            return try await commit(try await transport.payload(request), plan: resolved, root: root)
+            let changes = try await Ingest.normalized(transport.send(request), for: request, plan: resolved, rootKey: root.record.key)
+            try Task.checkCancellation()
+            return commit(changes, dating: root, complete: true)
         }
         var committed = Committed()
         var delivery = Delivery(store: store, resolved: resolved)

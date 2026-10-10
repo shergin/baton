@@ -75,8 +75,7 @@ extension Transport {
     /// The one payload of a request that answers once: the stream's first,
     /// or the failure a stream that delivers none is.
     public func payload(_ request: Request) async throws -> Data {
-        for try await payload in send(request) { return payload }
-        throw TransportError(statusCode: 0, body: "the transport delivered no payload for \(request.operationName)")
+        try await send(request).payload(for: request)
     }
 
     /// A stream of one payload, for a transport that answers once.
@@ -752,5 +751,14 @@ public actor GraphQLTransportWebSocket: Transport {
         socket = nil
         acknowledged = false
         receiving = nil
+    }
+}
+
+extension AsyncThrowingStream where Element == Data, Failure == any Error {
+    /// The one payload of `request` in this stream, its first, or the
+    /// failure a stream that delivers none is.
+    func payload(for request: Request) async throws -> Data {
+        for try await payload in self { return payload }
+        throw TransportError(statusCode: 0, body: "the transport delivered no payload for \(request.operationName)")
     }
 }

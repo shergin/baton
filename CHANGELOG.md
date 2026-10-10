@@ -5,6 +5,13 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A response is read where it is parsed. The Kotlin environment awaits the
+  transport's payload on the ingest dispatcher and the Swift environment on
+  a concurrent task, so the store's thread is entered once, for the commit,
+  rather than first when the bytes arrive: a response that lands while the
+  main thread draws a frame is parsed before the frame ends, not after it.
+  On the Pixel 9 the sample's first page, 686 KB, is parsed and normalized
+  in about 5 ms of a worker's time, inside the cold start's first frame.
 - The Kotlin twin of the exchange, `kotlin/samples/exchange`: an `Exchange`
   over `baton.Transport` in common Kotlin, the wrapper a production
   endpoint needs and the library does not ship. Credentials are the base
