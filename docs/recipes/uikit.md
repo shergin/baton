@@ -242,3 +242,6 @@ from an action, and the optimistic layer shows in the turn of the call.
 
 Nothing in the runtime imports UIKit or AppKit; `Observations` and the
 handles are Foundation and Observation.
+
+The Kotlin wiring, an Android app's process lifecycle told to the
+environment, is in [`views.md`](views.md#the-apps-lifecycle).

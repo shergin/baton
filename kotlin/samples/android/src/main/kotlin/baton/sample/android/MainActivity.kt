@@ -87,7 +87,9 @@ class MainActivity : ComponentActivity() {
 /**
  * The environment, made on the main thread with the view model, which the
  * activity makes there. The runtime holds no `Context`: the image's
- * directory is the app's cache directory, passed by path.
+ * directory is the app's cache directory, passed by path. The process's
+ * lifecycle is told to the environment for as long as the model lives:
+ * the background parks its subscriptions, and the return revalidates.
  */
 class SampleModel(application: Application) : AndroidViewModel(application) {
     val environment = trace(Sections.CLIENT_SETUP) {
@@ -97,7 +99,10 @@ class SampleModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
+    private val activation = Activation(environment)
+
     override fun onCleared() {
+        activation.close()
         // The view model's own scope is cancelled by now. The end writes what
         // the store handed the image and gives the file back, so the next
         // activity's environment in this process can take it.

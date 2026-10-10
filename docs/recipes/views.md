@@ -89,3 +89,56 @@ The hold is the retention: the handle's data stays in the store while the
 model holds it, and is collected after the model releases it, as the
 composable's leaving releases `rememberQuery`'s. A `ViewModel` releases it
 in `onCleared`; a window when it closes.
+
+## The app's lifecycle
+
+`environment.isActive` parks the retained subscriptions while it is false
+and resumes them when it is true again; `environment.revalidate()` refetches
+the retained operations that went stale or failed. The app says when, from
+its own lifecycle, and holds the observer for as long as the environment
+lives. On Android the lifecycle is the process's, `ProcessLifecycleOwner`
+from `androidx.lifecycle:lifecycle-process`, not an activity's: the
+environment is the app's, and an activity recreated for a rotation does
+not make the app inactive. The code below is `Activation.kt` in
+[`kotlin/samples/android`](../../kotlin/samples/android/src/main/kotlin/baton/sample/android/Activation.kt),
+compiled with the sample; its view model makes one beside the environment
+and closes it in `onCleared`, before the environment ends.
+
+```kotlin
+class Activation(
+    private val environment: Environment,
+    private val lifecycle: Lifecycle = ProcessLifecycleOwner.get().lifecycle,
+) : DefaultLifecycleObserver {
+    init {
+        lifecycle.addObserver(this)
+    }
+
+    override fun onStart(owner: LifecycleOwner) {
+        environment.isActive = true
+        environment.revalidate()
+    }
+
+    override fun onStop(owner: LifecycleOwner) {
+        environment.isActive = false
+    }
+
+    /** Stops telling the environment, before it ends. */
+    fun close() {
+        lifecycle.removeObserver(this)
+    }
+}
+```
+
+The observer is called on the main thread, where the store lives, so the
+writes are made where the environment's synchronous calls are. `ON_STOP`
+arrives once the last activity has stopped, after the short delay the
+lifecycle library keeps so a configuration change sends nothing, and
+`ON_START` with the first activity; adding the observer to a started
+lifecycle delivers `ON_START` at once, and a revalidation with nothing
+retained does nothing. The runtime depends on no lifecycle library; the
+wiring is the app's, as `examples/Controllers` is on iOS and macOS
+([`uikit.md`](uikit.md#the-apps-lifecycle)).
+
+On the desktop a window stays on screen while another app is frontmost, so
+the desktop samples park nothing; an app that wants a revalidation when a
+window regains focus calls `revalidate()` from the window's focus listener.

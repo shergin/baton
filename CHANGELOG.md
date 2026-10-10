@@ -16,6 +16,13 @@ are expected and listed without apology.
   sample sends through it, as the Swift one sends through
   `examples/Exchange`, and `docs/recipes/exchange.md` has its Kotlin half,
   quoting the compiled loop.
+- The Android sample tells the environment the process's lifecycle:
+  `Activation` in `kotlin/samples/android` observes `ProcessLifecycleOwner`,
+  sets `isActive` false when the last activity stops and true when the
+  first starts, and calls `revalidate()` on the return; the view model
+  closes it before the environment ends. `docs/recipes/views.md` quotes it
+  as the Kotlin half of the lifecycle section of `docs/recipes/uikit.md`,
+  which now links it.
 - Kotlin's `TransportError` carries the connection's own failure as its
   `cause` when there was no response: `HttpTransport`, `OkHttpTransport`
   and the socket clients pass the exception they caught, so a wrapper can

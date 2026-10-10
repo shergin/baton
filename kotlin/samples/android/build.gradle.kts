@@ -33,6 +33,8 @@ android {
 dependencies {
     implementation(project(":samples:shared"))
     implementation(libs.activity.compose)
+    // The process's lifecycle, which the app tells the environment.
+    implementation(libs.lifecycle.process)
     // The fixed server a measured launch fetches from, and the trace sections.
     implementation(project(":benchmarks:macro:server"))
 }
