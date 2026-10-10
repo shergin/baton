@@ -74,6 +74,21 @@ are expected and listed without apology.
   `FateDocuments.kt`, the twin of `FateDocuments.swift`. Each harness runs
   in a JVM of its own, since the registry numbers types by name per process
   and Relay's test schema and fate's both declare a `User`. CI runs both.
+- The Kotlin Rick and Morty sample has the episode screen, an episode's
+  cast, and the location screen, a location's residents, the Swift
+  documents verbatim; a character's episodes and its origin and last known
+  location open them, and a cast member or a resident opens the character,
+  through a stack of destinations the desktop's pane and the Android app
+  keep, which Back pops and a recreation restores.
+- The Kotlin GitHub sample has the triage screen: the viewer's assigned
+  and created searches over the `SearchResultItem` union with `@alias`
+  spreads, an issue row that carries its repository's name as the Swift
+  row does, a pull request row, a refresh of the searches and a refresh of
+  the rows through `nodes(ids:)`, behind a switch in the bar beside the
+  repository. Its tests show both searches, the refresh asking for the
+  rows' ids in order, and a row selecting its issue.
+- The Kotlin store's thread check says the violation, "the store is used
+  off the thread that made it", where it stated the rule.
 - The Kotlin runtime's floors are recorded,
   `docs/decisions/kotlin-floors.md`: Android 6 (API 23), the lowest the
   Compose runtime and AndroidX SQLite allow; Java 21 class files on the

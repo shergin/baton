@@ -290,7 +290,7 @@ class Store(
 
     /** Fails a call from a thread other than the store's. */
     internal fun checkThread() {
-        check(currentThreadId() == thread) { "a store is used on the thread that made it" }
+        check(currentThreadId() == thread) { "the store is used off the thread that made it" }
     }
 
     /** The root a response of the operation kind is committed under. */
