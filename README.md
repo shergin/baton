@@ -43,101 +43,6 @@ The agent's first page is
 [`docs/recipes/agents.md`](docs/recipes/agents.md): what to read, the
 shape of a screen, what never to write, and a review checklist.
 
-## By the numbers
-
-Two head-to-heads against the maintained native clients, on the same
-data: the Rick and Morty page, 686 KB and 899 records. Same machine, same
-day, Apollo configured as its documentation says, both harnesses in this
-repository. Every number is in [`BENCHMARKS.md`](BENCHMARKS.md) with the
-device, the OS and the date.
-
-**Swift against Apollo iOS 2.4**, Apple M1 Pro, 2 October 2026:
-
-| | Baton | Apollo iOS | Faster |
-|---|---|---|---|
-| The response into the store | 3.4 ms | 318 ms | **94×** |
-| The same payload again | 165 µs | 3.99 ms | **24×** |
-| A screen whose data is already in the store | the first body has it, after a 115 µs check | 228 ms to rebuild the query | |
-
-**Kotlin against Apollo Kotlin 5.2**, a Google Pixel 9 on Android 17,
-release builds, 9 October 2026:
-
-| | Baton | Apollo Kotlin | Faster |
-|---|---|---|---|
-| The response into the store | 5.3 ms | 44.7 ms | **8.4×** |
-| The same payload again | 0.30 ms | 1.1 ms | **3.8×** |
-| A screen whose data is already in the store | a 0.75 ms check | 25 ms to rebuild the query | **33×** |
-
-The difference is the model tree Apollo builds from the bytes and rebuilds
-on every read. Baton materializes nothing a view did not read: on the phone
-the whole response is in the store in less than a 120 Hz frame, 1.0 ms of
-it on the main thread, and the screen reads its fields from there. From
-the last byte to a list a screen can render, Baton is 5.3 ms; Apollo
-Kotlin is 44.7 ms with its default cache write before the response is
-emitted, or about 12 ms to a first render with the write deferred and
-32 ms of work after it.
-
-Also measured: an optimistic write shows at once and the whole cycle costs
-0.4 ms; forty-two pages of scrolling plateau near five megabytes, since
-the store releases what no view holds; a launch with the image already
-open reads the page back in 1.78 ms before any request; end to end on the
-Pixel 9, the sample shows its list 255 ms after a cold launch with an
-empty store and 238 ms after one over its image, where the Apollo Kotlin
-twin takes 327 ms and 281 ms; on the JVM, the Kotlin runtime ingests the
-same page in 1.1 ms.
-
-## What it is, and will be
-
-- **A fragment per view.** GraphQL lives in the Swift file, next to the view
-  that reads it, as a full, valid document. A parent passes a child its
-  fragment as a record reference and a context; a child can read nothing it
-  did not declare.
-- **One request per screen.** The compiler assembles the operation from the
-  fragments spread into it and, under Relay's `persistConfig`, the id a
-  server registers it under. Nobody writes the screen's query by hand, and
-  nothing waterfalls.
-- **Cached data in the first frame.** Reads are synchronous on the main
-  actor; a handle resolves against the store before the first body runs, and
-  after a launch the store reads what that handle needs from its image on
-  disk. Decoding and normalizing a response and the image's writes run off
-  it; the check and garbage collection stay on it, each under a third of a
-  frame on the benchmark machine, and an optimistic response is normalized
-  on it, so its layer shows in the turn of the call.
-- **Only changed views re-render.** Records are observable objects; a body
-  that read `user.name` is invalidated when that field of that record changes
-  and at no other time. An unchanged refetch of the benchmark fixture costs
-  the main actor under 200 µs and no view; committing all 899 records costs
-  about a millisecond.
-- **Honest data.** Nullability is what the schema says; `@required` and
-  `@catch` work as in Relay, in Swift's terms (an optional lens, a `Result`,
-  a `get throws`); field errors survive caching; staleness is a phase a view
-  can read.
-- **Small everything.** Generated code is one line per field plus data
-  tables. The runtime depends on Foundation, Observation and the SQLite the
-  system ships. The compiler is one prebuilt binary, shared by the Swift and
-  Kotlin runtimes.
-- **Declarative, down to the writes.** What a view needs, how a list pages,
-  what an optimistic response shows and how a mutation edits a list are all
-  directives and values in the GraphQL text beside the view; nothing is
-  wired up at run time. That is also what makes Baton cheap for code that
-  language models write: one file holds the whole contract, the build checks
-  it against the schema at the exact character, and a wrong field is a
-  compile error rather than a runtime surprise.
-
-## What it will not be
-
-- Not a runtime GraphQL client: every operation is known at build time. No
-  query builders, no string queries, no GraphQL parser in the app.
-- Not a model layer: there is nothing decoded to hold, mutate or persist
-  besides the store itself.
-- Not configurable by policy objects: identity is schema configuration
-  compiled in; behaviour is a directive or a value on a handle.
-- Not an offline-sync engine, a local-state framework, a server, or a React
-  Native or web client.
-- Not one runtime for two platforms: the Swift and Kotlin runtimes are
-  separate and idiomatic; the compiler, the artifact format, the vocabulary
-  and the conformance fixtures are shared.
-
 ## The feel
 
 SwiftUI on the left and Compose on the right, over GitHub's GraphQL API, as
@@ -366,6 +271,58 @@ A Kotlin document is a `$$"""…"""` string, since `$` starts a template in a
 plain one and GraphQL's variables need it. The view marker stands on the
 composable, and the composable remembers the operation value it shows.
 
+## What it is, and will be
+
+- **A fragment per view.** GraphQL lives in the Swift file, next to the view
+  that reads it, as a full, valid document. A parent passes a child its
+  fragment as a record reference and a context; a child can read nothing it
+  did not declare.
+- **One request per screen.** The compiler assembles the operation from the
+  fragments spread into it and, under Relay's `persistConfig`, the id a
+  server registers it under. Nobody writes the screen's query by hand, and
+  nothing waterfalls.
+- **Cached data in the first frame.** Reads are synchronous on the main
+  actor; a handle resolves against the store before the first body runs, and
+  after a launch the store reads what that handle needs from its image on
+  disk. Decoding and normalizing a response and the image's writes run off
+  it; the check and garbage collection stay on it, each under a third of a
+  frame on the benchmark machine, and an optimistic response is normalized
+  on it, so its layer shows in the turn of the call.
+- **Only changed views re-render.** Records are observable objects; a body
+  that read `user.name` is invalidated when that field of that record changes
+  and at no other time. An unchanged refetch of the benchmark fixture costs
+  the main actor under 200 µs and no view; committing all 899 records costs
+  about a millisecond.
+- **Honest data.** Nullability is what the schema says; `@required` and
+  `@catch` work as in Relay, in Swift's terms (an optional lens, a `Result`,
+  a `get throws`); field errors survive caching; staleness is a phase a view
+  can read.
+- **Small everything.** Generated code is one line per field plus data
+  tables. The runtime depends on Foundation, Observation and the SQLite the
+  system ships. The compiler is one prebuilt binary, shared by the Swift and
+  Kotlin runtimes.
+- **Declarative, down to the writes.** What a view needs, how a list pages,
+  what an optimistic response shows and how a mutation edits a list are all
+  directives and values in the GraphQL text beside the view; nothing is
+  wired up at run time. That is also what makes Baton cheap for code that
+  language models write: one file holds the whole contract, the build checks
+  it against the schema at the exact character, and a wrong field is a
+  compile error rather than a runtime surprise.
+
+## What it will not be
+
+- Not a runtime GraphQL client: every operation is known at build time. No
+  query builders, no string queries, no GraphQL parser in the app.
+- Not a model layer: there is nothing decoded to hold, mutate or persist
+  besides the store itself.
+- Not configurable by policy objects: identity is schema configuration
+  compiled in; behaviour is a directive or a value on a handle.
+- Not an offline-sync engine, a local-state framework, a server, or a React
+  Native or web client.
+- Not one runtime for two platforms: the Swift and Kotlin runtimes are
+  separate and idiomatic; the compiler, the artifact format, the vocabulary
+  and the conformance fixtures are shared.
+
 ## Written by people, or by models
 
 A screen written by a language model has the same shape as one written by a
@@ -433,6 +390,49 @@ In a relay, the baton is the thing that is actually handed over. Here it is
 the data a screen hands each view: exactly what the view asked for, nothing
 else. In Russian the same word, батон, is a loaf of bread, which is why the
 symbol is 🥖 and the logo is a loaf.
+
+## By the numbers
+
+Two head-to-heads against the maintained native clients, on the same
+data: the Rick and Morty page, 686 KB and 899 records. Same machine, same
+day, Apollo configured as its documentation says, both harnesses in this
+repository. Every number is in [`BENCHMARKS.md`](BENCHMARKS.md) with the
+device, the OS and the date.
+
+**Swift against Apollo iOS 2.4**, Apple M1 Pro, 2 October 2026:
+
+| | Baton | Apollo iOS | Faster |
+|---|---|---|---|
+| The response into the store | 3.4 ms | 318 ms | **94×** |
+| The same payload again | 165 µs | 3.99 ms | **24×** |
+| A screen whose data is already in the store | the first body has it, after a 115 µs check | 228 ms to rebuild the query | |
+
+**Kotlin against Apollo Kotlin 5.2**, a Google Pixel 9 on Android 17,
+release builds, 9 October 2026:
+
+| | Baton | Apollo Kotlin | Faster |
+|---|---|---|---|
+| The response into the store | 5.3 ms | 44.7 ms | **8.4×** |
+| The same payload again | 0.30 ms | 1.1 ms | **3.8×** |
+| A screen whose data is already in the store | a 0.75 ms check | 25 ms to rebuild the query | **33×** |
+
+The difference is the model tree Apollo builds from the bytes and rebuilds
+on every read. Baton materializes nothing a view did not read: on the phone
+the whole response is in the store in less than a 120 Hz frame, 1.0 ms of
+it on the main thread, and the screen reads its fields from there. From
+the last byte to a list a screen can render, Baton is 5.3 ms; Apollo
+Kotlin is 44.7 ms with its default cache write before the response is
+emitted, or about 12 ms to a first render with the write deferred and
+32 ms of work after it.
+
+Also measured: an optimistic write shows at once and the whole cycle costs
+0.4 ms; forty-two pages of scrolling plateau near five megabytes, since
+the store releases what no view holds; a launch with the image already
+open reads the page back in 1.78 ms before any request; end to end on the
+Pixel 9, the sample shows its list 255 ms after a cold launch with an
+empty store and 238 ms after one over its image, where the Apollo Kotlin
+twin takes 327 ms and 281 ms; on the JVM, the Kotlin runtime ingests the
+same page in 1.1 ms.
 
 ## Compared with the other native clients
 

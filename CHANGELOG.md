@@ -9,7 +9,9 @@ are expected and listed without apology.
   GitHub samples and `docs/why-graphql.md` are: an issue row, an issues
   screen whose query spreads it into a repository's open issues, and the
   paging connection the list grows into. The Rick and Morty row is gone
-  from the README; the benchmark page it names stays.
+  from the README; the benchmark page it names stays. The feel is the
+  README's second section, and the numbers sit before the comparison
+  with the other clients, which cites them.
 
 ## 0.15.0 (Sushka) — 2026-10-09
 
