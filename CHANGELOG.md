@@ -74,6 +74,13 @@ are expected and listed without apology.
   `FateDocuments.kt`, the twin of `FateDocuments.swift`. Each harness runs
   in a JVM of its own, since the registry numbers types by name per process
   and Relay's test schema and fate's both declare a `User`. CI runs both.
+- `docs/comparison.md` is current at 0.14: the at-a-glance table carries
+  the Kotlin runtime's numbers on the Pixel 9 beside the Swift runtime's on
+  the Mac, the Apollo Kotlin head-to-head is a table of its own, the cons
+  say what the Kotlin runtime is and is not rather than that there is none,
+  the image con no longer names a row the writer replaced, which 0.8.0
+  fixed, and identity says what `baton.json` configures. `kotlin/README.md`
+  says `baton-testing` builds for Android, as it has since 0.14.0.
 - `docs/recipes/agents.md`, the page a coding agent reads first when it
   integrates Baton into an app: the reading order, the shape of a screen
   in Swift and Kotlin, what never to write, the compiler's diagnostics and

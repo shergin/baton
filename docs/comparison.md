@@ -11,29 +11,33 @@ companies with the hardest performance problems built the client in-house.
 This page is the argument for choosing. The measurements Baton publishes are
 in [BENCHMARKS.md](../BENCHMARKS.md), with the machine, the OS and the date.
 Numbers below that are not in that file are someone else's, and they say so.
-Versions are current as of October 2026: Baton 0.6.0, Apollo iOS 2.4.0
+Versions are current as of October 2026: Baton 0.14.0, Apollo iOS 2.4.0
 (20 August 2026), Apollo Kotlin 5.2.0 (16 September 2026) with normalized
 cache 1.0.9 (28 September 2026), the versions both comparisons measured.
+Baton's Kotlin runtime, for the JVM and Android, is held to the same
+compiler and the same fixtures as the Swift one; where a row below gives
+one number, it is the Swift runtime's on a Mac, and the Kotlin runtime's
+numbers on a phone are beside it.
 
 ## At a glance
 
-| | Baton 0.6 | Apollo iOS 2.4 | Apollo Kotlin 5.2 | Relay (web) |
+| | Baton 0.14 | Apollo iOS 2.4 | Apollo Kotlin 5.2 | Relay (web) |
 |---|---|---|---|---|
-| Where the GraphQL lives | In the Swift file, beside the view | `.graphql` files | `.graphql` files | In the component, in a tagged template |
+| Where the GraphQL lives | In the Swift or Kotlin file, beside the view | `.graphql` files | `.graphql` files | In the component, in a tagged template |
 | The screen's operation | The compiler aggregates the fragments | You write the query and spread fragments into it | You write the query; the Gradle plugin merges every document in the module | The compiler aggregates the fragments |
 | What a child receives | A lens over the record. Fields it did not declare have no accessor | A struct over the parent's dictionary, so the parent sees the child's fields too | A nested model class. The parent can read through it | An opaque fragment reference. The child reads it with `useFragment` |
 | A warm cache, first frame | The data. The read is synchronous on the main actor. On a Pixel 9 the Android sample's cold start over its image shows the list in its first frame, 240 ms from launch ([BENCHMARKS.md](../BENCHMARKS.md)) | Loading. Every store read is `async` | Loading. Store calls are documented to stay off the main thread, and the Compose helper starts at `null`. The sample's twin on the same phone draws a spinner first and the list at 272 ms, from the SQL cache; a tap to a detail whose header is cached takes 33 ms against Baton's 22 ([BENCHMARKS.md](../BENCHMARKS.md)) | The snapshot, when the query is already in the store or was preloaded. Otherwise Suspense |
 | A changed field | The views that read it. Twenty observed rows and one changed field invalidate that row | The whole query, rebuilt into a new model tree, with no equality check | The whole query, rebuilt into a new model tree | The fragments whose seen records overlap the change. Unchanged snapshots are suppressed. Field granularity is a flag, off by default |
-| Response into the store | 3.4 ms for 686 KB, 899 records | 318 ms for the same data | 44.7 ms for the same data on a Pixel 9, release build, of which 30 ms normalize the model tree into records; 8.8 ms on the JVM ([BENCHMARKS.md](../BENCHMARKS.md)) | A publish into a flat record map. No published store bench |
-| Read it back | A slot load, 26 ns. Inside a body, ~0.5 µs | 228 ms to rebuild the query, then 296 ns a field | 25 ms to rebuild the query on a Pixel 9, then 2 ns a field; 6.0 ms and 5.5 ns on the JVM ([BENCHMARKS.md](../BENCHMARKS.md)) | A re-read of the fragment snapshot |
+| Response into the store | 3.4 ms for 686 KB, 899 records, on an M1 Pro; 5.3 ms on a Pixel 9 through the Kotlin runtime ([BENCHMARKS.md](../BENCHMARKS.md)) | 318 ms for the same data | 44.7 ms for the same data on a Pixel 9, release build, of which 30 ms normalize the model tree into records; 8.8 ms on the JVM ([BENCHMARKS.md](../BENCHMARKS.md)) | A publish into a flat record map. No published store bench |
+| Read it back | A slot load, 26 ns. Inside a body, ~0.5 µs. 47 ns a field on a Pixel 9 through the Kotlin runtime | 228 ms to rebuild the query, then 296 ns a field | 25 ms to rebuild the query on a Pixel 9, then 2 ns a field; 6.0 ms and 5.5 ns on the JVM ([BENCHMARKS.md](../BENCHMARKS.md)) | A re-read of the fragment snapshot |
 | Memory | A release buffer. Forty-two pages plateau near +5 MB | Every record stays. Eviction has been the most-upvoted open issue since 2017 | A GC call you schedule, plus TTL and trimming | Retained operations, release buffer of 10, a sweep from each root |
 | Lists | `@connection`. Pages merge into one list. One notification per page | A separate package. One query watcher per page, concatenated for display | `@connection` in the new cache. Pages merge | `@connection`. Pages merge. Edge directives edit the list |
 | Optimistic write | A typed response, ingested like a server payload, rebased under later commits. The cycle is 0.4 ms | `perform` takes no optimistic response. A local-cache-mutation model can write the store by hand | Opt-in, off by default. Watchers are notified and re-run | An overlay the publish queue rebases onto every server payload |
 | Identity | `Type:` and the values of the fields `baton.json` names, `id` unless configured; a path otherwise | `@typePolicy`, field policies, or a function | Compiler-configured keys, with a typename scope | `id` by default, the field name configurable; a path otherwise |
 | Field errors | Stored on the record. `@required`, `@catch`, `@throwOnFieldError` | Travel with the response | Stored, and a partial cache read can return them | Stored on the record. The same directives |
-| On disk | System SQLite, one binary row a record. The check reads it when memory misses. Optimistic layers stay in memory | SQLite, one JSON string per record, no memory layer in front | Binary SQLite, a memory cache chained in front, with TTL and a trim | Not the runtime's job |
-| SwiftUI / Compose | `@Fragment`, `@Query`, `@Mutation` | None. The tutorial copies the result into a view model | Experimental helpers, last released July 2024. A colocation prototype is one commit from September 2025 | React hooks |
-| Floor | The 26 releases, Swift 6.2 | iOS 15 | Current Kotlin, and Kotlin Multiplatform | A JavaScript toolchain |
+| On disk | SQLite through the system's library (the bundled one on the JVM), one binary row a record. The check reads it when memory misses. Optimistic layers stay in memory | SQLite, one JSON string per record, no memory layer in front | Binary SQLite, a memory cache chained in front, with TTL and a trim | Not the runtime's job |
+| SwiftUI / Compose | `@Fragment`, `@Query`, `@Mutation`, in SwiftUI and in Compose | None. The tutorial copies the result into a view model | Experimental helpers, last released July 2024. A colocation prototype is one commit from September 2025 | React hooks |
+| Floor | The 26 releases, Swift 6.2; Android 6 (API 23) and the JVM for the Kotlin runtime | iOS 15 | Current Kotlin, and Kotlin Multiplatform | A JavaScript toolchain |
 
 ## The numbers
 
@@ -91,9 +95,23 @@ read. A flat list of 10,000 records is the same order.
 It is not a ratio against the 3.4 ms. It is the same bill, itemized by the
 people who pay it: the model tree is built on the way in and again on the
 way out.
-Our own measurement of Apollo Kotlin, the same operation and graph on a
-Pixel 9 and on the JVM, is in [BENCHMARKS.md](../BENCHMARKS.md), section
-"Apollo Kotlin 5.2.0, same operation, same graph".
+Our own measurement of Apollo Kotlin is the same operation and the same
+graph, through Baton's Kotlin runtime and Apollo Kotlin 5.2.0 with its
+normalized cache 1.0.9, on a Google Pixel 9 on Android 17, release builds,
+9 October 2026:
+
+| Step | Baton | Apollo Kotlin 5.2 |
+|---|---|---|
+| Response bytes to data in the store | 5.3 ms | 44.7 ms, of which about 30 ms normalize the model tree into records |
+| The same payload again, nothing changed | 0.30 ms | 1.1 ms |
+| From the store to something a view can read | A 0.75 ms availability check. The lens then reads slots | 25 ms to rebuild the query into models |
+| One field | 47 ns | 2 ns, after that rebuild |
+
+The same bill, itemized on a phone: the model tree is built on the way in
+and again on the way out. The entries, with the JVM numbers beside them,
+are in [BENCHMARKS.md](../BENCHMARKS.md), section "Apollo Kotlin 5.2.0,
+same operation, same graph"; the end-to-end launches and taps of the two
+Android samples on the same phone are its "end to end on a phone" entry.
 
 Three more of Baton's benches, same machine, from the 0.5.0 entry:
 
@@ -177,14 +195,14 @@ has every fragment inlined and writes a payload into a flat record map. A
 reader artifact keeps the fragment boundaries, and at a spread it hands the
 child a pointer instead of the child's fields. Baton keeps that split, runs
 Relay's front end at a pinned revision behind its own driver, and emits a
-Swift lens where Relay emits a reader.
+Swift or Kotlin lens where Relay emits a reader.
 
 The lens is a record reference, a context and one accessor per declared
 field. Reading `character.name` loads a slot and registers the read with
-Observation. A parent passes the lens, three references, and has no
-accessor for the child's fields. Masking is the type. There is no snapshot to build, no
-seen-record set to intersect, and no second copy of the data to keep equal
-to the first.
+Observation, or with Compose's snapshot state. A parent passes the lens,
+three references, and has no accessor for the child's fields. Masking is
+the type. There is no snapshot to build, no seen-record set to intersect,
+and no second copy of the data to keep equal to the first.
 
 The ingest writes those slots from the response bytes in one pass, off the
 main actor. A commit on the main actor swaps the records that changed and
@@ -209,7 +227,8 @@ stricter shape.
 - The screen's query is not a file anyone maintains. Fragments live next to
   the views that read them; the compiler spreads them into one operation and
   rejects a field the schema does not have, at the character in the Swift
-  file. One request per screen is the arrangement, not a review comment.
+  or Kotlin file. One request per screen is the arrangement, not a review
+  comment.
 - The cache update is not a function anyone writes. Pagination is
   `@connection` on the fragment. An optimistic response is a value on the
   mutation. An insertion into a list is an edge directive. A field the view
@@ -249,11 +268,13 @@ immutable typed view Meta generates, pointed at a live slot.
 
 Pros:
 
-- Cached data is in the first body. The read is a slot load on the main
-  actor, 26 ns untracked, about half a microsecond inside a view.
+- Cached data is in the first body, and in the first composition. The read
+  is a slot load on the main actor, 26 ns untracked, about half a
+  microsecond inside a view; 47 ns on a Pixel 9 through the Kotlin runtime.
 - A 686 KB response is in the store in 3.4 ms, against 318 ms for Apollo iOS
-  on the same fixture. An unchanged refetch is under 200 µs and updates no
-  view.
+  on the same fixture, and in 5.3 ms on a Pixel 9 through the Kotlin
+  runtime, against 44.7 ms for Apollo Kotlin on the same phone. An
+  unchanged refetch is under 200 µs and updates no view.
 - One changed field re-renders the view that read it. The bench with twenty
   observed rows invalidates that row, in 376 µs for the commit.
 - Memory tracks the screens you are keeping. Forty-two pages that share no
@@ -283,14 +304,15 @@ Pros:
 
 Cons:
 
-- It is 0.6. The API breaks until 1.0. There is no Kotlin runtime yet.
-  Android today means Apollo Kotlin.
+- It is 0.14. The API breaks until 1.0. The Kotlin runtime is new, October
+  2026, held to the same fixtures and shipped by no app yet, and it builds
+  for the JVM and Android alone, where Apollo Kotlin also runs on iOS and
+  the web through Kotlin Multiplatform.
 - The image is narrower than Apollo Kotlin's cache. A row ages out after
   one launch that did not read it. The other bound is a size limit checked
   at launch, 64 MB unless told otherwise, not a trim of the largest
   records. The check reads the image on the main actor, and one process
-  uses a file. A response that writes a record before the image is asked
-  replaces the row and drops fields only the image held.
+  uses a file.
 - The floor is the 26 releases of Apple's platforms. Apollo iOS still
   supports iOS 15.
 - Identity is `id` unless `baton.json` names other fields for a type, a
@@ -543,26 +565,31 @@ with no memory layer, and it is the option on the iOS 15 floor.
 
 Apollo iOS runs on iOS 15 and has a pagination package, persisted-query
 manifests and a tutorial-shaped path into an existing UIKit or SwiftUI app
-that already thinks in view models. Baton requires the 26 releases and a
-willingness to put the fragment in the view.
+that already thinks in view models. Baton requires the 26 releases, or
+Android 6 on Kotlin, and a willingness to put the fragment in the view.
 
 Identity configuration is theirs. `@typePolicy` and Kotlin's key configuration
 cover entities whose key is not `id`, and field policies that answer a root
-field from an argument. Baton keys on `id`.
+field from an argument. Baton keys on `id` unless `baton.json` names other
+own scalar fields for a type, and answers a root field from its arguments
+only through the `lookups` the same file names.
 
 Installed base is theirs. In public repositories, `apollo-ios` appears in
 about 541 Swift lockfiles, against about 7,200 for Alamofire, and Apollo's
 Kotlin artifacts in about 630 Android version catalogs, against about 38,000
 for Retrofit. Private apps are missing from those counts. The point stands:
-Apollo is the default, and Baton is a 0.6 with something to prove. The
-head-to-head fixture is the proof on offer, and it is rerunnable.
+Apollo is the default, and Baton is a 0.14 with something to prove. The
+head-to-head fixture is the proof on offer, and it is rerunnable on both
+platforms.
 
 ## Sources
 
 Baton's measurements: [BENCHMARKS.md](../BENCHMARKS.md), entries 0.1.0
-through 0.6.0, recorded on an Apple M1 Pro. The Apollo iOS comparison is the
-0.1.0 entry; the launch and hydration numbers are the 0.6.0 entry. The
-commands that reproduce them are at the bottom of that file.
+through 0.6.0, recorded on an Apple M1 Pro, and the entries of October 2026
+recorded on a Google Pixel 9. The Apollo iOS comparison is the 0.1.0 entry;
+the launch and hydration numbers are the 0.6.0 entry; the Apollo Kotlin
+comparison and the end-to-end launches are the Pixel 9 entries. The
+commands that reproduce them are in that file.
 
 Apollo's own material: [Apollo iOS docs](https://www.apollographql.com/docs/ios),
 [the 2.0 migration guide](https://www.apollographql.com/docs/ios/migrations/2.0),

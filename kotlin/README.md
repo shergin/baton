@@ -17,7 +17,7 @@ The runtime's files mirror the Swift runtime's, a file per concept, as
 [`docs/runtimes.md`](../docs/runtimes.md) maps them.
 
 From 0.13.0 the runtime is on Maven Central, `com.shergin.baton:baton`
-(JVM and Android), with `baton-testing` (JVM) and `baton-inspector` (JVM
+(JVM and Android), with `baton-testing` and `baton-inspector` (both JVM
 and Android) beside it, and the Gradle plugin `com.shergin.baton` runs the
 compiler over a module's hosts with every input and output declared,
 fetching the release's compiler bundle on first use.
@@ -36,7 +36,8 @@ release.properties
 baton/            the runtime: commonMain; jvmSharedMain, what the JVM and Android share; jvmMain and
                   androidMain; jvmTest runs the spec, jvmRelayTest spec/relay and jvmFateTest spec/fate,
                   androidDeviceTest the image and the ingest benchmark
-baton-testing/    the transports an app's tests run over: scripted, recorded, silent (JVM)
+baton-testing/    the transports an app's tests run over, scripted, recorded, silent, and the socket server double
+                  (JVM and Android)
 baton-inspector/  StoreInspector, a live view of an environment's store for a debug pane, and StoreExport
 goldens/          compiles the Kotlin emitter's goldens, compiler/src/tests/goldens-kotlin, against the runtime,
                   and baton.application, an application's calls into them with no opt-in
