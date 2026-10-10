@@ -6,10 +6,10 @@ are expected and listed without apology.
 ## Unreleased
 
 - The README's examples are one screen over GitHub's GraphQL API, as the
-  GitHub samples and `docs/why-graphql.md` are: an issue row, a repository
-  screen whose query spreads it into the open issues, and the paging
-  connection the list grows into. The Rick and Morty row is gone from the
-  README; the benchmark page it names stays.
+  GitHub samples and `docs/why-graphql.md` are: an issue row, an issues
+  screen whose query spreads it into a repository's open issues, and the
+  paging connection the list grows into. The Rick and Morty row is gone
+  from the README; the benchmark page it names stays.
 
 ## 0.15.0 (Sushka) — 2026-10-09
 

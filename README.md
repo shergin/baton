@@ -177,9 +177,9 @@ struct IssueRow: View {
     }
 }
 
-struct RepositoryScreen: View {
+struct IssuesScreen: View {
     @Query("""
-    query RepositoryQuery($owner: String!, $name: String!) {
+    query IssuesQuery($owner: String!, $name: String!) {
       repository(owner: $owner, name: $name) {
         nameWithOwner
         issues(first: 20, states: OPEN) {
@@ -188,10 +188,10 @@ struct RepositoryScreen: View {
       }
     }
     """)
-    var repository: RepositoryQuery
+    var issues: IssuesQuery
 
     var body: some View {
-        switch repository.phase {
+        switch issues.phase {
         case .ready(let data):
             if let repo = data.repository {
                 List {
@@ -204,7 +204,7 @@ struct RepositoryScreen: View {
         case .loading:
             ProgressView()
         case .failed(let error):
-            ErrorView(error) { repository.retry() }
+            ErrorView(error) { issues.retry() }
         }
     }
 }
@@ -232,7 +232,7 @@ fun IssueRow(issue: IssueRow_issue) {
 }
 
 @Query($$"""
-    query RepositoryQuery($owner: String!, $name: String!) {
+    query IssuesQuery($owner: String!, $name: String!) {
       repository(owner: $owner, name: $name) {
         nameWithOwner
         issues(first: 20, states: OPEN) {
@@ -242,9 +242,9 @@ fun IssueRow(issue: IssueRow_issue) {
     }
     """)
 @Composable
-fun RepositoryScreen(owner: String, name: String) {
+fun IssuesScreen(owner: String, name: String) {
     val query = rememberQuery(
-        RepositoryQuery(owner = owner, name = name),
+        IssuesQuery(owner = owner, name = name),
     )
     when (val phase = query.phase) {
         is Phase.Ready -> phase.data.repository?.let { repo ->
