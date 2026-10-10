@@ -60,6 +60,10 @@ val generateFateKotlin = tasks.register<BatonGenerate>("generateFateKotlin") {
 
 kotlin {
     jvm()
+    // The JDK the artifacts are compiled with, on the JVM and on Android: the
+    // floor `docs/decisions/kotlin-floors.md` records, pinned so a build on
+    // another JDK writes the same class files as the release.
+    jvmToolchain(21)
     android {
         namespace = "baton"
         compileSdk = 36

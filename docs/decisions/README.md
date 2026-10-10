@@ -21,6 +21,7 @@ principle, the proof belongs here.
 - [The image evicts by launch before it starts over](the-image-evicts-by-launch.md)
 - [Marker macros carry the GraphQL](marker-macros.md)
 - [Floors at the 26 releases](platform-floors.md)
+- [Floors at Android 6, Java 21 and the current Kotlin](kotlin-floors.md)
 - [Lookups satisfy root fields from cached entities](lookups.md) (superseded)
 - [Connections reference page edges and own inserted ones](connections-own-their-edges.md)
 - [Relay's error directives in Swift's terms](error-directives-in-swift.md)

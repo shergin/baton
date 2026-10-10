@@ -37,7 +37,7 @@ numbers on a phone are beside it.
 | Field errors | Stored on the record. `@required`, `@catch`, `@throwOnFieldError` | Travel with the response | Stored, and a partial cache read can return them | Stored on the record. The same directives |
 | On disk | SQLite through the system's library (the bundled one on the JVM), one binary row a record. The check reads it when memory misses. Optimistic layers stay in memory | SQLite, one JSON string per record, no memory layer in front | Binary SQLite, a memory cache chained in front, with TTL and a trim | Not the runtime's job |
 | SwiftUI / Compose | `@Fragment`, `@Query`, `@Mutation`, in SwiftUI and in Compose | None. The tutorial copies the result into a view model | Experimental helpers, last released July 2024. A colocation prototype is one commit from September 2025 | React hooks |
-| Floor | The 26 releases, Swift 6.2; Android 6 (API 23) and the JVM for the Kotlin runtime | iOS 15 | Current Kotlin, and Kotlin Multiplatform | A JavaScript toolchain |
+| Floor | The 26 releases, Swift 6.2; Android 6 (API 23), Java 21 and the current Kotlin for the Kotlin runtime | iOS 15 | Current Kotlin, and Kotlin Multiplatform | A JavaScript toolchain |
 
 ## The numbers
 

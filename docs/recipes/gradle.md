@@ -35,7 +35,10 @@ build keeps what the code calls. The AndroidX pieces
 are on Google's Maven repository, which Gradle does not search unless the
 build names it, so the settings name `google()` beside `mavenCentral()` for
 dependencies, as the snippet below does. The runtime is built with Kotlin
-2.4.20.
+2.4.20 and carries Java 21 class files, so a consumer runs on a JVM of 21
+or newer and compiles with Kotlin 2.4 or newer; the floors and the policy
+behind them are
+[the decision](../decisions/kotlin-floors.md).
 
 ## The plugin
 

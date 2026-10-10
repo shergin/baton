@@ -92,7 +92,10 @@ rules for Baton, and the artifacts ship none.
 On Android the runtime starts at API 23, the lowest the Compose runtime
 and AndroidX SQLite allow, and compiles against API 36. Modules with
 Compose UI, the inspector and the samples, compile against API 37, which
-Compose UI 1.12 asks of what depends on it.
+Compose UI 1.12 asks of what depends on it. The runtime and its modules
+are compiled with a JDK 21 toolchain and carry Java 21 class files on the
+JVM and on Android, pinned in their builds; the floors and why are
+[`docs/decisions/kotlin-floors.md`](../docs/decisions/kotlin-floors.md).
 
 ## Building
 

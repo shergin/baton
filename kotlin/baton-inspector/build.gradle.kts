@@ -13,6 +13,8 @@ plugins {
 // `@_spi(Generated)`, and never writes.
 kotlin {
     jvm()
+    // The JDK the artifacts are compiled with, as `docs/decisions/kotlin-floors.md` records.
+    jvmToolchain(21)
     android {
         namespace = "baton.inspector"
         // Compose UI 1.12 is compiled against Android 17's API and asks the

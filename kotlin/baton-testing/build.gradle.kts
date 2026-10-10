@@ -13,6 +13,8 @@ plugins {
 // them too; the socket server double is the two platforms' shared Java.
 kotlin {
     jvm()
+    // The JDK the artifacts are compiled with, as `docs/decisions/kotlin-floors.md` records.
+    jvmToolchain(21)
     android {
         namespace = "baton.testing"
         compileSdk = 36

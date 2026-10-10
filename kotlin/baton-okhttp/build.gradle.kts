@@ -16,6 +16,8 @@ plugins {
 // runtime's socket transport over the client this module supplies.
 kotlin {
     jvm()
+    // The JDK the artifacts are compiled with, as `docs/decisions/kotlin-floors.md` records.
+    jvmToolchain(21)
     android {
         namespace = "baton.okhttp"
         // OkHttp 5.5 is compiled against Android 17's API and asks the same

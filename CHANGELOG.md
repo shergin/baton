@@ -74,6 +74,14 @@ are expected and listed without apology.
   `FateDocuments.kt`, the twin of `FateDocuments.swift`. Each harness runs
   in a JVM of its own, since the registry numbers types by name per process
   and Relay's test schema and fate's both declare a `User`. CI runs both.
+- The Kotlin runtime's floors are recorded,
+  `docs/decisions/kotlin-floors.md`: Android 6 (API 23), the lowest the
+  Compose runtime and AndroidX SQLite allow; Java 21 class files on the
+  JVM and on Android, the JDK the release builds with; and the current
+  Kotlin, 2.4.20. The runtime's four published modules pin the JDK 21
+  toolchain in their builds, where the JVM target had followed whichever
+  JDK ran the build: a local build on JDK 26 wrote Java 26 class files
+  where the release wrote Java 21.
 - The recipes say Kotlin where they said Swift alone:
   `porting-from-relay.md` has a Kotlin column beside the Swift one for
   every Relay word, `discover-once.md` the Kotlin twin of its refresh,
