@@ -5,6 +5,12 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- Kotlin's `TransportError` carries the connection's own failure as its
+  `cause` when there was no response: `HttpTransport`, `OkHttpTransport`
+  and the socket clients pass the exception they caught, so a wrapper can
+  tell a connection that was lost or timed out, which a retry may mend,
+  from a request the transport could not make, which would repeat. A
+  status 0 with no cause is still the latter.
 - A Baton app is a client of the server of fate's GraphQL template as it
   ships: responses recorded from it under `spec/fate/` prove its posts
   connection, `node(id:)`, `postAdd` with `@prependNode` and the

@@ -77,7 +77,7 @@ class OkHttpTransport(
             } catch (failure: IOException) {
                 // A read that failed because the collector went away is the cancellation, not a failure.
                 currentCoroutineContext().ensureActive()
-                throw TransportError(0, failure.message ?: failure.toString())
+                throw TransportError(0, failure.message ?: failure.toString(), failure)
             } finally {
                 cancelling.cancel()
             }

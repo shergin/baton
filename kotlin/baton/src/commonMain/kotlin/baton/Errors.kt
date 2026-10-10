@@ -67,8 +67,14 @@ class GraphQLErrors(val errors: List<FieldError>) : Exception() {
     override val message: String get() = messages.joinToString("; ")
 }
 
-/** A response outside 2xx, or no response at all (status 0), with what the transport could say. */
-class TransportError(val statusCode: Int, val body: String) : Exception() {
+/**
+ * A response outside 2xx, or no response at all (status 0), with what the
+ * transport could say. Without a response, [cause] is the connection's own
+ * failure when the connection raised one, so a wrapper can tell a connection
+ * that was lost or timed out, which a retry may mend, from a request the
+ * transport could not make, which would repeat.
+ */
+class TransportError(val statusCode: Int, val body: String, cause: Throwable? = null) : Exception(cause) {
     override val message: String get() = if (statusCode == 0) body else "HTTP $statusCode: $body"
 }
 

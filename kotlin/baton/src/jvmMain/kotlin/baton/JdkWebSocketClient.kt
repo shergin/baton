@@ -19,7 +19,7 @@ class JdkWebSocketClient(private val client: HttpClient = HttpClient.newHttpClie
         val socket = try {
             builder.buildAsync(URI(url), Listener(listener)).await()
         } catch (failure: Exception) {
-            throw TransportError(0, "the socket could not be opened: ${failure.cause?.message ?: failure.message}")
+            throw TransportError(0, "the socket could not be opened: ${failure.cause?.message ?: failure.message}", failure.cause ?: failure)
         }
         return Connection(socket)
     }
@@ -30,7 +30,7 @@ class JdkWebSocketClient(private val client: HttpClient = HttpClient.newHttpClie
             try {
                 socket.sendText(text, true).await()
             } catch (failure: Exception) {
-                throw TransportError(0, "the socket could not send: ${failure.cause?.message ?: failure.message}")
+                throw TransportError(0, "the socket could not send: ${failure.cause?.message ?: failure.message}", failure.cause ?: failure)
             }
         }
 
@@ -72,7 +72,7 @@ class JdkWebSocketClient(private val client: HttpClient = HttpClient.newHttpClie
         }
 
         override fun onError(webSocket: WebSocket, error: Throwable) {
-            delivery.closed(TransportError(0, "the socket failed: ${error.message ?: error}"))
+            delivery.closed(TransportError(0, "the socket failed: ${error.message ?: error}", error))
         }
     }
 }

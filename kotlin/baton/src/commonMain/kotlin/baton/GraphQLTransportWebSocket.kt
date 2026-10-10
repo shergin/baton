@@ -274,7 +274,7 @@ class GraphQLTransportWebSocket(
     private fun fail(current: Connection, failure: Throwable) {
         if (connection !== current) return
         connection = null
-        val error = failure as? TransportError ?: TransportError(0, failure.message ?: failure.toString())
+        val error = failure as? TransportError ?: TransportError(0, failure.message ?: failure.toString(), failure)
         current.acknowledged.completeExceptionally(error)
         current.frames.close()
         for (stream in subscribers.values) stream.close(error)

@@ -52,9 +52,9 @@ class OkHttpWebSocketClient(private val client: OkHttpClient) : WebSocketClient 
                 }
 
                 override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                    val failure = TransportError(0, "the socket failed: ${t.message ?: t}")
+                    val failure = TransportError(0, "the socket failed: ${t.message ?: t}", t)
                     if (!opened.isCompleted) {
-                        opened.completeExceptionally(TransportError(0, "the socket could not be opened: ${t.message ?: t}"))
+                        opened.completeExceptionally(TransportError(0, "the socket could not be opened: ${t.message ?: t}", t))
                         return
                     }
                     if (ended.compareAndSet(false, true)) listener.closed(failure)
