@@ -71,10 +71,13 @@ measurements and the one condition under which this bends.
 ## Spelled today
 
 `swift/` holds the Swift runtime, its macros, its build plugin, its
-benchmarks and its tests; `compiler/` holds `batonc`, which emits Swift;
-`spec/` holds the schemas, the documents, the responses, the store dumps
-and the expected reads a runtime is held to, listed in `spec/manifest.json`,
-and `spec/runtime.md`, the contract: the rules that produce them, each
-naming the fixture that holds it or marked unheld. There is no Kotlin
-runtime yet, and `batonc` has no Kotlin emitter. This section may rot; the
-rest must not.
+benchmarks and its tests; `kotlin/` holds the Kotlin runtime, common first
+with the JVM and Android as its actuals, its Gradle plugin, its benchmarks
+and its tests; `compiler/` holds `batonc`, which emits Swift and Kotlin
+from one plan; `spec/` holds the schemas, the documents, the responses,
+the store dumps and the expected reads both runtimes are held to, listed in
+`spec/manifest.json`, and `spec/runtime.md`, the contract: the rules that
+produce them, each naming the fixture that holds it or marked unheld.
+Compose Multiplatform is the Kotlin runtime on more targets, not a third
+runtime ([The Kotlin runtime is common first](../decisions/the-kotlin-runtime-is-common-first.md)).
+This section may rot; the rest must not.
