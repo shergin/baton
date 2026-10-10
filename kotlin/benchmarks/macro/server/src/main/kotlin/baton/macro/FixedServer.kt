@@ -94,7 +94,10 @@ class FixedServer private constructor(private val assets: AssetManager, private 
         val list = operation == "CharactersScreenQuery"
         if (list) Sections.begin(Sections.LIST_RESPONSE_TO_FRAME)
         respond(output, 200, "application/json", answer)
-        if (list) Sections.begin(Sections.LIST_LAST_BYTE_TO_FRAME)
+        if (list) {
+            Sections.begin(Sections.LIST_LAST_BYTE_TO_FRAME)
+            Sections.begin(Sections.LIST_LAST_BYTE_TO_STORE)
+        }
         Log.i(TAG, "answered $operation with $name, ${answer.size} bytes")
     }
 

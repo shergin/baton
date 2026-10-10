@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import baton.macro.Sections
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.ApolloResponse
 import com.apollographql.apollo.api.Query
@@ -41,6 +42,7 @@ import com.apollographql.apollo.exception.CacheMissException
 import com.apollographql.cache.normalized.watch
 import java.net.URI
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 
 /** The client the screens query, provided by the activity. */
@@ -65,7 +67,8 @@ class Watched<D : Query.Data>(val response: ApolloResponse<D>?, val retry: () ->
 fun <D : Query.Data> watchQuery(query: Query<D>): Watched<D> {
     val client = LocalApollo.current
     var attempt by remember(query) { mutableIntStateOf(0) }
-    val flow = remember(client, query, attempt) { client.query(query).watch() }
+    // A response the watch emits after the server's last byte is the page in the cache; the macrobenchmark's section ends there.
+    val flow = remember(client, query, attempt) { client.query(query).watch().onEach { Sections.stored() } }
     val response = key(flow) { flow.collectAsState(initial = null).value }
     return Watched(response, retry = { attempt++ })
 }

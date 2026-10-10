@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.AndroidViewModel
 import androidx.tracing.trace
 import baton.Environment
+import baton.LogEvent
 import baton.LocalBaton
 import baton.Persistence
 import baton.Store
@@ -97,6 +98,9 @@ class SampleModel(application: Application) : AndroidViewModel(application) {
             FixedServer.graphql("https://rickandmortyapi.com/graphql"),
             store = Store(persistence = Persistence.named("RickAndMorty", directory = application.cacheDir.path, version = Types.schemaDigest)),
         )
+    }.also { environment ->
+        // A page's data is in the store once the server's batch is committed; the macrobenchmark's section ends there.
+        environment.log = { event -> if (event is LogEvent.Committed && event.kind == LogEvent.CommitKind.SERVER) Sections.stored() }
     }
 
     private val activation = Activation(environment)

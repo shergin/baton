@@ -25,6 +25,17 @@ object Sections {
      */
     const val LIST_LAST_BYTE_TO_FRAME = "ListLastByteToFrame"
 
+    /**
+     * From the last byte of a characters page's response to the data in
+     * the store: Baton's commit of the page, on the main thread after the
+     * ingest; Apollo's emission of the response, after its cache write.
+     * The last byte's section split in two at the store, with the next.
+     */
+    const val LIST_LAST_BYTE_TO_STORE = "ListLastByteToStore"
+
+    /** From the data in the store to the first draw of the list: the recomposition, the layout and the frame. */
+    const val LIST_STORE_TO_FRAME = "ListStoreToFrame"
+
     /** The construction of the app's client, Baton's environment and store or Apollo's client and cache, on the main thread. */
     const val CLIENT_SETUP = "ClientSetup"
 
@@ -45,10 +56,25 @@ object Sections {
         synchronized(open) { if (open.remove(name)) Trace.endAsyncSection(name, COOKIE) }
     }
 
-    /** A page's list drew for the first time: the response's and the page turn's sections end. */
+    /**
+     * A page's data reached the store: the last byte's section to the store
+     * ends and the store's to the frame begins, when a page is on its way;
+     * a commit or an emission of anything else does nothing here.
+     */
+    fun stored() {
+        synchronized(open) {
+            if (!open.remove(LIST_LAST_BYTE_TO_STORE)) return
+            Trace.endAsyncSection(LIST_LAST_BYTE_TO_STORE, COOKIE)
+            if (open.add(LIST_STORE_TO_FRAME)) Trace.beginAsyncSection(LIST_STORE_TO_FRAME, COOKIE)
+        }
+    }
+
+    /** A page's list drew for the first time: the response's, the store's and the page turn's sections end. */
     fun listDrawn() {
         end(LIST_RESPONSE_TO_FRAME)
         end(LIST_LAST_BYTE_TO_FRAME)
+        end(LIST_LAST_BYTE_TO_STORE)
+        end(LIST_STORE_TO_FRAME)
         end(PAGE_TURN_TO_FRAME)
     }
 }

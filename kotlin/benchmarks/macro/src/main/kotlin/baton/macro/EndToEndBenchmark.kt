@@ -165,6 +165,8 @@ class EndToEndBenchmark(private val app: String) {
         StartupTimingMetric(),
         TraceSectionMetric(Sections.LIST_RESPONSE_TO_FRAME, TraceSectionMetric.Mode.First),
         TraceSectionMetric(Sections.LIST_LAST_BYTE_TO_FRAME, TraceSectionMetric.Mode.First),
+        TraceSectionMetric(Sections.LIST_LAST_BYTE_TO_STORE, TraceSectionMetric.Mode.First),
+        TraceSectionMetric(Sections.LIST_STORE_TO_FRAME, TraceSectionMetric.Mode.First),
         TraceSectionMetric(Sections.CLIENT_SETUP, TraceSectionMetric.Mode.First),
     )
 
