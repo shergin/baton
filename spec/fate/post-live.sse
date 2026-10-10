@@ -1,0 +1,8 @@
+:
+
+event: next
+data: {"data":{"fateLiveNode":{"id":"01a12372-b62b-7122-aff3-029976170578","delete":null,"select":["likes"],"data":{"id":"01a12372-b62b-7122-aff3-029976170578","likes":87}}}}
+
+event: next
+data: {"data":{"fateLiveNode":{"id":"01a12372-b62b-7122-aff3-029976170578","delete":null,"select":["likes"],"data":{"id":"01a12372-b62b-7122-aff3-029976170578","likes":88}}}}
+

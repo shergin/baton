@@ -92,7 +92,7 @@ let package = Package(
             exclude: ["README.md", "runtime.md"],
             sources: ["Spec.swift", "Manifest.swift"],
             resources: [
-                .copy("documents"), .copy("manifest.json"), .copy("relay"), .copy("rickandmorty"),
+                .copy("documents"), .copy("fate"), .copy("manifest.json"), .copy("relay"), .copy("rickandmorty"),
                 .copy("scripts"), .copy("sources"), .copy("tests"), .copy("tokenizer"),
             ],
             swiftSettings: [.swiftLanguageMode(.v6)]
@@ -110,6 +110,15 @@ let package = Package(
             name: "BatonRelayTests",
             dependencies: ["Baton", "BatonInspector", "BatonSpec"],
             path: "swift/Tests/BatonRelayTests",
+            swiftSettings: [.swiftLanguageMode(.v6)],
+            plugins: ["BatonPlugin"]
+        ),
+        // Responses recorded from the server of fate's GraphQL template,
+        // under `spec/fate/`, compiled against the schema that server exports.
+        .testTarget(
+            name: "BatonFateTests",
+            dependencies: ["Baton", "BatonTesting", "BatonSpec"],
+            path: "swift/Tests/BatonFateTests",
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
         ),

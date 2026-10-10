@@ -1,0 +1,237 @@
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+type Category implements Node {
+  description: String
+  id: ID!
+  name: String!
+  postCount: Int!
+  posts(after: String, before: String, first: Int, last: Int): CategoryPostsConnection!
+}
+
+type CategoryPostsConnection {
+  edges: [CategoryPostsConnectionEdge]
+  pageInfo: PageInfo!
+}
+
+type CategoryPostsConnectionEdge {
+  cursor: String!
+  node: Post
+}
+
+type Comment implements Node {
+  author: User
+  content: String!
+  id: ID!
+  post: Post!
+}
+
+input CommentAddInput {
+  args: JSON
+  content: String!
+  postId: String!
+}
+
+input CommentDeleteInput {
+  args: JSON
+  id: String!
+}
+
+scalar DateTime
+
+type Event implements Node {
+  attendees(after: String, before: String, first: Int, last: Int): EventAttendeesConnection!
+  attendingCount: Int!
+  capacity: Int!
+  description: String!
+  endAt: DateTime!
+  host: User!
+  id: ID!
+  livestreamUrl: String
+  location: String!
+  name: String!
+  startAt: DateTime!
+  topics: [String!]!
+  type: String!
+}
+
+type EventAttendee implements Node {
+  id: ID!
+  notes: String
+  status: String!
+  user: User!
+}
+
+type EventAttendeesConnection {
+  edges: [EventAttendeesConnectionEdge]
+  pageInfo: PageInfo!
+}
+
+type EventAttendeesConnectionEdge {
+  cursor: String!
+  node: EventAttendee
+}
+
+type FateLiveConnectionEvent {
+  cursor: String
+  id: String
+  node: JSON
+  nodeType: String
+  targetCursor: String
+  type: String!
+}
+
+type FateLiveNodeEvent {
+  data: JSON
+  delete: Boolean
+  id: String
+  select: [String!]
+}
+
+scalar JSON
+
+type Mutation {
+  commentAdd(input: CommentAddInput!): Comment
+  commentDelete(input: CommentDeleteInput!): Comment
+  postAdd(input: PostAddInput!): Post
+  postLike(input: PostLikeInput!): Post
+  postUnlike(input: PostUnlikeInput!): Post
+  userUpdate(input: UserUpdateInput!): User
+}
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
+type Post implements Node {
+  author: User!
+  category: Category
+  commentCount: Int!
+  comments(after: String, before: String, first: Int, last: Int): PostCommentsConnection!
+  content: String!
+  id: ID!
+  likes: Int!
+  tags(after: String, before: String, first: Int, last: Int): PostTagsConnection!
+  title: String!
+}
+
+input PostAddInput {
+  args: JSON
+  content: String!
+  title: String!
+}
+
+type PostCommentsConnection {
+  edges: [PostCommentsConnectionEdge]
+  pageInfo: PageInfo!
+}
+
+type PostCommentsConnectionEdge {
+  cursor: String!
+  node: Comment
+}
+
+input PostLikeInput {
+  args: JSON
+  error: String
+  id: String!
+  slow: Boolean
+}
+
+type PostTagsConnection {
+  edges: [PostTagsConnectionEdge]
+  pageInfo: PageInfo!
+}
+
+type PostTagsConnectionEdge {
+  cursor: String!
+  node: Tag
+}
+
+input PostUnlikeInput {
+  args: JSON
+  id: String!
+}
+
+type Query {
+  categories(after: String, before: String, first: Int, last: Int): QueryCategoriesConnection
+  commentSearch(after: String, before: String, first: Int, last: Int, query: String!): QueryCommentSearchConnection
+  events(after: String, before: String, first: Int, last: Int): QueryEventsConnection
+  node(id: ID!): Node
+  nodes(ids: [ID!]!): [Node]!
+  posts(after: String, before: String, first: Int, last: Int): QueryPostsConnection
+  viewer: User
+}
+
+type QueryCategoriesConnection {
+  edges: [QueryCategoriesConnectionEdge]
+  pageInfo: PageInfo!
+}
+
+type QueryCategoriesConnectionEdge {
+  cursor: String!
+  node: Category
+}
+
+type QueryCommentSearchConnection {
+  edges: [QueryCommentSearchConnectionEdge]
+  pageInfo: PageInfo!
+}
+
+type QueryCommentSearchConnectionEdge {
+  cursor: String!
+  node: Comment
+}
+
+type QueryEventsConnection {
+  edges: [QueryEventsConnectionEdge]
+  pageInfo: PageInfo!
+}
+
+type QueryEventsConnectionEdge {
+  cursor: String!
+  node: Event
+}
+
+type QueryPostsConnection {
+  edges: [QueryPostsConnectionEdge]
+  pageInfo: PageInfo!
+}
+
+type QueryPostsConnectionEdge {
+  cursor: String!
+  node: Post
+}
+
+type Subscription {
+  fateLiveConnection(args: JSON, procedure: String!, select: [String!]!, selectionArgs: JSON, type: String!): FateLiveConnectionEvent
+  fateLiveNode(args: JSON, id: ID!, select: [String!]!, type: String!): FateLiveNodeEvent
+}
+
+type Tag implements Node {
+  description: String
+  id: ID!
+  name: String!
+}
+
+type User implements Node {
+  email: String @auth(self: true)
+  id: ID!
+  name: String!
+  username: String
+}
+
+input UserUpdateInput {
+  args: JSON
+  name: String!
+}

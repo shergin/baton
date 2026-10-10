@@ -19,6 +19,8 @@ and the documents; `BATON_BLESS=1 cargo test` in `compiler/` writes
 
 - `rickandmorty/`: the public API's schema, three documents and their
   responses.
+- `fate/`: responses recorded from the server of fate's GraphQL template,
+  with the schema it exports; [`fate/README.md`](fate/README.md) says how.
 - `tests/`: the responses the test documents read, recorded or shaped by
   hand to say one thing each, with the dump beside each one the oracle reads,
   the schema and its client extensions, and `baton.json`, the configuration
