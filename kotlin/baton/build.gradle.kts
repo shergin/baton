@@ -117,6 +117,8 @@ kotlin {
                 implementation(kotlin("reflect"))
                 // The scripts run through the scripted transport an app's tests use.
                 implementation(project(":baton-testing"))
+                // The exchange of `docs/recipes/exchange.md` is proven here, over the specification's operations.
+                implementation(project(":samples:exchange"))
                 // The inspector is held in a composition over the specification's operations.
                 implementation(project(":baton-inspector"))
                 // The composables are tested in a composition, on the desktop's renderer, its main dispatcher the event thread.

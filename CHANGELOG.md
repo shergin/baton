@@ -15,7 +15,14 @@ are expected and listed without apology.
   twice; a stream that delivered is not sent again. The Kotlin GitHub
   sample sends through it, as the Swift one sends through
   `examples/Exchange`, and `docs/recipes/exchange.md` has its Kotlin half,
-  quoting the compiled loop.
+  quoting the compiled loop. `ExchangeTests` in the runtime's JVM tests
+  prove it over `baton-testing`'s doubles and a loopback server: the
+  replayed challenge carries the renewed token, a second challenge fails,
+  a 503 then a 200 is sent twice, the attempts bound the sends, a deadline
+  that expires during the backoff fails at once, a mutation refused with a
+  503 is sent once, a cancelled consumer ends the held attempt, an
+  environment over an exchange reads ready after a retry, and a held
+  mutation's optimistic layer stands through a retry beside it.
 - The Android sample tells the environment the process's lifecycle:
   `Activation` in `kotlin/samples/android` observes `ProcessLifecycleOwner`,
   sets `isActive` false when the last activity stops and true when the
