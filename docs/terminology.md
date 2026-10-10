@@ -9,9 +9,11 @@ Then *Here*: what the thing is in Baton, in no language's terms, which is
 the rule as [the runtime contract](../spec/runtime.md) states it, with a
 link to the section that holds it. Then *Swift*: the spelling, the types,
 properties, macros, products and modules by which the Swift runtime and its
-generated code name it; an entry with nothing to spell has no Swift part. A
-*Kotlin* part will be added entry by entry as that runtime spells it, and
-until then it is absent. Each entry is also marked with its place in the
+generated code name it. Then *Kotlin*: the same for the Kotlin runtime and
+its generated Kotlin, with what differs from the Swift spelling: a getter
+that throws where Swift's accessor throws, a `Result` for `@catch`, a
+`Hold` for a retention, a `Flow` for a stream. An entry with nothing to
+spell has neither part. Each entry is also marked with its place in the
 closed inventory of
 [What earns a concept](principles/what-earns-a-concept.md): schema,
 document, directive, lens, record, store, plan, operation value, connection,
@@ -81,6 +83,9 @@ The default accessor name is derived from the fragment name;
 `@alias(as:)` names it verbatim. See
 [the contract](../spec/runtime.md#6-the-lens-reads).
 Swift: the derived name reads `issue.issueRow`.
+Kotlin: the same derived name, `issue.issueRow`, a getter returning the
+fragment's lens class, nullable when the spread is conditional, deferred or
+bubbles a `@required` field.
 
 **Fragment arguments.** *Concept: directive.* Relay: `@argumentDefinitions`
 and `@arguments`.
@@ -98,6 +103,9 @@ with the lens's variables and the owner's id and updates the records in
 place. New variables replace the lens. See
 [the contract](../spec/runtime.md#6-the-lens-reads).
 Swift: the refetch is `refetch()`.
+Kotlin: the refetch is the lens's `suspend fun refetch()`, run through the
+environment of the handle the lens was read from; a lens made by hand throws
+`EnvironmentError.OutsideEnvironment`.
 
 **Directive.** *Concept: directive.* GraphQL: an annotation on a selection
 or definition.
@@ -118,6 +126,9 @@ no timer is armed. See
 and [the decision](decisions/an-operation-states-its-expiration.md).
 Swift: the constant is `cacheExpiration`; the store's default is
 `Store(cacheExpiration:)`.
+Kotlin: the constant is the companion's `cacheExpirationSeconds`, a `Double?`;
+the store's default is `Store(cacheExpiration = ...)`, a `Duration?`, null for
+none.
 
 **Required.** *Concept: directive.* Relay:
 `@required(action: NONE | LOG | THROW)`, a field the view cannot do without.
@@ -132,6 +143,12 @@ Swift: a generated `satisfied` checks the lens; LOG's event is
 `requiredFieldMissing`; THROW makes the accessor `get throws`, raising
 `RequiredFieldError`; the root's failure is a `RequiredFieldError`, and a
 generated `missingRequiredField` finds the path.
+Kotlin: the companion's generated `satisfied(anchor)` checks the lens, and a
+spread that bubbles reads null; LOG's event is
+`LogEvent.RequiredFieldMissing`; THROW makes the field's getter throw
+`RequiredFieldError`, since Kotlin has no throwing property; the root's
+failure is `Phase.Failed(RequiredFieldError)`, its path found by the
+companion's generated `missingRequiredField(anchor)`.
 
 **Catch.** *Concept: directive.* Relay: `@catch(to: RESULT | NULL)`, a field
 or aliased spread whose errors the view handles.
@@ -141,6 +158,10 @@ the optional type and reads errors as null. On an aliased spread the errors
 are those in the fragment's own selection, whatever the fragment's policy.
 See [the contract](../spec/runtime.md#6-the-lens-reads).
 Swift: RESULT's accessor is a `Result<T, FieldErrors>`.
+Kotlin: RESULT's accessor is a `kotlin.Result<T>` whose failure is a
+`FieldErrors`, since Kotlin's `Result` names no error type; a plural link
+reads a `Result` of its list and an aliased spread a `Result` of its lens;
+NULL keeps the nullable type.
 
 **Throw on field error.** *Concept: directive.* Relay: `@throwOnFieldError`
 on a fragment or operation, the policy under which `@semanticNonNull` fields
@@ -155,6 +176,10 @@ read non-optional under either, and inside `@catch`. See
 [its verdict](../spec/runtime.md#8-the-handle-policies-phase-fetch).
 Swift: the spread accessor is `get throws` and throws `FieldErrors`; the
 failed operation is `.failed(FieldErrors)`.
+Kotlin: the spread's getter reads through the fragment companion's generated
+`throwing(anchor)`, which throws `FieldErrors`, beside `caught(anchor)`, the
+same as a `Result`; the failed operation is `Phase.Failed(FieldErrors)`, and
+`Environment.fetch`, `commitPayload` and a mutation's action throw it.
 
 **Deferred fragment.** *Composition: document, directive.* GraphQL:
 `...F @defer(label:)`, a fragment the server may deliver in a later part.
@@ -168,6 +193,8 @@ empty, and the rest of the operation renders meanwhile. See
 [the contract](../spec/runtime.md#5-the-availability-check-and-hydration)
 and [its incremental parts](../spec/runtime.md#3-the-ingest-a-response-to-a-change-set).
 Swift: a generated `isPresent` says whether the fields are present.
+Kotlin: the companion's generated `isPresent(anchor)` says it, and the
+spread's getter is nullable, null until then.
 
 **Inline data fragment.** *Composition: document, directive.* Relay:
 `@inline`, a fragment whose data a function outside rendering reads as a
@@ -195,6 +222,11 @@ Swift: the value is a `Sendable`, `Hashable` struct, with a nested struct
 per link, an array per plural link, and an initializer that takes the
 fields; the main thread is the main actor; the caught spread reads a
 `Result`.
+Kotlin: the value is a `data class`, with a nested data class per link, a
+`List` per plural link and a primary constructor that takes the fields;
+generated code alone builds one from an anchor, on the store's thread; its
+companion has `throwing(anchor)` and `caught(anchor)` as a lens's does, and
+the caught spread reads a `Result`.
 
 **Variables.** *Concept: operation value.* GraphQL: an operation's
 parameters.
@@ -202,6 +234,9 @@ Here: the values an [operation value](#generated) holds. A nullable
 variable left unset is absent from the request, or sent as the default the
 operation declares for it, never as null.
 Swift: the stored properties of the operation value.
+Kotlin: the constructor's `val` properties of the operation value, a nullable
+one null by default; its `variables` is a `Variables` of `Variable` values,
+built with `Variables.of`, which leaves a null out.
 
 ## Generated
 
@@ -260,6 +295,10 @@ the types the document does not name. See
 [its ingest](../spec/runtime.md#3-the-ingest-a-response-to-a-change-set).
 Swift: the compiled sets are `Types.Named_possible`; the concrete type's
 lens is `asCharacter`, and the set condition's `asNamed`.
+Kotlin: the compiled sets are `Types.Named_possible`, a `Members` that
+registers its types when the shared file's `Types` is first used and answers
+`includes(type)`; the concrete type's lens is `asCharacter`, and the set
+condition's `asNamed`.
 
 **Owner.** *Composition: lens, operation value.* Relay: the fragment owner,
 the request whose variables a fragment reference is read with.
@@ -302,6 +341,12 @@ that says so, since the absence of an environment is not a session. See
 Swift: a `Hashable` struct; the handle exposes `phase`, `data`, `refetch`
 and `retry`; the value's `resolution`, generated code's, is a `Resolution`,
 unresolved, resolved to the handle, or not injected.
+Kotlin: an `@Immutable` class equal and hashed by its variables, a
+`QueryOperation`, `MutationOperation` or `SubscriptionOperation`, carrying no
+handle; `rememberQuery` resolves it to a `QueryState`, whose `handle` is null
+outside every environment and whose `phase`, `fetch`, `refetch()` and
+`retry()` read the handle's, and `Environment.handle(operation)` resolves it
+outside a composition.
 
 **Operation handle.** *Composition: store, operation value, environment,
 phase.* Relay: the query reference a loader hands out, and the request the
@@ -416,6 +461,8 @@ image keyed another way is a miss and not a merge. See
 [the contract](../spec/runtime.md#1-types-keys-and-records) and
 [the decision](decisions/identity-is-configured.md).
 Swift: the event is `ambiguousIdentity`.
+Kotlin: the event is `LogEvent.AmbiguousIdentity`, with the id and the types'
+names; a lens carries its record's key as `recordID`.
 
 **Storage key, slot.** *Composition: record, plan.* Relay: a field name plus
 its serialized arguments, the key under which a value is stored; an
@@ -441,6 +488,12 @@ report names a slot by its storage key. See
 [Slots are numbered by the process](decisions/slots-are-numbered-by-the-process.md)
 and [Keys a session produces belong to its store](decisions/session-keys-belong-to-the-store.md).
 Swift: the storage key of a slot is `Store.storageKey(of:)`.
+Kotlin: a slot is a `Slot`, a type and an index; the build's constants are
+`Slots.<Type>.<field>`, interned by `Registry.slot(type, storageKey)`, a key
+with variables a `DynamicKey`, and an abstract slot an `AbstractSlot` under
+`AbstractSlots`; the storage key of a build's slot is
+`Registry.storageKey(slot)`, and one the store numbered is named by the
+store's keys.
 
 **Invalidation channel.** *Concept: record.* Baton's word; Relay tells a
 fragment's subscribers when a record it read changes.
@@ -478,6 +531,10 @@ writes a record, edits follow entries, and the observed fields that changed
 are notified when the batch ends. See
 [the contract](../spec/runtime.md#4-the-commit).
 Swift: the commit runs on the main actor.
+Kotlin: the commit runs on the store's thread, through the environment's main
+dispatcher; the change set and the batch, with its kind, are the runtime's
+internal `ChangeSet` and `Store.Batch`, and the log tells a commit as
+`LogEvent.Committed`, with its kind and the slots it changed.
 
 **Payload.** *Composition: operation value, plan.* Relay's word, from
 `commitPayload`; GraphQL calls the whole a response. The response is the
@@ -491,6 +548,10 @@ and [the decision](decisions/a-payload-is-bytes-in-a-responses-shape.md).
 Swift: `Payload`, over `Data`, with `init(json:)`; `commitPayload` and
 `mutate(_:optimistic:)` take one, and a mutation's `OptimisticResponse`
 builder renders one as `payload`.
+Kotlin: `Payload`, over a `ByteArray`, with a constructor from a JSON
+`String`, equal by its bytes; `commitPayload` and `mutate(operation,
+optimistic)` take one, and a mutation's `OptimisticResponse` renders one as
+`payload`.
 
 **Commit payload.** *Composition: store, plan, operation value,
 environment.* Relay: `commitPayload`, writing a response for an operation
@@ -504,6 +565,9 @@ payload may carry part of what the operation selects, and it alone writes
 [the contract](../spec/runtime.md#3-the-ingest-a-response-to-a-change-set)
 and [the decision](decisions/client-data-is-described-and-committed.md).
 Swift: `Environment.commitPayload(operation, payload)`.
+Kotlin: `Environment.commitPayload(operation, payload)`, a `suspend` function
+run on the main dispatcher whatever thread calls it; under
+`@throwOnFieldError` it throws `FieldErrors`.
 
 **Root, retain, release buffer.** *Composition: store, operation value,
 environment.* Relay's words.
@@ -554,6 +618,10 @@ an expiration applies, in memory as from the image. See
 Swift: `Environment.invalidate()` and `Environment.revalidate()`; the
 stamping fetches include `Environment.fetch` and `commitPayload`; the
 handle reads the age as `fetchTime`.
+Kotlin: `Environment.invalidate()` and `Environment.revalidate()`; the
+stamping fetches include the suspending `Environment.fetch` and
+`commitPayload`; the handle reads the age as `fetchTime`, a `TimeMark?`, and
+staleness as `isStale`.
 
 **Persistence, image.** *Concept: store.* Baton's words; Relay's store lives
 in memory.
@@ -649,6 +717,8 @@ concrete type and conditional spreads. Relay's rule holds: a spread inside
 an inline fragment on an abstract selection carries `@alias`. See
 [the contract](../spec/runtime.md#3-the-ingest-a-response-to-a-change-set).
 Swift: the accessors are `as<Type>`.
+Kotlin: the accessors are `as<Type>`, each a nullable getter of a nested
+`As<Type>` lens class, null when the record is of another type.
 
 **Field error.** *Composition: record, plan.* GraphQL: an entry of a
 response's `errors` with a `path`.
@@ -665,6 +735,9 @@ message: see
 and [A failure says its kind](decisions/a-failure-says-its-kind.md).
 Swift: the stored error is `FieldError`; the fetch's failure is
 `GraphQLErrors`; the extensions are a `Variable`.
+Kotlin: the stored error is `FieldError`, a data class of `message`, `path`
+and `extensions`; the fetch's failure is `GraphQLErrors`; the extensions are a
+`Variable`; an uncaught one is logged as `LogEvent.FieldError`.
 
 **Heal.** *Composition: store, operation value, environment.* Baton's word
 for the response to missing data: record the event, mark the owning
@@ -679,6 +752,9 @@ non-null or a value of another kind, is logged as unexpected; it is not a
 miss, so nothing heals it. See
 [the contract](../spec/runtime.md#7-the-lifetime-roots-retention-ages-collection).
 Swift: the events are `missing` and `unexpected`.
+Kotlin: the events are `LogEvent.Missing` and `LogEvent.Unexpected`, each with
+the type and the field; an environment made with `debug = true` prints them
+until a log is set, since common Kotlin has no build configuration of its own.
 
 ## Compiler
 
@@ -791,6 +867,10 @@ an image written under another list starts again. See
 [the contract](../spec/runtime.md#9-the-image) and
 [the decision](decisions/what-may-reach-the-image.md).
 Swift: the shared file's lists are `Types.transient`.
+Kotlin: the shared file's lists are `Types.transient`, a `Transient` whose
+construction marks the registry, each type also interned with
+`Registry.type(name, transient = true)`; every plan names it, `Plan(root,
+transient = Types.transient)`.
 
 **Input object.** *Composition: schema, operation.* GraphQL: a type of
 named fields an argument or variable takes.
@@ -813,6 +893,13 @@ an initializer with a parameter per field; its `variable` is the object the
 request carries; it is `Hashable`. One named like a shared enum or a
 standard library type takes `Input` after its name, and a field named
 `variable` takes an underscore. The box is `Baton.Indirect`.
+Kotlin: a `data class` implementing `InputObject`, with a `val` per field,
+null by default where the schema allows it, equal by its fields; its
+`variable` is the object the request carries. One named like a runtime or
+standard library type takes `Input` after its name, and a field named
+`variable` or `copy`, `componentN`, or `Variable` or `Variables`, which the
+rendering spells, takes an underscore. There is no box: a class holds a
+reference to its own type.
 
 **Plan.** *Concept: plan.* Baton's word for the normalization artifact.
 Relay's normalization AST, renamed because it is data, not a tree the
@@ -837,7 +924,11 @@ GraphQL over HTTP working group's proposal. See
 [the contract](../spec/runtime.md#10-the-environment-and-the-wire) and
 [the decision](decisions/an-operation-is-sent-as-text-or-id.md).
 Swift: the build plugin is SwiftPM's; the operation's document is
-`document`. Kotlin: the build plugin is Gradle's, `com.shergin.baton`.
+`document`.
+Kotlin: the build plugin is Gradle's, `com.shergin.baton`, whose task's
+`persisted` property places the file through `--persisted`; the operation's
+document is the companion's `document`, a `Document.Id` or a `Document.Text`,
+and the standard `Encoding` writes an id as `documentId`.
 
 **Artifact.** *Composition: document, lens, plan.*
 Here: everything the compiler emits for one source file: lens types, plans,
@@ -859,7 +950,7 @@ and the shared file names it as `Types.format`, the runtime's marker object
 
 **Report.** *Composition: document, schema.* Baton's word.
 Here: what the compiler compiled for one target, written by
-`batonc generate --report` as JSON and, under the build plugin, into the
+`batonc generate --report` as JSON and, under SwiftPM's plugin, into the
 build's output directory as `Baton.report.json`: the schema's digest; every
 operation with its name, kind, source, id when persisted, variables as the
 schema types them, the fragments it reaches directly or through other
@@ -878,7 +969,10 @@ persisted documents file is a second view of the same facts, and a
 dependent target's compilation is what the fragment's definition is there
 for; see
 [the decision](decisions/the-report-is-what-a-dependent-target-reads.md).
-Swift: the build plugin is SwiftPM's. Kotlin: Gradle's, `com.shergin.baton`.
+Swift: the build plugin is SwiftPM's.
+Kotlin: the build plugin is Gradle's, `com.shergin.baton`, whose
+`generateBaton` task writes the report through `--report` to its `report`
+property, `build/baton/<task>/report.json` by default.
 
 ## Runtime
 
@@ -945,6 +1039,10 @@ and [the decision](decisions/the-environment-is-the-session.md).
 Swift: the end is `Environment.end()`; a handle still held reads
 `.failed(EnvironmentError.gone)`. A store dropped without an end clears its
 records when it is deallocated: the net, not the end.
+Kotlin: the end is `Environment.end()`, a `suspend` function, and `ended` says
+it happened; a handle still held reads `Phase.Failed(EnvironmentError.Gone)`.
+Kotlin has no deinit, so there is no net: a store dropped without an end is
+the garbage collector's, and only the end closes its image.
 
 **Transport.** *Concept: transport.*
 Here: what HTTP, multipart incremental delivery and the socket live behind,
@@ -1039,6 +1137,13 @@ tests and previews import and its shipping binary does not; see
 [the decision](decisions/one-runtime-module.md).
 Swift: `RecordedTransport`, `ScriptedTransport` and `SilentTransport`; the
 wait is `wait(until:)`; the product is `BatonTesting`.
+Kotlin: `RecordedTransport`, `ScriptedTransport` and `SilentTransport`, in the
+package `baton.testing`; a scripted transport's `hold` and `drive` name the
+operations it holds and drives, `held` lists what `respond` or `refuse`
+answers, `driven` what `send`, `complete` or `fail` delivers, and
+`requests(kind)` lists its requests by kind; the wait is the suspending
+`wait(until, timeout)`; the module is `baton-testing`, for the JVM and
+Android.
 
 **Subscription.** *Composition: store, operation value, transport.*
 GraphQL: an operation whose events arrive over time.
@@ -1099,6 +1204,10 @@ refuses ends instead of reconnecting. See
 [the contract](../spec/runtime.md#3-the-ingest-a-response-to-a-change-set)
 and [the decision](decisions/a-failure-says-its-kind.md).
 Swift: the failure is `GraphQLErrors`, whose `errors` keep each error.
+Kotlin: the failure is `GraphQLErrors`, whose `errors` keep each error as a
+`FieldError` and whose `messages` list their messages, carried as
+`Failure.Request`; `requestErrors(body)` is public, so a transport over
+another HTTP client reads a body as the built-in one does.
 
 **Ingest.** *Composition: store, plan.*
 Here: the stage off the main thread that decodes response bytes straight
@@ -1109,6 +1218,9 @@ that follow are assembled into change sets at the records their paths name
 by the environment's delivery. See
 [the contract](../spec/runtime.md#3-the-ingest-a-response-to-a-change-set).
 Swift: off the main thread is off the main actor.
+Kotlin: off the store's thread is the environment's `ingestDispatcher`,
+`Dispatchers.Default` unless given; a response the plan cannot read throws
+`IngestError`, carried as `Failure.Malformed`.
 
 **Preload.** *Composition: operation value, environment.* Relay: starting a
 request on user intent, before the destination renders.
@@ -1116,6 +1228,8 @@ Here: a preload of an operation value; the destination's handle dedupes
 against it. See
 [the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch).
 Swift: `preload(operationValue)`.
+Kotlin: `Environment.preload(operation, fetchPolicy)`, which returns the
+handle the destination's `rememberQuery` then shares.
 
 **Fetch.** *Composition: operation value, environment, transport.* Relay's
 word: `fetchQuery`, and the fetch policies that say when one is made.
@@ -1132,6 +1246,10 @@ present and a fetch in flight. See
 Swift: the value is `Fetch`, the instant a `ContinuousClock.Instant`; the
 operation value reads it as `fetch`, beside `phase`; refreshing is
 `isRefreshing`.
+Kotlin: the value is the sealed interface `Fetch`, `Idle`, `InFlight` or
+`Failed(failure, at)`, the instant a `TimeMark` of the monotonic clock; the
+handle and the `QueryState` read it as `fetch`, beside `phase`, as snapshot
+state; refreshing is `isRefreshing`.
 
 **Failure.** *Composition: transport, environment, phase.* A plain English
 word: GraphQL has *request error* and *field error* for the server's part
@@ -1150,6 +1268,11 @@ decision leaves open. See
 [the decision](decisions/a-failure-says-its-kind.md).
 Swift: `Failure`, whose `error` is the error as thrown; the phase's failed
 case and `refetch()` carry `any Error`.
+Kotlin: the sealed class `Failure`, `Transport`, `Request`, `Malformed` or
+`Environment`, whose `error` is the error as thrown and whose `of` classifies
+one; the phase's `Failed` holds a `Throwable`, `refetch()` throws it, a
+subscription's stream ends with `Stream.Ended(failure)`, and the log names the
+kind.
 
 **Fetch policy.** *Composition: store, operation value, environment.*
 Relay's four.
@@ -1206,6 +1329,8 @@ Here: the connection record's key, passed in the `connections` variable of
 the edge directives. See
 [the contract](../spec/runtime.md#4-the-commit).
 Swift: read as `connectionID`.
+Kotlin: read as `connectionID`, a `String`, passed as the action's
+`connections: List<String>`.
 
 **Pagination.** *Composition: directive, lens, connection.* Relay:
 `usePaginationFragment` over a `@refetchable` fragment whose connection
@@ -1217,6 +1342,9 @@ the pages; the loading flags are client fields on the connection record
 (`__isLoadingNext`, `__isLoadingPrevious`). See
 [the contract](../spec/runtime.md#6-the-lens-reads).
 Swift: `loadNext(_:)` and `loadPrevious(_:)`.
+Kotlin: `loadNext(count)` and `loadPrevious(count)`, `suspend` functions, the
+count defaulting to the argument's default; a lens made by hand throws
+`EnvironmentError.OutsideEnvironment`.
 
 **Edge directives.** *Concept: directive.* Relay's declarative mutation
 directives: `@appendEdge`, `@prependEdge`, `@appendNode`, `@prependNode`
@@ -1231,6 +1359,9 @@ the connection's type, so it looks no key up by name; a record no
 connection field made, or an edge of another type than the connection's, is
 left alone. See [the contract](../spec/runtime.md#4-the-commit).
 Swift: the plan's edit is `Edit`, the change set's `ChangeSet.Edit`.
+Kotlin: the plan's edit is `Edit`, with an `Edit.Kind` per directive and its
+connections an `Edit.Connections`; the change set's is the runtime's internal
+`ChangeSet.Edit`.
 
 **Page.** *Composition: lens, operation value.*
 Here: a list fetched by page number or offset, as the sample API does. Not a

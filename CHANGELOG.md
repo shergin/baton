@@ -74,6 +74,15 @@ are expected and listed without apology.
   `FateDocuments.kt`, the twin of `FateDocuments.swift`. Each harness runs
   in a JVM of its own, since the registry numbers types by name per process
   and Relay's test schema and fate's both declare a `User`. CI runs both.
+- `docs/terminology.md` has its Kotlin part on every entry that has a
+  Swift one, as its preamble promised: the thirty-four that lacked one,
+  from Spread and Required to Pagination and the edge directives, say how
+  the Kotlin runtime and its generated Kotlin spell the concept and what
+  differs from Swift, a getter that throws, a `Result` for `@catch`, a
+  `Hold`, a `Flow`, a `suspend` function. `docs/recipes/testing.md` has
+  its Kotlin half: the test dispatcher an environment takes outside a
+  composition, and each of the Swift snippets beside its Kotlin twin over
+  `baton-testing`.
 - `docs/comparison.md` is current at 0.14: the at-a-glance table carries
   the Kotlin runtime's numbers on the Pixel 9 beside the Swift runtime's on
   the Mac, the Apollo Kotlin head-to-head is a table of its own, the cons
