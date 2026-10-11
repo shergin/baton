@@ -68,7 +68,7 @@ const ENTRIES: &[Entry] = &[
         config: Some("kotlin/samples/shared"),
         hosts: "src/commonMain/kotlin/baton/sample",
         language: Language::Kotlin,
-        story: "The same screens as Compose Multiplatform, shared by a Compose for Desktop app (`kotlin/samples/desktop`, with an inspector pane over the store) and an Android app (`kotlin/samples/android`, which tells the environment the process's lifecycle). The Android app has an Apollo Kotlin twin, `kotlin/samples/apollo-android`, for the end-to-end comparison in the benchmarks.",
+        story: "The same screens as Compose Multiplatform, shared by a Compose for Desktop app (`kotlin/samples/desktop`, with an inspector pane over the store) and an Android app (`kotlin/samples/android`, which tells the environment the process's lifecycle). The Android app has an Apollo Kotlin twin, `kotlin/samples/apollo-android`, the same two screens over Apollo Kotlin, for a head-to-head over the same launch.",
         run: "gradle :samples:desktop:run",
     },
     Entry {

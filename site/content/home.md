@@ -42,7 +42,7 @@ The store below holds records the runtime wrote from a recorded response to the 
 
 <h3>Every claim can be checked</h3>
 
-<p>Reading a field through a lens equals reading the raw response at the same path, and fixtures under <code>spec/</code> prove it for both runtimes. Every number comes from a bench recorded with device, OS and date. A view that re-rendered did so because a field it read changed, and a test can count it.</p>
+<p>Reading a field through a lens equals reading the raw response at the same path, and fixtures under <code>spec/</code> prove it for both runtimes. A claim of speed has a bench behind it in the repository. A view that re-rendered did so because a field it read changed, and a test can count it.</p>
 
 </div>
 
@@ -182,7 +182,7 @@ The vocabulary is closed and short. A feature is a composition of these, or a Re
 <li><a href="vision/">Vision</a><span>Three commitments and five rules.</span></li>
 <li><a href="principles/fragment-is-a-lens/">The principles</a><span>Eight constraints, each with the failure it avoids.</span></li>
 <li><a href="decisions/">Decisions</a><span>Every choice, with its evidence and what would reopen it.</span></li>
-<li><a href="comparison/">Compared with the other clients</a><span>Apollo iOS, Apollo Kotlin, the smaller Swift clients, Relay.</span></li>
+<li><a href="#faster-by-skipping-steps">Faster, by skipping steps</a><span>What Apollo does on every response and every read that Baton does not.</span></li>
 </ul>
 </section>
 
@@ -191,25 +191,24 @@ The vocabulary is closed and short. A feature is a composition of these, or a Re
 <ul>
 <li><a href="terminology/">Terminology</a><span>The vocabulary contract.</span></li>
 <li><a href="contract/">The runtime contract</a><span>What a runtime does, one paragraph a rule.</span></li>
-<li><a href="benchmarks/">Benchmarks</a><span>Every number, with its machine and date.</span></li>
+<li><a href="spec/">The specification</a><span>The fixtures both runtimes are held to.</span></li>
 <li><a href="changelog/">Changelog</a><span>Every release, named for a bread.</span></li>
 </ul>
 </section>
 
 </div>
 
-## By the numbers
+## Faster, by skipping steps
 
-Two head-to-heads against the maintained native clients, on the same data: a page of 686 KB and 899 records. Every number is in [the benchmarks](benchmarks/) with the device, the OS and the date; these are from the README.
+Baton is faster than Apollo iOS and Apollo Kotlin on the same data, and the reason is not a cleverer store: the store writes at about the same speed. The reason is three steps Apollo takes on every response or every read that Baton does not take at all.
 
 <div class="numbers">
-<div><span class="big">94×</span><p>faster than Apollo iOS 2.4 from bytes to the store on an M1 Pro: 3.4 ms against 318 ms.</p></div>
-<div><span class="big">8.4×</span><p>faster than Apollo Kotlin 5.2 on a Pixel 9: 5.3 ms against 44.7 ms, in under a 120 Hz frame.</p></div>
-<div><span class="big">0.75 ms</span><p>for a screen whose data is already in the store to know it, where Apollo Kotlin rebuilds the query in 25 ms.</p></div>
-<div><span class="big">0</span><p>views re-rendered by a refetch that changed nothing. The store compares before it notifies.</p></div>
+<div><span class="big word">No model tree</span><p>Apollo builds a model of the operation from the response's bytes, and builds it again from the store on every read. Baton decodes the bytes straight into record slots by the plan the compiler emitted, and a view reads a slot.</p></div>
+<div><span class="big word">No re-execution</span><p>When any field a query read changes, Apollo re-executes the whole query and rebuilds the tree. Baton notifies the slot that changed, and only the bodies that read it run.</p></div>
+<div><span class="big word">No waiting</span><p>Apollo's store reads are asynchronous, so a warm cache still shows a loading frame. Baton's reads are synchronous on the main actor, so the first body has the data, and after a launch the image on disk has it too.</p></div>
 </div>
 
-{{chart read-path | The ingest and the commit of the fixture at each release, best of each, drawn by the benchmark package from its own tables.}}
+Each is work a view never asked for. How much of a frame it costs depends on the device and the data, so the head-to-heads stay in the repository, in [`BENCHMARKS.md`](https://github.com/shergin/baton/blob/master/BENCHMARKS.md), each with its revision, machine, OS and date, and [`docs/comparison.md`](https://github.com/shergin/baton/blob/master/docs/comparison.md) is the longer argument, with the places Apollo is ahead.
 
 ## The name
 

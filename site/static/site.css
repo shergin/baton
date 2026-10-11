@@ -1,82 +1,83 @@
-/* Baton, the site. Warm paper, dark ink, a crust of orange, and the two
-   platform colours on the tabs. */
+/* Baton, the site. Near-white paper, graphite ink, one blue accent, the
+   two platform colours on the tabs, and the Plex family throughout. */
 
 :root {
-  --paper: #f6f1e7;
-  --paper-2: #ede6d8;
-  --paper-3: #e1d8c6;
-  --ink: #221b14;
-  --ink-2: #5b5047;
-  --ink-3: #8b8073;
-  --rule: rgba(34, 27, 20, 0.14);
-  --rule-strong: rgba(34, 27, 20, 0.5);
-  --accent: #b5521a;
+  --paper: #fafafa;
+  --paper-2: #f1f2f3;
+  --paper-3: #e3e5e8;
+  --ink: #15181c;
+  --ink-2: #4b5159;
+  --ink-3: #7a808a;
+  --rule: rgba(21, 24, 28, 0.12);
+  --rule-strong: rgba(21, 24, 28, 0.45);
+  --accent: #2563eb;
   --accent-ink: #fff;
-  --wheat: #d9a441;
-  --wheat-soft: rgba(217, 164, 65, 0.22);
-  --link: #8d3f11;
+  --wheat: #f0b429;
+  --wheat-soft: rgba(240, 180, 41, 0.22);
+  --link: #1d4ed8;
   --swift: #e4502e;
   --kotlin: #6f4ff2;
-  --term: #1b1612;
-  --term-2: #26201a;
-  --term-ink: #ebe3d6;
-  --term-ink-2: #a9a093;
-  --term-rule: rgba(235, 227, 214, 0.14);
-  --code-bg: rgba(34, 27, 20, 0.06);
-  --focus: #b5521a;
-  --flash: rgba(217, 164, 65, 0.55);
-  --display: "Fraunces", "Iowan Old Style", Palatino, Georgia, serif;
-  --serif: "Source Serif 4", "Iowan Old Style", Palatino, Georgia, serif;
+  --term: #14171c;
+  --term-2: #1c2026;
+  --term-ink: #e6e9ee;
+  --term-ink-2: #9aa2ad;
+  --term-rule: rgba(230, 233, 238, 0.14);
+  --code-bg: rgba(21, 24, 28, 0.055);
+  --focus: #2563eb;
+  --flash: rgba(240, 180, 41, 0.55);
+  --display: "IBM Plex Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --serif: "IBM Plex Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --top: 3.4rem;
+  --radius: 6px;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #171310;
-    --paper-2: #1f1a15;
-    --paper-3: #2b241d;
-    --ink: #eee6d8;
-    --ink-2: #b3a797;
-    --ink-3: #85796b;
-    --rule: rgba(238, 230, 216, 0.14);
-    --rule-strong: rgba(238, 230, 216, 0.55);
-    --accent: #ef8a4a;
-    --accent-ink: #1b1612;
-    --wheat: #e2b55c;
-    --wheat-soft: rgba(226, 181, 92, 0.2);
-    --link: #f0a870;
+    --paper: #0f1216;
+    --paper-2: #161a20;
+    --paper-3: #222730;
+    --ink: #e6e9ee;
+    --ink-2: #aab1bb;
+    --ink-3: #7c848f;
+    --rule: rgba(230, 233, 238, 0.14);
+    --rule-strong: rgba(230, 233, 238, 0.5);
+    --accent: #60a5fa;
+    --accent-ink: #0f1216;
+    --wheat: #f5c451;
+    --wheat-soft: rgba(245, 196, 81, 0.2);
+    --link: #8ab4ff;
     --swift: #ff7a5c;
     --kotlin: #a98cff;
-    --term: #0f0c0a;
-    --term-2: #19140f;
+    --term: #090b0e;
+    --term-2: #12151a;
     --code-bg: rgba(255, 255, 255, 0.06);
-    --flash: rgba(226, 181, 92, 0.5);
+    --flash: rgba(245, 196, 81, 0.5);
     color-scheme: dark;
   }
 }
 
 :root[data-theme="dark"] {
-  --paper: #171310;
-  --paper-2: #1f1a15;
-  --paper-3: #2b241d;
-  --ink: #eee6d8;
-  --ink-2: #b3a797;
-  --ink-3: #85796b;
-  --rule: rgba(238, 230, 216, 0.14);
-  --rule-strong: rgba(238, 230, 216, 0.55);
-  --accent: #ef8a4a;
-  --accent-ink: #1b1612;
-  --wheat: #e2b55c;
-  --wheat-soft: rgba(226, 181, 92, 0.2);
-  --link: #f0a870;
+  --paper: #0f1216;
+  --paper-2: #161a20;
+  --paper-3: #222730;
+  --ink: #e6e9ee;
+  --ink-2: #aab1bb;
+  --ink-3: #7c848f;
+  --rule: rgba(230, 233, 238, 0.14);
+  --rule-strong: rgba(230, 233, 238, 0.5);
+  --accent: #60a5fa;
+  --accent-ink: #0f1216;
+  --wheat: #f5c451;
+  --wheat-soft: rgba(245, 196, 81, 0.2);
+  --link: #8ab4ff;
   --swift: #ff7a5c;
   --kotlin: #a98cff;
-  --term: #0f0c0a;
-  --term-2: #19140f;
+  --term: #090b0e;
+  --term-2: #12151a;
   --code-bg: rgba(255, 255, 255, 0.06);
-  --flash: rgba(226, 181, 92, 0.5);
+  --flash: rgba(245, 196, 81, 0.5);
   color-scheme: dark;
 }
 
@@ -93,8 +94,7 @@ html {
 body {
   margin: 0;
   font-family: var(--serif);
-  font-optical-sizing: auto;
-  font-size: 1.06rem;
+  font-size: 1rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
@@ -176,10 +176,9 @@ pre code {
   align-items: center;
   gap: 0.45rem;
   font-family: var(--display);
-  font-style: italic;
   font-weight: 600;
-  font-size: 1.35rem;
-  letter-spacing: -0.01em;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
   color: var(--ink);
   text-decoration: none;
   flex: 0 0 auto;
@@ -222,6 +221,7 @@ pre code {
   padding: 0.28rem 0.8rem;
   color: var(--ink);
   cursor: pointer;
+  border-radius: var(--radius);
 }
 
 .search {
@@ -237,7 +237,7 @@ pre code {
   font-size: 0.78rem;
   padding: 0.38rem 0.75rem;
   border: 1px solid var(--rule);
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: var(--paper-2);
   color: var(--ink);
 }
@@ -255,7 +255,7 @@ pre code {
   overflow: auto;
   background: var(--paper);
   border: 1px solid var(--rule-strong);
-  border-radius: 8px;
+  border-radius: var(--radius);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
   padding: 0.3rem;
 }
@@ -290,7 +290,6 @@ pre code {
 .results .empty {
   margin: 0;
   padding: 0.5rem 0.6rem;
-  font-style: italic;
   color: var(--ink-2);
 }
 
@@ -440,38 +439,37 @@ article {
 h1 {
   margin: 0 0 0.7rem;
   font-family: var(--display);
-  font-size: clamp(2.1rem, 4.2vw, 2.9rem);
+  font-size: clamp(2rem, 4vw, 2.7rem);
   font-weight: 600;
-  font-style: italic;
-  line-height: 1.08;
-  letter-spacing: -0.02em;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
 }
 
 .standfirst {
   margin: 0;
-  font-size: 1.18rem;
-  line-height: 1.45;
+  font-size: 1.12rem;
+  line-height: 1.5;
   color: var(--ink-2);
-  max-width: 36em;
+  max-width: 38em;
 }
 
 h2 {
   margin: 2.6rem 0 0.8rem;
   font-family: var(--display);
-  font-size: 1.68rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  font-style: italic;
-  line-height: 1.15;
-  letter-spacing: -0.012em;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
   position: relative;
 }
 
 h3 {
   margin: 2rem 0 0.6rem;
   font-family: var(--display);
-  font-size: 1.22rem;
+  font-size: 1.12rem;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
 }
 
 h4 {
@@ -527,12 +525,6 @@ blockquote {
   padding: 0.2rem 0 0.2rem 1.1rem;
   border-left: 3px solid var(--accent);
   color: var(--ink-2);
-  font-style: italic;
-}
-
-blockquote em,
-blockquote code {
-  font-style: normal;
 }
 
 hr {
@@ -590,7 +582,6 @@ p.entry:target {
 }
 
 .section-intro {
-  font-style: italic;
   color: var(--ink-2);
 }
 
@@ -619,7 +610,7 @@ ul.index li span {
   position: relative;
   margin: 1.1rem 0 1.4rem;
   background: var(--code-bg);
-  border-radius: 8px;
+  border-radius: var(--radius);
 }
 
 .code pre {
@@ -676,24 +667,24 @@ ul.index li span {
   opacity: 0;
 }
 
-.code .k { color: #8a1f5c; }
-.code .s { color: #1e5f37; }
-.code .c { color: var(--ink-3); font-style: italic; }
-.code .n { color: #8a4b00; }
-.code .t { color: #1f3f8a; }
-.code .m { color: #b5521a; font-weight: 500; }
-.code .a { color: #5c5f2a; }
-.code .l { color: #8a4b00; }
+.code .k { color: #9f1f66; }
+.code .s { color: #1a6a3c; }
+.code .c { color: var(--ink-3); }
+.code .n { color: #a0520a; }
+.code .t { color: #1f4fb5; }
+.code .m { color: #c2410c; font-weight: 500; }
+.code .a { color: #5f6a2a; }
+.code .l { color: #a0520a; }
 .code .f { color: var(--ink); }
 .code .p { color: var(--accent); }
-.code .v { color: #7a2f00; }
-.code .d { color: #8a1f5c; }
-.code .r { color: #1f3f8a; }
+.code .v { color: #8a3a0f; }
+.code .d { color: #9f1f66; }
+.code .r { color: #1f4fb5; }
 .code .gql { color: var(--ink); }
-.code .gql .f { color: #1a3e6b; }
-.code .gql .t { color: #8a4b00; }
-.code .gql .k { color: #8a1f5c; }
-.code .gql .s { color: #1e5f37; }
+.code .gql .f { color: #1d4ed8; }
+.code .gql .t { color: #a0520a; }
+.code .gql .k { color: #9f1f66; }
+.code .gql .s { color: #1a6a3c; }
 
 :root[data-theme="dark"] .code .k,
 :root[data-theme="dark"] .code .d { color: #e59fc9; }
@@ -804,24 +795,19 @@ pre.term {
   overflow-x: auto;
   background: var(--term);
   color: var(--term-ink);
-  border-radius: 8px;
+  border-radius: var(--radius);
   font-size: 0.78rem;
   line-height: 1.4;
   white-space: pre;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
 }
 
 figcaption {
   margin: 0.65rem 0 0;
-  font-size: 0.92rem;
-  font-style: italic;
-  line-height: 1.45;
+  font-size: 0.9rem;
+  line-height: 1.5;
   color: var(--ink-2);
   max-width: 48em;
-}
-
-figcaption code {
-  font-style: normal;
 }
 
 .plate-number {
@@ -881,7 +867,7 @@ dl.operation {
   gap: 0.35rem 1rem;
   padding: 0.9rem 1rem;
   background: var(--paper-2);
-  border-radius: 8px;
+  border-radius: var(--radius);
   font-size: 0.92rem;
 }
 
@@ -981,8 +967,8 @@ pre.term.diagnostic .ok {
 .record {
   background: var(--term);
   color: var(--term-ink);
-  border-radius: 8px;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+  border-radius: var(--radius);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
   font-family: var(--mono);
   font-size: 0.72rem;
   overflow: hidden;
@@ -1007,7 +993,7 @@ pre.term.diagnostic .ok {
 }
 
 .record-key .key {
-  color: #9fd1ff;
+  color: #93c5fd;
   font-weight: 500;
   overflow-wrap: anywhere;
 }
@@ -1048,14 +1034,13 @@ pre.term.diagnostic .ok {
 }
 
 .record tr.client th {
-  color: #8a7f73;
-  font-style: italic;
+  color: #7c848f;
 }
 
 .record .string { color: #9ed6ae; }
 .record .number { color: #f0c27a; }
 .record .bool { color: #e59fc9; }
-.record .null { color: #a9a093; font-style: italic; }
+.record .null { color: #9aa2ad; }
 .record .scalar { color: var(--term-ink); }
 
 .record .ref {
@@ -1090,7 +1075,6 @@ pre.term.diagnostic .ok {
 
 .empty {
   color: var(--ink-3);
-  font-style: italic;
 }
 
 /* The normalize plate: a response beside its records */
@@ -1115,7 +1099,6 @@ pre.term.diagnostic .ok {
 
 .side-title .hint {
   color: var(--ink-3);
-  font-style: italic;
 }
 
 pre.term.response {
@@ -1169,7 +1152,6 @@ pre.term.response .jv.is-hover {
 }
 
 .notified .nothing {
-  font-style: italic;
   color: var(--ink-2);
 }
 
@@ -1178,7 +1160,7 @@ pre.term.response .jv.is-hover {
   font-family: var(--mono);
   font-size: 0.72rem;
   padding: 0.1rem 0.5rem;
-  border-radius: 999px;
+  border-radius: 4px;
   background: var(--wheat-soft);
   color: var(--ink);
   margin: 0.1rem 0.15rem 0.1rem 0;
@@ -1194,7 +1176,6 @@ table.reads {
 }
 
 table.reads .note {
-  font-style: italic;
   color: var(--ink-3);
 }
 
@@ -1354,7 +1335,7 @@ table.reads .note {
   align-items: baseline;
   gap: 0.5rem 1.4rem;
   padding: 0.8rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--paper-2);
 }
 
@@ -1391,7 +1372,7 @@ table.reads .note {
   font-size: 0.7rem;
   padding: 0.25rem 0.65rem;
   border: 1px solid var(--rule-strong);
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: transparent;
   color: var(--ink);
   cursor: pointer;
@@ -1411,7 +1392,7 @@ picture.chart img {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 8px;
+  border-radius: var(--radius);
 }
 
 /* The shelf of releases */
@@ -1432,7 +1413,7 @@ ol.shelf li {
   gap: 0 0.5rem;
   padding: 0.5rem 0.7rem;
   border: 1px solid var(--rule);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--paper-2);
   margin: 0;
 }
@@ -1458,7 +1439,6 @@ ol.shelf .loaf {
 ol.shelf .bread {
   grid-area: bread;
   font-family: var(--display);
-  font-style: italic;
   font-weight: 600;
 }
 
@@ -1511,7 +1491,6 @@ table.found .kind {
 
 .status {
   color: var(--ink-2);
-  font-style: italic;
 }
 
 .status.error {
@@ -1545,8 +1524,8 @@ body.home main {
 }
 
 .hero h1 {
-  font-size: clamp(2.6rem, 5vw, 3.9rem);
-  max-width: 13ch;
+  font-size: clamp(2.4rem, 4.6vw, 3.5rem);
+  max-width: 14ch;
   margin-bottom: 1.1rem;
 }
 
@@ -1559,8 +1538,8 @@ body.home main {
 }
 
 .hero .lede {
-  font-size: 1.2rem;
-  line-height: 1.5;
+  font-size: 1.12rem;
+  line-height: 1.55;
   max-width: 30em;
   color: var(--ink-2);
   margin-bottom: 1.4rem;
@@ -1583,8 +1562,8 @@ body.home main {
   text-decoration: none;
   color: var(--ink);
   border: 1px solid var(--ink);
-  border-radius: 999px;
-  padding: 0.45rem 1rem;
+  border-radius: var(--radius);
+  padding: 0.45rem 0.9rem;
   margin: 0.4rem 0.6rem 0 0;
 }
 
@@ -1626,14 +1605,13 @@ body.home main {
   gap: 1.6rem 2.4rem;
   margin: 1rem 0 3rem;
   padding: 2rem 0;
-  border-top: 2px solid var(--ink);
+  border-top: 2px solid var(--accent);
   border-bottom: 1px solid var(--rule);
 }
 
 .manifesto h3 {
   margin: 0 0 0.4rem;
-  font-style: italic;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
 }
 
 .manifesto p {
@@ -1664,7 +1642,6 @@ body.home main {
 
 .tile h3 {
   margin: 0.2rem 0 0.35rem;
-  font-style: italic;
 }
 
 .tile p {
@@ -1686,7 +1663,7 @@ body.home main {
   margin: 0;
   padding: 0.8rem 0.9rem;
   border: 1px solid var(--rule);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--paper-2);
   font-size: 0.92rem;
   color: var(--ink-2);
@@ -1695,9 +1672,8 @@ body.home main {
 .words li a {
   display: block;
   font-family: var(--display);
-  font-style: italic;
   font-weight: 600;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   color: var(--ink);
   text-decoration: none;
   margin-bottom: 0.2rem;
@@ -1763,15 +1739,14 @@ body.home main {
 
 .numbers div {
   padding: 1rem 1.1rem;
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--paper-2);
 }
 
 .numbers .big {
   display: block;
   font-family: var(--display);
-  font-style: italic;
-  font-size: 2.4rem;
+  font-size: 2.2rem;
   font-weight: 600;
   line-height: 1;
   color: var(--accent);
@@ -1816,7 +1791,7 @@ body.home main {
   margin: 1.6rem 0;
   padding: 1rem 1.2rem;
   border: 1px solid var(--rule-strong);
-  border-radius: 8px;
+  border-radius: var(--radius);
 }
 
 .rule p:last-child {
@@ -1830,7 +1805,7 @@ body.home main {
 .aside {
   margin: 1.4rem 0;
   padding: 0.9rem 1.1rem;
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--wheat-soft);
   font-size: 0.97rem;
 }
@@ -1911,7 +1886,7 @@ body.home main {
   line-height: 1.5;
   padding: 0.7rem 0.8rem;
   border: 1px solid var(--rule-strong);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--paper-2);
   color: var(--ink);
   tab-size: 2;
@@ -2074,4 +2049,9 @@ body.home main {
     white-space: pre-wrap;
     word-break: break-all;
   }
+}
+
+.numbers .big.word {
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
 }

@@ -15,7 +15,6 @@ use serde_json::Value;
 use crate::compiler::{Compiled, Compiler, Language, read};
 use crate::escape::{escape, inline_markdown};
 use crate::highlight::{graphql, highlight, label};
-use crate::markdown::Context;
 use crate::store::{self, Dump, RecordsOptions};
 
 /// Every figure, compiled on first use.
@@ -110,7 +109,6 @@ impl Registry {
         kind: &str,
         arguments: &[&str],
         caption: Option<&str>,
-        context: &Context,
         plates: &Cell<usize>,
         scripts: &mut Vec<String>,
     ) -> Result<String, String> {
@@ -356,31 +354,6 @@ impl Registry {
                 scripts.push("stage.js".to_string());
                 let inner = crate::stage::html(compiled, operation, &self.root.join(dump), rows)?;
                 Ok(plate(next(), &inner, caption, "stage-plate"))
-            }
-            // A benchmark chart drawn by the benchmark package.
-            "chart" => {
-                let name = first()?;
-                let dark = format!("benchmarks/charts/{name}.svg");
-                let light = format!("benchmarks/charts/{name}-light.svg");
-                for path in [&dark, &light] {
-                    if !self.root.join(path).exists() {
-                        return Err(format!("no chart at {path}"));
-                    }
-                }
-                let to = context.site.out.join("assets/charts");
-                std::fs::create_dir_all(&to).expect("charts directory");
-                for (path, file) in [
-                    (&dark, format!("{name}.svg")),
-                    (&light, format!("{name}-light.svg")),
-                ] {
-                    std::fs::copy(self.root.join(path), to.join(file)).expect("copy a chart");
-                }
-                let href = context.href(&format!("/assets/charts/{name}"));
-                let inner = format!(
-                    "<picture class=\"chart\"><source media=\"(prefers-color-scheme: dark)\" srcset=\"{href}.svg\"><img alt=\"{}\" src=\"{href}-light.svg\"></picture>",
-                    escape(caption)
-                );
-                Ok(plate(next(), &inner, caption, "chart-plate"))
             }
             // The releases, named for bread, from the changelog.
             "releases" => Ok(plate(

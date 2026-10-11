@@ -377,11 +377,15 @@ pub fn sections(root: &Path) -> Vec<Section> {
                     "The layout of the Kotlin tree, its dependencies, and how it is built and published.",
                     "kotlin/README.md",
                 ),
-                repo(
+                repo_with(
                     "/changelog/",
                     "Changelog",
                     "Every release, named for a bread, written for a person.",
                     "CHANGELOG.md",
+                    &[(
+                        "# Changelog",
+                        "{{releases | The releases so far, each named for a bread, as the release workflow reads them from the headings below.}}",
+                    )],
                 ),
             ],
         },
@@ -496,18 +500,6 @@ fn why(root: &Path) -> Vec<Page> {
         page.listed = false;
         pages.push(page);
     }
-    pages.push(repo(
-        "/comparison/",
-        "Compared with the other clients",
-        "Apollo iOS, Apollo Kotlin, the smaller Swift clients and Relay itself: the approaches, the numbers, and where each is ahead.",
-        "docs/comparison.md",
-    ));
-    pages.push(repo(
-        "/benchmarks/",
-        "Benchmarks",
-        "Every number the docs quote, with the revision, the machine, the OS and the date, appended and never edited.",
-        "BENCHMARKS.md",
-    ));
     pages
 }
 

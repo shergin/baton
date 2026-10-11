@@ -44,7 +44,7 @@ A record lives while a root reaches it. A root is an operation's selection and t
 
 {{script lifetime steps=3,4,5,9 | The specification's lifetime script, with a release buffer of one. Three handles hold five records; releasing one changes nothing while the buffer holds its root; releasing a second pushes the first out and its character goes; releasing the last leaves the records a mutation's payload still reaches.}}
 
-The consequence for a scrolling list: memory plateaus. Forty-two pages of the benchmark fixture stay near five megabytes, since the store releases what no view holds.
+The consequence for a scrolling list: memory plateaus, since the store releases what no view holds, and a page scrolled far out of view is a page that can go.
 
 ## Ages and staleness
 

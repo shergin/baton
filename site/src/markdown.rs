@@ -489,7 +489,7 @@ fn expand_directives(
             let arguments: Vec<&str> = words.collect();
             let mut html = context
                 .figures
-                .directive(kind, &arguments, caption, context, plates, scripts)
+                .directive(kind, &arguments, caption, plates, scripts)
                 .unwrap_or_else(|error| panic!("{}: {{{{{inner}}}}}: {error}", context.page.url));
             // A blank line would end the markdown HTML block and hand the
             // rest of the plate to the paragraph parser; an empty comment
