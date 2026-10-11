@@ -358,13 +358,6 @@ impl Registry {
                 let inner = crate::stage::html(compiled, operation, &self.root.join(dump), rows)?;
                 Ok(plate(next(), &inner, caption, "stage-plate"))
             }
-            // The releases, named for bread, from the changelog.
-            "releases" => Ok(plate(
-                next(),
-                &releases_html(&self.root),
-                caption,
-                "releases-plate",
-            )),
             // The playground, driven by the wasm build.
             "playground" => {
                 scripts.push("playground.js".to_string());
@@ -702,32 +695,6 @@ fn case_html(case: &Value) -> String {
             escape(&override_["value"].to_string())
         ));
     }
-    out
-}
-
-/// The releases, each a bread, from the changelog's headings.
-fn releases_html(root: &Path) -> String {
-    let changelog = read(&root.join("CHANGELOG.md"));
-    let mut out = String::from("<ol class=\"shelf\">");
-    for line in changelog.lines() {
-        let Some(heading) = line.strip_prefix("## ") else {
-            continue;
-        };
-        let Some((version, rest)) = heading.split_once(" (") else {
-            continue;
-        };
-        let Some((name, date)) = rest.split_once(")") else {
-            continue;
-        };
-        let date = date.trim_start_matches([' ', '—', '-']).trim();
-        out.push_str(&format!(
-            "<li><span class=\"loaf\" aria-hidden=\"true\"></span><span class=\"bread\">{}</span><span class=\"version\">{}</span><span class=\"date\">{}</span></li>",
-            escape(name),
-            escape(version),
-            escape(date)
-        ));
-    }
-    out.push_str("</ol>");
     out
 }
 

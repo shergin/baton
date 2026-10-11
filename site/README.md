@@ -43,7 +43,6 @@ A `{{directive}}` on a line of its own in any page becomes a plate:
 | `{{case <name>}}` | a manifest case's reads |
 | `{{script <name> [steps=1,2]}}` | a script from `spec/scripts/`, step by step |
 | `{{stage <figure> <Operation> <dump> [rows=n]}}` | a screen over real records; click a field |
-| `{{releases}}` | the releases, from the changelog |
 | `{{playground}}` | the playground, driven by the wasm build |
 
 A caption follows a `|`. Consecutive fences tagged `tab`, a Swift one and a

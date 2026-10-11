@@ -224,4 +224,3 @@ Each is work a view never asked for. How much of a frame it costs depends on the
 
 </section>
 
-{{releases | The releases so far. A release is cut whenever the unreleased section holds something an adopter can use.}}

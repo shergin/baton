@@ -1395,67 +1395,6 @@ picture.chart img {
   border-radius: var(--radius);
 }
 
-/* The shelf of releases */
-
-ol.shelf {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
-  gap: 0.5rem;
-}
-
-ol.shelf li {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-areas: "loaf bread" "loaf version" "loaf date";
-  gap: 0 0.5rem;
-  padding: 0.5rem 0.7rem;
-  border: 1px solid var(--rule);
-  border-radius: var(--radius);
-  background: var(--paper-2);
-  margin: 0;
-}
-
-ol.shelf .loaf {
-  grid-area: loaf;
-  width: 1.6rem;
-  height: 1.6rem;
-  align-self: center;
-  background: url("baton.png") center / contain no-repeat;
-}
-
-:root[data-theme="dark"] ol.shelf .loaf {
-  filter: brightness(0) invert(0.9);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) ol.shelf .loaf {
-    filter: brightness(0) invert(0.9);
-  }
-}
-
-ol.shelf .bread {
-  grid-area: bread;
-  font-family: var(--display);
-  font-weight: 600;
-}
-
-ol.shelf .version {
-  grid-area: version;
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  color: var(--ink-2);
-}
-
-ol.shelf .date {
-  grid-area: date;
-  font-family: var(--mono);
-  font-size: 0.66rem;
-  color: var(--ink-3);
-}
-
 /* Gallery */
 
 .gallery-index ol {

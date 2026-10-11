@@ -377,15 +377,11 @@ pub fn sections(root: &Path) -> Vec<Section> {
                     "The layout of the Kotlin tree, its dependencies, and how it is built and published.",
                     "kotlin/README.md",
                 ),
-                repo_with(
+                repo(
                     "/changelog/",
                     "Changelog",
                     "Every release, named for a bread, written for a person.",
                     "CHANGELOG.md",
-                    &[(
-                        "# Changelog",
-                        "{{releases | The releases so far, each named for a bread, as the release workflow reads them from the headings below.}}",
-                    )],
                 ),
             ],
         },
