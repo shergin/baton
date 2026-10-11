@@ -153,7 +153,26 @@ fn render_markdown(source: &str, context: &Context) -> Body {
                     dropped_title = true;
                     continue;
                 }
-                let id = slug(&label, &mut used);
+                // `## Title {#id}` names its own anchor, as the gallery does.
+                let (label, id) = match label.rsplit_once(" {#") {
+                    Some((text, rest)) if rest.ends_with('}') => {
+                        let id = rest.trim_end_matches('}').to_string();
+                        used.push(id.clone());
+                        // The suffix is in the last text event; trim it there.
+                        if let Some(Event::Text(last)) = inner.last_mut() {
+                            let trimmed = last
+                                .rsplit_once(" {#")
+                                .map(|(t, _)| t.to_string())
+                                .unwrap_or_default();
+                            *last = trimmed.into();
+                        }
+                        (text.to_string(), id)
+                    }
+                    _ => {
+                        let id = slug(&label, &mut used);
+                        (label, id)
+                    }
+                };
                 let n = level as u8;
                 events.push(Event::Html(format!("<h{n} id=\"{id}\">").into()));
                 events.extend(inner);
@@ -235,7 +254,10 @@ fn entry_ids(html: &str, used: &mut Vec<String>) -> String {
         match after.find("</strong>") {
             Some(end) if after[..end].ends_with('.') && !after[..end].contains('<') => {
                 let term = &after[..end - 1];
-                let id = slug(&format!("term {}", term.split(',').next().unwrap_or(term)), used);
+                let id = slug(
+                    &format!("term {}", term.split(',').next().unwrap_or(term)),
+                    used,
+                );
                 out.push_str(&format!("<p class=\"entry\" id=\"{id}\"><strong>"));
                 rest = after;
             }
@@ -305,9 +327,10 @@ pub fn code_block(language: &str, code: &str) -> String {
 /// a Kotlin tab are a language group: choosing one chooses it on the
 /// whole page.
 fn tab_block(fences: &[Fence]) -> String {
-    let group = if fences.iter().all(|fence| {
-        matches!(fence.language.as_str(), "swift" | "kotlin" | "kt")
-    }) {
+    let group = if fences
+        .iter()
+        .all(|fence| matches!(fence.language.as_str(), "swift" | "kotlin" | "kt"))
+    {
         " data-group=\"language\""
     } else {
         ""
@@ -368,6 +391,11 @@ pub fn rewrite_link(dest: &str, context: &Context) -> String {
         None => (dest, None),
     };
     let repo_path = resolve(&context.source_dir, path);
+    // The README's sections are not the front page's; a link into one goes
+    // to the README on GitHub.
+    if repo_path == "README.md" && fragment.is_some() {
+        return format!("{REPO}#{}", fragment.unwrap_or_default());
+    }
     let fragment = fragment.map(|f| format!("#{f}")).unwrap_or_default();
     if let Some(url) = pages::url_for(&context.site.sections, &repo_path) {
         if url.contains('#') {

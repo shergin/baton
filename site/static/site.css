@@ -2068,3 +2068,10 @@ body.home main {
     scroll-behavior: auto !important;
   }
 }
+
+@media (max-width: 480px) {
+  .hero .code pre {
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+}

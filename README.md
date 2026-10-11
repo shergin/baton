@@ -26,6 +26,10 @@ than GraphQL's (snapshots, re-reads, suspension by thrown promises), Baton
 leaves it out: SwiftUI's Observation and Compose's snapshot state already know
 which view read which field.
 
+The site, <https://shergin.github.io/baton/>, is the place to read:
+[GraphQL for mobile engineers](https://shergin.github.io/baton/graphql/),
+[one screen followed end to end](https://shergin.github.io/baton/walkthrough/),
+and a guide whose every plate the compiler and the runtime produced.
 The design is in [`docs/vision.md`](docs/vision.md). Constraints it assumes
 live in [`docs/principles/`](docs/principles/). The vocabulary is
 [`docs/terminology.md`](docs/terminology.md). How this compares with the

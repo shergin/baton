@@ -125,9 +125,11 @@ impl Registry {
                 .ok_or_else(|| format!("{kind} needs a figure name"))
         };
         let option = |key: &str| -> Option<String> {
-            arguments
-                .iter()
-                .find_map(|argument| argument.strip_prefix(&format!("{key}=")).map(str::to_string))
+            arguments.iter().find_map(|argument| {
+                argument
+                    .strip_prefix(&format!("{key}="))
+                    .map(str::to_string)
+            })
         };
         let caption = caption.unwrap_or("");
         self.rendered.set(self.rendered.get() + 1);
@@ -206,12 +208,19 @@ impl Registry {
                     .flatten()
                     .find(|entry| entry["name"].as_str() == Some(operation))
                     .ok_or("the report lacks the operation")?;
-                Ok(plate(next(), &operation_html(entry, text), caption, "operation-plate"))
+                Ok(plate(
+                    next(),
+                    &operation_html(entry, text),
+                    caption,
+                    "operation-plate",
+                ))
             }
             // A lens: the accessors a fragment or an operation root reads.
             "lens" => {
                 let name = first()?;
-                let which = arguments.get(1).ok_or("lens needs a fragment or operation name")?;
+                let which = arguments
+                    .get(1)
+                    .ok_or("lens needs a fragment or operation name")?;
                 let runs = self.all(name, false)?;
                 let compiled = runs.first().ok_or("no language")?;
                 let report = compiled.report.as_ref().ok_or("no report")?;
@@ -260,18 +269,24 @@ impl Registry {
             "json" => {
                 let path = first()?;
                 let text = read(&self.root.join(path));
-                let value: Value = serde_json::from_str(&text)
-                    .map_err(|error| format!("{path}: {error}"))?;
+                let value: Value =
+                    serde_json::from_str(&text).map_err(|error| format!("{path}: {error}"))?;
                 let pretty = serde_json::to_string_pretty(&value).unwrap_or(text);
-                Ok(plate(next(), &file_block_named(path, &pretty, "json"), caption, "json-plate"))
+                Ok(plate(
+                    next(),
+                    &file_block_named(path, &pretty, "json"),
+                    caption,
+                    "json-plate",
+                ))
             }
             // A case of the specification's manifest: what a lens must read
             // at each path after the response, and the leaf an optimistic
             // response overrides.
             "case" => {
                 let name = first()?;
-                let manifest: Value = serde_json::from_str(&read(&self.root.join("spec/manifest.json")))
-                    .map_err(|error| format!("spec/manifest.json: {error}"))?;
+                let manifest: Value =
+                    serde_json::from_str(&read(&self.root.join("spec/manifest.json")))
+                        .map_err(|error| format!("spec/manifest.json: {error}"))?;
                 let case = manifest["cases"]
                     .as_array()
                     .into_iter()
@@ -294,8 +309,8 @@ impl Registry {
                             .collect()
                     })
                     .unwrap_or_default();
-                let only: Option<Vec<String>> = option("only")
-                    .map(|list| list.split(',').map(str::to_string).collect());
+                let only: Option<Vec<String>> =
+                    option("only").map(|list| list.split(',').map(str::to_string).collect());
                 let inner = store::records_html(
                     &dump,
                     &RecordsOptions {
@@ -354,7 +369,10 @@ impl Registry {
                 }
                 let to = context.site.out.join("assets/charts");
                 std::fs::create_dir_all(&to).expect("charts directory");
-                for (path, file) in [(&dark, format!("{name}.svg")), (&light, format!("{name}-light.svg"))] {
+                for (path, file) in [
+                    (&dark, format!("{name}.svg")),
+                    (&light, format!("{name}-light.svg")),
+                ] {
                     std::fs::copy(self.root.join(path), to.join(file)).expect("copy a chart");
                 }
                 let href = context.href(&format!("/assets/charts/{name}"));
@@ -365,7 +383,12 @@ impl Registry {
                 Ok(plate(next(), &inner, caption, "chart-plate"))
             }
             // The releases, named for bread, from the changelog.
-            "releases" => Ok(plate(next(), &releases_html(&self.root), caption, "releases-plate")),
+            "releases" => Ok(plate(
+                next(),
+                &releases_html(&self.root),
+                caption,
+                "releases-plate",
+            )),
             // The playground, driven by the wasm build.
             "playground" => {
                 scripts.push("playground.js".to_string());
@@ -385,7 +408,10 @@ fn named(name: &str, wanted: &str) -> bool {
         || name.strip_suffix(".graphql") == Some(wanted)
         || name.strip_suffix(".baton.swift") == Some(wanted)
         || name.strip_suffix(".baton.kt") == Some(wanted)
-        || name.rsplit('/').next().is_some_and(|base| base != name && named(base, wanted))
+        || name
+            .rsplit('/')
+            .next()
+            .is_some_and(|base| base != name && named(base, wanted))
 }
 
 /// The first `a-b` lines of a text.
@@ -395,7 +421,7 @@ fn slice_lines(text: &str, range: &str) -> String {
     let to: usize = to.parse().unwrap_or(usize::MAX);
     text.lines()
         .enumerate()
-        .filter(|(index, _)| index + 1 >= from && index + 1 <= to)
+        .filter(|(index, _)| index + 1 >= from && *index < to)
         .map(|(_, line)| line)
         .collect::<Vec<_>>()
         .join("\n")
@@ -432,7 +458,9 @@ fn language_tabs(runs: &[Compiled], render: impl Fn(&Compiled) -> Option<String>
     if panels.len() == 1 {
         return panels[0].1.clone();
     }
-    let mut tabs = String::from("<div class=\"panels\" data-group=\"language\"><div class=\"tabs\" role=\"tablist\">");
+    let mut tabs = String::from(
+        "<div class=\"panels\" data-group=\"language\"><div class=\"tabs\" role=\"tablist\">",
+    );
     let mut bodies = String::new();
     for (index, (language, html)) in panels.iter().enumerate() {
         let selected = index == 0;
@@ -481,7 +509,10 @@ fn operation_html(entry: &Value, printed: &str) -> String {
         escape(name)
     );
     if !variables.is_empty() {
-        out.push_str(&format!("<dt>variables</dt><dd>{}</dd>", variables.join(" ")));
+        out.push_str(&format!(
+            "<dt>variables</dt><dd>{}</dd>",
+            variables.join(" ")
+        ));
     }
     if !fragments.is_empty() {
         out.push_str(&format!("<dt>spreads</dt><dd>{}</dd>", fragments.join(" ")));
@@ -561,7 +592,9 @@ fn lens_html(lens: &Value, depth: usize) -> String {
             other => shape.push(other.to_string()),
         }
         if accessor["list"].is_object() {
-            let optional_elements = accessor["list"]["optionalElements"].as_bool().unwrap_or(false);
+            let optional_elements = accessor["list"]["optionalElements"]
+                .as_bool()
+                .unwrap_or(false);
             shape.push(if optional_elements {
                 "a list, elements nullable".to_string()
             } else {
@@ -624,20 +657,18 @@ fn diagnostics_html(compiled: &Compiled) -> String {
             escape(severity.trim()),
             escape(message)
         ));
-        if let (Some(host), Ok(row), Ok(column)) = (
-            compiled.hosts.iter().find(|host| host.name == path),
-            row.parse::<usize>(),
-            column.parse::<usize>(),
-        ) {
-            if let Some(source) = host.text.lines().nth(row.saturating_sub(1)) {
-                out.push_str(&format!(
-                    "<span class=\"context\">{:>5} | {}</span>\n<span class=\"caret\">{}{}</span>\n",
-                    row,
-                    escape(source),
-                    " ".repeat(8 + column.saturating_sub(1)),
-                    "^"
-                ));
-            }
+        let host = compiled.hosts.iter().find(|host| host.name == path);
+        let position = (row.parse::<usize>(), column.parse::<usize>());
+        if let (Some(host), (Ok(row), Ok(column))) = (host, position)
+            && let Some(source) = host.text.lines().nth(row.saturating_sub(1))
+        {
+            out.push_str(&format!(
+                "<span class=\"context\">{:>5} | {}</span>\n<span class=\"caret\">{}{}</span>\n",
+                row,
+                escape(source),
+                " ".repeat(8 + column.saturating_sub(1)),
+                "^"
+            ));
         }
     }
     out.push_str("</pre></div>");

@@ -167,7 +167,9 @@ impl Compiler {
         let result = command
             .output()
             .unwrap_or_else(|error| panic!("running {}: {error}", self.binary.display()));
-        let diagnostics = String::from_utf8_lossy(&result.stderr).trim_end().to_string();
+        let diagnostics = String::from_utf8_lossy(&result.stderr)
+            .trim_end()
+            .to_string();
         let ok = result.status.success();
         let host_files = hosts
             .iter()
@@ -212,7 +214,9 @@ impl Compiler {
                     .expect("print");
                 operations.insert(
                     operation_name.to_string(),
-                    String::from_utf8_lossy(&printed.stdout).trim_end().to_string(),
+                    String::from_utf8_lossy(&printed.stdout)
+                        .trim_end()
+                        .to_string(),
                 );
             }
         }

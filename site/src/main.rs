@@ -73,6 +73,14 @@ fn main() {
     prepare(&site.out);
     copy_dir(&site.root.join("site/static"), &site.out);
     fs::copy(site.root.join("baton.png"), site.out.join("baton.png")).expect("copy the logo");
+    // The schema the playground compiles against, beside the compiler's
+    // wasm build that build.sh places there.
+    fs::create_dir_all(site.out.join("playground")).expect("playground directory");
+    fs::copy(
+        site.root.join("spec/rickandmorty/schema.graphql"),
+        site.out.join("playground/schema.graphql"),
+    )
+    .expect("copy the playground's schema");
     let figures = figures::Registry::new(&site.root, &manifest.join("target/work"));
     let mut index = Vec::new();
     let mut written = 0;
@@ -242,12 +250,13 @@ fn illustrate(source: &str, inserts: &[(String, String)]) -> String {
 }
 
 fn prepare(out: &Path) {
-    // Keep `wasm/`: build.sh fills it after this generator runs, and a
-    // local iteration should not have to rebuild it. Replace the rest.
+    // Keep `playground/`: build.sh puts the compiler's wasm build there
+    // after this generator runs, and a local iteration should not have to
+    // rebuild it. Replace the rest.
     if out.exists() {
         for entry in fs::read_dir(out).expect("output directory") {
             let entry = entry.expect("directory entry");
-            if entry.file_name() == "wasm" {
+            if entry.file_name() == "playground" {
                 continue;
             }
             let path = entry.path();

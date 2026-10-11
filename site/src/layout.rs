@@ -34,10 +34,14 @@ pub fn page(site: &Site, section: &str, page: &Page, body: &Body) -> String {
     out.push_str(&format!(
         "<link rel=\"icon\" href=\"{root}favicon.svg\" type=\"image/svg+xml\">\n"
     ));
-    out.push_str(&format!("<link rel=\"stylesheet\" href=\"{root}site.css\">\n"));
+    out.push_str(&format!(
+        "<link rel=\"stylesheet\" href=\"{root}site.css\">\n"
+    ));
     out.push_str("<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n");
     out.push_str("<link href=\"https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400;1,8..60,600&display=swap\" rel=\"stylesheet\">\n");
-    out.push_str(&format!("<script>window.BATON_ROOT = \"{root}\";</script>\n"));
+    out.push_str(&format!(
+        "<script>window.BATON_ROOT = \"{root}\";</script>\n"
+    ));
     out.push_str("</head>\n");
     out.push_str(&format!(
         "<body class=\"{}\">\n",
@@ -102,7 +106,9 @@ pub fn page(site: &Site, section: &str, page: &Page, body: &Body) -> String {
     out.push_str(&body.html);
     if !home {
         out.push_str("<footer class=\"page-foot\">\n");
-        let all: Vec<&Page> = pages::all(&site.sections).filter(|entry| entry.listed).collect();
+        let all: Vec<&Page> = pages::all(&site.sections)
+            .filter(|entry| entry.listed)
+            .collect();
         if let Some(index) = all.iter().position(|entry| entry.url == page.url) {
             out.push_str("<nav class=\"pager\" aria-label=\"Previous and next\">\n");
             if index > 0 {

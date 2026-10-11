@@ -6,7 +6,7 @@ Status: accepted, 2026-10-11; extended by
 manifest side of [#7](https://github.com/shergin/baton/issues/7), and
 settles the shape of the report before fragments across modules need it.
 Serves [What earns a concept](../principles/what-earns-a-concept.md) and
-[The compiler decides](../principles/the-compiler-decides.md). Reopen the
+[The compiler decides](../principles/compiler-decides.md). Reopen the
 import when an adopter spreads fragments across modules, which the record
 expects on a Bazel build with hundreds of fragments.
 

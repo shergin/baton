@@ -104,7 +104,9 @@ pub fn url_for(repo_path: &str) -> Option<String> {
         .or_else(|| {
             matches!(
                 path,
-                "kotlin/samples/desktop" | "kotlin/samples/android" | "kotlin/samples/apollo-android"
+                "kotlin/samples/desktop"
+                    | "kotlin/samples/android"
+                    | "kotlin/samples/apollo-android"
             )
             .then(|| "/examples/#rick-and-morty-kotlin".to_string())
             .or_else(|| {
@@ -127,10 +129,11 @@ pub fn render(context: &Context) -> Body {
             escape(entry.path)
         ));
     }
-    source.push_str("<li><a href=\"#caton\">Caton</a> <span>the demo app</span></li></ol></div>\n\n");
+    source
+        .push_str("<li><a href=\"#caton\">Caton</a> <span>the demo app</span></li></ol></div>\n\n");
     let mut plates = 0;
     for entry in ENTRIES {
-        source.push_str(&format!("## {}\n\n", entry.title));
+        source.push_str(&format!("## {} {{#{}}}\n\n", entry.title, entry.id));
         source.push_str(&format!(
             "<p class=\"source-link\"><a href=\"{}/tree/master/{}\">{}</a></p>\n\n",
             crate::layout::REPO,
@@ -150,20 +153,27 @@ pub fn render(context: &Context) -> Body {
             source.push_str("\n\n");
         }
     }
-    source.push_str("## Caton\n\n");
+    source.push_str("## Caton {#caton}\n\n");
     source.push_str("[Caton](https://github.com/shergin/caton) is the demo app: a macOS menu bar inbox for GitHub notifications, built to show this framework in a real product. It joins each notification to the live state of its pull request or issue, and the number in the menu bar is the number of things waiting on you.\n");
     markdown::render(&source, context)
 }
 
 /// What the compiler found in a sample, as a plate.
-fn found_html(context: &Context, entry: &Entry, root: &Path, config: &str, number: usize) -> String {
+fn found_html(
+    context: &Context,
+    entry: &Entry,
+    root: &Path,
+    config: &str,
+    number: usize,
+) -> String {
     let dir = root.join(config);
     let hosts_dir = dir.join(entry.hosts);
     let schemas = crate::compiler::schema_files(&dir);
     let mut hosts: Vec<String> = crate::compiler::file_names(&hosts_dir)
         .into_iter()
         .filter(|name| {
-            name.ends_with(&format!(".{}", entry.language.extension())) || name.ends_with(".graphql")
+            name.ends_with(&format!(".{}", entry.language.extension()))
+                || name.ends_with(".graphql")
         })
         .filter(|name| !schemas.contains(name))
         .filter(|name| !name.ends_with("Test.kt") && !name.ends_with("Tests.swift"))
@@ -189,7 +199,9 @@ fn found_html(context: &Context, entry: &Entry, root: &Path, config: &str, numbe
         );
     }
     let report = compiled.report.expect("a report");
-    let mut inner = String::from("<table class=\"found\"><thead><tr><th>operation</th><th>in</th><th>variables</th><th>spreads</th></tr></thead><tbody>");
+    let mut inner = String::from(
+        "<table class=\"found\"><thead><tr><th>operation</th><th>in</th><th>variables</th><th>spreads</th></tr></thead><tbody>",
+    );
     for operation in report["operations"].as_array().into_iter().flatten() {
         let variables: Vec<String> = operation["variables"]
             .as_array()

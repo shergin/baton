@@ -326,7 +326,32 @@ pub fn sections(root: &Path) -> Vec<Section> {
                     "Terminology",
                     "The vocabulary contract: each word's meaning in the literature, what it is here, and how Swift and Kotlin spell it.",
                     "docs/terminology.md",
-                    &[],
+                    &[
+                        (
+                            "## Documents",
+                            "{{host issues IssueRow | A document in its marker, SwiftUI and Compose.}}",
+                        ),
+                        (
+                            "## Generated",
+                            "{{lens issues IssuesQuery | An operation's data lens as the compiler reported it, nested lens by nested lens.}}",
+                        ),
+                        (
+                            "## Store",
+                            "{{normalize spec/rickandmorty/character-header-9 | A response and the records it became.}}",
+                        ),
+                        (
+                            "## Compiler",
+                            "{{diagnostics typo | A diagnostic, pointing into the host.}}",
+                        ),
+                        (
+                            "## Runtime",
+                            "{{script phase steps=1,2,4,5 | Phases and fetches, from the specification's script.}}",
+                        ),
+                        (
+                            "## Lists",
+                            "{{script connections steps=1,2 | Two pages merged in the store.}}",
+                        ),
+                    ],
                 ),
                 repo(
                     "/contract/",
@@ -371,29 +396,84 @@ fn why(root: &Path) -> Vec<Page> {
             "Vision",
             "The argument: three commitments and five rules.",
             "docs/vision.md",
-            &[],
+            &[(
+                "## The rules",
+                "{{stage characters CharactersQuery spec/rickandmorty/characters-page-1.store.json rows=4 | The five rules on one screen: a fragment is a lens, the store is the UI's state, and a change to a field re-renders the view that read it. Click a field.}}",
+            )],
         ),
         repo_with(
             "/why-graphql/",
             "Why GraphQL",
             "For iOS and Android engineers who build on REST and view models: what it is, what it changes, what it costs.",
             "docs/why-graphql.md",
-            &[],
+            &[
+                (
+                    "## What GraphQL solves",
+                    "{{source spec/rickandmorty/schema.graphql lines=7-32 | A schema's root type and one object type, from the Rick and Morty API. The whole schema is on the GraphQL chapter.}}",
+                ),
+                (
+                    "## What Relay solves",
+                    "{{normalize spec/rickandmorty/character-header-9 | One store: a response and the records it became, each object once, by type and id.}}",
+                ),
+                (
+                    "## What Baton adds",
+                    "{{lens issues IssueRow_issue | The lens a fragment compiles to: one accessor per declared field.}}",
+                ),
+            ],
         ),
     ];
-    for file in [
-        "fragment-is-a-lens",
-        "store-is-the-ui-state",
-        "response-is-the-oracle",
-        "compiler-decides",
-        "honest-data",
-        "what-earns-a-concept",
-        "relays-words",
-        "two-runtimes-one-compiler",
-    ] {
+    let illustrated: &[(&str, &str, &str)] = &[
+        (
+            "fragment-is-a-lens",
+            "## The idea",
+            "{{lens issue-list IssueList_repository | A lens over a connection, as reported: a reference and one accessor per declared field, nested lenses for links, and nothing else.}}",
+        ),
+        (
+            "store-is-the-ui-state",
+            "## The idea",
+            "{{script notifications steps=2,3 | A commit that changes nothing notifies nothing; a commit that changes one field notifies one slot.}}",
+        ),
+        (
+            "response-is-the-oracle",
+            "## The idea",
+            "{{case rickandmorty/character-header-9 | A case of the manifest: the reads a lens must answer after the response, and the override an optimistic layer must read.}}",
+        ),
+        (
+            "compiler-decides",
+            "## The idea",
+            "{{operation issues IssuesQuery | What the compiler settled: the fragment inlined, the key fields added, the text printed once and hashed.}}",
+        ),
+        (
+            "honest-data",
+            "## The idea",
+            "{{script heal steps=2,3 | Missing data reported and healed: the read logs the miss and the owner refetches.}}",
+        ),
+        (
+            "what-earns-a-concept",
+            "## The idea",
+            "{{script connections steps=4 | A list edited by a directive on a payload: a composition of connection, plan and store, not a concept of its own.}}",
+        ),
+        (
+            "relays-words",
+            "## The idea",
+            "{{operation comments CommentComposerAddComment | Relay's directive on the client's side of the line: `@appendEdge` is left out of the text the server receives.}}",
+        ),
+        (
+            "two-runtimes-one-compiler",
+            "## The idea",
+            "{{generated characters CharactersScreen | One plan, two emitters: the same operation's generated code in Swift and in Kotlin.}}",
+        ),
+    ];
+    for (file, heading, material) in illustrated {
         let path = format!("docs/principles/{file}.md");
         let (title, blurb) = title_and_blurb(&root.join(&path));
-        pages.push(repo(&format!("/principles/{file}/"), &title, &blurb, &path));
+        pages.push(repo_with(
+            &format!("/principles/{file}/"),
+            &title,
+            &blurb,
+            &path,
+            &[(heading, material)],
+        ));
     }
     pages.push(page(
         "/decisions/",
@@ -434,7 +514,8 @@ fn why(root: &Path) -> Vec<Page> {
 /// A repository document's title, from its first heading, and its blurb,
 /// from the first paragraph after it.
 fn title_and_blurb(path: &Path) -> (String, String) {
-    let text = fs::read_to_string(path).unwrap_or_else(|error| panic!("{}: {error}", path.display()));
+    let text =
+        fs::read_to_string(path).unwrap_or_else(|error| panic!("{}: {error}", path.display()));
     let mut lines = text.lines();
     let title = lines
         .by_ref()

@@ -14,7 +14,12 @@ use crate::store::Dump;
 
 /// The stage for `operation` of a compiled figure, over `dump`, with at
 /// most `rows` rows.
-pub fn html(compiled: &Compiled, operation: &str, dump_path: &Path, rows: usize) -> Result<String, String> {
+pub fn html(
+    compiled: &Compiled,
+    operation: &str,
+    dump_path: &Path,
+    rows: usize,
+) -> Result<String, String> {
     let report = compiled.report.as_ref().ok_or("no report")?;
     let entry = report["operations"]
         .as_array()
@@ -98,10 +103,7 @@ pub fn html(compiled: &Compiled, operation: &str, dump_path: &Path, rows: usize)
         pick(root, &[root_storage.as_str()]),
     ));
     let mut list_only = pick(list_record, &[list_storage.as_str()]);
-    list_only.insert(
-        list_storage.clone(),
-        json!({"__refs": targets}),
-    );
+    list_only.insert(list_storage.clone(), json!({"__refs": targets}));
     records.push((list_record_key.clone(), list_only));
     for target in &targets {
         let record = dump.record(target).ok_or("a listed record is missing")?;
@@ -136,7 +138,13 @@ pub fn html(compiled: &Compiled, operation: &str, dump_path: &Path, rows: usize)
     ));
     for (index, target) in targets.iter().enumerate() {
         let record = dump.record(target).ok_or("a listed record is missing")?;
-        let field = |name: &str| record.get(name).and_then(Value::as_str).unwrap_or("").to_string();
+        let field = |name: &str| {
+            record
+                .get(name)
+                .and_then(Value::as_str)
+                .unwrap_or("")
+                .to_string()
+        };
         let image = field("image");
         let subtitle: Vec<String> = row_fields
             .iter()
@@ -161,7 +169,10 @@ pub fn html(compiled: &Compiled, operation: &str, dump_path: &Path, rows: usize)
     // The records, each field a button.
     out.push_str("<div class=\"stage-store\"><p class=\"side-title\">The store <span class=\"hint\">click a field to change it</span></p><div class=\"records\">");
     for (key, record) in &records {
-        let typename = record.get("__typename").and_then(Value::as_str).unwrap_or("");
+        let typename = record
+            .get("__typename")
+            .and_then(Value::as_str)
+            .unwrap_or("");
         out.push_str(&format!(
             "<div class=\"record\" data-key=\"{}\"><div class=\"record-key\"><span class=\"key\">{}</span><span class=\"typename\">{}</span></div><table>",
             escape(key),
@@ -191,7 +202,10 @@ pub fn html(compiled: &Compiled, operation: &str, dump_path: &Path, rows: usize)
                     "<span class=\"refs\">[ {} links ]</span>",
                     object["__refs"].as_array().map_or(0, Vec::len)
                 ),
-                other => format!("<span class=\"scalar\">{}</span>", escape(&other.to_string())),
+                other => format!(
+                    "<span class=\"scalar\">{}</span>",
+                    escape(&other.to_string())
+                ),
             };
             out.push_str(&format!(
                 "<tr data-record=\"{}\" data-field=\"{}\"><th>{}</th><td><button type=\"button\" class=\"slot\" data-record=\"{}\" data-field=\"{}\" title=\"Change this field\">{}</button></td></tr>",
@@ -215,7 +229,9 @@ pub fn html(compiled: &Compiled, operation: &str, dump_path: &Path, rows: usize)
     });
     out.push_str(&format!(
         "<script type=\"application/json\" class=\"stage-data\">{}</script></div>",
-        serde_json::to_string(&data).expect("stage data").replace("</", "<\\/")
+        serde_json::to_string(&data)
+            .expect("stage data")
+            .replace("</", "<\\/")
     ));
     Ok(out)
 }
@@ -242,10 +258,18 @@ fn host_name(text: &str, document_name: &str) -> Option<String> {
     for line in rest.lines() {
         let trimmed = line.trim();
         if let Some(name) = trimmed.strip_prefix("struct ") {
-            return Some(name.split(|c: char| !c.is_alphanumeric() && c != '_').next()?.to_string());
+            return Some(
+                name.split(|c: char| !c.is_alphanumeric() && c != '_')
+                    .next()?
+                    .to_string(),
+            );
         }
         if let Some(name) = trimmed.strip_prefix("fun ") {
-            return Some(name.split(|c: char| !c.is_alphanumeric() && c != '_').next()?.to_string());
+            return Some(
+                name.split(|c: char| !c.is_alphanumeric() && c != '_')
+                    .next()?
+                    .to_string(),
+            );
         }
     }
     None

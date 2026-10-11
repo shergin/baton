@@ -26,12 +26,7 @@ impl Dump {
             .as_object()
             .expect("a dump is an object of records")
             .iter()
-            .map(|(key, record)| {
-                (
-                    key.clone(),
-                    record.as_object().cloned().unwrap_or_default(),
-                )
-            })
+            .map(|(key, record)| (key.clone(), record.as_object().cloned().unwrap_or_default()))
             .collect();
         Dump { records }
     }
@@ -74,12 +69,14 @@ pub fn records_html(dump: &Dump, options: &RecordsOptions) -> String {
     let mut out = String::from("<div class=\"records\">");
     let mut shown = 0;
     for (key, record) in &dump.records {
-        if let Some(only) = options.only {
-            if !only.iter().any(|wanted| wanted == key) {
-                continue;
-            }
+        if let Some(only) = options.only
+            && !only.iter().any(|wanted| wanted == key)
+        {
+            continue;
         }
-        if options.elide_roots && (key == "client:root:mutation" || key == "client:root:subscription") {
+        if options.elide_roots
+            && (key == "client:root:mutation" || key == "client:root:subscription")
+        {
             let empty = record.len() <= 1;
             if empty {
                 continue;
@@ -119,9 +116,18 @@ fn record_html(key: &str, record: &Map<String, Value>, options: &RecordsOptions)
             .any(|(record_key, storage_key)| record_key == key && storage_key == field);
         let classes = [
             if notified { "is-notified" } else { "" },
-            if field.starts_with("__") { "client" } else { "" },
+            if field.starts_with("__") {
+                "client"
+            } else {
+                ""
+            },
         ];
-        let class = classes.iter().filter(|c| !c.is_empty()).cloned().collect::<Vec<_>>().join(" ");
+        let class = classes
+            .iter()
+            .filter(|c| !c.is_empty())
+            .cloned()
+            .collect::<Vec<_>>()
+            .join(" ");
         out.push_str(&format!(
             "<tr class=\"{class}\" data-record=\"{}\" data-field=\"{}\"><th>{}</th><td>{}</td></tr>",
             escape(key),
@@ -173,7 +179,10 @@ fn value_html(value: &Value) -> String {
         }
         Value::Number(number) => format!("<span class=\"number\">{number}</span>"),
         Value::Bool(flag) => format!("<span class=\"bool\">{flag}</span>"),
-        other => format!("<span class=\"scalar\">{}</span>", escape(&other.to_string())),
+        other => format!(
+            "<span class=\"scalar\">{}</span>",
+            escape(&other.to_string())
+        ),
     }
 }
 
@@ -264,12 +273,16 @@ fn print_value(value: &Value, path: &str, depth: usize, out: &mut String, last: 
 /// Where each path of a response landed: the record and the storage key,
 /// found by walking the response and the dump together from the root
 /// record. A link's path maps to the slot that holds the link.
-pub fn link_map(response: &Value, dump: &Dump, root_key: &str) -> BTreeMap<String, (String, String)> {
+pub fn link_map(
+    response: &Value,
+    dump: &Dump,
+    root_key: &str,
+) -> BTreeMap<String, (String, String)> {
     let mut map = BTreeMap::new();
-    if let Some(data) = response.get("data") {
-        if let Some(root) = dump.record(root_key) {
-            walk(data, "data", root_key, root, dump, &mut map);
-        }
+    if let Some(data) = response.get("data")
+        && let Some(root) = dump.record(root_key)
+    {
+        walk(data, "data", root_key, root, dump, &mut map);
     }
     map
 }
@@ -304,15 +317,12 @@ fn walk(
             child.as_array(),
         ) {
             for (index, (target, item)) in targets.iter().zip(items).enumerate() {
-                if let Some(target) = target.as_str() {
-                    if let Some(target_record) = dump.record(target) {
-                        let item_path = format!("{child_path}.{index}");
-                        map.insert(
-                            item_path.clone(),
-                            (target.to_string(), "".to_string()),
-                        );
-                        walk(item, &item_path, target, target_record, dump, map);
-                    }
+                if let Some(target) = target.as_str()
+                    && let Some(target_record) = dump.record(target)
+                {
+                    let item_path = format!("{child_path}.{index}");
+                    map.insert(item_path.clone(), (target.to_string(), "".to_string()));
+                    walk(item, &item_path, target, target_record, dump, map);
                 }
             }
         }
@@ -330,7 +340,14 @@ pub fn normalize_html(response_path: &Path, dump_path: &Path, root_key: &str) ->
     format!(
         "<div class=\"normalize\"><div class=\"side\"><p class=\"side-title\">The response</p>{}</div><div class=\"side\"><p class=\"side-title\">The records</p>{}</div><script type=\"application/json\" class=\"link-map\">{}</script></div>",
         response_html(&response),
-        records_html(&dump, &RecordsOptions { notified: &[], only: None, elide_roots: true }),
+        records_html(
+            &dump,
+            &RecordsOptions {
+                notified: &[],
+                only: None,
+                elide_roots: true
+            }
+        ),
         json.replace("</", "<\\/")
     )
 }
@@ -345,10 +362,10 @@ pub fn script_html(root: &Path, name: &str, steps_wanted: Option<&[usize]>) -> S
     let mut panels = String::new();
     let mut shown = 0;
     for (index, step) in steps.iter().enumerate() {
-        if let Some(wanted) = steps_wanted {
-            if !wanted.contains(&(index + 1)) {
-                continue;
-            }
+        if let Some(wanted) = steps_wanted
+            && !wanted.contains(&(index + 1))
+        {
+            continue;
         }
         let Some(object) = step.as_object() else {
             continue;
@@ -484,7 +501,11 @@ pub fn script_html(root: &Path, name: &str, steps_wanted: Option<&[usize]>) -> S
                 .collect();
             panel.push_str(&format!(
                 "<p class=\"facts\"><span class=\"notified-title\">Logged</span> {}</p>",
-                if names.is_empty() { "<span class=\"nothing\">nothing</span>".to_string() } else { names.join(" ") }
+                if names.is_empty() {
+                    "<span class=\"nothing\">nothing</span>".to_string()
+                } else {
+                    names.join(" ")
+                }
             ));
         }
         if let Some(reads) = object.get("reads").and_then(Value::as_array) {
@@ -588,7 +609,13 @@ fn call(arguments: &Map<String, Value>) -> String {
 fn describe_step(kind: &str, arguments: &Value) -> String {
     let empty = Map::new();
     let arguments = arguments.as_object().unwrap_or(&empty);
-    let text = |key: &str| arguments.get(key).and_then(Value::as_str).unwrap_or("").to_string();
+    let text = |key: &str| {
+        arguments
+            .get(key)
+            .and_then(Value::as_str)
+            .unwrap_or("")
+            .to_string()
+    };
     match kind {
         "attach" => {
             let policy = arguments
