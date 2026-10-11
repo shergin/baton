@@ -1,0 +1,5 @@
+{
+  "schema": "../../../examples/GitHubTriage/schema.docs.graphql",
+  "persistConfig": { "file": "persisted.json", "algorithm": "MD5" },
+  "kotlin": { "package": "app" }
+}

@@ -27,3 +27,7 @@ DerivedData/
 /kotlin/**/.kotlin/
 /kotlin/**/build/
 /kotlin/local.properties
+
+# The documentation site; the pages workflow builds it from site/.
+/site/dist/
+/site/target/

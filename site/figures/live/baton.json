@@ -1,0 +1,6 @@
+{
+  "schema": "../../../spec/tests/schema.graphql",
+  "schemaExtensions": ["../../../spec/tests/extensions.graphql"],
+  "lookups": [{ "field": "Query.character", "type": "Character", "argument": "id" }],
+  "kotlin": { "package": "app" }
+}
