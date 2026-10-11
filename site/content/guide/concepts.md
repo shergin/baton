@@ -16,15 +16,15 @@ A query, a mutation, a subscription or a fragment, carried by a marker in source
 
 ## Directive
 
-The only way behaviour attaches to data. The set is Relay's, with one exception Relay has no word for, `@cacheExpiration(seconds:)`: `@connection`, `@refetchable`, `@argumentDefinitions`, `@arguments`, `@alias`, `@required`, `@catch`, `@throwOnFieldError`, `@defer`, `@inline`, `@include`, `@skip`, and the edge directives `@appendEdge`, `@prependEdge`, `@appendNode`, `@prependNode`, `@deleteEdge`, `@deleteRecord`. Nothing is configured by an object at run time. [In the terminology.](../../terminology/#term-directive)
+The only way behaviour attaches to data. The set is Relay's: `@connection`, `@refetchable`, `@argumentDefinitions`, `@arguments`, `@alias`, `@required`, `@catch`, `@throwOnFieldError`, `@defer`, `@inline`, `@include`, `@skip`, and the edge directives `@appendEdge`, `@prependEdge`, `@appendNode`, `@prependNode`, `@deleteEdge` and `@deleteRecord`; the one exception, which Relay has no word for, is `@cacheExpiration(seconds:)`. Nothing is configured by an object at run time. [In the terminology.](../../terminology/#term-directive)
 
-{{host comments Comments.swift | Four directives in one file: a refetchable connection with its argument definitions, and a mutation whose payload edge is appended to that connection.}}
+{{host comments | Four directives in one figure: a refetchable connection with its argument definitions, and a mutation whose payload edge is appended to that connection.}}
 
 ## Lens
 
-Baton's word for what Relay calls a fragment reference and fragment data, which are one value here: a typed, read-only view over one record, with one accessor per declared field. A parent passes a child its lens through a spread's accessor and cannot read through it. A lens is valid on the main thread, where the store lives; equal by its record and its owner. [In the terminology.](../../terminology/#term-lens)
+Baton's word for what Relay calls a fragment reference and fragment data, which are one value here: a typed, read-only view over one record, with one accessor per declared field. A parent passes a child its lens through a spread's accessor and cannot read through it. A lens is valid on the main thread, where the store lives; equal by its record, its owner and its origin. [In the terminology.](../../terminology/#term-lens)
 
-{{lens issue-list IssueList_repository | A lens over a connection: `issues` reads a nested lens whose `edges` are a list, each edge's `node` a lens that spreads the row's fragment. Nothing the fragment did not declare appears.}}
+{{lens issue-list IssueList_repository | A lens over a connection: `issues` reads a nested lens whose `edges` are a list, each edge's `node` a lens that spreads the row's fragment, and `cursor` and `pageInfo`, which the compiler added for the connection. Nothing else appears.}}
 
 ## Record
 
@@ -42,7 +42,7 @@ All records, retained roots and lifetime state, owned by the main thread, read s
 
 How a response becomes records: the normalization artifact the compiler emits per operation, as data the runtime walks. The ingest follows the plan through the bytes, keys each object by the type's key fields, and writes slots by their numbers; it knows no field by name. Both runtimes interpret the same plans. [In the terminology.](../../terminology/#term-plan)
 
-{{generated issues IssuesScreen | The plan is the data table at the end of an operation's generated code: one selection per object in the response, each field with its storage key and kind.}}
+{{generated issues IssuesScreen | The plan is the data table in an operation's generated code, before its data lens: one selection per distinct selection set, each field with its storage key and kind.}}
 
 ## Operation value
 
@@ -60,7 +60,7 @@ A list that pages: Relay's connection specification, on a fragment marked `@refe
 
 The session: one store, one transport, and the door everything from outside comes through. It fetches, commits, applies optimistic layers, hydrates from the image, logs, and ends. Signing out is ending it and making another. Injected once at the root of the app. [In the terminology.](../../terminology/#term-environment)
 
-{{script end steps=4 | The environment ends: every handle reads as gone, the records are released, and nothing is logged.}}
+{{script end steps=4 | The environment ends: every handle reads as gone, the records are cleared, and nothing is logged.}}
 
 ## Transport
 

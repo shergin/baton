@@ -1,6 +1,6 @@
 # One screen, end to end
 
-A character's header: a name, a status, a species, a picture, and where the character is from. Small enough to follow every step, and every step on this page is program output. The compiler compiled the documents below when the page was built; the response is one the specification recorded from the API; the records, the notifications and the phases are what the runtime produced under the specification's fixtures.
+A character's header: a name, a status, a species, a picture, and where the character is from. Small enough to follow every step, and every step on this page is program output. The compiler compiled the documents below when the page was built; the response is one the specification recorded from the API; the records are dumps the runtime wrote under the specification's fixtures, and the notifications and the phases are what the specification requires of both runtimes.
 
 ## 1. A fragment beside the view
 
@@ -16,9 +16,9 @@ The screen declares one query and spreads the header's fragment into it. The par
 
 ## 3. What the compiler makes of them
 
-The compiler reads the schema and every document in the module, validates them, inlines the fragment into the operation, and adds the fields identity needs. This is the request the app will send, printed on one line as the compiler prints it:
+The compiler reads the schema and every document in the module, validates them, assembles the operation with the fragments it reaches, and adds the fields identity needs. This is the text the app will send, printed on one line as the compiler prints it:
 
-{{operation header CharacterQuery | The operation's text. The compiler added `id` under `origin`, because a `Location` is keyed by its id and the store needs it to make the record; the directive on the query stays out of the text, since it is the client's business.}}
+{{operation header CharacterQuery | The operation's text, the fragment printed after it. The compiler added `id` to the character and under `origin`, because both types are keyed by id and the store needs the keys to make the records; the directive on the query stays out of the text, since it is the client's business.}}
 
 For each fragment and each operation it emits a lens: one accessor per declared field, typed as the schema types it.
 
@@ -26,7 +26,7 @@ For each fragment and each operation it emits a lens: one accessor per declared 
 
 And it writes the code. The generated Swift is one line per field plus the data tables the runtime walks a response by; there is no model, no decoder and no cache policy in it.
 
-{{generated header CharacterHeader | What the compiler wrote for the file above. The lens reads a slot per field through the anchor it holds; the operation value carries its variables, its text and its plan.}}
+{{generated header | What the compiler wrote for the two files above. The lens reads a slot per field through the anchor it holds; the operation value carries its variables, its text and its plan.}}
 
 ## 4. The request
 
@@ -34,13 +34,13 @@ The view appears, and its handle checks the store. Nothing is there yet, so the 
 
 While the request is out, the view reads `phase` as `loading`. Here is what a handle shows at each moment, from the specification's script of phases:
 
-{{script phase steps=1,2,3,4,5 | A handle attached with nothing in the store is loading with a fetch in flight; the answer makes it ready. A second handle for the same operation is ready at once, with no fetch. One attached under `storeAndNetwork` is ready and refreshing; when its refresh fails, the data stays and the fetch records the failure.}}
+{{script phase steps=1,2,3,4,5 | A handle attached with nothing in the store is loading with a fetch in flight; the answer makes it ready. A second attach of the same operation is ready at once, with no fetch. One attached under `storeAndNetwork` is ready and refreshing; when its refresh fails, the data stays and the fetch records the failure.}}
 
 ## 5. The response
 
 The server answers in the document's shape:
 
-{{json spec/rickandmorty/character-header-9.json | The recorded response for `id: "9"`. Six values, two objects, and the ids the compiler asked for.}}
+{{json spec/rickandmorty/character-header-9.json | The recorded response for `id: "9"`. Five values, two objects, and the two ids the compiler asked for.}}
 
 ## 6. The records
 
@@ -54,7 +54,7 @@ The specification's manifest says what the lens must read at each path after tha
 
 {{case rickandmorty/character-header-9 | The reads the fixture requires, and the override below them: under an optimistic response that changes the name, the lens reads the new name until the server answers.}}
 
-The view's body runs. `character.name` loads a slot; so do `status`, `species` and `image`; `origin` follows the link and `origin.name` loads a slot of the other record. Each read registers with Observation, so the body now depends on exactly those five slots of those two records.
+The view's body runs. `character.name` loads a slot; so do `status`, `species` and `image`; `origin` follows the link and `origin.name` loads a slot of the other record. Each read registers with Observation, so the body now depends on exactly six slots of those two records: five on the character, the `origin` link among them, and one on the location.
 
 ## 8. A field changes
 
@@ -74,7 +74,7 @@ A mutation's optimistic response is a typed value that goes through the same ing
 
 Every server batch is written behind to an image, one SQLite file, off the main actor. When the app launches again, the handle's availability check reads what memory lacks from the image before the first body runs, so the screen the user left is the screen they get back, before any request.
 
-{{script check steps=1,2,3,4,5,7 | A commit writes records; the check for an operation whose data is in memory answers `memory`, and for one it lacks, `miss`; after a relaunch the first check answers `image`, and the lens reads the same value, while the miss is still a miss, and is fetched.}}
+{{script check steps=1,2,3,4,5,7 | A commit writes records; the check for an operation whose data is in memory answers `memory`, and for one it lacks, `miss`; after a relaunch the first check answers `image`, and the lens reads the same value, while the miss is still a miss, which a handle would fetch.}}
 
 The image is a cache, not a database. An image written under another schema, another format or another identity configuration starts again; a record that goes a whole launch unread is dropped at the next; optimistic layers never reach it.
 
@@ -82,7 +82,7 @@ The image is a cache, not a database. An image written under another schema, ano
 
 The environment is the session. Ending it cancels what it started, closes the image, and leaves every handle failed as gone; a new environment makes its own store, on the same file or another.
 
-{{script end steps=1,3,4 | A handle attached and an optimistic rename applied; then the environment ends: every handle reads as gone, the records are released, and nothing is logged. Signing out is `await environment.end()` and a new environment.}}
+{{script end steps=1,2,3,4 | Two handles attached, one still fetching, and an optimistic rename applied; then the environment ends: every handle reads as gone, the records are cleared, and nothing is logged. Signing out is `await environment.end()` and a new environment.}}
 
 ## Run it
 
@@ -92,4 +92,4 @@ The screen on this page is a trimmed copy of the Rick and Morty sample, which is
 swift run RickAndMorty
 ```
 
-Quit it, launch it again, and the characters are there before the network answers. Then change the header's fragment, add `gender`, and build: the lens gains an accessor, the operation's text gains a field, and nothing else in the app moves. Or do the same without leaving this site, in [the playground](../playground/).
+Quit it, launch it again, and the characters are there before the network answers. Then change the header's fragment, add `type`, and build: the lens gains an accessor, the operation's text gains a field, and nothing else in the app moves. Or do the same without leaving this site, in [the playground](../playground/).

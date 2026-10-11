@@ -39,22 +39,3 @@ fun CharacterNotes(character: CharacterNotes_character) {
         }
     }
 }
-
-@Query($$"""
-    query CharacterQuery($id: ID!) {
-      character(id: $id) {
-        name
-        ...CharacterNotes_character @defer
-      }
-    }
-    """)
-@Composable
-fun CharacterScreen(id: String) {
-    val query = rememberQuery(CharacterQuery(id = id))
-    val phase = query.phase
-    if (phase is Phase.Ready) phase.data.character?.let { character ->
-        Text(character.name ?: "Unknown")
-        val notes = character.characterNotes
-        if (notes != null) CharacterNotes(notes) else CircularProgressIndicator()
-    }
-}

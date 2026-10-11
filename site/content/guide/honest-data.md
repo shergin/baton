@@ -12,10 +12,10 @@ A non-null field is a non-optional property; a nullable one is optional. That is
 
 Some nulls the schema allows are nulls the product has no use for: a row for an issue whose author is gone has nothing to show. `@required(action:)` moves the null up to where the product wants to handle it:
 
-- `NONE` and `LOG` make the field non-optional and bubble the null to the lens boundary: the accessor that produces the lens produces nil instead, and `LOG` logs the path through the environment's log.
-- `THROW` makes the field's accessor throw a required-field error, and a root that throws fails the operation with the path of the first required field that was null.
+- `NONE` and `LOG` make the field non-optional and bubble the null to the lens boundary: the accessor that produces the lens produces nil instead, `LOG` logs the path through the environment's log, and a null that bubbles all the way to an operation's root fails the operation with the path of the first required field that was null.
+- `THROW` makes the field's accessor throw a required-field error, at the read.
 
-{{host catch RepositoryScreen.swift | The row requires its author; an issue without one reads as no row, and the screen's `if let row` skips it. The environment logs where.}}
+{{host catch RepositoryScreen | The row requires its author; an issue without one reads as no row, and the screen's `if let row` skips it. The environment logs where.}}
 
 ## `@catch`: an error the view shows
 
@@ -31,18 +31,19 @@ case .success(let repo?): RepositoryBody(repo)
 
 ```kotlin tab
 val caught = data.repository
+val repo = caught.getOrNull()
 when {
     caught.exceptionOrNull() != null -> Text("Could not load the repository")
-    caught.getOrNull() == null -> Text("No such repository")
-    else -> RepositoryBody(caught.getOrThrow())
+    repo == null -> Text("No such repository")
+    else -> RepositoryBody(repo)
 }
 ```
 
-`@catch(to: NULL)` keeps the optional type and reads errors as null, for a field the view would rather blank. `@throwOnFieldError` on a fragment or an operation is the strict policy: an uncaught error inside fails the read, or the operation, with the errors, and fields the schema marks `@semanticNonNull` read non-optional under it. An app that wants a server's `onError` behaviour states it once in `baton.json`, and the compiler sends it with every operation.
+`@catch(to: NULL)` keeps the optional type and reads errors as null, for a field the view would rather blank. `@throwOnFieldError` on a fragment or an operation is the strict policy: an uncaught error inside fails the read, or the operation, with the errors, and fields the schema marks `@semanticNonNull` read non-optional under it. An app that wants a server's `onError` behaviour states it once in `baton.json`; the compiler writes it into every operation, and the runtime sends it.
 
-{{script notifications steps=4,5,6 | Field errors are data: a response that carries errors for three fields notifies those three slots, and a response that answers them notifies them again. A view reading through `@catch` sees the error, then the value.}}
+{{script notifications steps=5,6 | Field errors are data: a response that carries errors for three fields notifies those three slots, and a response that answers them notifies them again. A view reading through `@catch` sees the error, then the value.}}
 
-A response with errors and no data at all is not a field error but a request error: the whole fetch fails, the phase reads failed with the server's errors, and a retry is one call away.
+A response with errors and no data at all is not a field error but a request error: the whole fetch fails. With nothing in the store the phase reads failed with the server's errors and a retry is one call away; with data already there, the data stays and the fetch carries the failure.
 
 ## Missing data heals
 
@@ -50,7 +51,7 @@ Missing data is the one case the types cannot express. It arises when a link is 
 
 {{script heal steps=1,2,3,4 | A read that finds `Location.dimension` missing logs it and refetches the owner; the refetch restores the value; a second miss after the heal's own refetch is logged as unexpected and healed no further.}}
 
-A value the generated type cannot hold, a null in a non-null field or a number where a string was promised, is logged as unexpected in the same way, and never read as a zero that looks like data.
+A value the generated type cannot hold, a null in a non-null field or a string where an integer was promised, is logged as unexpected and reads as nil, or as the zero value where the type has no nil; a mapped scalar that does not convert never reads as a zero at all.
 
 ## Enums
 
@@ -79,7 +80,7 @@ val IssueState.word: String
 
 ## Custom scalars
 
-A custom scalar is stored as its text, exactly as the server wrote it, and reads as a string; or `customScalarTypes` in `baton.json` maps it to a type of the app's, `Decimal`, `Date`, `URL` and `UUID` out of the box, and the read converts the text at the read. Because a conversion can fail, the accessor is optional wherever the schema puts the field, unless `@required` or `@throwOnFieldError` says what a failure does; a text that does not convert is reported as unexpected, never read as a zero.
+A custom scalar is stored as its text, exactly as the server wrote it, and reads as a string; or `customScalarTypes` in `baton.json` maps it to a type of the app's, which in Swift `Decimal`, `Date`, `URL` and `UUID` already are and in Kotlin takes a converter object, and the text is converted at the read. Because a conversion can fail, the accessor is optional wherever the schema puts the field, unless `@required` or `@throwOnFieldError` says what a failure does; a text that does not convert is reported as unexpected, never read as a zero.
 
 ```json
 {
@@ -103,7 +104,7 @@ addComment(input = AddCommentInput(body = body, subjectId = subjectID), connecti
 
 ## Staleness is a phase
 
-A handle reads `isStale` beside its phase: true when the data is older than the operation's expiration or was marked stale by an invalidation, and the age survives a launch because the image keeps it. Stale data stays visible; what to do about it is the app's call, a refresh on appearance or a revalidation on return. [Reads](../reads/) has the policies.
+A handle reads `isStale` beside its phase: true when the data is older than the operation's expiration or was marked stale by an invalidation, and the age survives a launch because the image keeps it. Stale data stays visible; a `storeOrNetwork` attach refetches it, and a revalidation on the app's return refetches whatever went stale meanwhile. [Reads](../reads/) has the policies.
 
 ## The principle behind it
 

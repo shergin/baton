@@ -1,6 +1,6 @@
 # Compose
 
-The Kotlin runtime is the same machine written for its platform: the same compiler, the same plans, the same fixtures under `spec/`, in Kotlin's words. Every chapter on this site shows the Compose spelling beside the SwiftUI one; this page is what differs, and the setup.
+The Kotlin runtime is the same machine written for its platform: the same compiler, the same plans, the same fixtures under `spec/`, in Kotlin's words. The figures on this site show the Compose spelling beside the SwiftUI one; this page is what differs, and the setup.
 
 ## Where the marker stands
 
@@ -36,6 +36,8 @@ Everything else is the same by construction: the same operation text, the same r
 ## The environment in a composition
 
 ```kotlin
+// From the GitHub sample: Exchange is the sample's own wrapper, under
+// kotlin/samples/exchange; on Android the image also takes a directory.
 val environment = remember(token) {
     Environment(
         Exchange(HttpTransport("https://api.github.com/graphql", credentials = { mapOf("Authorization" to "Bearer $token") })),

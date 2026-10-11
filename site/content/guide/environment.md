@@ -58,13 +58,13 @@ The environment has an active flag the app sets from its lifecycle: false when t
 
 The environment calls its log with each event of its work: a fetch started, completed with its duration or failed with its failure's kind; a commit with its kind and the count of slots it changed; a field error no `@catch` handled, by operation and path; the image opened, written or failed; and the missing-data cases, each by type and field name. Every event is value-free, a set of names and counts, never a record, a value or a response body, so an app routes it to its logging and metrics without logging anything a user typed.
 
-{{script events steps=1,2,3,5,7,8 | What the specification requires the log to say for a commit, a fetch that fails each way, a response with field errors, and an optimistic layer applied and resolved.}}
+{{script events steps=1,2,3,4,7,8 | What the specification requires the log to say for a commit, a fetch that fails by the transport and by a request error, a response whose field error no `@catch` handles, and an optimistic layer applied and resolved.}}
 
-Debug builds print the missing-data events until a log is set; a test sets none, or collects them and asserts on a name.
+In Swift a debug build prints the missing-data events until a log is set; in Kotlin an environment made with `debug = true` does. A test sets none, or collects them and asserts on a name.
 
 ## Failures say their kind
 
-A fetch or a stream that did not deliver fails in one of a closed set of kinds: the transport's, carrying what the transport threw unchanged; a request error, the server's errors with no data; a malformed response; the environment's, when it is gone. A view branches on the kind, and an app's retry policy lives in its exchange, not in the view.
+A fetch or a stream that did not deliver fails in one of a closed set of kinds: the transport's, carrying what the transport threw unchanged; a request error, the server's errors with no data; a malformed response; the environment's, when nothing could send the request, because it is gone or has no subscription transport. A view branches on the kind, and an app's retry policy lives in its exchange, not in the view.
 
 ## A store without a server
 

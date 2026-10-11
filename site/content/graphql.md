@@ -16,16 +16,16 @@ A **document** is what you send: a selection of fields, nested as deep as you li
 
 {{source spec/sources/TestHeaderQuery.graphql | A query with a variable, `$id`, and a fragment spread, `...TestHeader_character`. The fragment is below.}}
 
-{{source spec/sources/TestHeader_character.graphql | A fragment: a named piece of a selection on one type. Think of it as the fields one view needs, with a name. The query above spreads it, and the server never sees the name; the compiler inlines it before sending.}}
+{{source spec/sources/TestHeader_character.graphql | A fragment: a named piece of a selection on one type. Think of it as the fields one view needs, with a name. The query above spreads it, and the text the server receives carries the fragment after the operation, as the compiler prints it.}}
 
 The response is the order, filled. Its keys are the document's field names, its nesting is the document's nesting, and there is nothing in it you did not ask for:
 
-{{json spec/rickandmorty/character-header-9.json | The response, recorded from the API for `id: "9"`. An extra `id` under `origin` is there because the compiler asked for it; the next section says why.}}
+{{json spec/rickandmorty/character-header-9.json | The response, recorded from the API for `id: "9"`. The `id` fields, on the character and under `origin`, are there because the compiler asked for them; the next section says why.}}
 
 Three things to notice, because they change how you build:
 
-- **No over-fetching.** The REST endpoint for a character returns twenty fields; this response has six. A screen fetches what its views render.
-- **No waterfalls.** The origin's name came in the same round trip as the character. On REST that was a second call after the first answered.
+- **No over-fetching.** The REST endpoint for a character returns every field the character has, a dozen; this response has the five the view reads. A screen fetches what its views render.
+- **No waterfalls.** Ask for the origin's dimension as well and it comes in the same round trip as the character. On REST the character embeds only its origin's name and link, and the dimension is a second call after the first answered.
 - **The contract is in the build.** The document is checked against the schema when the app is compiled. A field the server renames is a build error at the character in the text, not a decoding failure in production.
 
 ## Null is a word in the schema
@@ -66,7 +66,7 @@ A **subscription** is the third kind of operation: a stream of events from the s
 
 ## Errors are data too
 
-A GraphQL response can carry both `data` and `errors`, and an error has a `path` that says which field failed. A client that swallows that into a `null` shows an empty label and tells no one. Baton stores a field's error beside the field, so a cached read sees the same error the network read saw, and `@catch` lets a view decide what to show. A response with errors and no data at all is a failure of the whole fetch, which the view sees as a failed phase with a retry.
+A GraphQL response can carry both `data` and `errors`, and an error has a `path` that says which field failed. A client that swallows that into a `null` shows an empty label and tells no one. Baton stores a field's error beside the field, so a cached read sees the same error the network read saw, and `@catch` lets a view decide what to show. A response with errors and no data at all is a failure of the whole fetch: with nothing in the store the phase reads failed, with a retry; with data already there, the data stays and the fetch carries the failure.
 
 ## What Relay adds, and what Baton keeps
 

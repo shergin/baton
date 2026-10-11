@@ -1,6 +1,6 @@
 # Getting started
 
-Four things, in order: the package, the schema, the environment, the first screen. Then a fragment, a list and a write, which is most of what an app does. Every snippet compiles in the repository's checks, and the SwiftUI and Compose tabs show the same thing twice.
+Four things, in order: the package, the schema, the environment, the first screen. Then a fragment, a list and a write, which is most of what an app does. The GraphQL in every figure is compiled by the real compiler when this site is built, and the SwiftUI and Compose tabs show the same thing twice.
 
 ## Install
 
@@ -24,6 +24,8 @@ In Kotlin, the runtime is on Maven Central and the Gradle plugin runs the compil
 
 ```kotlin
 // build.gradle.kts
+import baton.gradle.BatonGenerate
+
 plugins {
     kotlin("multiplatform") version "2.4.20"
     id("com.shergin.baton") version "0.15.0"
@@ -64,11 +66,12 @@ One environment per session, made at the root of the app and injected once. It h
 
 ```swift tab
 @main
-struct App: App {
+struct IssuesApp: App {
+    private static let tokens = TokenStore()
     @State private var environment = Baton.Environment(
         transport: URLSessionTransport(
             url: URL(string: "https://api.github.com/graphql")!,
-            credentials: { ["Authorization": "Bearer \(token)"] }
+            credentials: { ["Authorization": "Bearer \(tokens.current)"] }
         ),
         store: Store(persistence: Persistence(name: "App", version: Types.schemaDigest))
     )
@@ -84,10 +87,10 @@ struct App: App {
 
 ```kotlin tab
 @Composable
-fun App(token: String) {
-    val environment = remember(token) {
+fun App(tokens: TokenStore) {
+    val environment = remember {
         Environment(
-            HttpTransport("https://api.github.com/graphql", credentials = { mapOf("Authorization" to "Bearer $token") }),
+            HttpTransport("https://api.github.com/graphql", credentials = { mapOf("Authorization" to "Bearer ${tokens.current}") }),
             store = Store(persistence = Persistence.named("App", version = Types.schemaDigest)),
         )
     }
@@ -97,7 +100,7 @@ fun App(token: String) {
 }
 ```
 
-`Types.schemaDigest` is generated: an image written under another schema starts again instead of being migrated. The credentials closure is read on every attempt, so a renewed token reaches the next request without a new environment. A production endpoint wants a retry and a deadline around that transport, which is [the exchange](../recipes/exchange/), a few dozen lines the app owns.
+`Types.schemaDigest` is generated: an image written under another schema starts again instead of being migrated. The credentials closure is read on every attempt, so a token the store renews reaches the next request without a new environment; on Android the image also needs a directory, `Persistence.named("App", version = Types.schemaDigest, directory = cacheDir.path)`. A production endpoint wants a retry and a deadline around that transport, which is [the exchange](../recipes/exchange/), a few dozen lines the app owns.
 
 ## The first screen
 
@@ -135,7 +138,7 @@ A mutation compiles to an action. Call it with one argument per variable and, wh
 
 Misspell a field and the build fails at the character in the GraphQL text, in the file that carries it, with the schema's suggestion:
 
-{{diagnostics typo | `batonc validate` over a row with a typo. The position points into the string inside the Swift file, so the editor shows it on the line.}}
+{{diagnostics typo | The compiler over a row with a typo. The position points into the string inside the Swift file, so the editor shows it on the line.}}
 
 ## Previews and tests
 

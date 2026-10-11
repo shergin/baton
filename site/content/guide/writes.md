@@ -16,7 +16,7 @@ An optimistic response is rendered to a payload by a generated builder, ingested
 
 {{script optimistic | The specification's optimistic script: a rename applied as a layer, a server commit underneath it, the layer resolved, a second layer reverted, and a deleted note revived by a layer and deleted again when the layer goes.}}
 
-What the view does when the server refuses is the view's: the layer is already gone, so a button reads its old state again, and the action's error says why. The GitHub sample's comment composer empties its field at once and puts the text back on a refusal.
+What the view does when the server refuses is the view's: the layer is already gone, so a button reads its old state again, and the action's error says why. The Kotlin GitHub sample's comment composer empties its field at once and puts the text back on a refusal; the Swift one clears it when the server answers.
 
 ## Adding to a list
 
@@ -24,7 +24,7 @@ A payload field that is an edge or a node carries an edge directive naming the c
 
 {{host comments CommentComposer | `@appendEdge` on the payload's `commentEdge`. The composer never touches the list; it names it.}}
 
-{{operation comments CommentComposerAddComment | The directive is the client's business and stays out of the text the server receives; `$connections` is declared because the document uses it, and the server ignores a variable it does not read.}}
+{{operation comments CommentComposerAddComment | The directive is the client's business and stays out of the text the server receives, and so does the `$connections` variable only it used; the request's variables still carry `connections`, which the server ignores.}}
 
 Removing is `@deleteEdge(connections:)` on a field holding the removed node's id, or `@deleteRecord` on a field holding the id of a record to delete outright. [Lists](../lists/) shows the edit in the store.
 

@@ -37,8 +37,10 @@ struct CharactersScreen: View {
     var body: some View {
         switch characters.phase {
         case .ready(let data):
-            List(data.characters?.results ?? .empty) { character in
-                CharacterRow(character: character.characterRow)
+            List {
+                ForEach(data.characters?.results ?? .empty) { character in
+                    CharacterRow(character: character.characterRow)
+                }
             }
             .navigationTitle("Characters")
         case .loading:

@@ -34,7 +34,7 @@ Baton adds its own checks on top: a name generated code reserves, a fragment bot
 
 One output per source that declares GraphQL, named by the source's path, and one shared file per target with the types and the storage keys every output names. The generated code is one line per field plus the data tables the runtime walks a response by: no model, no decoder, no cache policy, no reflection.
 
-{{generated issues IssueRow | The lens of one fragment: a struct holding its anchor and one accessor per field. A linked field is a nested lens; an abstract field reads its slot on the concrete type.}}
+{{generated issues IssueRow | The lens of one fragment: a struct in Swift and a class in Kotlin, holding its anchor and one accessor per field. A linked field is a nested lens; an abstract field reads its slot on the concrete type.}}
 
 {{generated issues shared | The shared file: the schema's digest, the format the runtime must declare, and every type and storage key the target's documents name, interned once per process.}}
 

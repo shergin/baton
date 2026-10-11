@@ -38,35 +38,3 @@ fun IssueComments(issue: IssueComments_issue) {
         CommentComposer(subjectID = issue.id, connectionID = comments.connectionID)
     }
 }
-
-@Mutation($$"""
-    mutation CommentComposerAddComment($input: AddCommentInput!, $connections: [ID!]!) {
-      addComment(input: $input) {
-        commentEdge @appendEdge(connections: $connections) {
-          node { id bodyText author { login } }
-        }
-      }
-    }
-    """)
-@Composable
-fun CommentComposer(subjectID: String, connectionID: String) {
-    val addComment = rememberMutation(CommentComposerAddComment)
-    val scope = rememberCoroutineScope()
-    var text by remember { mutableStateOf("") }
-    Row {
-        OutlinedTextField(value = text, onValueChange = { text = it })
-        Button(
-            onClick = {
-                val body = text
-                scope.launch {
-                    addComment(
-                        input = AddCommentInput(body = body, subjectId = subjectID),
-                        connections = listOf(connectionID),
-                    )
-                    text = ""
-                }
-            },
-            enabled = text.isNotBlank() && !addComment.isInFlight,
-        ) { Text("Comment") }
-    }
-}

@@ -2,5 +2,6 @@
   "schema": "../../../spec/rickandmorty/schema.graphql",
   "lookups": [
     { "field": "Query.character", "type": "Character", "argument": "id" }
-  ]
+  ],
+  "kotlin": { "package": "app" }
 }

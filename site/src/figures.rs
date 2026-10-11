@@ -154,13 +154,16 @@ impl Registry {
                             .join(""),
                     )
                 });
-                Ok(plate(next(), &inner, caption, "host-plate"))
+                Ok(plate(next(), &inner?, caption, "host-plate"))
             }
             // What the compiler generated from the figure's documents.
             "generated" => {
                 let name = first()?;
                 let runs = self.all(name, false)?;
-                let file = arguments.get(1).filter(|word| !word.contains('=')).copied();
+                let file = arguments
+                    .get(1)
+                    .filter(|word| !word.contains('=') && **word != "shared")
+                    .copied();
                 let shared = arguments.contains(&"shared");
                 let inner = language_tabs(&runs, |compiled| {
                     let outputs: Vec<&crate::compiler::File> = compiled
@@ -185,7 +188,7 @@ impl Registry {
                             .join(""),
                     )
                 });
-                Ok(plate(next(), &inner, caption, "generated-plate"))
+                Ok(plate(next(), &inner?, caption, "generated-plate"))
             }
             // An operation's text, as the compiler prints it: the request.
             "operation" => {
@@ -423,13 +426,19 @@ pub fn file_block_named(name: &str, text: &str, language: &str) -> String {
 
 /// SwiftUI beside Compose: one panel per language a figure has, or the
 /// one language's content alone.
-fn language_tabs(runs: &[Compiled], render: impl Fn(&Compiled) -> Option<String>) -> String {
+fn language_tabs(
+    runs: &[Compiled],
+    render: impl Fn(&Compiled) -> Option<String>,
+) -> Result<String, String> {
     let panels: Vec<(Language, String)> = runs
         .iter()
         .filter_map(|compiled| render(compiled).map(|html| (compiled.language, html)))
         .collect();
+    if panels.is_empty() {
+        return Err("no file of the figure matches; the plate would be empty".to_string());
+    }
     if panels.len() == 1 {
-        return panels[0].1.clone();
+        return Ok(panels[0].1.clone());
     }
     let mut tabs = String::from(
         "<div class=\"panels\" data-group=\"language\"><div class=\"tabs\" role=\"tablist\">",
@@ -450,7 +459,7 @@ fn language_tabs(runs: &[Compiled], render: impl Fn(&Compiled) -> Option<String>
         ));
     }
     tabs.push_str("</div>");
-    format!("{tabs}{bodies}</div>")
+    Ok(format!("{tabs}{bodies}</div>"))
 }
 
 /// An operation as the request it becomes: its variables, its text on one
@@ -746,7 +755,7 @@ fn playground_html(number: usize) -> String {
          </div>\n\
          <div class=\"readings\" id=\"readings\"><p class=\"status\">Loading the compiler…</p></div>\n\
          </div>\n\
-         <figcaption><span class=\"plate-number\">Plate {number}.</span> The documents on the left are compiled by `batonc` built to WebAssembly, against the Rick and Morty schema; every tab on the right is what the compiler wrote for them, remade as you type.</figcaption>\n\
+         <figcaption><span class=\"plate-number\">Plate {number}.</span> The documents on the left are compiled by <code>batonc</code> built to WebAssembly, against the Rick and Morty schema; every tab on the right is what the compiler wrote for them, remade as you type.</figcaption>\n\
          </figure>\n"
     )
 }

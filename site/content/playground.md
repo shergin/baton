@@ -8,7 +8,7 @@ Write a fragment and a query against the Rick and Morty schema, and read what th
 
 - Add `gender` to the fragment and watch one accessor appear in both lenses and one field in the operation's text. Nothing else moves.
 - Misspell a field. The diagnostic points at the line and the column inside the document, with the schema's suggestion.
-- Spread a fragment the query does not reach, and read the warning: a fragment nobody spreads is one nothing can read.
+- Declare a fragment no query spreads, and read the warning: a fragment nobody spreads is one nothing can read.
 - Mark the fragment `@inline` and see a value in place of a lens: a struct in Swift, a data class in Kotlin.
 - Put `@required(action: THROW)` on `name` and see the accessor stop being optional and start throwing.
 - Give the query `@cacheExpiration(seconds: 60)`. The text the server receives does not change, because the directive is the client's business.

@@ -6,13 +6,13 @@
 
 <h1>Relay, for <span class="swift-word">SwiftUI</span> and <span class="kotlin-word">Compose</span>.</h1>
 
-<p class="lede">A fragment beside every view, one request per screen, cached data in the first frame, and a re-render only where a field changed. You write what a view needs. The compiler writes the query, checks every field against the schema, and emits a typed lens. The runtime turns responses into records that the UI framework itself observes.</p>
+<p class="lede">A fragment beside every view, one request per screen, cached data in the first frame, and a re-render only where a field changed. You write what a view needs. The compiler assembles the screen's operation, checks every field against the schema, and emits a typed lens. The runtime turns responses into records that the UI framework itself observes.</p>
 
 ```sh
 swift package add-dependency https://github.com/shergin/baton --from 0.15.0
 ```
 
-<p class="trust">Swift 6.2 · Kotlin 2.4 · Foundation, Observation and the system's SQLite, nothing else · one prebuilt compiler</p>
+<p class="trust">Swift 6.2 · Kotlin 2.4 · the platform's own frameworks and SQLite, nothing vendored · one prebuilt compiler</p>
 
 <p><a class="cta solid" href="start/">Start here</a> <a class="cta" href="graphql/">New to GraphQL?</a> <a class="cta accent" href="walkthrough/">One screen, end to end</a> <a class="cta" href="playground/">Open the playground</a></p>
 
@@ -62,7 +62,7 @@ A screen is one query. Every view on it is one fragment. The compiler assembles 
 
 {{host issues IssuesScreen | The screen names the repository by its variables and spreads the row's fragment into the open issues. The row's accessor, `issueRow`, is the baton: the parent hands it over and cannot read through it.}}
 
-{{operation issues IssuesQuery | What the compiler sends: the fragment inlined, the `id` fields identity needs added, the whole operation printed on one line and hashed to an id. Under `persistConfig` the request carries the id alone.}}
+{{operation issues IssuesQuery | What the compiler sends: the operation with the fragment it reaches printed after it, the `id` fields identity needs added, the whole text on one line and hashed to an id. Under `persistConfig` the request carries the id alone.}}
 
 {{lens issues IssueRow_issue | The row's lens, as the compiler reported it: one accessor per declared field, and no accessor for anything the fragment did not declare. Masking is not a convention here; it is the shape of the type.}}
 
@@ -130,7 +130,7 @@ The vocabulary is closed and short. A feature is a composition of these, or a Re
 <li><a href="guide/concepts/#record">record</a>an observable object keyed by type and id</li>
 <li><a href="guide/concepts/#store">store</a>all records, owned by the main thread</li>
 <li><a href="guide/concepts/#plan">plan</a>how a response becomes records, decided by the compiler</li>
-<li><a href="guide/concepts/#operation-value">operation value</a>a query's variables, the thing a parent constructs</li>
+<li><a href="guide/concepts/#operation-value">operation value</a>an operation's variables, the thing a parent constructs</li>
 <li><a href="guide/concepts/#connection">connection</a>a list that pages, merged in the store</li>
 <li><a href="guide/concepts/#environment">environment</a>the session: one store, one transport</li>
 <li><a href="guide/concepts/#transport">transport</a>one verb, <code>send</code>, yielding payloads</li>

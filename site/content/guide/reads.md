@@ -6,7 +6,7 @@ A screen declares one query and reads its data through a lens; a view declares o
 
 The screen's document is a query with variables, carried by a marker. The compiler turns it into an operation value, a struct of the variables in Swift and a class in Kotlin, which the parent constructs and the view resolves when it appears.
 
-{{host header CharacterScreen | A screen with one variable. In Swift the operation value is the view's stored property, resolved by the `@Query` wrapper; in Kotlin `rememberQuery` resolves it in the composable.}}
+{{host header CharacterScreen | A screen with one variable. In Swift the operation value is the view's stored property, resolved by the `@Query` macro; in Kotlin `rememberQuery` resolves it in the composable.}}
 
 Resolving means: the environment makes or shares a handle for that value, the handle checks the store, and if the store holds everything the operation selects, the first body renders it. Otherwise the environment fetches, and the body renders `loading` until the answer is committed. Two views that resolve equal values share one handle and one fetch.
 
@@ -18,7 +18,7 @@ A handle's phase is `loading`, `ready(data)` or `failed(error)`, always readable
 
 ## Fetch policies
 
-Relay's four, on the handle: `storeOrNetwork`, the default, renders what the store has and fetches only on a miss; `storeAndNetwork` renders and fetches; `networkOnly` renders what the store has while it fetches; `storeOnly` never fetches. In Swift the policy is an argument of `@Query`; in Kotlin, of `rememberQuery`.
+Relay's four, chosen where a handle is attached: `storeOrNetwork`, the default, renders what the store has and fetches when the store cannot answer or the data is stale; `storeAndNetwork` renders and fetches; `networkOnly` shows loading until its own response, unless another holder already shows the handle; `storeOnly` never fetches. In Swift the policy is an argument of `@Query`; in Kotlin, of `rememberQuery`.
 
 ```swift tab
 @Query("…", fetchPolicy: .storeAndNetwork) var issues: IssuesQuery
@@ -28,7 +28,7 @@ Relay's four, on the handle: `storeOrNetwork`, the default, renders what the sto
 val query = rememberQuery(IssuesQuery(owner, name), fetchPolicy = FetchPolicy.STORE_AND_NETWORK)
 ```
 
-A refetch asks the network again whatever the policy; `environment.invalidate()` marks everything stale and refetches what is retained; `environment.revalidate()` refetches what is stale or failed, for a return to the foreground. A query may state its own expiration with `@cacheExpiration(seconds:)`, and the store has a default for the rest; data past it reads as stale, and a revalidation refetches it.
+A refetch asks the network again whatever the policy; `environment.invalidate()` marks everything stale and refetches what is retained; `environment.revalidate()` refetches what is stale or failed, for a return to the foreground. A query may state its own expiration with `@cacheExpiration(seconds:)`, and the store may be given a default for the rest; data past it reads as stale, which a `storeOrNetwork` attach refetches, as a revalidation does.
 
 {{script ages steps=1,2,3,4,5,6 | Two operations over the same character, under the store's default expiration of a minute; the second states thirty seconds of its own. As the clock advances the second reads stale first, then both; a revalidation refetches both, since both are stale by then.}}
 
@@ -48,7 +48,7 @@ Every accessor is a synchronous read on the main thread that loads a slot and re
 
 What an accessor reads as follows the schema: a nullable field is an optional; a non-null field is not; a list of nullable elements is a list of optionals; a list of records is a collection of lenses, `List` in Swift and `LensList` in Kotlin, each lens keyed by its record. Interfaces and unions add an accessor per concrete type, `asIssue`, and a spread inside an inline fragment on them carries `@alias`, as Relay requires.
 
-{{host catch RepositoryScreen.swift | A list of lenses, a spread that may read as absent, and a field under `@catch`; the next chapters cover the last two.}}
+{{host catch RepositoryScreen | A list of lenses, a spread that may read as absent, and a field under `@catch`; Honest data covers the last two.}}
 
 ## Refetch, retry, invalidate
 
@@ -59,7 +59,7 @@ What an accessor reads as follows the schema: a nullable field is an optional; a
 
 ## Lookups
 
-A root field that names a record by id, `node(id:)` or `character(id:)`, can be answered from the store before the network: `baton.json` declares the lookup, and the availability check binds the field to the record it already holds, so a detail screen opened from a list renders its header in the first frame and fetches only what the list did not. The binding happens in the check, never in a read, so a read stays a slot load.
+A root field that names a record by id, `node(id:)` or `character(id:)`, can be answered from the store before the network: `baton.json` declares the lookup, and the availability check binds the field to the record it already holds, so a detail screen opened from a list renders in the first frame when the list fetched everything the detail selects, and is fetched whole otherwise. The binding happens in the check, never in a read, so a read stays a slot load.
 
 ```json
 {
@@ -75,4 +75,4 @@ A root field that names a record by id, `node(id:)` or `character(id:)`, can be 
 
 A rule outside a view, a share sheet, a comparison off the main thread: these want a value, not a live lens. A fragment marked `@inline` compiles to a plain value of its fields, built from the record when the spread's accessor is called, and a test builds one with its initializer. A fragment is a lens or a value, never both.
 
-{{host inline Rules.swift | An inline fragment, the rule that takes its value, and the screen that builds the value at a tap.}}
+{{host inline Rules | An inline fragment, the rule that takes its value, and the screen that builds the value in its body and hands it on.}}
