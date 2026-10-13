@@ -21,6 +21,105 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, a streamed list — 2026-10-13
+
+Revision: the working tree on top of `d027f18`; the runtime change was
+committed as `1c12dda` between the first run and the second, the bench's
+new section after the runs, with the one fix the runs asked for, below.
+The baseline column is `d027f18` built in a worktree with its own
+compiler. Machine: Apple M1 Pro
+(MacBook Pro), macOS 26.5.2, Xcode 26.6, Swift 6.3.3, release build.
+`swift run -c release BatonBenchmarks`, the whole suite, three runs of the
+change and two of the baseline, the last four alternating; best of the
+runs, the median of the medians in parentheses. Not a quiet machine: the
+load average stood between 13 and 22 and other sessions were building;
+read the change against the baseline column.
+
+### Streamed lists
+
+A thousand items in Relay's shape through the environment, one part an
+item after an initial part with none (`docs/decisions/a-streamed-list-grows-in-its-slot.md`),
+against the same thousand episodes in one part.
+
+| Measurement | Best (median) |
+|---|---|
+| A thousand episodes in one part, fetched and committed | 817 µs (859) |
+| A streamed episode, per item, over a thousand parts | 33.8 µs (34.9) |
+| A streamed edge, per item, over a thousand parts, the connection merged again after each | 55.4 µs (56.2) |
+
+An episode in the one-part fetch costs 0.82 µs; streamed, one part an
+item, it costs 33.8 µs, about 41 times as much, since each part is parsed,
+ingested and committed on its own and the list's slot is written again
+with one more element. A streamed edge costs 21.6 µs more than a streamed
+episode, the merge of the page into its connection after every edge; a
+thousand-item stream is 34 ms of work in all, a thousand-edge stream
+55 ms, spread over the parts' arrival.
+
+### The sections that were there
+
+| Measurement | Latest recorded | `d027f18`, two runs | The change, three runs |
+|---|---|---|---|
+| Response bytes into a change set | 1.73 ms (1.80), 9 October | 1.70 ms (2.23) | 1.68 ms (1.79) |
+| Resolve the fixture plan for a page, per resolution | 878 ns (889), 7 October | 1.56 µs (1.60) | 1.67 µs (1.69) |
+| Commit into an empty store, 899 records | 470 µs (505), 9 October | 469 µs (509) | 471 µs (492) |
+| Commit of the same payload again | 113 µs (118), 9 October | 114 µs (122) | 114 µs (115) |
+| Commit with one field changed, 20 rows observing | 116 µs (116), 9 October | 116 µs (120) | 117 µs (119) |
+| Untracked lens read, per field | 20.3 ns, 9 October | 20.7 ns (22.0) | 20.4 ns (20.5) |
+| Tracked read, a row body of 8 fields, per field | 579 ns (628), 8 October | 595 ns (644) | 574 ns (619) |
+| The check of the fixture plan against the store | 127 µs (127), 9 October | 129 µs (134) | 128 µs (129) |
+| Hydration of 898 rows | 1.79 ms (1.84), 9 October | 1.78 ms (1.92) | 1.79 ms (1.91) |
+| A pass over one root reaching 50,004 records | 1.56 ms (1.93), 9 October | 1.56 ms (1.67) | 1.55 ms (1.67) |
+| A multipart response of 978 KB, in 16 KB chunks | 482 µs (491), 4 October | 482 µs (491) | 484 µs (498) |
+| The same response through `URLSessionTransport` | 1.10 ms (1.38), 3 October | 1.26 ms (1.48) | 1.10 ms (1.56) |
+| `loadNext` with no body reading the nodes, per page of 50 | 190 µs (1.18 ms), 7 October | 170 µs (836) | 167 µs (829) |
+| `loadNext`, a body reading every node, per page of 50 | 222 µs (1.80 ms), 7 October | 222 µs (1.22 ms) | 199 µs (1.21 ms) |
+| Nodes of the merged connection, 2,100 lenses, untracked | 80.9 µs (81.0), 8 October | 81.4 µs (86.5) | 81.5 µs (84.7) |
+| Nodes of the merged connection, tracked | 1.16 ms (1.25), 3 October | 1.14 ms (1.43) | 1.14 ms (1.41) |
+
+Against the baseline, one row moved beyond five percent in every run: the
+resolution of the fixture plan for a page, 1.67 µs against 1.56, about
+110 ns a resolution. The rest of the suite stands within five percent of
+the baseline at its best, the ingest, the commit, the reads, the
+availability check, the collection, incremental delivery and the
+connection among it; the long session's commit of a lookup, its last 100,
+read 2.42 µs against 2.29, at six percent. Against the latest recorded
+numbers, the resolution had already moved before this change, from 878 ns
+on 7 October to 1.56 µs at `d027f18`, and `loadNext` with no body reading
+the nodes reads 170 µs at `d027f18` where 7 October recorded 190; neither
+is this change's. The long session's footprint read +0.7 and -0.6 MB at
+`d027f18` and +9.3 to +13.9 MB with the change, against +20.3 MB on
+8 October: the figure is the process's footprint over the session, which
+depends on what the sections before it returned to the allocator, and the
+streamed lists now run before it.
+
+The resolution's 110 ns had a cause and a fix. The resolved field had
+gained the stream's label as an optional string, sixteen bytes more in a
+struct a resolution copies several times over the fixture's fields; the
+runtime needs only whether the field streams, so the field now carries a
+flag and the label stays on the static plan. One run of the full suite's
+samples after the fix, on the same loaded machine, read the row at
+1.61 µs (1.64), within the baseline's spread; the stream rows above were
+measured before the fix, which touches no part of their path.
+
+### The Kotlin ingest on a device
+
+The device benchmark of the entry of 7 October, `IngestBenchmark` under
+`kotlin/benchmarks/android`, on a Microsoft Surface Duo (Android 12,
+API 32), which is not the Pixel 9 of the earlier entries, so its two
+columns compare only with each other: `d027f18` in a worktree with its own
+compiler against the working tree with its own, each installed as a
+release build and run twice, the medians of 300 runs after 200 warm-ups,
+the two runs within 0.02 ms of each other.
+
+| Step | `d027f18` | The change |
+|---|---|---|
+| Ingest, off the main thread | 5.49 ms, 5.50 ms | 5.39 ms, 5.38 ms |
+| Commit, on the main thread | 1.10 ms, 1.12 ms | 1.06 ms, 1.06 ms |
+
+The ingest allocated 1,584 KB and the commit 448 KB on both trees, and a
+store held 328 KB after the commit on both. The change added one test of a
+field's flag to the ingest's plural link, which the numbers do not see.
+
 ## Unreleased, where the phone's cold start waits — 2026-10-09
 
 Revision: `8e587e7` for the traces, the Baton sample built on the working

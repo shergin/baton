@@ -108,6 +108,25 @@ struct BenchmarkDocuments {
     var caughtQuery: BenchCaughtQuery
 
     @Query("""
+        query BenchStreamedEpisodes($id: ID!) {
+          character(id: $id) { id name episode @stream(label: "episodes", initialCount: 0) { id name } }
+        }
+        """)
+    var streamedEpisodes: BenchStreamedEpisodes
+
+    @Query("""
+        query BenchStreamedNotes($id: ID!) {
+          character(id: $id) {
+            id
+            notes(first: 1000) @stream_connection(key: "BenchStreamedNotes_notes", initial_count: 0) {
+              edges { node { id text } }
+            }
+          }
+        }
+        """)
+    var streamedNotes: BenchStreamedNotes
+
+    @Query("""
         query BenchStrictFixture($page: Int) @throwOnFieldError {
           characters(page: $page) {
             info { count pages next prev }
@@ -561,6 +580,9 @@ func run() async throws {
     print("incremental delivery: a multipart response of \(MultipartStub.parts) parts, \(MultipartStub.body.count / 1024) KB")
     try await multipartBench()
 
+    print("streamed lists: \(StreamParts.count) items, one part each, through the environment")
+    try await streamBench()
+
     print("keys with arguments: 5,000 rows, each an id and three fields under keys of one kind")
     try argumentBench()
 
@@ -628,6 +650,79 @@ func multipartBench() async throws {
         }
         if count != MultipartStub.parts { print("    parts: \(count)") }
         return DispatchTime.now().uptimeNanoseconds - start
+    }
+}
+
+/// A transport that answers every request with the parts it was given, in
+/// order, and ends the stream after the last.
+final class PartsTransport: Transport, @unchecked Sendable {
+    let parts: [Data]
+    init(_ parts: [Data]) { self.parts = parts }
+
+    func send(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+        AsyncThrowingStream { continuation in
+            for part in parts { continuation.yield(part) }
+            continuation.finish()
+        }
+    }
+}
+
+/// The parts of two streams of a thousand items in Relay's shape, one item a
+/// part, and the same thousand episodes in one part for scale.
+enum StreamParts {
+    static let count = 1_000
+
+    static let episodes: [Data] = {
+        var parts = [Data(#"{"data":{"character":{"id":"1","name":"Rick Sanchez","episode":[]}},"hasNext":true}"#.utf8)]
+        for index in 0..<count {
+            parts.append(Data(#"{"data":{"id":"\#(index)","name":"Episode \#(index)"},"path":["character","episode",\#(index)],"label":"BenchStreamedEpisodes$stream$episodes","hasNext":true}"#.utf8))
+        }
+        parts.append(Data(#"{"hasNext":false}"#.utf8))
+        return parts
+    }()
+
+    static let episodesWhole: Data = {
+        let items = (0..<count).map { #"{"id":"\#($0)","name":"Episode \#($0)"}"# }.joined(separator: ",")
+        return Data(#"{"data":{"character":{"id":"1","name":"Rick Sanchez","episode":[\#(items)]}}}"#.utf8)
+    }()
+
+    static let notes: [Data] = {
+        var parts = [Data(#"{"data":{"character":{"id":"1","notes":{"edges":[]}}},"hasNext":true}"#.utf8)]
+        for index in 0..<count {
+            parts.append(Data(#"{"data":{"node":{"id":"n\#(index)","text":"Note \#(index)","__typename":"Note"},"cursor":"c\#(index)"},"path":["character","notes","edges",\#(index)],"label":"BenchStreamedNotes$stream$BenchStreamedNotes_notes","hasNext":true}"#.utf8))
+        }
+        parts.append(Data(#"{"data":{"pageInfo":{"endCursor":"c\#(count - 1)","hasNextPage":false}},"path":["character","notes"],"label":"BenchStreamedNotes$defer$BenchStreamedNotes_notes$pageInfo","hasNext":false}"#.utf8))
+        return parts
+    }()
+}
+
+/// What a stream costs per item, end to end: the part read, the item placed
+/// in its list and committed, and, for a connection, the page merged into
+/// the connection again. The same episodes in one part say what the stream
+/// pays over a whole response.
+@MainActor
+func streamBench() async throws {
+    func now() -> UInt64 { DispatchTime.now().uptimeNanoseconds }
+    await measureEach("a thousand episodes in one part, fetched and committed", iterations: 10) {
+        let store = Store()
+        let environment = Environment(transport: PartsTransport([StreamParts.episodesWhole]), store: store)
+        let start = now()
+        try? await environment.fetch(BenchStreamedEpisodes(id: "1"))
+        return now() - start
+    }
+    await measureEach("a streamed episode, per item, over a thousand parts", iterations: 10, ops: StreamParts.count) {
+        let store = Store()
+        let environment = Environment(transport: PartsTransport(StreamParts.episodes), store: store)
+        let start = now()
+        try? await environment.fetch(BenchStreamedEpisodes(id: "1"))
+        return now() - start
+    }
+    await measureEach("a streamed edge, per item, over a thousand parts, the connection merged again each", iterations: 10, ops: StreamParts.count) {
+        let store = Store()
+        let environment = Environment(transport: PartsTransport(StreamParts.notes), store: store)
+        let start = now()
+        try? await environment.fetch(BenchStreamedNotes(id: "1"))
+        return now() - start
     }
 }
 
