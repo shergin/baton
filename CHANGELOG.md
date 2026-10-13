@@ -3,7 +3,7 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
-## Unreleased
+## 0.16.0 (Pampushka) — 2026-10-13
 
 - `@stream` and `@stream_connection`. A plural linked field under
   `@stream(label:, initialCount:)` comes with its first items and grows as

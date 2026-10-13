@@ -346,12 +346,13 @@ handing a change back, is
 
 ## Status
 
-0.15.0 (Sushka). On Swift, reads, writes, lists, errors and persistence
+0.16.0 (Pampushka). On Swift, reads, writes, lists, errors and persistence
 run through every layer, with tests and benchmarks behind the claims: cached
 data in the first body, one changed field re-rendering one row, optimistic
 responses that show at once and revert on failure, connections that merge
 their pages in the store, field errors read through Relay's directives,
-deferred fragments, subscriptions, and a store that outlives the process.
+deferred fragments, streamed lists, subscriptions, and a store that
+outlives the process.
 The Kotlin runtime runs on the JVM and on Android, held to the same
 compiler and the same fixtures under `spec/`: every case and every script
 of the specification passes through code the compiler generates, with a
