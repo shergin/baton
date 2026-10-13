@@ -821,7 +821,7 @@
       "text": "mutation TestBuilderNames($id:ID!,$favorite:Boolean!,$self:ID!){type:setFavorite(id:$id,favorite:$favorite){character{id,favorite}},self:setFavorite(id:$self,favorite:$favorite){character{id,favorite}},string:setFavorite(id:$id,favorite:$favorite){character{id,name}},sendable:setFavorite(id:$id,favorite:$favorite){character{id,favorite}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -1801,7 +1801,7 @@
       "text": "query TestCaughtSpreads($id:ID!){character(id:$id){id,...TestCaughtProfile_character,...TestCaughtStrict_character},node(id:$id){__typename,id,...on Character{...TestCaughtProfile_character}}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestCaughtStrict_character on Character{species}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -2531,7 +2531,7 @@
       "text": "mutation TestCommitVariable($commit:ID!){setFavorite(id:$commit,favorite:true){character{id,name,favorite}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -2827,7 +2827,7 @@
       "text": "query TestConditionNames($id:ID!,$name:String!){namesake(name:$name){__typename,asCharacter:name,...on Character{status},...on Node{__isNode:__typename,id}},node(id:$id){__typename,id,...on Episode{name},...on Character{name}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -3508,7 +3508,7 @@
       "text": "query TestEdgesNamesQuery($id:ID!){character(id:$id){...TestEdgesNames_character,id}}fragment TestEdgesNames_character on Character{notes(first:2){Edges:pageInfo{hasNextPage},edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -3997,7 +3997,7 @@
       "text": "query TestEscapedText{search(name:\"\\\\#1\"){__typename,...on Node{__isNode:__typename,id}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -4244,7 +4244,7 @@
       "text": "query TestFragmentNamedFields($id:ID!){character(id:$id){TestCaughtProfile_character:name,TestCaughtStrict_character:species,...TestCaughtProfile_character,...TestCaughtStrict_character,Fragment:status,...Fragment,id}}fragment Fragment on Character{status}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestCaughtStrict_character on Character{species}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -4745,7 +4745,7 @@
       "text": "query TestHasherVariable($hasher:ID!){character(id:$hasher){id,name}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -4960,7 +4960,7 @@
       "text": "mutation TestListPayload{setLists{strings,ids,counts,ratios,flags,jsons,statuses}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -5400,7 +5400,7 @@
       "text": "query TestLowercaseSpreads($id:ID!){character(id:$id){...testLowercase,...testLowercaseRequired,id}}fragment testLowercase on Character{name}fragment testLowercaseRequired on Character{origin{name,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -5673,7 +5673,7 @@
       "text": "mutation TestModuleNamedPayload($id:ID!){setFavorite(id:$id,favorite:true){Baton:character{id,Baton:name}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -5917,7 +5917,7 @@
       "text": "query TestProgramNamesQuery($id:ID!){character(id:$id){...TestProgramNames_character,id}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestProgramNames_character on Character{testProgramNamesRefetchQuery:origin{name,id},testCaughtProfile_character:location{name,id},...TestCaughtProfile_character,id}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -6338,7 +6338,7 @@
       "text": "query TestProgramNamesRefetchQuery($id:ID!){node(id:$id){__typename,...TestProgramNames_character,id}}fragment TestCaughtProfile_character on Character{name,origin{name,id}}fragment TestProgramNames_character on Character{testProgramNamesRefetchQuery:origin{name,id},testCaughtProfile_character:location{name,id},...TestCaughtProfile_character,id}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -6827,7 +6827,7 @@
       "text": "query TestSpreadNames($id:ID!){character(id:$id){testCaughtStrict:species,...TestCaughtStrict_character,id}}fragment TestCaughtStrict_character on Character{species}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {

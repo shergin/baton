@@ -33,7 +33,7 @@ fragment HostileConnection_character on Character
     # What an operation value, a mutation's action and its optimistic response declare.
     variables: totalCount resolution: totalCount name: totalCount document: totalCount
     text: totalCount plan: totalCount errorBehavior: totalCount throwsOnFieldError: totalCount
-    bubbles: totalCount hasDeferred: totalCount cacheExpiration: totalCount Data: totalCount Action: totalCount
+    bubbles: totalCount hasIncremental: totalCount cacheExpiration: totalCount Data: totalCount Action: totalCount
     OptimisticResponse: totalCount hash: totalCount commit: totalCount
     callAsFunction: totalCount Op: totalCount variable: totalCount payload: totalCount
     # What the runtime's protocols give a generated type.

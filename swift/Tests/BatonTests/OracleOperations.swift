@@ -28,7 +28,7 @@ struct OracleOperation: Sendable {
     let value: any Baton.Operation
     let kind: Request.Kind
     /// Whether the response may arrive in parts.
-    let hasDeferred: Bool
+    let hasIncremental: Bool
 
     init<Op: Baton.Operation>(_ operation: Op, reads: [String: @MainActor @Sendable (Op.Data) -> Manifest.Value], spellings: [String: Spelling] = [:]) {
         self.spellings = spellings
@@ -39,7 +39,7 @@ struct OracleOperation: Sendable {
         variables = operation.variables
         value = operation
         kind = Op.kind
-        hasDeferred = Op.hasDeferred
+        hasIncremental = Op.hasIncremental
         readers = reads.mapValues { read -> Reader in { anchor in read(Op.Data(anchor: anchor)) } }
         if let query = operation as? any Query {
             fetch = { environment in try await environment.fetch(query) }
@@ -79,6 +79,8 @@ struct OracleOperation: Sendable {
         "TestUnion": { try OracleOperation(TestUnion(name: $0.string("name")), reads: unionReads) },
         "TestNodeFields": { try OracleOperation(TestNodeFields(id: $0.string("id")), reads: nodeFieldsReads) },
         "TestNodeDeferred": { try OracleOperation(TestNodeDeferred(id: $0.string("id")), reads: nodeDeferredReads) },
+        "TestStreamedEpisodes": { try OracleOperation(TestStreamedEpisodes(id: $0.string("id")), reads: streamedEpisodesReads) },
+        "TestStreamedNotes": { try OracleOperation(TestStreamedNotes(id: $0.string("id")), reads: streamedNotesReads) },
         "TestTwoSpreads": { try OracleOperation(TestTwoSpreads(id: $0.string("id"), again: $0.bool("again")), reads: twoSpreadsReads) },
         "TestDeleteNote": { try OracleOperation(TestDeleteNote(id: $0.string("id")), reads: deleteNoteReads) },
         "TestAddNote": {
@@ -443,6 +445,20 @@ extension OracleOperation {
         "node.name": { $0.node?.asCharacter?.name.manifestValue ?? .null },
         "node.episode.0.name": { $0.node?.appearances?.testAppearances?.episode.element(0)?.name.manifestValue ?? .null },
         "node.episode.1.air_date": { $0.node?.appearances?.testAppearances?.episode.element(1)?.air_date.manifestValue ?? .null },
+    ]
+
+    /// A streamed list reads through the accessor it has without the
+    /// directive; an item that has not arrived is skipped.
+    static let streamedEpisodesReads: [String: @MainActor @Sendable (TestStreamedEpisodes.Data) -> Manifest.Value] = [
+        "character.name": { $0.character?.name.manifestValue ?? .null },
+        "character.episode.0.name": { $0.character?.episode.element(0)?.name.manifestValue ?? .null },
+        "character.episode.1.name": { $0.character?.episode.element(1)?.name.manifestValue ?? .null },
+        "character.episode.2.name": { $0.character?.episode.element(2)?.name.manifestValue ?? .null },
+    ]
+
+    static let streamedNotesReads: [String: @MainActor @Sendable (TestStreamedNotes.Data) -> Manifest.Value] = [
+        "character.notes.edges.0.node.id": { $0.character?.notes.edges?.element(0)?.node?.id.manifestValue ?? .null },
+        "character.notes.edges.1.node.text": { $0.character?.notes.edges?.element(1)?.node?.text.manifestValue ?? .null },
     ]
 
     static let twoSpreadsReads: [String: @MainActor @Sendable (TestTwoSpreads.Data) -> Manifest.Value] = [

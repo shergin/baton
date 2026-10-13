@@ -76,6 +76,14 @@ struct OracleCase: Sendable, CustomTestStringConvertible {
         return parts.count == 1 ? first : try Oracle.merging(Array(parts.dropFirst()), into: first)
     }
 
+    /// The response without its deferred parts: the first part with every
+    /// streamed item placed, what the image answers a check with.
+    func streamedResponse() throws -> Data {
+        let parts = parts
+        guard let first = parts.first else { throw OracleError(description: "\(entry.name) lists no response") }
+        return parts.count == 1 ? first : try Oracle.merging(Array(parts.dropFirst()), into: first, deferred: false)
+    }
+
     /// Commits the responses into a store: one response directly, the parts
     /// of an incremental response through a fetch, as an app receives them.
     @MainActor func commit(_ operation: OracleOperation, into store: Store) async throws {
@@ -129,8 +137,9 @@ struct OracleTests {
                 if oracle.entry.complete { #expect(answered == .image, "the image answers the plan") }
                 // The check passes over deferred fields, so the image answers
                 // an incremental response's initial part, and its operation
-                // fetches.
-                let initial = oracle.parts.count == 1 ? expected : try Oracle.leaves(of: oracle.parts[0], plan: secondPlan)
+                // fetches. A streamed list is no deferred field: the check
+                // walks it, and the image answers every item the stream placed.
+                let initial = oracle.parts.count == 1 ? expected : try Oracle.leaves(of: oracle.streamedResponse(), plan: secondPlan)
                 expectSame(Oracle.leaves(of: second.root, plan: secondPlan), initial, "from the image")
             }
         }
@@ -167,6 +176,42 @@ struct OracleTests {
                 Issue.record("\(oracle.entry.name): the lens reads \(row.path) as \(value) where the manifest has \(row.value)")
             }
         }
+    }
+
+    /// The streamed cases, each with the links its list holds once every
+    /// part landed, in order, whatever order the parts came in.
+    nonisolated static let streamedCases: [(name: String, list: String, keys: [String])] = [
+        ("tests/character-streamed", "Character:1", ["Episode:1", "Episode:2", "Episode:3"]),
+        ("tests/character-streamed-pending", "Character:1", ["Episode:1", "Episode:2", "Episode:3"]),
+        ("tests/character-streamed-unordered", "Character:1", ["Episode:1", "Episode:2", "Episode:3"]),
+        ("tests/character-streamed-failed", "Character:1", ["Episode:1"]),
+        ("tests/notes-streamed", "Character:1:__TestStreamedNotes_notes_connection", ["Character:1:notes(first:2):edges:0", "Character:1:notes(first:2):edges:1"]),
+    ]
+
+    @Test("a streamed list holds its items in order at their indices once its stream completes, a failed stream's errors sit beside the list, and a streamed connection holds its edges and the deferred page info", arguments: streamedCases.map(\.name))
+    func aStreamedListGrowsInItsSlot(_ name: String) async throws {
+        let entry = try #require(Spec.manifest.cases.first { $0.name == name })
+        let expected = try #require(Self.streamedCases.first { $0.name == name })
+        let oracle = OracleCase(entry: entry)
+        let operation = try OracleOperation.bind(entry)
+        let store = Store()
+        store.log = nil
+        try await oracle.commit(operation, into: store)
+        let record = try #require(store.existing(expected.list))
+        let field = record.type == Registry.type("Character") ? "episode" : "edges"
+        let slot = Registry.slot(record.type, field)
+        guard case .refs(let list) = record.read(slot) else {
+            Issue.record("\(expected.list).\(field) holds no list")
+            return
+        }
+        #expect(list.map { $0?.key } == expected.keys)
+        let errors = record.error(slot).map { [$0.message] } ?? []
+        #expect(errors == (name == "tests/character-streamed-failed" ? ["episodes unavailable"] : []))
+        StoreDump.expectMatches(store, oracle.dumpName)
+        guard name == "tests/notes-streamed" else { return }
+        let pageInfo = try #require(store.existing("Character:1:__TestStreamedNotes_notes_connection:pageInfo"))
+        #expect(pageInfo.read(Registry.slot(pageInfo.type, "endCursor")) == .string("c2"))
+        #expect(pageInfo.read(Registry.slot(pageInfo.type, "hasNextPage")) == .bool(true))
     }
 
     @Test("every operation the manifest's cases and scripts name has its document under spec/documents, equal to the text the compiler generated")
@@ -261,8 +306,13 @@ struct Parts: Transport {
 
 extension Oracle {
     /// The first part of an incremental response with every later part's
-    /// items placed at their paths: the response the parts add up to.
-    static func merging(_ later: [Data], into first: Data) throws -> Data {
+    /// content placed at its path: the response the parts add up to. A
+    /// deferred part's data merges into the object its path names; a
+    /// streamed list's items are placed in the list, at the index Relay's
+    /// shape and the June 2023 shape name, or after the last item for the
+    /// 2024 shape, whose items arrive in order. Without `deferred`, the
+    /// deferred parts are left out and the streamed items alone placed.
+    static func merging(_ later: [Data], into first: Data, deferred: Bool = true) throws -> Data {
         guard var tree = try JSONSerialization.jsonObject(with: first) as? [String: Any] else {
             throw OracleError(description: "the first part is not an object")
         }
@@ -275,10 +325,36 @@ extension Oracle {
             for announced in (object["pending"] as? [[String: Any]]) ?? [] {
                 if let id = announced["id"] as? String, let path = announced["path"] as? [Any] { pending[id] = path }
             }
-            for item in (object["incremental"] as? [[String: Any]]) ?? [] {
+            // Relay's shape is one item at the top level of the part.
+            let items = (object["incremental"] as? [[String: Any]]) ?? (object["path"] == nil ? [] : [object])
+            for item in items {
+                let announced = (item["id"] as? String).flatMap { pending[$0] }
+                let path = (item["path"] as? [Any]) ?? announced ?? []
+                if let elements = item["items"] as? [Any] {
+                    if item["path"] != nil {
+                        // The June 2023 shape: the path ends in the first item's index.
+                        guard let first = path.last.flatMap(index) else {
+                            throw OracleError(description: "a streamed part's path ends in no index")
+                        }
+                        for (offset, element) in elements.enumerated() {
+                            tree["data"] = try placed(tree["data"] as Any, segments(path.dropLast()), first + offset, element)
+                        }
+                    } else {
+                        // The 2024 shape: the items follow the last one the list holds.
+                        for element in elements {
+                            tree["data"] = try appended(tree["data"] as Any, segments(path), element)
+                        }
+                    }
+                    continue
+                }
                 guard let data = item["data"] as? [String: Any] else { continue }
-                let path = (item["path"] as? [Any]) ?? (item["id"] as? String).flatMap { pending[$0] } ?? []
-                tree["data"] = try merged(tree["data"] as Any, path.map { "\($0)" }, data)
+                if Self.isStream(item["label"]), let last = path.last.flatMap(index) {
+                    // Relay's streamed item: one item, the path ending in its index.
+                    tree["data"] = try placed(tree["data"] as Any, segments(path.dropLast()), last, data)
+                    continue
+                }
+                guard deferred else { continue }
+                tree["data"] = try merged(tree["data"] as Any, segments(path), data)
             }
         }
         tree.removeValue(forKey: "pending")
@@ -286,19 +362,59 @@ extension Oracle {
         return try JSONSerialization.data(withJSONObject: tree)
     }
 
+    /// Whether a part's label is a stream's, as the compiler names it.
+    private static func isStream(_ label: Any?) -> Bool {
+        (label as? String)?.contains("$stream$") == true
+    }
+
+    /// A path segment as a list index, when it is a number.
+    private static func index(_ segment: Any) -> Int? {
+        guard !(segment is String), let number = segment as? NSNumber else { return nil }
+        return number.intValue
+    }
+
+    private static func segments(_ path: some Collection<Any>) -> [String] {
+        path.map { "\($0)" }
+    }
+
     private static func merged(_ node: Any, _ path: [String], _ data: [String: Any]) throws -> Any {
-        guard let head = path.first else {
+        try walked(node, path) { node in
             guard var object = node as? [String: Any] else { throw OracleError(description: "a part lands on something that is not an object") }
             for (key, value) in data { object[key] = value }
             return object
         }
+    }
+
+    /// The list at `path` with `element` at `index`, extended with nulls to
+    /// reach it.
+    private static func placed(_ node: Any, _ path: [String], _ index: Int, _ element: Any) throws -> Any {
+        try walked(node, path) { node in
+            guard var list = node as? [Any] else { throw OracleError(description: "a streamed item lands on something that is not a list") }
+            while list.count <= index { list.append(NSNull()) }
+            list[index] = element
+            return list
+        }
+    }
+
+    /// The list at `path` with `element` after its last item.
+    private static func appended(_ node: Any, _ path: [String], _ element: Any) throws -> Any {
+        try walked(node, path) { node in
+            guard var list = node as? [Any] else { throw OracleError(description: "a streamed item lands on something that is not a list") }
+            list.append(element)
+            return list
+        }
+    }
+
+    /// The tree with the node at `path` replaced by what `change` makes of it.
+    private static func walked(_ node: Any, _ path: [String], _ change: (Any) throws -> Any) throws -> Any {
+        guard let head = path.first else { return try change(node) }
         let rest = Array(path.dropFirst())
         if var object = node as? [String: Any], let child = object[head] {
-            object[head] = try merged(child, rest, data)
+            object[head] = try walked(child, rest, change)
             return object
         }
         if var array = node as? [Any], let index = Int(head), array.indices.contains(index) {
-            array[index] = try merged(array[index], rest, data)
+            array[index] = try walked(array[index], rest, change)
             return array
         }
         throw OracleError(description: "a part's path names \(head), which the response does not have")

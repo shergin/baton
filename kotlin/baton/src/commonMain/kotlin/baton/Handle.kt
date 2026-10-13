@@ -173,11 +173,12 @@ class OperationHandle<Data : Lens> internal constructor(
         }
         val answer = store.check(root.resolved)
         val complete = answer != Answer.MISS
-        // The deferred parts the store holds half are cleared and fetched; the initial part shows meanwhile.
-        val partial = complete && type.hasDeferred && !store.deferredPartsHold(root.resolved)
+        // Data an earlier launch fetched takes the age the image knows.
+        if (complete) store.takeAge(root, hydrated = answer == Answer.IMAGE)
+        // The deferred parts the store holds half are cleared and fetched, and a streamed list is held only under a root a
+        // completed stream dated; the initial part shows meanwhile.
+        val partial = complete && type.hasIncremental && !store.incrementalPartsHold(root.resolved, root)
         if (complete) {
-            // Data an earlier launch fetched takes the age the image knows.
-            store.takeAge(root, hydrated = answer == Answer.IMAGE)
             // The data is there, and its verdict is settled on it: a parked handle saw no commit.
             root.found()
         }

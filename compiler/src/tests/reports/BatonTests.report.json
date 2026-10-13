@@ -1,5 +1,5 @@
 {
-  "schemaDigest": "b65cad080c007ba5a285087d8c06e099",
+  "schemaDigest": "cc1a283536bd9b098bee6081d7ecb260",
   "operations": [
     {
       "name": "Fixture",
@@ -5494,6 +5494,180 @@
                         "read": "spread",
                         "optional": true,
                         "fragment": "TestLogEdges_connection"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestStreamedEpisodes",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/DeliveryDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestStreamedEpisodes($id:ID!){character(id:$id){id,name,episode@stream(label:\"TestStreamedEpisodes$stream$episodes\",initialCount:1){id,name}}}",
+      "lens": {
+        "type": "Query",
+        "accessors": [
+          {
+            "name": "character",
+            "key": "character",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "Character",
+              "accessors": [
+                {
+                  "name": "id",
+                  "key": "id",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "name",
+                  "key": "name",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "episode",
+                  "key": "episode",
+                  "read": "linked",
+                  "list": {
+                    "optionalElements": false
+                  },
+                  "lens": {
+                    "type": "Episode",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "name",
+                        "key": "name",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestStreamedNotes",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/DeliveryDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestStreamedNotes($id:ID!){character(id:$id){id,notes(first:2){edges@stream(label:\"TestStreamedNotes$stream$TestStreamedNotes_notes\",initialCount:1){node{id,text,__typename},cursor},...@defer(label:\"TestStreamedNotes$defer$TestStreamedNotes_notes$pageInfo\"){pageInfo{endCursor,hasNextPage}}}}}",
+      "lens": {
+        "type": "Query",
+        "accessors": [
+          {
+            "name": "character",
+            "key": "character",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "Character",
+              "accessors": [
+                {
+                  "name": "id",
+                  "key": "id",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "notes",
+                  "key": "notes",
+                  "read": "linked",
+                  "lens": {
+                    "type": "NoteConnection",
+                    "accessors": [
+                      {
+                        "name": "edges",
+                        "key": "edges",
+                        "read": "linked",
+                        "optional": true,
+                        "list": {
+                          "optionalElements": false
+                        },
+                        "lens": {
+                          "type": "NoteEdge",
+                          "accessors": [
+                            {
+                              "name": "node",
+                              "key": "node",
+                              "read": "linked",
+                              "optional": true,
+                              "lens": {
+                                "type": "Note",
+                                "accessors": [
+                                  {
+                                    "name": "id",
+                                    "key": "id",
+                                    "read": "scalar",
+                                    "optional": true
+                                  },
+                                  {
+                                    "name": "text",
+                                    "key": "text",
+                                    "read": "scalar",
+                                    "optional": true
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "name": "cursor",
+                              "key": "cursor",
+                              "read": "scalar"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "name": "pageInfo",
+                        "key": "pageInfo",
+                        "read": "linked",
+                        "lens": {
+                          "type": "PageInfo",
+                          "accessors": [
+                            {
+                              "name": "endCursor",
+                              "key": "endCursor",
+                              "read": "scalar",
+                              "optional": true
+                            },
+                            {
+                              "name": "hasNextPage",
+                              "key": "hasNextPage",
+                              "read": "scalar"
+                            }
+                          ]
+                        }
                       }
                     ]
                   }

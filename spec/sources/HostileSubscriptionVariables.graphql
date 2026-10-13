@@ -33,7 +33,7 @@ subscription HostileSubscriptionVariables(
   # What an operation value, a mutation's action and its optimistic response declare.
   $name: Boolean!, $document: Boolean!, $text: Boolean!, $plan: Boolean!,
   $errorBehavior: Boolean!, $throwsOnFieldError: Boolean!, $bubbles: Boolean!,
-  $hasDeferred: Boolean!, $cacheExpiration: Boolean!, $Action: Boolean!, $OptimisticResponse: Boolean!, $hash: Boolean!,
+  $hasIncremental: Boolean!, $cacheExpiration: Boolean!, $Action: Boolean!, $OptimisticResponse: Boolean!, $hash: Boolean!,
   $commit: Boolean!, $callAsFunction: Boolean!, $Op: Boolean!, $variable: Boolean!, $payload: Boolean!,
   # What the runtime's protocols give a generated type.
   $phase: Boolean!, $isRefreshing: Boolean!, $isStale: Boolean!, $retry: Boolean!,
@@ -112,7 +112,7 @@ subscription HostileSubscriptionVariables(
       ... @include(if: $text) { cursor } ... @include(if: $plan) { cursor }
       ... @include(if: $errorBehavior) { cursor }
       ... @include(if: $throwsOnFieldError) { cursor } ... @include(if: $bubbles) { cursor }
-      ... @include(if: $hasDeferred) { cursor } ... @include(if: $cacheExpiration) { cursor } ... @include(if: $Action) { cursor }
+      ... @include(if: $hasIncremental) { cursor } ... @include(if: $cacheExpiration) { cursor } ... @include(if: $Action) { cursor }
       ... @include(if: $OptimisticResponse) { cursor } ... @include(if: $hash) { cursor }
       ... @include(if: $commit) { cursor } ... @include(if: $callAsFunction) { cursor }
       ... @include(if: $Op) { cursor } ... @include(if: $variable) { cursor } ... @include(if: $payload) { cursor }

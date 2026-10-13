@@ -25,7 +25,7 @@ query HostileVariables(
   $Owner: ID!, $Query: ID!, $Operation: ID!, $RefetchQuery: ID!,
   # What an operation value, a mutation's action and its optimistic response declare.
   $name: ID!, $document: ID!, $text: ID!, $plan: ID!, $errorBehavior: ID!,
-  $throwsOnFieldError: ID!, $bubbles: ID!, $hasDeferred: ID!, $cacheExpiration: ID!, $Action: ID!,
+  $throwsOnFieldError: ID!, $bubbles: ID!, $hasIncremental: ID!, $cacheExpiration: ID!, $Action: ID!,
   $OptimisticResponse: ID!, $hash: ID!, $commit: ID!, $callAsFunction: ID!, $Op: ID!,
   $variable: ID!, $payload: ID!,
   # What the runtime's protocols give a generated type.
@@ -56,7 +56,7 @@ query HostileVariables(
     $selfValue, $values, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery,
     # What an operation value, a mutation's action and its optimistic response declare.
     $name, $document, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles,
-    $hasDeferred, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $payload,
+    $hasIncremental, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $payload,
     # What the runtime's protocols give a generated type.
     $retry, $subscription,
     # The shared enums.

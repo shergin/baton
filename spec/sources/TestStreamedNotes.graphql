@@ -1,0 +1,8 @@
+query TestStreamedNotes($id: ID!) {
+  character(id: $id) {
+    id
+    notes(first: 2) @stream_connection(key: "TestStreamedNotes_notes", initial_count: 1) {
+      edges { node { id text } }
+    }
+  }
+}

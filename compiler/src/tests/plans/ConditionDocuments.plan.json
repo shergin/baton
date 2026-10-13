@@ -81,7 +81,7 @@
       "text": "query TestConditions($id:ID!,$withOrigin:Boolean!,$hideStatus:Boolean!){character(id:$id){name,origin{id},origin@include(if:$withOrigin){name,dimension,id}\n    species@include(if:$withOrigin),status@skip(if:$hideStatus),id}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -685,7 +685,7 @@
       "text": "query TestFoldedNode($name:String!){search(name:$name){__typename,...on Node{__isNode:__typename,id}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -945,7 +945,7 @@
       "text": "query TestNamedSpread($id:ID!){node(id:$id){__typename,id,...TestNamed_named}}fragment TestNamed_named on Named{__isNamed:__typename,name}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -1262,7 +1262,7 @@
       "text": "query TestNodeDeferred($id:ID!){node(id:$id){__typename,id,...on Character{name},...TestAppearances_character@defer(label:\"TestNodeDeferred$defer$TestAppearances_character\")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": true,
+      "has_incremental": true,
       "error_behavior": null,
       "reader": [
         {
@@ -1739,7 +1739,7 @@
       "text": "query TestNodeFields($id:ID!){node(id:$id){__typename,id,...on Character{name}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -2060,7 +2060,7 @@
       "text": "query TestStrictConditions($id:ID!,$withStatus:Boolean!){character(id:$id){name,__typename@include(if:$withStatus)\n    species@include(if:$withStatus)\n    status@include(if:$withStatus)\n    origin@include(if:$withStatus){name,id},id}}",
       "throws_on_field_error": true,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -2552,7 +2552,7 @@
       "text": "query TestTwoSpreads($id:ID!,$again:Boolean!){character(id:$id){...TestRow_character,...TestRow_character@include(if:$again),id}}fragment TestRow_character on Character{name,status,image}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -2813,7 +2813,7 @@
       "text": "query TestUnion($name:String!){search(name:$name){__typename,...on Character{label:name,status},...on Location{label:dimension,type},...on Episode{air_date},...on Named{__isNamed:__typename,name},...on Node{__isNode:__typename,id}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {

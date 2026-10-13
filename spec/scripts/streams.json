@@ -1,0 +1,115 @@
+{
+  "name": "streams",
+  "image": true,
+  "steps": [
+    {
+      "attach": {"operation": "TestStreamedEpisodes", "variables": {"id": "1"}, "as": "rick", "response": "tests/character-streamed-1.json"},
+      "phase": {"handle": "rick", "phase": "ready", "isRefreshing": true},
+      "fetch": {"handle": "rick", "fetch": "inFlight"},
+      "reads": [{"handle": "rick", "path": "character.episode.0.name", "value": "Pilot"}]
+    },
+    {
+      "answer": {"handle": "rick", "response": "tests/character-streamed-3-first.json"},
+      "fetch": {"handle": "rick", "fetch": "inFlight"},
+      "records": "tests/character-streamed-hole.store.json",
+      "reads": [{"handle": "rick", "path": "character.episode.0.name", "value": "Pilot"}, {"handle": "rick", "path": "character.episode.1.name", "value": "Anatomy Park", "note": "the item at index 1 has not arrived; a list reads past a null element"}]
+    },
+    {
+      "answer": {"handle": "rick", "response": "tests/character-streamed-2.json"},
+      "notified": [{"record": "Character:1", "field": "episode"}],
+      "reads": [{"handle": "rick", "path": "character.episode.1.name", "value": "Lawnmower Dog"}, {"handle": "rick", "path": "character.episode.2.name", "value": "Anatomy Park"}]
+    },
+    {
+      "answer": {"handle": "rick", "response": "tests/character-streamed-stray.json"},
+      "events": [{"partDropped": {"path": "character.nonexistent.0"}}],
+      "fetch": {"handle": "rick", "fetch": "inFlight"}
+    },
+    {
+      "answer": {"handle": "rick", "response": "tests/character-streamed-end.json"},
+      "phase": {"handle": "rick", "phase": "ready", "isRefreshing": false, "isStale": false},
+      "fetch": {"handle": "rick", "fetch": "idle"},
+      "records": "tests/character-streamed.store.json"
+    },
+    {
+      "attach": {"operation": "TestStreamedEpisodes", "variables": {"id": "1"}, "as": "rick-again"},
+      "phase": {"handle": "rick-again", "phase": "ready"},
+      "fetch": {"handle": "rick-again", "fetch": "idle"},
+      "sent": []
+    },
+    {
+      "attach": {"operation": "TestStreamedEpisodes", "variables": {"id": "2"}, "as": "morty", "response": "tests/character-streamed-morty-1.json"},
+      "phase": {"handle": "morty", "phase": "ready", "isRefreshing": true}
+    },
+    {
+      "answer": {"handle": "morty", "failure": "transport"},
+      "phase": {"handle": "morty", "phase": "ready"},
+      "fetch": {"handle": "morty", "fetch": {"failed": "transport"}}
+    },
+    {
+      "attach": {"operation": "TestStreamedEpisodes", "variables": {"id": "2"}, "as": "morty-again"},
+      "phase": {"handle": "morty-again", "phase": "ready", "isRefreshing": true},
+      "fetch": {"handle": "morty-again", "fetch": "inFlight"}
+    },
+    {
+      "answer": {"handle": "morty-again", "response": "tests/character-streamed-morty.json"},
+      "fetch": {"handle": "morty-again", "fetch": "idle"},
+      "reads": [{"handle": "morty-again", "path": "character.episode.1.name", "value": "Lawnmower Dog"}]
+    },
+    {
+      "attach": {"operation": "TestStreamedEpisodes", "variables": {"id": "3"}, "as": "summer", "response": "tests/character-streamed-summer-1.json"},
+      "reads": [{"handle": "summer", "path": "character.episode.0.name", "value": "Pilot"}]
+    },
+    {
+      "payload": {"operation": "TestStreamedEpisodes", "variables": {"id": "3"}, "response": "tests/character-streamed-summer-payload.json"},
+      "reads": [{"handle": "summer", "path": "character.episode.0.name", "value": "Rick Potion #9"}]
+    },
+    {
+      "answer": {"handle": "summer", "response": "tests/character-streamed-summer-2.json"},
+      "events": [{"partDropped": {"path": "character.episode.1"}}, {"fetchCompleted": {"operation": "TestStreamedEpisodes"}}],
+      "fetch": {"handle": "summer", "fetch": "idle"},
+      "reads": [{"handle": "summer", "path": "character.episode.0.name", "value": "Rick Potion #9"}],
+      "records": "tests/character-streamed-summer.store.json"
+    },
+    {
+      "attach": {"operation": "TestStreamedNotes", "variables": {"id": "1"}, "as": "notes", "response": "tests/notes-streamed-1.json"},
+      "reads": [{"handle": "notes", "path": "character.notes.edges.0.node.id", "value": "n1"}]
+    },
+    {
+      "answer": {"handle": "notes", "response": "tests/notes-streamed-2.json"},
+      "reads": [{"handle": "notes", "path": "character.notes.edges.1.node.text", "value": "Portal gun needs charging"}]
+    },
+    {
+      "answer": {"handle": "notes", "response": "tests/notes-streamed-3.json"},
+      "fetch": {"handle": "notes", "fetch": "idle"},
+      "records": "tests/streams-notes.store.json"
+    },
+    {
+      "attach": {"operation": "TestStreamedEpisodes", "variables": {"id": "4"}, "as": "beth", "response": "tests/character-streamed-beth-1.json"},
+      "phase": {"handle": "beth", "phase": "ready", "isRefreshing": true}
+    },
+    {
+      "answer": {"handle": "beth", "failure": "transport"},
+      "fetch": {"handle": "beth", "fetch": {"failed": "transport"}}
+    },
+    {
+      "relaunch": {}
+    },
+    {
+      "attach": {"operation": "TestStreamedEpisodes", "variables": {"id": "1"}, "as": "rick-relaunched"},
+      "phase": {"handle": "rick-relaunched", "phase": "ready", "isStale": false},
+      "fetch": {"handle": "rick-relaunched", "fetch": "idle"},
+      "reads": [{"handle": "rick-relaunched", "path": "character.episode.2.name", "value": "Anatomy Park"}]
+    },
+    {
+      "attach": {"operation": "TestStreamedEpisodes", "variables": {"id": "4"}, "as": "beth-relaunched"},
+      "phase": {"handle": "beth-relaunched", "phase": "ready", "isStale": true, "isRefreshing": true},
+      "fetch": {"handle": "beth-relaunched", "fetch": "inFlight"}
+    },
+    {
+      "answer": {"handle": "beth-relaunched", "response": "tests/character-streamed-beth.json"},
+      "phase": {"handle": "beth-relaunched", "phase": "ready", "isStale": false},
+      "fetch": {"handle": "beth-relaunched", "fetch": "idle"},
+      "reads": [{"handle": "beth-relaunched", "path": "character.episode.1.name", "value": "Anatomy Park"}]
+    }
+  ]
+}

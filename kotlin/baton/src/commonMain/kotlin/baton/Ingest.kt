@@ -35,6 +35,8 @@ internal class IncrementalPart(
         /** Below the announced part's path, where the data is, in the 2024 shape. */
         val subPath: List<PathSegment>?,
         val data: ByteArray,
+        /** The items of a streamed list the part delivers, in the June 2023 and 2024 shapes; Relay's carries one item as `data`, its path ending in the item's index. */
+        val items: List<ByteArray>?,
         /** The field errors that came with the item, by absolute path. */
         val errors: List<ResponseError>,
     )
@@ -73,27 +75,41 @@ internal object Ingest {
 
     /**
      * One object, as a deferred part delivers it: the selection the part
-     * fills, at the record its path named, read as that record's type. An
-     * error under the object's [path] lands on the field it names; any other
-     * is unplaced.
+     * fills, at the record its path named, read as that record's type.
      */
-    fun normalizeObject(
-        bytes: ByteArray,
-        plan: ResolvedSelection,
-        key: String,
-        type: TypeID,
-        entity: Boolean,
-        path: List<PathSegment> = emptyList(),
-        errors: List<ResponseError> = emptyList(),
-    ): ChangeSet {
-        val cursor = Cursor(bytes, ChangeSet(bytes), complete = false)
+    fun normalizeObject(bytes: ByteArray, plan: ResolvedSelection, key: String, type: TypeID, entity: Boolean): ChangeSet =
+        normalize(Delivery.ObjectPart(bytes, plan, key, type, entity, emptyList(), emptyList()))
+
+    /**
+     * One object of a later part as a change set. A deferred part's object is
+     * read into the record the part names; a streamed item is read as the
+     * list field's object, keyed by its id or by the parent, the field and
+     * its index, as it would be had it come with the first part, and placed
+     * at that index. An object that lands on a connection's page merges the
+     * page into its connection again. An error under the object's path lands
+     * on the field it names; any other is unplaced.
+     */
+    fun normalize(part: Delivery.ObjectPart): ChangeSet {
+        val cursor = Cursor(part.data, ChangeSet(part.data), complete = false)
         cursor.scanner.skipWhitespace()
-        val root = cursor.changes.record(key, type, if (entity) Record.idOffset(type.name) else -1)
-        cursor.objectAt(plan, root, null, -1, 0, root)
+        val anchor = cursor.changes.record(part.key, part.type, if (part.entity) Record.idOffset(part.type.name) else -1)
+        val placement = part.placement
+        val obj = if (placement == null) {
+            cursor.objectAt(part.plan, anchor, null, -1, 0, anchor)
+        } else {
+            val item = cursor.objectAt(part.plan, anchor, placement.storageKey, placement.index, 0, -1)
+            cursor.changes.edits.add(ChangeSet.Edit.Place(anchor, placement.slot.index, placement.index, item))
+            cursor.changes.streams.add(anchor to placement.slot.index)
+            item
+        }
+        part.remerge?.let { remerge ->
+            val connection = cursor.changes.record(remerge.connectionKey, remerge.slots.connection, -1)
+            cursor.changes.edits.add(ChangeSet.Edit.Merge(connection, anchor, remerge.slots, remerge.mode))
+        }
         cursor.changes.group()
-        if (errors.isNotEmpty()) {
-            cursor.rawErrors.addAll(errors)
-            cursor.resolveErrors(plan, root, path)
+        if (part.errors.isNotEmpty()) {
+            cursor.rawErrors.addAll(part.errors)
+            cursor.resolveErrors(part.plan, obj, part.path)
         }
         return cursor.changes
     }
@@ -120,6 +136,17 @@ internal object Ingest {
         }
         for (field in fields) changes.fieldErrors.add(ChangeSet.FieldErrorEntry(record, field.slot.index, first, field.caught))
         return FailedPart(changes, if (fields.all { it.caught }) emptyList() else rendered)
+    }
+
+    /** The field errors of a streamed list the server could not finish, on the list field itself, beside the items that arrived. */
+    fun failedStream(field: ResolvedField, key: String, type: TypeID, entity: Boolean, path: List<PathSegment>, errors: List<ResponseError>): FailedPart {
+        val changes = ChangeSet(ByteArray(0))
+        val record = changes.record(key, type, if (entity) Record.idOffset(type.name) else -1)
+        changes.group()
+        val rendered = errors.map { FieldError(it.message, render(it.path ?: path), it.extensions) }
+        val first = rendered.firstOrNull() ?: return FailedPart(changes, emptyList())
+        changes.fieldErrors.add(ChangeSet.FieldErrorEntry(record, field.slot.index, first, field.caught))
+        return FailedPart(changes, if (field.caught) emptyList() else rendered)
     }
 
     /** A response path, dotted, as a field error shows it. */
@@ -149,10 +176,16 @@ internal object Ingest {
                     var label: String? = null
                     var id: String? = null
                     var data = ByteArray(0)
+                    var streamed: List<ByteArray>? = null
                     var errors: List<ResponseError> = emptyList()
                     scanner.members { member ->
                         when (member) {
                             "data" -> data = scanner.rawValue()
+                            "items" -> {
+                                val values = ArrayList<ByteArray>()
+                                scanner.elements { values.add(scanner.rawValue()) }
+                                streamed = values
+                            }
                             "path" -> path = scanner.path()
                             "subPath" -> subPath = scanner.path()
                             "label" -> label = scanner.stringValue()
@@ -161,7 +194,7 @@ internal object Ingest {
                             else -> scanner.skipValue()
                         }
                     }
-                    items.add(IncrementalPart.Item(path, label, id, subPath, data, errors))
+                    items.add(IncrementalPart.Item(path, label, id, subPath, data, streamed, errors))
                 }
                 "pending" -> pending = scanner.pending()
                 "completed" -> scanner.elements {
@@ -185,7 +218,7 @@ internal object Ingest {
             }
         }
         val data = topData
-        if (data != null && topPath != null) items.add(IncrementalPart.Item(topPath, topLabel, null, null, data, topErrors))
+        if (data != null && topPath != null) items.add(IncrementalPart.Item(topPath, topLabel, null, null, data, null, topErrors))
         return IncrementalPart(items, pending, completed, hasNext)
     }
 }

@@ -488,7 +488,7 @@ impl Naming for SwiftNaming {
             ("cacheExpiration", operation.cache_expiration.is_some()),
             ("throwsOnFieldError", operation.throws_on_field_error),
             ("bubbles", operation.bubbles),
-            ("hasDeferred", operation.has_deferred),
+            ("hasIncremental", operation.has_incremental),
         ];
         for (name, declared) in flags {
             if declared {

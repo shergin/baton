@@ -50,7 +50,8 @@ interface OperationType<Data : Lens> {
     val plan: Plan
     val throwsOnFieldError: Boolean get() = false
     val bubbles: Boolean get() = false
-    val hasDeferred: Boolean get() = false
+    /** Whether the response may arrive in parts: a deferred fragment or a streamed list in it. */
+    val hasIncremental: Boolean get() = false
     val errorBehavior: ErrorBehavior? get() = null
     val cacheExpirationSeconds: Double? get() = null
 

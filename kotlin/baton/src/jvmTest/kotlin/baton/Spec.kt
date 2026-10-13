@@ -66,12 +66,21 @@ internal object Spec {
             val first = Ingest.normalizeFirstPart(bytes(responses[0]), resolved, rootKey, complete = true)
             store.commit(first.changes)
             val delivery = Delivery(store, resolved)
+            delivery.committed(first.changes)
             delivery.announce(first.pending)
             for (response in responses.drop(1)) {
                 val part = Ingest.incremental(bytes(response))
                 delivery.announce(part.pending)
-                for (item in delivery.objects(part)) store.commit(item.normalize())
-                for (failure in delivery.failures(part)) store.commit(failure.changes)
+                val objects = delivery.objects(part)
+                val failures = delivery.failures(part)
+                for (obj in objects) {
+                    // A streamed item whose list another commit changed since the stream left it is stale and dropped.
+                    val changes = obj.normalize()
+                    if (!delivery.fits(obj)) continue
+                    store.commit(changes)
+                    delivery.committed(changes)
+                }
+                for (failure in failures) store.commit(failure.changes)
             }
         }
 

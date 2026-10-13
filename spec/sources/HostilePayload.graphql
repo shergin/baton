@@ -25,7 +25,7 @@ mutation HostilePayload {
       Query: name Operation: name RefetchQuery: name fields: name
       # What an operation value, a mutation's action and its optimistic response declare.
       variables: name resolution: name name: name document: name text: name plan: name
-      errorBehavior: name throwsOnFieldError: name bubbles: name hasDeferred: name cacheExpiration: name Data: name
+      errorBehavior: name throwsOnFieldError: name bubbles: name hasIncremental: name cacheExpiration: name Data: name
       Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name
       Op: name payload: name
       # What the runtime's protocols give a generated type.
@@ -75,7 +75,7 @@ mutation HostilePayload {
     # What an operation value, a mutation's action and its optimistic response declare.
     variables: note { id } resolution: note { id } name: note { id } document: note { id }
     text: note { id } plan: note { id } errorBehavior: note { id }
-    throwsOnFieldError: note { id } bubbles: note { id } hasDeferred: note { id } cacheExpiration: note { id }
+    throwsOnFieldError: note { id } bubbles: note { id } hasIncremental: note { id } cacheExpiration: note { id }
     Data: note { id } Action: note { id } OptimisticResponse: note { id } hash: note { id }
     commit: note { id } callAsFunction: note { id } Op: note { id } payload: note { id }
     # What the runtime's protocols give a generated type.

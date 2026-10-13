@@ -238,7 +238,7 @@ class TestNodeDeferred(val id: String) : QueryOperation<TestNodeDeferred.Data> {
         override val name = "TestNodeDeferred"
         override val document: Document = Document.Text("query TestNodeDeferred(\$id:ID!){node(id:\$id){__typename,id,...on Character{name},...TestAppearances_character@defer(label:\"TestNodeDeferred\$defer\$TestAppearances_character\")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}")
         override val kind = OperationKind.QUERY
-        override val hasDeferred = true
+        override val hasIncremental = true
         override val plan: Plan by lazy { Plan(root = `TestNodeDeferred-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)

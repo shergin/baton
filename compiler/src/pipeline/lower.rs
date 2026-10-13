@@ -194,17 +194,34 @@ fn key_by_response(selections: &mut [SelectionPlan]) {
     }
 }
 
-fn has_deferred(selections: &[SelectionPlan]) -> bool {
-    selections.iter().any(|selection| match selection {
+/// The incremental directive the selections carry, `@defer` or `@stream`,
+/// when one does: the response then arrives in parts.
+fn incremental(selections: &[SelectionPlan]) -> Option<&'static str> {
+    selections.iter().find_map(|selection| match selection {
         SelectionPlan::Inline {
             deferred,
             selections,
             ..
-        } => deferred.is_some() || has_deferred(selections),
-        SelectionPlan::Linked { selections, .. } | SelectionPlan::Condition { selections, .. } => {
-            has_deferred(selections)
+        } => {
+            if deferred.is_some() {
+                Some("@defer")
+            } else {
+                incremental(selections)
+            }
         }
-        _ => false,
+        SelectionPlan::Linked {
+            streamed,
+            selections,
+            ..
+        } => {
+            if streamed.is_some() {
+                Some("@stream")
+            } else {
+                incremental(selections)
+            }
+        }
+        SelectionPlan::Condition { selections, .. } => incremental(selections),
+        _ => None,
     })
 }
 
@@ -367,10 +384,17 @@ impl Lowering<'_> {
         }
         // A mutation's payload and a subscription's event each arrive whole:
         // neither is read as a stream of parts.
-        if operation.kind != SyntaxOperationKind::Query && has_deferred(&normalization) {
+        if operation.kind != SyntaxOperationKind::Query
+            && let Some(directive) = incremental(&normalization)
+        {
+            let verb = if directive == "@defer" {
+                "deferred"
+            } else {
+                "streamed"
+            };
             self.diagnostics.borrow_mut().push(Diagnostic::error(
                 format!(
-                    "`@defer` in the {} `{name}`: its response arrives in one part, so nothing can be deferred",
+                    "`{directive}` in the {} `{name}`: its response arrives in one part, so nothing can be {verb}",
                     operation.kind
                 ),
                 operation.name.location,
@@ -404,7 +428,7 @@ impl Lowering<'_> {
                     .named(*CHILDREN_CAN_BUBBLE_METADATA_KEY)
                     .is_some()
             }),
-            has_deferred: has_deferred(&normalization),
+            has_incremental: incremental(&normalization).is_some(),
             error_behavior: self.config.on_error,
             cache_expiration: self.cache_expiration(operation),
             reader,
@@ -922,6 +946,7 @@ impl Lowering<'_> {
             storage_key: field_storage_key,
             lookup,
             connection,
+            streamed: self.streamed(&field.directives),
             edit,
             required: self.required(&field.directives),
             catch: self.catch(&field.directives),
@@ -932,6 +957,24 @@ impl Lowering<'_> {
             bubbles: self.bubbles(&field.directives),
             selections: self.selections(&field.selections, target, side, field_caught, client),
         }
+    }
+
+    /// `@stream(label:)`: the label the streamed items carry, which Relay's
+    /// transform settled to a constant.
+    fn streamed(&self, directives: &[graphql_ir::Directive]) -> Option<String> {
+        directives
+            .named(directive_name("stream"))
+            .and_then(|directive| {
+                directive
+                    .arguments
+                    .named(common::ArgumentName("label".intern()))
+            })
+            .and_then(|label| match &label.value.item {
+                graphql_ir::Value::Constant(graphql_ir::ConstantValue::String(text)) => {
+                    Some(text.lookup().to_string())
+                }
+                _ => None,
+            })
     }
 
     /// The lookup `baton.json` names for the field, and the value the

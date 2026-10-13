@@ -913,6 +913,20 @@ class Store(
         for (edit in changes.edits) {
             when (edit) {
                 is ChangeSet.Edit.Merge -> merge(objects[edit.connection]!!, objects[edit.page]!!, edit.slots, edit.mode, batch)
+                is ChangeSet.Edit.Place -> {
+                    // The delivery checked the list before this batch, on this thread; a parent that holds no list here
+                    // was changed by this very change set, which cannot be.
+                    val record = objects[edit.parent]!!
+                    val slot = Slot(record.type, edit.slotIndex)
+                    val current = (record.peek(slot) as? Value.Refs)?.records
+                    if (!record.deleted && current != null) {
+                        val list = ArrayList<Record?>(maxOf(current.size, edit.index + 1))
+                        list.addAll(current)
+                        while (list.size <= edit.index) list.add(null)
+                        list[edit.index] = objects[edit.item]
+                        set(record, slot, Value.Refs(list), batch)
+                    }
+                }
                 is ChangeSet.Edit.InsertEdge -> for (key in edit.connections) insertEdge(objects[edit.edge]!!, key, edit.prepend, batch)
                 is ChangeSet.Edit.InsertNode -> for (key in edit.connections) insertNode(objects[edit.node]!!, edit.edgeType, key, edit.prepend, batch)
                 is ChangeSet.Edit.DeleteEdge -> for (key in edit.connections) deleteEdges(edit.id, key, batch)
@@ -966,16 +980,29 @@ class Store(
      * incremental part's `path`. Null when the path leads through data the
      * store never received.
      */
-    internal fun walk(path: List<PathSegment>, selection: ResolvedSelection, from: Record = root): Pair<Record, ResolvedSelection>? {
+    internal fun walk(path: List<PathSegment>, selection: ResolvedSelection, from: Record = root): Pair<Record, ResolvedSelection>? =
+        locate(path, selection, from)?.let { it.record to it.selection }
+
+    /**
+     * Where a response path leads through the store: the record, the
+     * selection that reads it, and, when the last link followed was a
+     * connection field, the connection its page merges into, by the key the
+     * ingest gives it.
+     */
+    internal class Place(val record: Record, val selection: ResolvedSelection, val connection: Pair<String, ResolvedConnection>?)
+
+    internal fun locate(path: List<PathSegment>, selection: ResolvedSelection, from: Record = root): Place? {
         checkThread()
         var record = from
         var current = selection
+        var connection: Pair<String, ResolvedConnection>? = null
         var position = 0
         while (position < path.size) {
             val segment = path[position] as? PathSegment.Name ?: return null
             position += 1
             val field = current.variant(record.type).field(segment.name) ?: return null
             val kind = field.kind as? ResolvedField.Kind.Linked ?: return null
+            connection = kind.connection?.let { record.key + ":" + it.storageKey to it }
             record = when (val value = record.peek(field.slot)) {
                 is Value.Ref -> value.record
                 is Value.Refs -> {
@@ -987,7 +1014,7 @@ class Store(
             }
             current = kind.selection
         }
-        return record to current
+        return Place(record, current, connection)
     }
 
     internal companion object {

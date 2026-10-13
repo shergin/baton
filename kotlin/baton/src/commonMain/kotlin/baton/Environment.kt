@@ -313,7 +313,7 @@ class Environment(
         document = type.document,
         variables = variables,
         errorBehavior = type.errorBehavior,
-        incremental = type.hasDeferred,
+        incremental = type.hasIncremental,
     )
 
     /**
@@ -374,7 +374,7 @@ class Environment(
         val request = request(type, variables)
         // The operation's root: a handle's, or one made here, which waits in the release buffer once dated if nothing retains it.
         val root = store.root(Store.rootKey(type.name, variables), resolved, store.root)
-        if (!type.hasDeferred) {
+        if (!type.hasIncremental) {
             // The request is sent from the store's thread, as every transport call is; the response is awaited where it is
             // read, on the ingest dispatcher, so the store's thread is entered once, for the commit, and not first when the
             // bytes arrive, when it may be drawing a frame. A fetch superseded while its response was on the way or being
@@ -387,14 +387,17 @@ class Environment(
         var committed = Committed()
         val delivery = Delivery(store, resolved)
         var first = true
+        var completed = false
         transport.send(request).transformWhile<ByteArray, Unit> { part ->
             if (first) {
                 first = false
                 val opening = withContext(ingestDispatcher) { Ingest.normalizeFirstPart(part, resolved, Store.ROOT_KEY, complete = true) }
                 currentCoroutineContext().ensureActive()
                 committed += commit(opening.changes)
+                delivery.committed(opening.changes)
                 delivery.announce(opening.pending)
                 firstPart?.invoke(committed)
+                completed = !opening.hasNext
                 return@transformWhile opening.hasNext
             }
             val incremental = withContext(ingestDispatcher) { Ingest.incremental(part) }
@@ -403,14 +406,23 @@ class Environment(
             val failures = delivery.failures(incremental)
             val changes = withContext(ingestDispatcher) { objects.map { it.normalize() } }
             currentCoroutineContext().ensureActive()
-            for (change in changes) committed += commit(change)
+            for ((index, change) in changes.withIndex()) {
+                // A streamed item whose list another commit changed since the stream left it is stale and dropped.
+                if (!delivery.fits(objects[index])) continue
+                committed += commit(change)
+                delivery.committed(change)
+            }
             for (failure in failures) {
                 commit(failure.changes)
                 committed += Committed.of(failure)
             }
+            completed = !incremental.hasNext
             incremental.hasNext
         }.collect()
-        // A deferred response is fetched, and fresh, once its stream completes.
+        // A stream the transport ended before the part that says it is the last is cut short: the response is incomplete,
+        // and nothing dates the root, so the next attach fetches it whole.
+        if (!completed) throw IngestError(0, "the incremental response ended before its last part")
+        // An incremental response is fetched, and fresh, once its stream completes.
         if (!ended) evict(store.date(root))
         return committed
     }

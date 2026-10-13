@@ -11,7 +11,7 @@
       "text": "query TestDrafts{character(id:\"1\"){id,name}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -609,7 +609,7 @@
       "text": "query TestPinnedCharacter($id:ID!){character(id:$id){id,name,status}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {

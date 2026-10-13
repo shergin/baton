@@ -45,6 +45,15 @@ extension Store {
         var met = false
     }
 
+    /// Whether the parts of an incremental response the check found are
+    /// whole: every deferred part, below, and, where a list streams, a root
+    /// a completed stream dated, since a stream cut short leaves the list
+    /// as it was and the date is the one fact that says so.
+    func incrementalPartsHold(_ selection: ResolvedSelection, _ root: Root) -> Bool {
+        if selection.streams, root.fetchTime == nil { return false }
+        return deferredPartsHold(selection)
+    }
+
     /// Whether every deferred part of a selection the check found is whole,
     /// in memory or, through the check, in the image. The check passes over
     /// deferred fields, while a record read from the image holds every cell

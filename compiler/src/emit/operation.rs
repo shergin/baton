@@ -121,7 +121,7 @@ fn value_members(
     let flags = [
         ("throwsOnFieldError", operation.throws_on_field_error),
         ("bubbles", operation.bubbles),
-        ("hasDeferred", operation.has_deferred),
+        ("hasIncremental", operation.has_incremental),
     ];
     for (flag, set) in flags {
         if set {

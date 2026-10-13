@@ -33,6 +33,36 @@ fn the_directives_baton_gives_a_meaning_pass_in_their_places() {
 }
 
 #[test]
+fn stream_and_stream_connection_on_a_field_pass_the_directive_check() {
+    assert!(
+        errors(
+            "query Q { a @stream(label: \"l\", initialCount: 1) { b } }",
+            Some(Marker::Query)
+        )
+        .is_empty()
+    );
+    assert!(
+        errors(
+            "query Q { a(first: 2) @stream_connection(key: \"Q_a\", initial_count: 1) { edges { node { b } } } }",
+            Some(Marker::Query)
+        )
+        .is_empty()
+    );
+}
+
+#[test]
+fn stream_on_a_fragment_spread_is_an_error_at_it() {
+    assert_eq!(
+        errors(
+            "query Q { a { ...F @stream(initialCount: 1) } }",
+            Some(Marker::Query)
+        )
+        .len(),
+        1
+    );
+}
+
+#[test]
 fn inline_on_a_fragment_definition_passes_the_directive_check() {
     assert!(errors("fragment F on T @inline { a }", Some(Marker::Fragment)).is_empty());
     assert!(
@@ -55,14 +85,6 @@ fn a_directive_baton_gives_no_meaning_is_an_error_at_it() {
     assert_eq!(
         errors(
             "query Q { a { ...F @relay(mask: false) } }",
-            Some(Marker::Query)
-        )
-        .len(),
-        1
-    );
-    assert_eq!(
-        errors(
-            "query Q { a @stream(initialCount: 1) { b } }",
             Some(Marker::Query)
         )
         .len(),

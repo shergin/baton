@@ -21,12 +21,12 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use common::{Diagnostic, NoopPerfLogger, SourceLocationKey};
+use common::{ArgumentName, Diagnostic, NoopPerfLogger, SourceLocationKey};
 use graphql_ir::{FragmentDefinitionNameSet, Program};
 use graphql_syntax::OperationKind as SyntaxOperationKind;
 use intern::Lookup;
 use intern::string_key::Intern;
-use relay_config::ProjectConfig;
+use relay_config::{DeferStreamInterface, ProjectConfig};
 use relay_transforms::{
     apply_transforms, disallow_reserved_aliases, disallow_typename_on_root, validate_connections,
     validate_global_variable_names, validate_no_double_underscore_alias,
@@ -142,7 +142,8 @@ pub fn compile(
         return Err(diagnostics);
     }
 
-    let project_config = ProjectConfig::default();
+    let mut project_config = ProjectConfig::default();
+    project_config.schema_config.defer_stream_interface = defer_stream_interface(&schema);
 
     let started = Instant::now();
     let ir =
@@ -182,6 +183,30 @@ pub fn compile(
     timings.lower = started.elapsed();
 
     Ok(Compiled { plan, timings })
+}
+
+/// Relay's defer and stream interface as the schema spells it: the
+/// specification's `initialCount` and `useCustomizedBatch`, or Relay's
+/// `initial_count` and `use_customized_batch` when the schema declares
+/// `@stream` with those, so a schema of either lineage compiles.
+fn defer_stream_interface(schema: &SDLSchema) -> DeferStreamInterface {
+    let mut interface = DeferStreamInterface::default();
+    let Some(stream) = schema.get_directive(interface.stream_name) else {
+        return interface;
+    };
+    let declares = |name: &str| {
+        stream
+            .arguments
+            .iter()
+            .any(|argument| argument.name.item.0.lookup() == name)
+    };
+    if declares("initial_count") {
+        interface.initial_count_arg = ArgumentName("initial_count".intern());
+    }
+    if declares("use_customized_batch") {
+        interface.use_customized_batch_arg = ArgumentName("use_customized_batch".intern());
+    }
+    interface
 }
 
 /// The schema's root types whose names differ from the store's. A slot is

@@ -210,7 +210,7 @@ nonisolated public struct TestCaughtPartQuery: Baton.Query {
     public static let name = "TestCaughtPartQuery"
     public static let document: Baton.Document = .text(#"query TestCaughtPartQuery($id:ID!){character(id:$id){id,name,...TestCaughtAppearances_character@defer(label:"TestCaughtPartQuery$defer$TestCaughtAppearances_character")}}fragment TestCaughtAppearances_character on Character{episode{name,id}}"#)
     @_spi(Generated) public static let throwsOnFieldError = true
-    @_spi(Generated) public static let hasDeferred = true
+    @_spi(Generated) public static let hasIncremental = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1411,7 +1411,7 @@ nonisolated public struct TestTwoFieldPartQuery: Baton.Query {
 
     public static let name = "TestTwoFieldPartQuery"
     public static let document: Baton.Document = .text(#"query TestTwoFieldPartQuery($id:ID!){character(id:$id){id,name,...TestOriginAndEpisode_character@defer(label:"TestTwoFieldPartQuery$defer$TestOriginAndEpisode_character")}}fragment TestOriginAndEpisode_character on Character{origin{name,id},episode{name,id}}"#)
-    @_spi(Generated) public static let hasDeferred = true
+    @_spi(Generated) public static let hasIncremental = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -1566,7 +1566,7 @@ nonisolated public struct TestUncaughtPartQuery: Baton.Query {
     public static let name = "TestUncaughtPartQuery"
     public static let document: Baton.Document = .text(#"query TestUncaughtPartQuery($id:ID!){character(id:$id){id,name,...TestAppearances_character@defer(label:"TestUncaughtPartQuery$defer$TestAppearances_character")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}"#)
     @_spi(Generated) public static let throwsOnFieldError = true
-    @_spi(Generated) public static let hasDeferred = true
+    @_spi(Generated) public static let hasIncremental = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])

@@ -67,6 +67,29 @@ struct DeliveryDocuments {
         """)
     var overlapQuery: TestOverlapQuery
 
+    @Query("""
+        query TestStreamedEpisodes($id: ID!) {
+          character(id: $id) {
+            id
+            name
+            episode @stream(label: "episodes", initialCount: 1) { id name }
+          }
+        }
+        """)
+    var streamedEpisodes: TestStreamedEpisodes
+
+    @Query("""
+        query TestStreamedNotes($id: ID!) {
+          character(id: $id) {
+            id
+            notes(first: 2) @stream_connection(key: "TestStreamedNotes_notes", initial_count: 1) {
+              edges { node { id text } }
+            }
+          }
+        }
+        """)
+    var streamedNotes: TestStreamedNotes
+
     @Fragment("""
         fragment TestName_character on Character { name }
         """)

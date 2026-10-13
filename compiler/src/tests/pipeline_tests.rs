@@ -212,6 +212,146 @@ fn defer_in_a_mutation_or_a_subscription_is_an_error() {
 }
 
 #[test]
+fn stream_in_a_mutation_or_a_subscription_is_an_error() {
+    let mutation = errors(
+        "{}",
+        "mutation Probe { rename(id: \"1\", name: \"a\") { character { id episode @stream(label: \"later\", initialCount: 1) { id } } } }",
+    );
+    assert_eq!(
+        mutation,
+        vec![
+            "`@stream` in the mutation `Probe`: its response arrives in one part, so nothing can be streamed"
+        ]
+    );
+    let subscription = errors(
+        "{}",
+        "subscription Probe { noteAdded(characterId: \"1\") { character { id episode @stream(label: \"later\", initialCount: 1) { id } } } }",
+    );
+    assert_eq!(
+        subscription,
+        vec![
+            "`@stream` in the subscription `Probe`: its response arrives in one part, so nothing can be streamed"
+        ]
+    );
+}
+
+#[test]
+fn stream_on_a_list_of_scalars_is_refused() {
+    let messages = errors(
+        "{}",
+        "query Probe { tokenizer { strings @stream(label: \"later\", initialCount: 1) } }",
+    );
+    assert_eq!(messages.len(), 1, "{messages:?}");
+    assert!(
+        messages[0].contains("@stream") && messages[0].contains("scalar"),
+        "{messages:?}"
+    );
+}
+
+#[test]
+fn stream_connection_on_a_connection_compiles() {
+    assert!(
+        errors(
+            "{}",
+            "query Probe($id: ID!) { character(id: $id) { id notes(first: 2) @stream_connection(key: \"Probe_notes\", initial_count: 1) { edges { node { id text } } } } }"
+        )
+        .is_empty()
+    );
+}
+
+/// The one operation `text` compiles to against `sdl`.
+fn operation(sdl: &str, text: &str) -> OperationPlan {
+    let compiled = compile(
+        sdl,
+        "schema.graphql",
+        &[],
+        &[document(text)],
+        &Config::default(),
+    )
+    .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
+    compiled.plan.operations[0].clone()
+}
+
+/// The stream label of the linked field `name` wherever it sits in
+/// `selections`, or none when the field is not there.
+fn stream_label<'a>(selections: &'a [SelectionPlan], name: &str) -> Option<&'a Option<String>> {
+    selections.iter().find_map(|selection| match selection {
+        SelectionPlan::Linked {
+            name: field,
+            streamed,
+            selections,
+            ..
+        } => {
+            if field == name {
+                Some(streamed)
+            } else {
+                stream_label(selections, name)
+            }
+        }
+        SelectionPlan::Inline { selections, .. } | SelectionPlan::Condition { selections, .. } => {
+            stream_label(selections, name)
+        }
+        _ => None,
+    })
+}
+
+#[test]
+fn a_streamed_list_carries_its_label_on_the_linked_field_and_marks_the_operation_incremental() {
+    let (sdl, _) = schema();
+    let streamed = operation(
+        &sdl,
+        "query TestStreamedEpisodes($id: ID!) { character(id: $id) { id name episode @stream(label: \"episodes\", initialCount: 1) { id name } } }",
+    );
+    assert!(streamed.has_incremental);
+    assert_eq!(
+        stream_label(&streamed.normalization, "episode"),
+        Some(&Some("TestStreamedEpisodes$stream$episodes".to_string()))
+    );
+    assert_eq!(
+        stream_label(&streamed.normalization, "character"),
+        Some(&None)
+    );
+    let whole = operation(
+        &sdl,
+        "query Probe($id: ID!) { character(id: $id) { id episode { id name } } }",
+    );
+    assert!(!whole.has_incremental);
+    assert_eq!(stream_label(&whole.normalization, "episode"), Some(&None));
+}
+
+#[test]
+fn the_stream_arguments_follow_the_spelling_the_schema_declares() {
+    let (sdl, _) = schema();
+    let relay = sdl.replace(
+        "directive @stream(label: String, if: Boolean = true, initialCount: Int = 0, useCustomizedBatch: Boolean = false) on FIELD",
+        "directive @stream(label: String, if: Boolean = true, initial_count: Int = 0, use_customized_batch: Boolean = false) on FIELD",
+    );
+    assert_ne!(
+        relay, sdl,
+        "the test schema declares the specification's `@stream`"
+    );
+    let streamed = operation(
+        &relay,
+        "query Probe($id: ID!) { character(id: $id) { id episode @stream(label: \"episodes\", initial_count: 1) { id } } }",
+    );
+    assert!(streamed.has_incremental);
+    assert!(
+        streamed.text.contains("initial_count:1"),
+        "{}",
+        streamed.text
+    );
+    let specification = operation(
+        &sdl,
+        "query Probe($id: ID!) { character(id: $id) { id episode @stream(label: \"episodes\", initialCount: 1) { id } } }",
+    );
+    assert!(
+        specification.text.contains("initialCount:1"),
+        "{}",
+        specification.text
+    );
+}
+
+#[test]
 fn a_root_named_otherwise_that_an_interface_or_union_reaches_is_an_error() {
     for extension in [
         "interface Thing { id: ID }\nextend type QueryRoot implements Thing { id: ID }",

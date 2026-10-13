@@ -205,11 +205,12 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle, Store.Judge {
         }
         let answer = store.check(resolved)
         let complete = answer != .miss
-        // The deferred parts the store holds half are cleared and fetched;
-        // the initial part renders meanwhile.
-        let partial = complete && Op.hasDeferred && !store.deferredPartsHold(resolved)
+        if complete { store.takeAge(root, hydrated: answer == .image) }
+        // The deferred parts the store holds half are cleared and fetched,
+        // and a streamed list is held only under a root a completed stream
+        // dated; the initial part renders meanwhile.
+        let partial = complete && Op.hasIncremental && !store.incrementalPartsHold(resolved, root)
         if complete {
-            store.takeAge(root, hydrated: answer == .image)
             // The data is there, and its verdict is settled on it: a parked
             // handle saw no commit, so what it failed on may be gone and a
             // field error or a null may have come.

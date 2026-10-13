@@ -551,7 +551,7 @@ class TestDeferredValueQuery(val id: String) : QueryOperation<TestDeferredValueQ
         override val name = "TestDeferredValueQuery"
         override val document: Document = Document.Text("query TestDeferredValueQuery(\$id:ID!){character(id:\$id){id,...TestCharacterValue_character@defer(label:\"TestDeferredValueQuery\$defer\$TestCharacterValue_character\")}}fragment TestCharacterValue_character on Character{id,name,status,origin{...TestOriginValue_location,id},episode{id,name}}fragment TestOriginValue_location on Location{id,name,dimension}")
         override val kind = OperationKind.QUERY
-        override val hasDeferred = true
+        override val hasIncremental = true
         override val plan: Plan by lazy { Plan(root = `TestDeferredValueQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)

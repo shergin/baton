@@ -211,7 +211,7 @@ nonisolated public struct TestNodeDeferred: Baton.Query {
 
     public static let name = "TestNodeDeferred"
     public static let document: Baton.Document = .text(#"query TestNodeDeferred($id:ID!){node(id:$id){__typename,id,...on Character{name},...TestAppearances_character@defer(label:"TestNodeDeferred$defer$TestAppearances_character")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}"#)
-    @_spi(Generated) public static let hasDeferred = true
+    @_spi(Generated) public static let hasIncremental = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])

@@ -1,0 +1,1 @@
+query TestStreamedEpisodes($id:ID!){character(id:$id){id,name,episode@stream(label:"TestStreamedEpisodes$stream$episodes",initialCount:1){id,name}}}

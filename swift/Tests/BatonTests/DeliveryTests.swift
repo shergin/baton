@@ -1330,3 +1330,260 @@ final class ChunkedStub: URLProtocol, @unchecked Sendable {
 extension TestNullsOnError {
     public static let errorBehavior: ErrorBehavior? = .null
 }
+
+// MARK: Streamed lists
+
+/// A stream of parts a test drives: the parts given at once on each request,
+/// then each part the test sends, until it finishes or fails the stream.
+final class DrivenParts: Transport, @unchecked Sendable {
+    let initial: [Data]
+    var continuations: [AsyncThrowingStream<Data, any Error>.Continuation] = []
+    var requests: [Request] = []
+
+    init(_ initial: [Data]) { self.initial = initial }
+
+    func send(_ request: Request) -> AsyncThrowingStream<Data, any Error> {
+        requests.append(request)
+        return AsyncThrowingStream { continuation in
+            for part in initial { continuation.yield(part) }
+            continuations.append(continuation)
+        }
+    }
+
+    /// Delivers a part on the newest request's stream.
+    func send(_ part: Data) { continuations.last?.yield(part) }
+
+    /// Ends the newest request's stream, as a transport whose connection closed.
+    func finish() { continuations.last?.finish() }
+}
+
+@MainActor
+extension DeliveryTests {
+    static let episodesLabel = "TestStreamedEpisodes$stream$episodes"
+
+    /// The links Rick's `episode` field holds, by record key, null for a hole.
+    func episodeKeys(_ store: Store) -> [String?]? {
+        guard let character = store.existing("Character:1"), case .refs(let list) = character.read(Registry.slot(Registry.type("Character"), "episode")) else { return nil }
+        return list.map { $0?.key }
+    }
+
+    @Test
+    func a_streamed_part_s_items_are_read_with_their_path_in_the_june_2023_shape_and_by_their_announced_id_in_the_2024_shape() throws {
+        let june = try Ingest.incremental(fixture("character-streamed-3"))
+        #expect(june.items.count == 1)
+        #expect(june.items.first?.path == [.name("character"), .name("episode"), .index(2)])
+        #expect(june.items.first?.label == Self.episodesLabel)
+        #expect(june.items.first?.items?.count == 1)
+        #expect(!june.hasNext)
+
+        let announced = try Ingest.incremental(fixture("character-streamed-2-pending"))
+        #expect(announced.items.first?.id == "0")
+        #expect(announced.items.first?.path == nil)
+        #expect(announced.items.first?.items?.count == 2)
+        #expect(announced.completed.map(\.id) == ["0"])
+
+        let relay = try Ingest.incremental(fixture("character-streamed-2"))
+        #expect(relay.items.first?.items == nil, "Relay's shape carries its one item as data")
+        #expect(relay.items.first?.path == [.name("character"), .name("episode"), .index(1)])
+        #expect(relay.hasNext)
+    }
+
+    @Test
+    func a_streamed_item_placed_past_the_list_s_end_leaves_nulls_the_lens_skips() async throws {
+        let transport = DrivenParts([fixture("character-streamed-1"), fixture("character-streamed-3-first")])
+        let environment = Environment(transport: transport)
+        environment.log = nil
+        let handle = environment.handle(for: TestStreamedEpisodes(id: "1"))
+        let retention = handle.retain()
+        await until { self.episodeKeys(environment.store)?.count == 3 }
+        #expect(episodeKeys(environment.store) == ["Episode:1", nil, "Episode:3"])
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return
+        }
+        let episode = try #require(data.character?.episode)
+        #expect(episode.map(\.name) == ["Pilot", "Anatomy Park"], "the hole reads as absent")
+        #expect(handle.isRefreshing, "the stream is still open")
+
+        transport.send(fixture("character-streamed-2"))
+        await until { self.episodeKeys(environment.store)?.contains(nil) == false }
+        #expect(data.character?.episode.map(\.name) == ["Pilot", "Lawnmower Dog", "Anatomy Park"])
+        _ = consume retention
+    }
+
+    /// Fetches Rick's episodes through `parts`, fixture names or the JSON of
+    /// a part written here, and returns the paths the log heard dropped.
+    func droppedStreamParts(_ parts: [String]) async throws -> [String] {
+        let data = parts.map { $0.hasPrefix("{") ? Data($0.utf8) : fixture($0) }
+        let environment = Environment(transport: OpenParts(data))
+        let events = LogTests.Events()
+        environment.log = events.log
+        try await environment.fetch(TestStreamedEpisodes(id: "1"))
+        return events.all.compactMap { event in
+            guard case .partDropped(let path) = event else { return nil }
+            return path
+        }
+    }
+
+    @Test
+    func a_streamed_part_naming_a_field_the_plan_does_not_stream_or_under_a_label_it_does_not_know_is_dropped_and_logged_at_its_path() async throws {
+        let unstreamed = #"{"data":{"id":"9","name":"Nowhere"},"path":["character","name",1],"label":"\#(Self.episodesLabel)","hasNext":true}"#
+        #expect(try await droppedStreamParts(["character-streamed-1", unstreamed, "character-streamed-end"]) == ["character.name.1"])
+
+        let unknown = #"{"incremental":[{"items":[{"id":"9","name":"Nowhere"}],"path":["character","episode",1],"label":"TestStreamedEpisodes$stream$unknown"}],"hasNext":true}"#
+        #expect(try await droppedStreamParts(["character-streamed-1", unknown, "character-streamed-end"]) == ["character.episode.1"])
+
+        let announced = #"{"data":{"character":{"id":"1","name":"Rick Sanchez","episode":[{"id":"1","name":"Pilot"}]}},"pending":[{"id":"0","path":["character","name"],"label":"\#(Self.episodesLabel)"}],"hasNext":true}"#
+        #expect(try await droppedStreamParts([announced, "character-streamed-2-pending"]) == ["character.name"])
+
+        #expect(try await droppedStreamParts(["character-streamed-1", "character-streamed-2", "character-streamed-3"]).isEmpty)
+    }
+
+    @Test
+    func a_stream_the_transport_ends_after_a_part_that_says_more_follow_fails_the_fetch_as_malformed_and_dates_nothing() async throws {
+        let transport = DrivenParts([fixture("character-streamed-1"), fixture("character-streamed-2")])
+        let environment = Environment(transport: transport)
+        let events = LogTests.Events()
+        environment.log = events.log
+        let handle = environment.handle(for: TestStreamedEpisodes(id: "1"))
+        let retention = handle.retain()
+        await until { self.episodeKeys(environment.store)?.count == 2 }
+        transport.finish()
+        await handle.settle()
+        guard case .failed(.malformed, _) = handle.fetch else {
+            Issue.record("expected the fetch to fail as malformed, got \(handle.fetch)")
+            return
+        }
+        #expect(handle.fetchTime == nil, "a cut stream dates no root")
+        #expect(events.all.contains { if case .fetchFailed(_, .malformed) = $0 { true } else { false } })
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("the items that arrived stay, got \(handle.phase)")
+            return
+        }
+        #expect(data.character?.episode.map(\.name) == ["Pilot", "Lawnmower Dog"])
+        _ = consume retention
+    }
+
+    @Test
+    func a_handle_attached_under_store_or_network_while_a_stream_s_root_is_undated_fetches_and_one_attached_after_it_completed_does_not() async throws {
+        let open = DrivenParts([fixture("character-streamed-1-pending")])
+        let streaming = Environment(transport: open)
+        streaming.log = nil
+        let fetching = Task { try await streaming.fetch(TestStreamedEpisodes(id: "1")) }
+        await until { self.episodeKeys(streaming.store) != nil }
+        let attached = streaming.handle(for: TestStreamedEpisodes(id: "1"))
+        let attachedRetention = attached.retain()
+        await until { open.requests.count == 2 }
+        #expect(attached.isRefreshing, "a streamed list under an undated root is not held")
+        fetching.cancel()
+        _ = consume attachedRetention
+
+        let whole = DrivenParts([fixture("character-streamed-1-pending"), fixture("character-streamed-2-pending")])
+        let completed = Environment(transport: whole)
+        completed.log = nil
+        try await completed.fetch(TestStreamedEpisodes(id: "1"))
+        let after = completed.handle(for: TestStreamedEpisodes(id: "1"))
+        let afterRetention = after.retain()
+        for _ in 0..<10 { await Task.yield() }
+        #expect(whole.requests.count == 1, "the completed stream dated the root, and the list is held")
+        #expect(!after.isRefreshing)
+        #expect(after.fetchTime != nil)
+        guard case .ready(let data) = after.phase else {
+            Issue.record("expected ready from the store, got \(after.phase)")
+            return
+        }
+        #expect(data.character?.episode.map(\.name) == ["Pilot", "Lawnmower Dog", "Anatomy Park"])
+        _ = consume afterRetention
+    }
+
+    @Test
+    func a_streamed_edge_merges_into_its_connection_and_the_deferred_page_info_brings_the_end_cursor() async throws {
+        let transport = DrivenParts([fixture("notes-streamed-1")])
+        let environment = Environment(transport: transport)
+        environment.log = nil
+        let handle = environment.handle(for: TestStreamedNotes(id: "1"))
+        let retention = handle.retain()
+        await until { if case .loading = handle.phase { false } else { true } }
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("expected ready after the first part, got \(handle.phase)")
+            return
+        }
+        let notes = try #require(data.character?.notes)
+        #expect(notes.edges?.compactMap { $0.node?.id } == ["n1"])
+
+        transport.send(fixture("notes-streamed-2"))
+        await until { notes.edges?.count == 2 }
+        #expect(notes.edges?.compactMap { $0.node?.text } == ["Wubba lubba dub dub", "Portal gun needs charging"], "the connection holds the streamed edge")
+        #expect(notes.pageInfo.endCursor == nil, "the page info has not arrived")
+
+        transport.send(fixture("notes-streamed-3"))
+        await handle.settle()
+        #expect(notes.pageInfo.endCursor == "c2")
+        #expect(notes.pageInfo.hasNextPage)
+        #expect(notes.hasNext)
+        #expect(handle.fetchTime != nil)
+        let connection = try #require(environment.store.existing("Character:1:__TestStreamedNotes_notes_connection"))
+        guard case .refs(let edges) = connection.read(Registry.slot(Registry.type("NoteConnection"), "edges")) else {
+            Issue.record("the connection holds no edges")
+            return
+        }
+        #expect(edges.map { $0?.key } == ["Character:1:notes(first:2):edges:0", "Character:1:notes(first:2):edges:1"])
+        _ = consume retention
+    }
+
+    @Test("an item whose list another commit changed since the stream left it is dropped and logged, before the first item landed and after", arguments: [false, true])
+    func staleStreamedItem(afterAnItem: Bool) async throws {
+        let transport = DrivenParts([fixture("character-streamed-1")])
+        let environment = Environment(transport: transport)
+        let events = LogTests.Events()
+        environment.log = events.log
+        let fetching = Task { try await environment.fetch(TestStreamedEpisodes(id: "1")) }
+        await until { self.episodeKeys(environment.store) != nil }
+        if afterAnItem {
+            transport.send(fixture("character-streamed-2"))
+            await until { self.episodeKeys(environment.store)?.count == 2 }
+        }
+        // Another operation writes Rick's list meanwhile.
+        let replacement = #"{"data":{"character":{"id":"1","name":"Rick Sanchez","episode":[{"id":"6","name":"Rick Potion #9"}]}}}"#
+        try await environment.commitPayload(TestStreamedEpisodes(id: "1"), Payload(Data(replacement.utf8)))
+        transport.send(fixture("character-streamed-3"))
+        try await fetching.value
+        #expect(episodeKeys(environment.store) == ["Episode:6"], "the stale item is not placed into the list the commit wrote")
+        let dropped = events.all.compactMap { event -> String? in
+            guard case .partDropped(let path) = event else { return nil }
+            return path
+        }
+        #expect(dropped == ["character.episode.2"])
+    }
+
+    @Test
+    func a_body_that_reads_a_streamed_list_is_notified_once_per_item() async throws {
+        let transport = DrivenParts([fixture("character-streamed-1")])
+        let environment = Environment(transport: transport)
+        environment.log = nil
+        let handle = environment.handle(for: TestStreamedEpisodes(id: "1"))
+        let retention = handle.retain()
+        await until { if case .loading = handle.phase { false } else { true } }
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("expected ready after the first part, got \(handle.phase)")
+            return
+        }
+        let character = try #require(data.character)
+        var names: [String?] = []
+        let (fired, track) = counter { names = character.episode.map(\.name) }
+        track()
+        #expect(names == ["Pilot"])
+
+        transport.send(fixture("character-streamed-2"))
+        await until { fired() == 1 }
+        track()
+        #expect(names == ["Pilot", "Lawnmower Dog"])
+
+        transport.send(fixture("character-streamed-3"))
+        await handle.settle()
+        #expect(fired() == 2, "one notification for the one item")
+        track()
+        #expect(names == ["Pilot", "Lawnmower Dog", "Anatomy Park"])
+        _ = consume retention
+    }
+}

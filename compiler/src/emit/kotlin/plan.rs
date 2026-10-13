@@ -153,6 +153,11 @@ impl<'a> PlanSelections<'a> {
                 .as_ref()
                 .map(|label| format!(", deferred = {}", string_literal(label)))
                 .unwrap_or_default();
+            let streamed_argument = field
+                .streamed
+                .as_ref()
+                .map(|label| format!(", streamed = {}", string_literal(label)))
+                .unwrap_or_default();
             let caught_argument = if field.caught { ", caught = true" } else { "" };
             let client_argument = if field.client { ", client = true" } else { "" };
             let transient_argument = if field.transient {
@@ -162,7 +167,7 @@ impl<'a> PlanSelections<'a> {
             };
             let guards_argument = guards_expression(&field.guards);
             let flags = format!(
-                "{edit_argument}{deferred_argument}{caught_argument}{client_argument}{transient_argument}{guards_argument}"
+                "{edit_argument}{deferred_argument}{streamed_argument}{caught_argument}{client_argument}{transient_argument}{guards_argument}"
             );
             match &field.kind {
                 NormalizationKind::Scalar { type_ } => {

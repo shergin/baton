@@ -23,7 +23,7 @@ fragment HostileScalars_character on Character {
   Owner: name Query: name Operation: name RefetchQuery: name
   # What an operation value, a mutation's action and its optimistic response declare.
   variables: name resolution: name name: name document: name text: name plan: name
-  errorBehavior: name throwsOnFieldError: name bubbles: name hasDeferred: name cacheExpiration: name Data: name
+  errorBehavior: name throwsOnFieldError: name bubbles: name hasIncremental: name cacheExpiration: name Data: name
   Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name Op: name
   variable: name payload: name
   # What the runtime's protocols give a generated type.

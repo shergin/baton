@@ -37,7 +37,7 @@ fragment HostileInlineLinks_character on Character @inline @throwOnFieldError {
   variables: origin { id } resolution: origin { id } name: origin { id }
   document: origin { id } text: origin { id } plan: origin { id }
   errorBehavior: origin { id } throwsOnFieldError: origin { id } bubbles: origin { id }
-  hasDeferred: origin { id } cacheExpiration: origin { id } Data: origin { id } Action: origin { id }
+  hasIncremental: origin { id } cacheExpiration: origin { id } Data: origin { id } Action: origin { id }
   OptimisticResponse: origin { id } hash: origin { id } commit: origin { id }
   callAsFunction: origin { id } Op: origin { id } variable: origin { id } payload: origin { id }
   # What the runtime's protocols give a generated type.

@@ -33,6 +33,8 @@ const FIELD: &[&str] = &[
     "prependNode",
     "deleteEdge",
     "deleteRecord",
+    "stream",
+    "stream_connection",
 ];
 const INLINE_FRAGMENT: &[&str] = &["include", "skip", "defer", "alias", "catch"];
 const SPREAD: &[&str] = &["include", "skip", "defer", "arguments", "alias", "catch"];

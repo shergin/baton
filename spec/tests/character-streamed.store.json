@@ -1,0 +1,9 @@
+{
+  "Character:1": {"__typename": "Character", "episode": {"__refs": ["Episode:1", "Episode:2", "Episode:3"]}, "id": "1", "name": "Rick Sanchez"},
+  "Episode:1": {"__typename": "Episode", "id": "1", "name": "Pilot"},
+  "Episode:2": {"__typename": "Episode", "id": "2", "name": "Lawnmower Dog"},
+  "Episode:3": {"__typename": "Episode", "id": "3", "name": "Anatomy Park"},
+  "client:root": {"__typename": "Query", "character(id:\"1\")": {"__ref": "Character:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

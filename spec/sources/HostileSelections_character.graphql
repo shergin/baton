@@ -59,7 +59,7 @@ fragment HostileSelections_character on Character {
   ... @alias(as: "name") { name } ... @alias(as: "document") { name }
   ... @alias(as: "text") { name } ... @alias(as: "plan") { name }
   ... @alias(as: "errorBehavior") { name } ... @alias(as: "throwsOnFieldError") { name }
-  ... @alias(as: "bubbles") { name } ... @alias(as: "hasDeferred") { name } ... @alias(as: "cacheExpiration") { name }
+  ... @alias(as: "bubbles") { name } ... @alias(as: "hasIncremental") { name } ... @alias(as: "cacheExpiration") { name }
   ... @alias(as: "Data") { name } ... @alias(as: "Action") { name }
   ... @alias(as: "OptimisticResponse") { name } ... @alias(as: "hash") { name }
   ... @alias(as: "commit") { name } ... @alias(as: "callAsFunction") { name }

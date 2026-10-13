@@ -11,7 +11,7 @@
       "text": "query TestTokenizerQuery{tokenizer{id,text,strings,count,counts,ratio,ratios,flag,flags,json,jsons}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {

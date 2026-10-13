@@ -214,6 +214,8 @@ pub struct NormalizationField {
     pub guards: Vec<Vec<Guard>>,
     /// The `@defer` label of the part that carries the field.
     pub deferred: Option<String>,
+    /// The `@stream` label the field's items carry, when the list streams.
+    pub streamed: Option<String>,
     /// Whether an error on the field is handled by a `@catch`.
     pub caught: bool,
     /// A client field, from a schema extension: never asked of a server,
@@ -239,6 +241,7 @@ impl PartialEq for NormalizationField {
             key,
             guards,
             deferred,
+            streamed,
             caught,
             client,
             extension,
@@ -250,6 +253,7 @@ impl PartialEq for NormalizationField {
             && *key == other.key
             && *guards == other.guards
             && *deferred == other.deferred
+            && *streamed == other.streamed
             && *caught == other.caught
             && *client == other.client
             && *extension == other.extension
@@ -634,6 +638,7 @@ fn field(
             key: storage_key.clone(),
             guards,
             deferred,
+            streamed: None,
             caught,
             client,
             extension,
@@ -651,6 +656,7 @@ fn field(
             possible_types,
             lookup,
             connection,
+            streamed,
             ..
         } => {
             let differ = members
@@ -677,6 +683,7 @@ fn field(
                 key: storage_key.clone(),
                 guards,
                 deferred,
+                streamed: streamed.clone(),
                 caught,
                 client,
                 extension,

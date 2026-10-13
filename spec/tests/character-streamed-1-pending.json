@@ -1,0 +1,1 @@
+{"data":{"character":{"id":"1","name":"Rick Sanchez","episode":[{"id":"1","name":"Pilot"}]}},"pending":[{"id":"0","path":["character","episode"],"label":"TestStreamedEpisodes$stream$episodes"}],"hasNext":true}

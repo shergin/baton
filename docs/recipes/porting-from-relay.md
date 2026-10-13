@@ -19,6 +19,7 @@ below links its reason.
 | `useRefetchableFragment` | `@refetchable(queryName:)` and `refetch()` on the lens | The same; `refetch()` is a `suspend` function |
 | `@required(action: NONE / LOG / THROW)`, `@catch`, `@throwOnFieldError` | The same directives; `@catch` reads as `Result`, `@required(action: THROW)` and `@throwOnFieldError` fail the phase, `LOG` logs through the environment's `log` | The same; `@catch` reads as `kotlin.Result`, THROW's getter throws `RequiredFieldError`, and the phase and the log as in Swift |
 | `@defer` | `@defer`; the first part renders, `isPresent` says whether the rest arrived | `@defer`; the spread's getter is null until the rest arrived, which the companion's `isPresent(anchor)` says |
+| `@stream`, `@stream_connection` | The same; the list reads what has arrived and grows as parts land, `isRefreshing` says the stream is still running, and a streamed connection's deferred `pageInfo.isPresent` says the edges are whole | The same; the list getter reads what has arrived, and the handle's `isRefreshing` and the page info's `isPresent(anchor)` say the rest |
 | `@inline` and `readInlineData` | `@inline`; the fragment compiles to a `Sendable`, `Hashable` struct, and the spread's accessor on the parent's lens builds it when called, on the main actor | `@inline`; the fragment compiles to a `data class`, built by the spread's getter when called, on the store's thread |
 | `@argumentDefinitions`, `@arguments` | The same | The same |
 | `RelayEnvironmentProvider` | `.environment(\.baton, environment)` | `CompositionLocalProvider(LocalBaton provides environment)` |
@@ -65,7 +66,6 @@ below links its reason.
 | Suspense, the missed-update epoch | Reads are synchronous; the heal refetches | none |
 | Generator-based GC | A pass runs whole on the store's thread, once a turn after a root left or a commit dropped a link: 2.8 ms over 50,000 records ([why](../decisions/the-check-and-collection-run-on-the-main-actor.md)) | A pass that misses a frame |
 | `invalidateRecord` | Ages belong to the operation, not the record | A product that must mark one entity stale |
-| `@stream`, `@stream_connection` | No server in use emits them | A server in use that does |
 | Imperative store updaters | Directives and payloads have expressed every write so far | A real write neither can express |
 | Automatic persisted queries | They need text and id at run time; the working group dropped them | none |
 

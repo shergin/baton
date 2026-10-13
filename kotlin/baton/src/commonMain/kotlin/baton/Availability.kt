@@ -222,6 +222,17 @@ private fun Store.hydrate(record: Record, slot: Slot, disk: Disk, batch: Store.B
  * unless a field outside the deferred part reads the same slot. Either way
  * the answer is false, so the operation fetches.
  */
+/**
+ * Whether the parts of an incremental response the check found are whole:
+ * every deferred part, below, and, where a list streams, a root a completed
+ * stream dated, since a stream cut short leaves the list as it was and the
+ * date is the one fact that says so.
+ */
+internal fun Store.incrementalPartsHold(selection: ResolvedSelection, root: Store.Root): Boolean {
+    if (selection.streams && root.fetchTime == null) return false
+    return deferredPartsHold(selection)
+}
+
 internal fun Store.deferredPartsHold(selection: ResolvedSelection, record: Record = root): Boolean {
     var whole = true
     local { batch -> whole = deferredParts(selection, record, batch) }

@@ -33,7 +33,7 @@ struct ScriptTests {
 final class ScriptRun {
     let script: Manifest.Script
     /// Holds every query and mutation until a step answers it, and lets the
-    /// steps drive every subscription and every deferred response.
+    /// steps drive every subscription and every incremental response.
     let transport = ScriptedTransport()
     let image: TemporaryImage?
     let heard = HeardEvents()
@@ -95,7 +95,7 @@ final class ScriptRun {
     func bind(_ operation: Manifest.Operation) -> OracleOperation? {
         do {
             let bound = try OracleOperation.bind(operation.name, StepVariables(name: context, variables: operation.variables))
-            if bound.hasDeferred { transport.drive(bound.name) } else { transport.hold(bound.name) }
+            if bound.hasIncremental { transport.drive(bound.name) } else { transport.hold(bound.name) }
             return bound
         } catch {
             fail("\(error)")
@@ -185,8 +185,9 @@ final class ScriptRun {
                 fail("the attach made no fetch for the step's reply to answer")
                 return nil
             }
-            await deliver(Answering(reply), to: operation, newerThan: nil, finished: Flag())
-            await live.settle()
+            // A stream the part leaves open keeps the fetch in flight, so
+            // nothing settles until a later step ends it.
+            if await deliver(Answering(reply), to: operation, newerThan: nil, finished: Flag()) == .complete { await live.settle() }
             return nil
 
         case .answer(let name, let reply):
@@ -195,8 +196,7 @@ final class ScriptRun {
                 fail("\(name) has no fetch in flight to answer")
                 return nil
             }
-            await deliver(Answering(reply), to: live.operation, newerThan: nil, finished: Flag())
-            await live.settle()
+            if await deliver(Answering(reply), to: live.operation, newerThan: nil, finished: Flag()) == .complete { await live.settle() }
             return nil
 
         case .refetch(let name, let reply):
@@ -329,10 +329,27 @@ final class ScriptRun {
         transport.requests.count(where: operation.sent)
     }
 
+    /// What a delivery left of the response: complete, or a stream left open
+    /// for a later step's part.
+    enum Delivered {
+        case complete
+        case open
+    }
+
+    /// Whether a part of an incremental response says more parts follow.
+    static func hasNext(_ part: Data) -> Bool {
+        guard let object = try? JSONSerialization.jsonObject(with: part) as? [String: Any] else { return false }
+        return (object["hasNext"] as? Bool) == true
+    }
+
     /// Answers the newest request of the operation: one sent after the
     /// first `newerThan` of its kind, or one already held. Stops waiting when
-    /// the work that would send it has finished without sending.
-    func deliver(_ answering: Answering, to operation: OracleOperation, newerThan sent: Int?, finished: Flag) async {
+    /// the work that would send it has finished without sending. A driven
+    /// stream, an incremental response's, stays open when the last part
+    /// given says more follow, and a later delivery sends the next part into
+    /// it or fails it.
+    @discardableResult
+    func deliver(_ answering: Answering, to operation: OracleOperation, newerThan sent: Int?, finished: Flag) async -> Delivered {
         if let sent {
             await until { self.requests(of: operation) > sent || finished.isSet }
         } else {
@@ -341,8 +358,17 @@ final class ScriptRun {
         if let stream = transport.driven.last(where: { operation.sent($0.request) }) {
             switch answering {
             case .parts(let parts):
+                let heardBefore = heard.all.count
                 for part in parts { stream.send(part) }
-                stream.complete()
+                guard let last = parts.last, Self.hasNext(last) else {
+                    stream.complete()
+                    return .complete
+                }
+                // The fetch stays in flight, so no settle says the part was
+                // taken; each part the fetch takes is logged, as a commit, a
+                // dropped part or the fetch's end.
+                await until { self.heard.all.count > heardBefore }
+                return .open
             case .failure(.transport): stream.fail(Self.transportFailure)
             case .failure(.request):
                 stream.send(Self.requestFailure)
@@ -351,11 +377,11 @@ final class ScriptRun {
                 stream.send(Self.malformedResponse)
                 stream.complete()
             }
-            return
+            return .complete
         }
         guard let held = transport.held.last(where: { operation.sent($0.request) }) else {
             if !finished.isSet { fail("no request of \(operation.name) waits for an answer") }
-            return
+            return .complete
         }
         switch answering {
         case .parts(let parts):
@@ -365,6 +391,7 @@ final class ScriptRun {
         case .failure(.request): held.respond(Self.requestFailure)
         case .failure(.malformed): held.respond(Self.malformedResponse)
         }
+        return .complete
     }
 
     // MARK: The expectations

@@ -32,7 +32,7 @@ mutation HostileMutationVariables(
   # What an operation value, a mutation's action and its optimistic response declare.
   $resolution: Boolean!, $name: Boolean!, $document: Boolean!, $text: Boolean!,
   $plan: Boolean!, $errorBehavior: Boolean!, $throwsOnFieldError: Boolean!, $bubbles: Boolean!,
-  $hasDeferred: Boolean!, $cacheExpiration: Boolean!, $hash: Boolean!, $commit: Boolean!, $callAsFunction: Boolean!,
+  $hasIncremental: Boolean!, $cacheExpiration: Boolean!, $hash: Boolean!, $commit: Boolean!, $callAsFunction: Boolean!,
   $Op: Boolean!, $variable: Boolean!, $payload: Boolean!,
   # What the runtime's protocols give a generated type.
   $phase: Boolean!, $isRefreshing: Boolean!, $isStale: Boolean!, $retry: Boolean!,
@@ -110,7 +110,7 @@ mutation HostileMutationVariables(
       ... @include(if: $document) { name } ... @include(if: $text) { name }
       ... @include(if: $plan) { name } ... @include(if: $errorBehavior) { name }
       ... @include(if: $throwsOnFieldError) { name } ... @include(if: $bubbles) { name }
-      ... @include(if: $hasDeferred) { name } ... @include(if: $cacheExpiration) { name } ... @include(if: $hash) { name }
+      ... @include(if: $hasIncremental) { name } ... @include(if: $cacheExpiration) { name } ... @include(if: $hash) { name }
       ... @include(if: $commit) { name } ... @include(if: $callAsFunction) { name }
       ... @include(if: $Op) { name } ... @include(if: $variable) { name } ... @include(if: $payload) { name }
       # What the runtime's protocols give a generated type.

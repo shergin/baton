@@ -59,6 +59,8 @@ internal class ResolvedField(
     val client: Boolean,
     /** Which of the record's key fields this is, or -1; set by the variant the field is read in. */
     val keyIndex: Int = -1,
+    /** The `@stream` label the field's items carry, when the list streams: its first items come with the field, the rest in later parts. */
+    val streamed: String? = null,
 ) {
     sealed interface Kind {
         class Scalar(val kind: ScalarKind, val list: Boolean) : Kind
@@ -71,7 +73,7 @@ internal class ResolvedField(
     val isServer: Boolean get() = !client && deferred == null
 
     fun copy(slot: Slot = this.slot, kind: Kind = this.kind, deferred: String? = this.deferred, keyIndex: Int = this.keyIndex): ResolvedField =
-        ResolvedField(responseKey, keyBytes, storageKey, rendered, slot, kind, edit, deferred, caught, client, keyIndex)
+        ResolvedField(responseKey, keyBytes, storageKey, rendered, slot, kind, edit, deferred, caught, client, keyIndex, streamed)
 
     /** The same field on another concrete type: its slot, and its connection's, interned there. */
     fun on(type: TypeID, keys: Keys?): ResolvedField {
@@ -194,6 +196,9 @@ internal class ResolvedSelection(
     private val own = ResolvedVariant(type, key, fields)
     val membershipKeys: List<Pair<ByteArray, TypeID>> = memberships.map { it.responseKey.encodeToByteArray() to it.condition }
 
+    /** Whether a list somewhere in the selection streams, so that its data is whole only under a root dated by a completed stream. */
+    val streams: Boolean = streams(fields) || listed.values.any { streams(it.fields) } || conditions.any { streams(it.second) }
+
     /** The listed types' names as bytes, so a `__typename` of a listed type is matched without a string. */
     private val typeNameKeys: List<Pair<ByteArray, TypeID>> =
         (listOf(type) + listed.keys.sortedBy { it.raw }).map { it.name.encodeToByteArray() to it }
@@ -288,6 +293,10 @@ internal class ResolvedSelection(
     }
 }
 
+/** Whether one of the fields, or a field below one of them, streams. */
+private fun streams(fields: List<ResolvedField>): Boolean =
+    fields.any { it.streamed != null || (it.kind as? ResolvedField.Kind.Linked)?.selection?.streams == true }
+
 /** Whether the bytes at [start] are [other]'s; the caller has checked the length. */
 internal fun ByteArray.regionEquals(start: Int, other: ByteArray): Boolean {
     if (start + other.size > size) return false
@@ -377,6 +386,7 @@ private class Resolver(private val variables: Variables, private val keys: Keys)
             deferred = field.deferred,
             caught = field.caught,
             client = field.client,
+            streamed = field.streamed,
         )
     }
 

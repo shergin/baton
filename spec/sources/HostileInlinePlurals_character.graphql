@@ -37,7 +37,7 @@ fragment HostileInlinePlurals_character on Character @inline @throwOnFieldError 
   variables: episode { id } resolution: episode { id } name: episode { id }
   document: episode { id } text: episode { id } plan: episode { id }
   errorBehavior: episode { id } throwsOnFieldError: episode { id } bubbles: episode { id }
-  hasDeferred: episode { id } cacheExpiration: episode { id } Data: episode { id } Action: episode { id }
+  hasIncremental: episode { id } cacheExpiration: episode { id } Data: episode { id } Action: episode { id }
   OptimisticResponse: episode { id } hash: episode { id } commit: episode { id }
   callAsFunction: episode { id } Op: episode { id } variable: episode { id } payload: episode { id }
   # What the runtime's protocols give a generated type.

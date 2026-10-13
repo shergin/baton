@@ -122,7 +122,7 @@ fragment HostileArguments_character on Character
   errorBehavior: {type: "Boolean", defaultValue: true},
   throwsOnFieldError: {type: "Boolean", defaultValue: true},
   bubbles: {type: "Boolean", defaultValue: true},
-  hasDeferred: {type: "Boolean", defaultValue: true},
+  hasIncremental: {type: "Boolean", defaultValue: true},
   cacheExpiration: {type: "Boolean", defaultValue: true},
   Action: {type: "Boolean", defaultValue: true},
   OptimisticResponse: {type: "Boolean", defaultValue: true},
@@ -217,7 +217,7 @@ fragment HostileArguments_character on Character
   ... @include(if: $name) { name } ... @include(if: $document) { name }
   ... @include(if: $text) { name } ... @include(if: $plan) { name }
   ... @include(if: $errorBehavior) { name } ... @include(if: $throwsOnFieldError) { name }
-  ... @include(if: $bubbles) { name } ... @include(if: $hasDeferred) { name } ... @include(if: $cacheExpiration) { name }
+  ... @include(if: $bubbles) { name } ... @include(if: $hasIncremental) { name } ... @include(if: $cacheExpiration) { name }
   ... @include(if: $Action) { name } ... @include(if: $OptimisticResponse) { name }
   ... @include(if: $hash) { name } ... @include(if: $commit) { name }
   ... @include(if: $callAsFunction) { name } ... @include(if: $Op) { name }

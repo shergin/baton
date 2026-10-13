@@ -204,15 +204,14 @@ internal class ScriptRun(private val script: Script) {
                 handles[action.name] = live
                 val reply = action.reply ?: return null
                 if (handle.fetch != Fetch.InFlight) return null.also { fail("the attach made no fetch for the step's reply to answer") }
-                deliver(Answering.of(reply), operation, null, null)
-                handle.settle()
+                // A stream the part leaves open keeps the fetch in flight, so nothing settles until a later step ends it.
+                if (deliver(Answering.of(reply), operation, null, null) == Delivered.COMPLETE) handle.settle()
                 return null
             }
             is Script.Action.Answer -> {
                 val live = handle(action.handle) ?: return null
                 if (live.handle.fetch != Fetch.InFlight) return null.also { fail("${action.handle} has no fetch in flight to answer") }
-                deliver(Answering.of(action.reply), live.operation, null, null)
-                live.handle.settle()
+                if (deliver(Answering.of(action.reply), live.operation, null, null) == Delivered.COMPLETE) live.handle.settle()
                 return null
             }
             is Script.Action.Refetch -> {
@@ -336,15 +335,24 @@ internal class ScriptRun(private val script: Script) {
         }
     }
 
+    /** What a delivery left of the response: complete, or a stream left open for a later step's part. */
+    private enum class Delivered { COMPLETE, OPEN }
+
+    /** Whether a part of an incremental response says more parts follow. */
+    private fun hasNext(part: ByteArray): Boolean = (Json.parse(part.decodeToString()) as? Map<*, *>)?.get("hasNext") == true
+
     /** How many requests of the operation the transport was sent. */
     private fun requests(operation: Bound): Int = transport.requests.count { operation.sent(it) }
 
     /**
      * Answers the newest request of the operation: one sent after the first
      * [newerThan] of its kind, or one already held. Stops waiting when the
-     * work that would send it has finished without sending.
+     * work that would send it has finished without sending. A driven
+     * stream, an incremental response's, stays open when the last part
+     * given says more follow, and a later delivery sends the next part into
+     * it or fails it.
      */
-    private fun deliver(answering: Answering, operation: Bound, newerThan: Int?, work: Deferred<*>?) {
+    private fun deliver(answering: Answering, operation: Bound, newerThan: Int?, work: Deferred<*>?): Delivered {
         val finished = { work?.isCompleted ?: false }
         if (newerThan != null) {
             until { requests(operation) > newerThan || finished() }
@@ -355,7 +363,15 @@ internal class ScriptRun(private val script: Script) {
         if (stream != null) {
             when (answering) {
                 is Answering.Parts -> {
+                    val heardBefore = heard.size
                     for (part in answering.parts) stream.send(part)
+                    val last = answering.parts.lastOrNull()
+                    if (last != null && hasNext(last)) {
+                        // The fetch stays in flight, so no settle says the part was taken; each part the fetch takes is
+                        // logged, as a commit, a dropped part or the fetch's end.
+                        until { heard.size > heardBefore }
+                        return Delivered.OPEN
+                    }
                     stream.complete()
                 }
                 is Answering.Failure -> when (answering.kind) {
@@ -371,12 +387,12 @@ internal class ScriptRun(private val script: Script) {
                 }
             }
             scope.runCurrent()
-            return
+            return Delivered.COMPLETE
         }
         val held = transport.held.lastOrNull { operation.sent(it.request) }
         if (held == null) {
             if (!finished()) fail("no request of ${operation.name} waits for an answer")
-            return
+            return Delivered.COMPLETE
         }
         when (answering) {
             is Answering.Parts -> {
@@ -390,6 +406,7 @@ internal class ScriptRun(private val script: Script) {
             }
         }
         scope.runCurrent()
+        return Delivered.COMPLETE
     }
 
     // Binding an operation a step names to the class the compiler generated for it.
@@ -411,7 +428,7 @@ internal class ScriptRun(private val script: Script) {
             return null
         }
         val bound = Bound(value)
-        if (bound.type.hasDeferred) transport.drive(bound.name) else transport.hold(bound.name)
+        if (bound.type.hasIncremental) transport.drive(bound.name) else transport.hold(bound.name)
         return bound
     }
 

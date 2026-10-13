@@ -189,6 +189,8 @@ class PlanField private constructor(
     val kind: Kind,
     val edit: Edit?,
     val deferred: String?,
+    /** The `@stream` label the field's items carry, when the list streams. */
+    val streamed: String?,
     val caught: Boolean,
     val client: Boolean,
     val transient: Boolean,
@@ -226,7 +228,7 @@ class PlanField private constructor(
             client: Boolean = false,
             transient: Boolean = false,
             guards: List<List<Guard>> = emptyList(),
-        ): PlanField = PlanField(responseKey, key, Kind.Scalar(kind, list), edit, deferred, caught, client, transient, guards)
+        ): PlanField = PlanField(responseKey, key, Kind.Scalar(kind, list), edit, deferred, null, caught, client, transient, guards)
 
         fun linked(
             responseKey: String,
@@ -236,13 +238,14 @@ class PlanField private constructor(
             connection: ConnectionPlan? = null,
             edit: Edit? = null,
             deferred: String? = null,
+            streamed: String? = null,
             caught: Boolean = false,
             client: Boolean = false,
             transient: Boolean = false,
             guards: List<List<Guard>> = emptyList(),
             selection: Selection,
         ): PlanField = PlanField(
-            responseKey, key, Kind.Linked(selection, plural, lookup, connection), edit, deferred, caught, client, transient, guards,
+            responseKey, key, Kind.Linked(selection, plural, lookup, connection), edit, deferred, streamed, caught, client, transient, guards,
         )
     }
 }

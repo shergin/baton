@@ -92,6 +92,9 @@ package final class ResolvedSelection: Sendable {
     /// selection that reads no variables, whose resolution every store
     /// shares.
     private let hold: Keys.Hold?
+    /// Whether a list somewhere in the selection streams, so that its data
+    /// is whole only under a root dated by a completed stream.
+    let streams: Bool
 
     init(type: TypeID, key: [String], isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant], conditions: [(TypeID, [ResolvedField])] = [], memberships: [Selection.MembershipAnswer] = [], hold: Keys.Hold?, transient: Bool = false) {
         self.type = type
@@ -99,6 +102,7 @@ package final class ResolvedSelection: Sendable {
         self.isAbstract = isAbstract
         self.transient = transient
         self.fields = fields
+        streams = ResolvedSelection.streams(fields) || listed.values.contains { ResolvedSelection.streams($0.fields) } || conditions.contains { ResolvedSelection.streams($0.1) }
         own = ResolvedVariant(type: type, key: key, fields: fields, typeName: type.name)
         self.listed = listed
         self.conditions = conditions
@@ -106,6 +110,15 @@ package final class ResolvedSelection: Sendable {
         self.hold = hold
         typeName = type.name
         typeNameKeys = ([type] + listed.keys.sorted { $0.raw < $1.raw }).map { (Array($0.name.utf8), $0) }
+    }
+
+    /// Whether one of the fields, or a field below one of them, streams.
+    private static func streams(_ fields: [ResolvedField]) -> Bool {
+        fields.contains { field in
+            if field.streamed != nil { return true }
+            if case .linked(let child, _, _, _) = field.kind { return child.streams }
+            return false
+        }
     }
 
     /// The fields a record of `type` reads, with their slots on it. Taken
@@ -285,6 +298,9 @@ package struct ResolvedField: Sendable {
     /// wait for, or the client, which no response carries.
     package let origin: Origin
     package let caught: Bool
+    /// The `@stream` label the field's items carry, when the list streams:
+    /// its first items come with the field, the rest in later parts.
+    package let streamed: String?
     let isTypename: Bool
 
     package enum Origin: Sendable, Equatable {
@@ -308,7 +324,7 @@ package struct ResolvedField: Sendable {
     /// the field is read in, since a field keys one type and not another.
     var keyIndex: Int32 = -1
 
-    init(responseKey: String, keyBytes: [UInt8], storageKey: String, rendered: Bool, slot: Slot, kind: Kind, edit: ResolvedEdit?, deferred: String?, caught: Bool, client: Bool = false) {
+    init(responseKey: String, keyBytes: [UInt8], storageKey: String, rendered: Bool, slot: Slot, kind: Kind, edit: ResolvedEdit?, deferred: String?, streamed: String? = nil, caught: Bool, client: Bool = false) {
         self.responseKey = responseKey
         self.keyBytes = keyBytes
         self.storageKey = storageKey
@@ -317,13 +333,14 @@ package struct ResolvedField: Sendable {
         self.kind = kind
         self.edit = edit
         origin = client ? .client : deferred.map(Origin.deferred) ?? .server
+        self.streamed = streamed
         self.caught = caught
         isTypename = responseKey == "__typename"
     }
 
     /// The same field as the incremental part delivers it: no longer deferred.
     func undeferred() -> ResolvedField {
-        ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, rendered: rendered, slot: slot, kind: kind, edit: edit, deferred: nil, caught: caught, client: origin == .client)
+        ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, rendered: rendered, slot: slot, kind: kind, edit: edit, deferred: nil, streamed: streamed, caught: caught, client: origin == .client)
     }
 
     /// The same field on another concrete type: its slot, and its
@@ -352,6 +369,7 @@ package struct ResolvedField: Sendable {
             kind: kind,
             edit: edit,
             deferred: deferred,
+            streamed: streamed,
             caught: caught,
             client: origin == .client
         )

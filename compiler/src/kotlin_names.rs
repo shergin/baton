@@ -166,7 +166,7 @@ pub const MEMBER_NAMES: [(&str, &str); 30] = [
     ("plan", "the operation's `plan`"),
     ("throwsOnFieldError", "the operation's `throwsOnFieldError`"),
     ("bubbles", "the operation's `bubbles`"),
-    ("hasDeferred", "the operation's `hasDeferred`"),
+    ("hasIncremental", "the operation's `hasIncremental`"),
     ("errorBehavior", "the operation's `errorBehavior`"),
     (
         "cacheExpirationSeconds",

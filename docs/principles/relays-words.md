@@ -69,6 +69,6 @@ Understood by the compiler and honored by the runtime:
 `@argumentDefinitions`, `@arguments`, `@connection`, `@refetchable`,
 `@alias`, `@appendEdge`, `@prependEdge`, `@appendNode`, `@prependNode`,
 `@deleteEdge`, `@deleteRecord`, `@include`, `@skip`, `@required`, `@catch`,
-`@throwOnFieldError`, `@semanticNonNull` (schema), `@defer`, `@inline`. Parsed and
-validated by Relay's front end but not yet given meaning here: `@stream`.
+`@throwOnFieldError`, `@semanticNonNull` (schema), `@defer`, `@stream`,
+`@stream_connection`, `@inline`.
 This section may rot; the rest must not.

@@ -2390,7 +2390,7 @@
       "text": "mutation TestAddNote($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){noteEdge{cursor,node{id,text}}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -2769,7 +2769,7 @@
       "text": "mutation TestAddNoteFirst($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){noteEdge{cursor,node{id,text}}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -3148,7 +3148,7 @@
       "text": "mutation TestAddNoteNode($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){note{id,text}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -3423,7 +3423,7 @@
       "text": "mutation TestAddNoteNodeFirst($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){note{id,text}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -3698,7 +3698,7 @@
       "text": "mutation TestAddNoteNodeOfAnotherType($characterId:ID!,$text:String!){addNote(characterId:$characterId,text:$text){note{id,text}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -3949,7 +3949,7 @@
       "text": "query TestAliasQuery($id:ID!){character(id:$id){...TestRow_character,id}}fragment TestRow_character on Character{name,status,image}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -4220,7 +4220,7 @@
       "text": "query TestAuthorNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestAuthorNotes_note_1G22uz,id}}fragment TestAuthorNotes_note_1G22uz on Note{id,author{id,name,notes(first:$count,after:$cursor){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -4835,7 +4835,7 @@
       "text": "query TestAuthorNotesQuery($id:ID!){node(id:$id){__typename,...TestAuthorNotes_note,id}}fragment TestAuthorNotes_note on Note{id,author{id,name,notes(first:2){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -5477,7 +5477,7 @@
       "text": "query TestDeferredNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestDeferredNotes_character_1G22uz,id}}fragment TestDeferredNotes_character_1G22uz on Character{notes(first:$count,after:$cursor){edges{node{id,...TestNoteText_note@defer(label:\"TestDeferredNotes_character$defer$noteText\"),__typename},cursor},pageInfo{endCursor,hasNextPage}},id}fragment TestNoteText_note on Note{text}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": true,
+      "has_incremental": true,
       "error_behavior": null,
       "reader": [
         {
@@ -6027,7 +6027,7 @@
       "text": "mutation TestDeleteNote($id:ID!){removeNote(id:$id){removedNoteId}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -6186,7 +6186,7 @@
       "text": "query TestHiddenNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestHiddenNotes_character_1G22uz,id}}fragment TestHiddenNotes_character_1G22uz on Character{TestHiddenNotes_character:name,TestHiddenNotesPaginationQuery:status,notes(first:$count,after:$cursor){TestHiddenNotes_character:totalCount,TestHiddenNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -6808,7 +6808,7 @@
       "text": "query TestHiddenNotesQuery($id:ID!){character(id:$id){...TestHiddenNotes_character,id}}fragment TestHiddenNotes_character on Character{TestHiddenNotes_character:name,TestHiddenNotesPaginationQuery:status,notes(first:2){TestHiddenNotes_character:totalCount,TestHiddenNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -7372,7 +7372,7 @@
       "text": "query TestHiddenRecentNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestHiddenRecentNotes_character_1G22uz,id}}fragment TestHiddenRecentNotes_character_1G22uz on Character{notes(last:$count,before:$cursor){TestHiddenRecentNotes_character:totalCount,TestHiddenRecentNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -7952,7 +7952,7 @@
       "text": "query TestHiddenRecentNotesQuery($id:ID!){character(id:$id){...TestHiddenRecentNotes_character,id}}fragment TestHiddenRecentNotes_character on Character{notes(last:2){TestHiddenRecentNotes_character:totalCount,TestHiddenRecentNotesPaginationQuery:totalCount,edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -8474,7 +8474,7 @@
       "text": "query TestNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestNotes_character_1G22uz,id}}fragment TestNotes_character_1G22uz on Character{name,notes(first:$count,after:$cursor){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -9054,7 +9054,7 @@
       "text": "query TestNotesQuery($id:ID!){character(id:$id){...TestNotes_character,id}}fragment TestNotes_character on Character{name,notes(first:2){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -9563,7 +9563,7 @@
       "text": "query TestNotesSizedQuery($id:ID!,$size:Int){character(id:$id){...TestNotes_character_2H9PL,id}}fragment TestNotes_character_2H9PL on Character{name,notes(first:$size){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -10090,7 +10090,7 @@
       "text": "query TestRecentNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestRecentNotes_character_1G22uz,id}}fragment TestRecentNotes_character_1G22uz on Character{notes(last:$count,before:$cursor){edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -10628,7 +10628,7 @@
       "text": "query TestRecentNotesQuery($id:ID!){character(id:$id){...TestRecentNotes_character,id}}fragment TestRecentNotes_character on Character{notes(last:2){edges{node{id,text,__typename},cursor},pageInfo{hasPreviousPage,startCursor}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -11099,7 +11099,7 @@
       "text": "mutation TestRemoveNote($id:ID!){removeNote(id:$id){removedNoteId,deleted:removedNoteId}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -11284,7 +11284,7 @@
       "text": "query TestTwoPagesQuery($id:ID!){character(id:$id){id,notes(first:2){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}},node(id:$id){__typename,...on Character{notes(first:2,after:\"c2\"){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}},id}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {

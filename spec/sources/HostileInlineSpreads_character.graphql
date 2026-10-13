@@ -118,7 +118,7 @@ fragment HostileInlineSpreads_character on Character @inline @throwOnFieldError 
   ... @alias(as: "errorBehavior") { ...HostileInlineSpreadTarget_character }
   ... @alias(as: "throwsOnFieldError") { ...HostileInlineSpreadTarget_character }
   ... @alias(as: "bubbles") { ...HostileInlineSpreadTarget_character }
-  ... @alias(as: "hasDeferred") { ...HostileInlineSpreadTarget_character }
+  ... @alias(as: "hasIncremental") { ...HostileInlineSpreadTarget_character }
   ... @alias(as: "cacheExpiration") { ...HostileInlineSpreadTarget_character }
   ... @alias(as: "Data") { ...HostileInlineSpreadTarget_character }
   ... @alias(as: "Action") { ...HostileInlineSpreadTarget_character }

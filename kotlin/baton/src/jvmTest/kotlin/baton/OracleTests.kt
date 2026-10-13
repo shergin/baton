@@ -123,6 +123,58 @@ class OracleTests {
     fun `a deferred part announced as pending lands by its id`() = expectDump("tests/character-deferred-pending")
 
     @Test
+    fun `streamed items in Relay's shape and the June 2023 shape land at the indices their paths name`() = expectDump("tests/character-streamed")
+
+    @Test
+    fun `streamed items announced as pending follow the last item the stream left`() = expectDump("tests/character-streamed-pending")
+
+    @Test
+    fun `streamed items that arrive out of order read in their order once each is there`() = expectDump("tests/character-streamed-unordered")
+
+    @Test
+    fun `a failed stream's errors sit beside the list field, which keeps its first items`() = expectDump("tests/character-streamed-failed")
+
+    @Test
+    fun `a streamed connection holds its streamed edges and its deferred page info`() = expectDump("tests/notes-streamed")
+
+    /**
+     * The streamed cases, each with the links its list holds once every
+     * part landed, in order, whatever order the parts came in, and the
+     * errors beside it; Swift's `aStreamedListGrowsInItsSlot` holds the same.
+     */
+    @Test
+    fun `a streamed list holds its items in order at their indices once its stream completes`() {
+        val episodes = listOf("Episode:1", "Episode:2", "Episode:3")
+        val expected = listOf(
+            Triple("tests/character-streamed", "Character:1", episodes),
+            Triple("tests/character-streamed-pending", "Character:1", episodes),
+            Triple("tests/character-streamed-unordered", "Character:1", episodes),
+            Triple("tests/character-streamed-failed", "Character:1", listOf("Episode:1")),
+            Triple(
+                "tests/notes-streamed",
+                "Character:1:__TestStreamedNotes_notes_connection",
+                listOf("Character:1:notes(first:2):edges:0", "Character:1:notes(first:2):edges:1"),
+            ),
+        )
+        for ((name, key, keys) in expected) {
+            val store = Store()
+            Spec.case(name).commit(store)
+            val record = checkNotNull(store.existing(key)) { "$name: no $key" }
+            val field = if (record.type == Registry.type("Character")) "episode" else "edges"
+            val slot = Registry.slot(record.type, field)
+            val list = record.peek(slot) as? Value.Refs ?: fail("$name: $key.$field holds no list")
+            assertEquals(keys, list.records.map { it?.key }, name)
+            val errors = record.error(slot)?.let { listOf(it.message) }.orEmpty()
+            assertEquals(if (name == "tests/character-streamed-failed") listOf("episodes unavailable") else emptyList(), errors, name)
+        }
+        val store = Store()
+        Spec.case("tests/notes-streamed").commit(store)
+        val pageInfo = checkNotNull(store.existing("Character:1:__TestStreamedNotes_notes_connection:pageInfo"))
+        assertEquals(Value.String("c2"), pageInfo.peek(Registry.slot(pageInfo.type, "endCursor")))
+        assertEquals(Value.Bool(true), pageInfo.peek(Registry.slot(pageInfo.type, "hasNextPage")))
+    }
+
+    @Test
     fun `a mutation's appended edge is a copy the connection owns`() = expectDump("tests/add-note-n9")
 
     @Test

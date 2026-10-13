@@ -468,7 +468,7 @@
       "text": "query TestCaughtEpisodes($id:ID!){character(id:$id){id,caught:episode{name,id}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -795,7 +795,7 @@
       "text": "query TestCaughtPartQuery($id:ID!){character(id:$id){id,name,...TestCaughtAppearances_character@defer(label:\"TestCaughtPartQuery$defer$TestCaughtAppearances_character\")}}fragment TestCaughtAppearances_character on Character{episode{name,id}}",
       "throws_on_field_error": true,
       "bubbles": false,
-      "has_deferred": true,
+      "has_incremental": true,
       "error_behavior": null,
       "reader": [
         {
@@ -1132,7 +1132,7 @@
       "text": "query TestCollidingErrors($id:ID!){types:character(id:$id){id},typesLens:character(id:$id){id,name}}",
       "throws_on_field_error": true,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -1514,7 +1514,7 @@
       "text": "query TestCollidingRequired($id:ID!){types:character(id:$id){id},typesLens:character(id:$id){id,name}}",
       "throws_on_field_error": false,
       "bubbles": true,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -1906,7 +1906,7 @@
       "text": "query TestFilteredCharacters($filters:[FilterCharacter!]!){charactersMatching(filters:$filters){id,name}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -2122,7 +2122,7 @@
       "text": "query TestKeywordVariables($where:ID!,$in:String!){character(id:$where){id},search(name:$in){__typename,...on Node{__isNode:__typename,id}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -2519,7 +2519,7 @@
       "text": "query TestLoggedOrigin($id:ID!){character(id:$id){id,origin{id,name}}}",
       "throws_on_field_error": false,
       "bubbles": true,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -2863,7 +2863,7 @@
       "text": "query TestRequiredOrigin($id:ID!){character(id:$id){id,origin{id,name}}}",
       "throws_on_field_error": false,
       "bubbles": true,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -3207,7 +3207,7 @@
       "text": "query TestReservedNames($id:ID!){sites:character(id:$id){id,...TestNotes_character_35kO5h},types:character(id:$id){id},slots:character(id:$id){id}}fragment TestNotes_character_35kO5h on Character{name,notes(first:1){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -4050,7 +4050,7 @@
       "text": "query TestStandaloneFragmentsQuery($id:ID!){character(id:$id){id,...TestThrowingOrigin_character,...TestLoggedNotes_character,notes(first:1){...TestLogEdges_connection}}}fragment TestLogEdges_connection on NoteConnection{edges{cursor}}fragment TestLoggedNotes_character on Character{notes(first:1){totalCount,...TestLogEdges_connection}}fragment TestThrowingOrigin_character on Character{origin{name,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -4490,7 +4490,7 @@
       "text": "query TestStrictEpisodes($id:ID!){character(id:$id){id,episode{id,name}}}",
       "throws_on_field_error": true,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -4836,7 +4836,7 @@
       "text": "query TestStrictOrigin($id:ID!){character(id:$id){id,origin{id,name}}}",
       "throws_on_field_error": true,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -5174,7 +5174,7 @@
       "text": "query TestSwiftNames($id:ID!){type:character(id:$id){id},self:character(id:$id){id},protocol:character(id:$id){id},any:character(id:$id){id},mainActor:character(id:$id){id},baton:character(id:$id){id},abstractSlots:character(id:$id){id},result:character(id:$id){id},optional:character(id:$id){id},string:character(id:$id){id},int:character(id:$id){id},double:character(id:$id){id},bool:character(id:$id){id},owner:character(id:$id){id},caught:character(id:$id){id},node(id:$id){__typename,id},tokenizer{ratio,count,flag,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -7968,7 +7968,7 @@
       "text": "query TestThrowingNode($id:ID!){node(id:$id){__typename,id,...on Character{name}}}",
       "throws_on_field_error": true,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -8279,7 +8279,7 @@
       "text": "query TestTwoFieldPartQuery($id:ID!){character(id:$id){id,name,...TestOriginAndEpisode_character@defer(label:\"TestTwoFieldPartQuery$defer$TestOriginAndEpisode_character\")}}fragment TestOriginAndEpisode_character on Character{origin{name,id},episode{name,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": true,
+      "has_incremental": true,
       "error_behavior": null,
       "reader": [
         {
@@ -8703,7 +8703,7 @@
       "text": "query TestTwoScopes($a:ID!,$b:ID!){first:character(id:$a){id,name,...TestNotes_character_35kO5h},second:character(id:$b){id,name,...TestNotes_character_41grAF}}fragment TestNotes_character_35kO5h on Character{name,notes(first:1){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}fragment TestNotes_character_41grAF on Character{name,notes(first:3){totalCount,edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}},id}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -9779,7 +9779,7 @@
       "text": "query TestUncaughtPartQuery($id:ID!){character(id:$id){id,name,...TestAppearances_character@defer(label:\"TestUncaughtPartQuery$defer$TestAppearances_character\")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}",
       "throws_on_field_error": true,
       "bubbles": false,
-      "has_deferred": true,
+      "has_incremental": true,
       "error_behavior": null,
       "reader": [
         {

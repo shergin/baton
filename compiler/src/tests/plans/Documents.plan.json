@@ -258,7 +258,7 @@
       "text": "query Fixture($page:Int){characters(page:$page){info{count,pages,next,prev},results{id,name,status,species,type,gender,image,created,origin{id,name,type,dimension,created},location{id,name,type,dimension,created},episode{id,name,air_date,episode,created,characters{id,name,image}}}}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -2060,7 +2060,7 @@
       "text": "query TestEpisodesQuery($id:ID!){character(id:$id){episode{id,name},id}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -2385,7 +2385,7 @@
       "text": "query TestFreshCharacter($id:ID!){character(id:$id){id,name}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "cache_expiration": 30.0,
       "reader": [
@@ -2612,7 +2612,7 @@
       "text": "query TestHeaderQuery($id:ID!){character(id:$id){...TestHeader_character,id}}fragment TestHeader_character on Character{name,status,species,image,origin{name,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -2942,7 +2942,7 @@
       "text": "query TestList($page:Int){characters(page:$page){results{...TestRow_character,...TestHeader_character,id}}}fragment TestHeader_character on Character{name,status,species,image,origin{name,id}}fragment TestRow_character on Character{name,status,image}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -3320,7 +3320,7 @@
       "text": "query TestQualifiedQuery($id:ID!){character(id:$id){id,name}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {

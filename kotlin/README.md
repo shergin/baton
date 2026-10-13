@@ -272,7 +272,8 @@ The reads. The anchor's readers are every accessor generated code calls
 thread, so composition registers that slot alone; a missing or wrong-kind value goes to the
 store's log and reads as null or a zero value; a non-null link with no
 record reads the type's placeholder, the link alone reported; `@required`,
-`@catch`, `@throwOnFieldError` and `@defer` read by Relay's rules. The
+`@catch`, `@throwOnFieldError`, `@defer` and `@stream` read by Relay's
+rules. The
 owner settles a lens's keys, conditions and `@arguments` once each
 (`Owner.kt`). `jvmTest` reads every `reads` row of every case through the
 generated lenses, walking a row's path over their properties, with mapped

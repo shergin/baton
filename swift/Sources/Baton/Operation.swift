@@ -35,8 +35,9 @@ public protocol Operation: Hashable, Sendable {
     @_spi(Generated) static var throwsOnFieldError: Bool { get }
     /// Whether a `@required` field at the root can null the whole result.
     @_spi(Generated) static var bubbles: Bool { get }
-    /// Whether the response may arrive in parts (`@defer`).
-    @_spi(Generated) static var hasDeferred: Bool { get }
+    /// Whether the response may arrive in parts: a deferred fragment or a
+    /// streamed list in it.
+    @_spi(Generated) static var hasIncremental: Bool { get }
     /// The `onError` value `baton.json` names, sent with every request.
     @_spi(Generated) static var errorBehavior: ErrorBehavior? { get }
     /// `@cacheExpiration(seconds:)`: how old the operation's data may be
@@ -125,7 +126,7 @@ extension Operation {
 
     @_spi(Generated) public static var throwsOnFieldError: Bool { false }
     @_spi(Generated) public static var bubbles: Bool { false }
-    @_spi(Generated) public static var hasDeferred: Bool { false }
+    @_spi(Generated) public static var hasIncremental: Bool { false }
     @_spi(Generated) public static var errorBehavior: ErrorBehavior? { nil }
     @_spi(Generated) public static var cacheExpiration: Duration? { nil }
 }

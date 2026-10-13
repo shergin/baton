@@ -196,6 +196,29 @@ Swift: a generated `isPresent` says whether the fields are present.
 Kotlin: the companion's generated `isPresent(anchor)` says it, and the
 spread's getter is nullable, null until then.
 
+**Streamed list.** *Composition: document, directive.* Relay:
+`episode @stream(label:, initialCount:)` on a plural linked field, a list
+the server delivers item by item after its first `initialCount`, and
+`@stream_connection(key:, initial_count:)` on a connection field, which
+streams the edges and defers the page info.
+Here: the first part writes the list with its first items; each later part
+places its items at their index in the list, as Relay's and the June 2023
+shapes name it, or after the last, as the 2024 shape delivers them, each
+normalized as the field's object is and keyed by its id or by the parent,
+the field and the index; a part that lands on a connection's page merges
+the page into its connection again. A list reads what has arrived, in
+order, through the accessor the field has without the directive; nothing
+says whether more is to come, since the handle's fetch is in flight while
+the stream runs and `isRefreshing` says so, and a streamed connection's
+deferred page info says the edges are whole. An item that lands in a list
+another commit changed since the stream left it is dropped and logged. The
+root is dated when the stream completes; under an undated root a streamed
+list is not held, so `storeOrNetwork` fetches. See
+[the contract](../spec/runtime.md#3-the-ingest-a-response-to-a-change-set)
+and [the decision](decisions/a-streamed-list-grows-in-its-slot.md).
+Swift and Kotlin: the list reads as any list; nothing is generated for the
+directive.
+
 **Inline data fragment.** *Composition: document, directive.* Relay:
 `@inline`, a fragment whose data a function outside rendering reads as a
 plain value with `readInlineData`; the value is not live.

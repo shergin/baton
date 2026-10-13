@@ -29,6 +29,9 @@ package struct ChangeSet: Sendable {
     /// into this change set; connections are named by their record keys.
     package enum Edit: Sendable {
         case merge(connection: Int32, page: Int32, slots: ConnectionSlots, mode: ConnectionMode)
+        /// A streamed item set at its index in the parent's list, which is
+        /// extended with nulls to reach the index.
+        case place(parent: Int32, slot: Slot, index: Int, item: Int32)
         case insertEdge(edge: Int32, connections: [String], prepend: Bool)
         case insertNode(node: Int32, edgeType: TypeID, connections: [String], prepend: Bool)
         case deleteEdge(id: String, connections: [String])
@@ -64,6 +67,11 @@ package struct ChangeSet: Sendable {
     package internal(set) var refs: ContiguousArray<Int32> = []
     package internal(set) var scalars: ContiguousArray<RawValue> = []
     package internal(set) var edits: ContiguousArray<Edit> = []
+    /// The streamed lists this change set writes, by record and slot: the
+    /// lists a first part carries, and the one an item is placed in. The
+    /// delivery notes each as its commit left it, so a later item knows the
+    /// list it belongs to.
+    package internal(set) var streams: ContiguousArray<(record: Int32, slot: Slot)> = []
     package internal(set) var fieldErrors: ContiguousArray<FieldErrorEntry> = []
     /// Errors the response carried without a path, or with one that names
     /// no field it selected: nothing in the store holds them.
@@ -314,6 +322,10 @@ package enum Ingest {
             /// 2024 format.
             package var subPath: [PathSegment]?
             package var data: Data
+            /// The items of a streamed list the part delivers, in the June
+            /// 2023 and 2024 formats; Relay's carries one item as `data`,
+            /// its path ending in the item's index.
+            package var items: [Data]?
             /// The field errors that came with the item, by absolute path.
             package var errors: [ResponseError] = []
         }
@@ -345,10 +357,29 @@ package enum Ingest {
         package var extensions: Variable? = nil
     }
 
-    /// One object a later part delivers, at the record its path names.
+    /// One object a later part delivers: a deferred part's object, at the
+    /// record its path names, or an item of a streamed list, under the
+    /// parent record that holds the list.
     struct ObjectPart: Sendable {
+        /// Where the object goes: into the record itself, as a deferred
+        /// part's object does, or into the parent's list at an index.
+        enum Placement: Sendable {
+            case fills
+            case item(storageKey: String, slot: Slot, index: Int)
+        }
+
+        /// A connection whose page the object lands on: the page merges
+        /// into the connection again once the object is in.
+        struct Remerge: Sendable {
+            let connectionKey: String
+            let slots: ConnectionSlots
+            let mode: ConnectionMode
+        }
+
         let data: Data
         let plan: ResolvedSelection
+        /// The record the object fills, or the parent of the list it is an
+        /// item of.
         let key: String
         let type: TypeID
         let entity: Bool
@@ -356,6 +387,8 @@ package enum Ingest {
         /// start with.
         let path: [PathSegment]
         let errors: [ResponseError]
+        var placement: Placement = .fills
+        var remerge: Remerge? = nil
     }
 
     /// A whole response, or the first part of an incremental one, as it
@@ -417,22 +450,39 @@ package enum Ingest {
     /// the part fills, at the record its path named, read as that record's
     /// concrete type.
     package static func normalizeObject(_ data: Data, plan: ResolvedSelection, key: String, type: TypeID, entity: Bool) throws -> ChangeSet {
-        try normalizeObject(data, plan: plan, key: key, type: type, entity: entity, at: [], errors: [])
+        try normalize(ObjectPart(data: data, plan: plan, key: key, type: type, entity: entity, path: [], errors: []))
     }
 
-    /// The same, with the field errors the part carried: an error under the
-    /// object's path lands on the field it names, any other is unplaced.
-    static func normalizeObject(_ data: Data, plan: ResolvedSelection, key: String, type: TypeID, entity: Bool, at path: [PathSegment], errors: [ResponseError]) throws -> ChangeSet {
-        let bytes = [UInt8](data)
+    /// One object of a later part as a change set. A deferred part's object
+    /// is read into the record the part names; a streamed item is read as
+    /// the list field's object, keyed by its id or by the parent, the field
+    /// and its index, as it would be had it come with the first part, and
+    /// placed at that index. An object that lands on a connection's page
+    /// merges the page into its connection again. An error under the
+    /// object's path lands on the field it names; any other is unplaced.
+    static func normalize(_ part: ObjectPart) throws -> ChangeSet {
+        let bytes = [UInt8](part.data)
         return try bytes.withUnsafeBufferPointer { buffer in
             var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: ChangeSet(bytes: bytes))
             cursor.skipWhitespace()
-            let rootID = cursor.changes.record(for: key, type: type, idOffset: entity ? Record.idOffset(ofType: type.name) : -1)
-            _ = try cursor.object(plan: plan, parent: rootID, storageKey: nil, listIndex: nil, depth: 0, fixedRecord: rootID)
+            let anchor = cursor.changes.record(for: part.key, type: part.type, idOffset: part.entity ? Record.idOffset(ofType: part.type.name) : -1)
+            let object: Int32
+            switch part.placement {
+            case .fills:
+                object = try cursor.object(plan: part.plan, parent: anchor, storageKey: nil, listIndex: nil, depth: 0, fixedRecord: anchor)
+            case .item(let storageKey, let slot, let index):
+                object = try cursor.object(plan: part.plan, parent: anchor, storageKey: storageKey, listIndex: index, depth: 0, fixedRecord: nil)
+                cursor.changes.edits.append(.place(parent: anchor, slot: slot, index: index, item: object))
+                cursor.changes.streams.append((anchor, slot))
+            }
+            if let remerge = part.remerge {
+                let connection = cursor.changes.record(for: remerge.connectionKey, type: remerge.slots.connection, idOffset: -1)
+                cursor.changes.edits.append(.merge(connection: connection, page: anchor, slots: remerge.slots, mode: remerge.mode))
+            }
             cursor.changes.group()
-            if !errors.isEmpty {
-                cursor.rawErrors = errors
-                cursor.resolveErrors(root: plan, rootID: rootID, below: path)
+            if !part.errors.isEmpty {
+                cursor.rawErrors = part.errors
+                cursor.resolveErrors(root: part.plan, rootID: object, below: part.path)
             }
             return cursor.changes
         }
@@ -442,9 +492,7 @@ package enum Ingest {
     /// in one call.
     @concurrent
     nonisolated static func normalized(_ objects: [ObjectPart]) async throws -> [ChangeSet] {
-        try objects.map { object in
-            try normalizeObject(object.data, plan: object.plan, key: object.key, type: object.type, entity: object.entity, at: object.path, errors: object.errors)
-        }
+        try objects.map { object in try normalize(object) }
     }
 
     /// An announced part the server could not deliver: the change set of its
@@ -481,6 +529,18 @@ package enum Ingest {
         return FailedPart(changes: changes, uncaught: fields.allSatisfy(\.caught) ? [] : rendered)
     }
 
+    /// The field errors of a streamed list the server could not finish, on
+    /// the list field itself, beside the items that arrived.
+    nonisolated static func failedStream(_ field: ResolvedField, key: String, type: TypeID, entity: Bool, at path: [PathSegment], errors: [ResponseError]) -> FailedPart {
+        var changes = ChangeSet(bytes: [])
+        let record = changes.record(for: key, type: type, idOffset: entity ? Record.idOffset(ofType: type.name) : -1)
+        changes.group()
+        let rendered = errors.map { FieldError(message: $0.message, path: Ingest.render($0.path ?? path), extensions: $0.extensions) }
+        guard let first = rendered.first else { return FailedPart(changes: changes, uncaught: []) }
+        changes.fieldErrors.append(ChangeSet.FieldErrorEntry(record: record, slot: field.slot, error: first, caught: field.caught))
+        return FailedPart(changes: changes, uncaught: field.caught ? [] : rendered)
+    }
+
     /// A response path, dotted, as a field error shows it.
     static func render(_ path: [PathSegment]) -> String {
         path.map { segment in
@@ -513,6 +573,10 @@ package enum Ingest {
                         try scanner.members { key, scanner in
                             switch key {
                             case "data": item.data = try scanner.rawValue(in: bytes)
+                            case "items":
+                                var items: [Data] = []
+                                try scanner.elements { scanner in items.append(try scanner.rawValue(in: bytes)) }
+                                item.items = items
                             case "path": item.path = try scanner.path()
                             case "subPath": item.subPath = try scanner.path()
                             case "label": item.label = try scanner.stringValue()
@@ -883,6 +947,7 @@ package enum Ingest {
                         let start = Int32(changes.refs.count)
                         changes.refs.append(contentsOf: linked[depth])
                         scratch[depth].append((matched, .refs(start: start, count: Int32(linked[depth].count))))
+                        if fields[matched].streamed != nil { changes.streams.append((record, fields[matched].slot)) }
                         if let edit = fields[matched].edit {
                             for target in linked[depth] where target >= 0 { insertion(edit, target) }
                         }

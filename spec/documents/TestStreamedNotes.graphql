@@ -1,0 +1,1 @@
+query TestStreamedNotes($id:ID!){character(id:$id){id,notes(first:2){edges@stream(label:"TestStreamedNotes$stream$TestStreamedNotes_notes",initialCount:1){node{id,text,__typename},cursor},...@defer(label:"TestStreamedNotes$defer$TestStreamedNotes_notes$pageInfo"){pageInfo{endCursor,hasNextPage}}}}}

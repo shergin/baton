@@ -68,3 +68,4 @@ principle, the proof belongs here.
 - [swift-syntax spans the floor to the newest release](swift-syntax-spans-the-floor-to-the-newest.md)
 - [Relay's store tests are measured against, not obeyed](relays-tests-are-measured-not-obeyed.md)
 - [The report holds each lens](the-report-holds-each-lens.md)
+- [A streamed list grows in its slot](a-streamed-list-grows-in-its-slot.md)

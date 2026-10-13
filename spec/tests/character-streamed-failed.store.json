@@ -1,0 +1,7 @@
+{
+  "Character:1": {"__errors": {"episode": {"message": "episodes unavailable", "path": "character.episode"}}, "__typename": "Character", "episode": {"__refs": ["Episode:1"]}, "id": "1", "name": "Rick Sanchez"},
+  "Episode:1": {"__typename": "Episode", "id": "1", "name": "Pilot"},
+  "client:root": {"__typename": "Query", "character(id:\"1\")": {"__ref": "Character:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

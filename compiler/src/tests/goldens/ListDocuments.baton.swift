@@ -1249,7 +1249,7 @@ nonisolated public struct TestDeferredNotesPaginationQuery: Baton.Query {
 
     public static let name = "TestDeferredNotesPaginationQuery"
     public static let document: Baton.Document = .text(#"query TestDeferredNotesPaginationQuery($count:Int=2,$cursor:String,$id:ID!){node(id:$id){__typename,...TestDeferredNotes_character_1G22uz,id}}fragment TestDeferredNotes_character_1G22uz on Character{notes(first:$count,after:$cursor){edges{node{id,...TestNoteText_note@defer(label:"TestDeferredNotes_character$defer$noteText"),__typename},cursor},pageInfo{endCursor,hasNextPage}},id}fragment TestNoteText_note on Note{text}"#)
-    @_spi(Generated) public static let hasDeferred = true
+    @_spi(Generated) public static let hasIncremental = true
 
     public var variables: Baton.Variables {
         var values: [String: Baton.Variable] = ["count": self.count == nil ? .int(2) : Baton.Variable(self.count), "id": Baton.Variable(self.id)]

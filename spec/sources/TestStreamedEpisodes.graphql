@@ -1,0 +1,7 @@
+query TestStreamedEpisodes($id: ID!) {
+  character(id: $id) {
+    id
+    name
+    episode @stream(label: "episodes", initialCount: 1) { id name }
+  }
+}

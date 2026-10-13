@@ -1177,7 +1177,7 @@ class TestDeferredNotesPaginationQuery(val count: Int? = null, val cursor: Strin
         override val name = "TestDeferredNotesPaginationQuery"
         override val document: Document = Document.Text("query TestDeferredNotesPaginationQuery(\$count:Int=2,\$cursor:String,\$id:ID!){node(id:\$id){__typename,...TestDeferredNotes_character_1G22uz,id}}fragment TestDeferredNotes_character_1G22uz on Character{notes(first:\$count,after:\$cursor){edges{node{id,...TestNoteText_note@defer(label:\"TestDeferredNotes_character\$defer\$noteText\"),__typename},cursor},pageInfo{endCursor,hasNextPage}},id}fragment TestNoteText_note on Note{text}")
         override val kind = OperationKind.QUERY
-        override val hasDeferred = true
+        override val hasIncremental = true
         override val plan: Plan by lazy { Plan(root = `TestDeferredNotesPaginationQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)

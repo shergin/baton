@@ -153,6 +153,11 @@ impl<'a> PlanSelections<'a> {
                 .as_ref()
                 .map(|label| format!(", deferred: {}", swift_literal(label)))
                 .unwrap_or_default();
+            let streamed_argument = field
+                .streamed
+                .as_ref()
+                .map(|label| format!(", streamed: {}", swift_literal(label)))
+                .unwrap_or_default();
             let caught_argument = if field.caught { ", caught: true" } else { "" };
             let client_argument = if field.client { ", client: true" } else { "" };
             let transient_argument = if field.transient {
@@ -201,7 +206,7 @@ impl<'a> PlanSelections<'a> {
                         .unwrap_or_default();
                     let _ = write!(
                         output,
-                        ".linked({}, key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{edit_argument}{deferred_argument}{caught_argument}{client_argument}{transient_argument}{guards_argument}, selection: {}),",
+                        ".linked({}, key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{edit_argument}{deferred_argument}{streamed_argument}{caught_argument}{client_argument}{transient_argument}{guards_argument}, selection: {}),",
                         swift_literal(&field.response_key),
                         PlanSelections::name(self.table.number(selection))
                     );

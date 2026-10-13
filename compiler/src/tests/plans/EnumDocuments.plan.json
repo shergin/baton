@@ -36,7 +36,7 @@
       "text": "query TestCharactersWithStatus($status:Status!,$any:[Status!]){charactersWithStatus(status:$status,any:$any){name,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -224,7 +224,7 @@
       "text": "mutation TestSetStatuses{setLists{statuses}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {

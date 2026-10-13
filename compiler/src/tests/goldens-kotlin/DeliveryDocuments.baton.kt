@@ -6,6 +6,7 @@ package baton.goldens
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import baton.Anchor
+import baton.ConnectionPlan
 import baton.Document
 import baton.Edit
 import baton.FieldError
@@ -273,7 +274,7 @@ class TestOverlapQuery(val id: String) : QueryOperation<TestOverlapQuery.Data> {
         override val name = "TestOverlapQuery"
         override val document: Document = Document.Text("query TestOverlapQuery(\$id:ID!){character(id:\$id){name,episode{id},...TestAppearances_character@defer(label:\"TestOverlapQuery\$defer\$TestAppearances_character\"),id}}fragment TestAppearances_character on Character{episode{name,air_date,id}}")
         override val kind = OperationKind.QUERY
-        override val hasDeferred = true
+        override val hasIncremental = true
         override val plan: Plan by lazy { Plan(root = `TestOverlapQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
@@ -349,7 +350,7 @@ class TestProfileQuery(val id: String) : QueryOperation<TestProfileQuery.Data> {
         override val name = "TestProfileQuery"
         override val document: Document = Document.Text("query TestProfileQuery(\$id:ID!){character(id:\$id){...TestProfile_character,...TestStrict_character,...TestAppearances_character@defer(label:\"TestProfileQuery\$defer\$TestAppearances_character\"),id}}fragment TestAppearances_character on Character{episode{name,air_date,id}}fragment TestProfile_character on Character{name,origin{name,id},status,image,location{name,dimension,id},gender}fragment TestStrict_character on Character{species,type}")
         override val kind = OperationKind.QUERY
-        override val hasDeferred = true
+        override val hasIncremental = true
         override val plan: Plan by lazy { Plan(root = `TestProfileQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
@@ -493,6 +494,188 @@ private object `TestRosterQuery-plan` {
     }
 }
 
+/** Operation value for `query TestStreamedEpisodes`. */
+@Immutable
+class TestStreamedEpisodes(val id: String) : QueryOperation<TestStreamedEpisodes.Data> {
+    override val variables: Variables
+        get() = Variables.of("id" to Variable.of(id))
+    override val type: OperationType<Data> get() = Companion
+
+    override fun equals(other: Any?): Boolean = other is TestStreamedEpisodes && other.id == id
+    override fun hashCode(): Int = listOf(id).hashCode()
+
+    companion object : QueryType<TestStreamedEpisodes, TestStreamedEpisodes.Data> {
+        override val name = "TestStreamedEpisodes"
+        override val document: Document = Document.Text("query TestStreamedEpisodes(\$id:ID!){character(id:\$id){id,name,episode@stream(label:\"TestStreamedEpisodes\$stream\$episodes\",initialCount:1){id,name}}}")
+        override val kind = OperationKind.QUERY
+        override val hasIncremental = true
+        override val plan: Plan by lazy { Plan(root = `TestStreamedEpisodes-plan`.selection0, transient = Types.transient) }
+
+        override fun data(anchor: Anchor): Data = Data(anchor)
+    }
+
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestStreamedEpisodes.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            val episode: List<Episode> get() = anchor.requiredList(Slots.Character.episode, ::Episode)
+            override fun equals(other: Any?): Boolean = other is TestStreamedEpisodes.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Episode(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Episode.id)
+                val name: String? get() = anchor.string(Slots.Episode.name)
+                override fun equals(other: Any?): Boolean = other is TestStreamedEpisodes.Data.Character.Episode && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
+}
+
+private object `TestStreamedEpisodes-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+            PlanField.linked("episode", key = StorageKey.Fixed(Slots.Character.episode), plural = true, streamed = "TestStreamedEpisodes\$stream\$episodes", selection = selection2),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.Episode, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Episode.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Episode.name), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
+/** Operation value for `query TestStreamedNotes`. */
+@Immutable
+class TestStreamedNotes(val id: String) : QueryOperation<TestStreamedNotes.Data> {
+    override val variables: Variables
+        get() = Variables.of("id" to Variable.of(id))
+    override val type: OperationType<Data> get() = Companion
+
+    override fun equals(other: Any?): Boolean = other is TestStreamedNotes && other.id == id
+    override fun hashCode(): Int = listOf(id).hashCode()
+
+    companion object : QueryType<TestStreamedNotes, TestStreamedNotes.Data> {
+        override val name = "TestStreamedNotes"
+        override val document: Document = Document.Text("query TestStreamedNotes(\$id:ID!){character(id:\$id){id,notes(first:2){edges@stream(label:\"TestStreamedNotes\$stream\$TestStreamedNotes_notes\",initialCount:1){node{id,text,__typename},cursor},...@defer(label:\"TestStreamedNotes\$defer\$TestStreamedNotes_notes\$pageInfo\"){pageInfo{endCursor,hasNextPage}}}}}")
+        override val kind = OperationKind.QUERY
+        override val hasIncremental = true
+        override val plan: Plan by lazy { Plan(root = `TestStreamedNotes-plan`.selection0, transient = Types.transient) }
+
+        override fun data(anchor: Anchor): Data = Data(anchor)
+    }
+
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val character: Character? get() = anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9))?.let(::Character)
+        override fun equals(other: Any?): Boolean = other is TestStreamedNotes.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Character(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val notes: Notes get() = Notes(anchor.requiredLinked(Slots.Character.__TestStreamedNotes_notes_connection, Types.NoteConnection))
+            override fun equals(other: Any?): Boolean = other is TestStreamedNotes.Data.Character && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class Notes(override val anchor: Anchor) : Lens {
+                val edges: List<Edges>? get() = anchor.list(Slots.NoteConnection.edges, ::Edges)
+                val pageInfo: PageInfo get() = PageInfo(anchor.requiredLinked(Slots.NoteConnection.pageInfo, Types.PageInfo))
+                /** The edges' nodes, in order, without nulls. */
+                val nodes: List<Edges.Node> get() = anchor.nodes(Slots.NoteConnection.connection, { Edges.Node(it) })
+                /** Whether the server has edges after the last one, from the merged `pageInfo`. */
+                val hasNext: Boolean get() = anchor.hasNext(Slots.NoteConnection.connection)
+                val hasPrevious: Boolean get() = anchor.hasPrevious(Slots.NoteConnection.connection)
+                val isLoadingNext: Boolean get() = anchor.isLoadingNext(Slots.NoteConnection.connection)
+                val isLoadingPrevious: Boolean get() = anchor.isLoadingPrevious(Slots.NoteConnection.connection)
+                /** Relay's connection id, for the `connections` argument of the edge directives. */
+                val connectionID: String get() = anchor.record.key
+                override fun equals(other: Any?): Boolean = other is TestStreamedNotes.Data.Character.Notes && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+
+                @Stable
+                class Edges(override val anchor: Anchor) : Lens {
+                    val node: Node? get() = anchor.linked(Slots.NoteEdge.node)?.let(::Node)
+                    val cursor: String get() = anchor.requiredString(Slots.NoteEdge.cursor)
+                    override fun equals(other: Any?): Boolean = other is TestStreamedNotes.Data.Character.Notes.Edges && other.anchor == anchor
+                    override fun hashCode(): Int = anchor.hashCode()
+
+                    @Stable
+                    class Node(override val anchor: Anchor) : Lens {
+                        val id: String? get() = anchor.string(Slots.Note.id)
+                        val text: String? get() = anchor.string(Slots.Note.text)
+                        override fun equals(other: Any?): Boolean = other is TestStreamedNotes.Data.Character.Notes.Edges.Node && other.anchor == anchor
+                        override fun hashCode(): Int = anchor.hashCode()
+                    }
+                }
+
+                @Stable
+                class PageInfo(override val anchor: Anchor) : Lens {
+                    val endCursor: String? get() = anchor.string(Slots.PageInfo.endCursor)
+                    val hasNextPage: Boolean get() = anchor.requiredBool(Slots.PageInfo.hasNextPage)
+                    override fun equals(other: Any?): Boolean = other is TestStreamedNotes.Data.Character.Notes.PageInfo && other.anchor == anchor
+                    override fun hashCode(): Int = anchor.hashCode()
+                }
+            }
+        }
+    }
+}
+
+private object `TestStreamedNotes-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("character", key = StorageKey.Dynamic(Slots.Query.character_bca4f9), plural = false, lookup = Lookup(type = Types.Character, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+            PlanField.linked("notes", key = StorageKey.Fixed(Slots.Character.notes_29a6d8), plural = false, connection = ConnectionPlan(key = StorageKey.Fixed(Slots.Character.__TestStreamedNotes_notes_connection), slots = Slots.NoteConnection.connection), selection = selection2),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.NoteConnection, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("edges", key = StorageKey.Fixed(Slots.NoteConnection.edges), plural = true, streamed = "TestStreamedNotes\$stream\$TestStreamedNotes_notes", selection = selection4),
+            PlanField.linked("pageInfo", key = StorageKey.Fixed(Slots.NoteConnection.pageInfo), plural = false, deferred = "TestStreamedNotes\$defer\$TestStreamedNotes_notes\$pageInfo", selection = selection3),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.PageInfo, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("endCursor", key = StorageKey.Fixed(Slots.PageInfo.endCursor), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("hasNextPage", key = StorageKey.Fixed(Slots.PageInfo.hasNextPage), kind = ScalarKind.BOOL, list = false),
+        ))
+    }
+    val selection4: Selection by lazy {
+        Selection(type = Types.NoteEdge, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("node", key = StorageKey.Fixed(Slots.NoteEdge.node), plural = false, selection = selection5),
+            PlanField.scalar("cursor", key = StorageKey.Fixed(Slots.NoteEdge.cursor), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection5: Selection by lazy {
+        Selection(type = Types.Note, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.Note.__typename), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Note.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Note.text), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestStrictDeferred`. */
 @Immutable
 class TestStrictDeferred(val id: String) : QueryOperation<TestStrictDeferred.Data> {
@@ -508,7 +691,7 @@ class TestStrictDeferred(val id: String) : QueryOperation<TestStrictDeferred.Dat
         override val document: Document = Document.Text("query TestStrictDeferred(\$id:ID!){character(id:\$id){id,name,...TestAppearances_character@defer(label:\"TestStrictDeferred\$defer\$TestAppearances_character\")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}")
         override val kind = OperationKind.QUERY
         override val throwsOnFieldError = true
-        override val hasDeferred = true
+        override val hasIncremental = true
         override val plan: Plan by lazy { Plan(root = `TestStrictDeferred-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)

@@ -59,6 +59,8 @@ internal class ChangeSet(val bytes: ByteArray) {
     /** What the store does after writing the entries; records are indices into the change set, connections their record keys. */
     sealed interface Edit {
         class Merge(val connection: Int, val page: Int, val slots: ConnectionSlots, val mode: ConnectionMode) : Edit
+        /** A streamed item set at its index in the parent's list, which is extended with nulls to reach the index. */
+        class Place(val parent: Int, val slotIndex: Int, val index: Int, val item: Int) : Edit
         class InsertEdge(val edge: Int, val connections: List<String>, val prepend: Boolean) : Edit
         class InsertNode(val node: Int, val edgeType: TypeID, val connections: List<String>, val prepend: Boolean) : Edit
         class DeleteEdge(val id: String, val connections: List<String>) : Edit
@@ -106,6 +108,8 @@ internal class ChangeSet(val bytes: ByteArray) {
         private set
     val scalars = RawValues(16)
     val edits = ArrayList<Edit>()
+    /** The streamed lists this change set writes, as (record, slot index): the lists a first part carries, and the one an item is placed in. */
+    val streams = ArrayList<Pair<Int, Int>>()
     val fieldErrors = ArrayList<FieldErrorEntry>()
     /** Errors without a path, or with one that names no field the operation selected: nothing in the store holds them. */
     val unplacedErrors = ArrayList<FieldError>()

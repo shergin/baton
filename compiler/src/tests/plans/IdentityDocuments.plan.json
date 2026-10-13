@@ -22,7 +22,7 @@
       "text": "query TestAssetNameQuery($uuid:String!){asset(uuid:$uuid){name,id,uuid}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -248,7 +248,7 @@
       "text": "query TestAssetQuery($uuid:String!){asset(uuid:$uuid){owner{name,id},uuid,name,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -617,7 +617,7 @@
       "text": "query TestAssetsQuery{assets{name,size,id,uuid}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -859,7 +859,7 @@
       "text": "query TestQuoteQuery($base:String!,$quote:String!){quote(base:$base,quote:$quote){base,quote,rate}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -1146,7 +1146,7 @@
       "text": "query TestQuotesQuery{quotes{rate,base,quote}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {

@@ -283,10 +283,37 @@ its selection by the label's deferred fields at that record, or by the
 object's own selection below a sub-path; the object is then read as any
 object is, and committed. A completed part with errors is a failed part:
 the errors land on the fields it would have filled. A part that names a
-place the store or the plan does not have is dropped and logged. *Held by*
+place the store or the plan does not have is dropped and logged. A stream
+the transport ends before the part that says it is the last is cut short:
+the fetch fails as malformed, and nothing dates the root. *Held by*
 tests/character-deferred, tests/character-deferred-pending and
-tests/node-deferred; a dropped part by script `events`; a failed part is
-*unheld*.
+tests/node-deferred; a dropped part by script `events`; a failed part and
+a stream cut short are *unheld*.
+
+**A streamed list grows in its slot.** A field under `@stream`, or the
+edges of a connection under `@stream_connection`, comes with the first part
+holding its first items, and each later part delivers more: one item under
+`data` with a path ending in its index (Relay's shape), several under
+`items` with the path ending in the first's index (the June 2023 shape), or
+several under `items` by the id of an announced part, which follow the last
+item the stream left (the 2024 shape). An item is normalized as the list
+field's object, keyed by its id or by the parent record, the field's
+storage key and its index, as it would be had it come with the first part,
+and set at that index in the parent's list, which is extended with nulls to
+reach it; a null element reads as absent, so items that arrive out of order
+read in their order once each is there. An item that lands on a
+connection's page merges the page into its connection again, by the mode
+the page was fetched with; so does a deferred part landing on a page, which
+is how a streamed connection's deferred page info reaches the connection.
+An item whose list another commit changed since the stream left it is
+stale: dropped and logged, as a page fetched after a cursor that moved is
+ignored. A completed stream with errors puts them beside the list field. A
+part that names a field the plan does not stream is dropped and logged.
+*Held by* tests/character-streamed (Relay's and the June 2023 shapes),
+tests/character-streamed-pending (the 2024 shape),
+tests/character-streamed-unordered, tests/character-streamed-failed and
+tests/notes-streamed; the list over time, the stale item and the stray
+part by script `streams`.
 
 ## 4. The commit
 
@@ -554,10 +581,11 @@ operation's root with the store's time and the invalidation it was fetched
 under, and counts the fetch; the image is told, except for an operation
 selecting a transient root field, whose stamp would name what the field
 was asked with. A query just written that nothing retains waits in the
-release buffer, as a preload does. A deferred response is dated when its
-stream completes. *Held by* script `ages` for a fetch's stamp, here and
-across a launch; the transient root field and the deferred response are
-*unheld*.
+release buffer, as a preload does. An incremental response is dated when
+its stream completes, and not before. *Held by* script `ages` for a fetch's
+stamp, here and across a launch, and script `streams` for the incremental
+response, dated at its end and undated when cut short; the transient root
+field is *unheld*.
 
 **An age is the root's, and an unknown age is stale.** A root this launch
 has not fetched takes the age the image knows, the time since an earlier
@@ -635,13 +663,16 @@ data (not under `networkOnly`, which asks it nothing); a complete answer
 takes the age; with data the phase settles to what the data deserves
 (section 8, the verdict). Then: `storeOnly` fails with a missing-data error
 when the store cannot answer and the phase is loading; `storeOrNetwork`
-fetches when the store cannot answer, when the deferred parts are not all
-held, when the data is stale, or when the last response carried errors no
-field holds; `storeAndNetwork` and `networkOnly` fetch, and `networkOnly`
-shows loading until its own response if nobody shows the handle yet. One
-fetch is in flight per handle at a time. *Held by* script `phase`, and the
-fetch of stale data by script `ages`; the fetches for deferred parts not
-held and for errors no field holds are *unheld*.
+fetches when the store cannot answer, when the parts of an incremental
+response are not all held (a deferred part held half, or a streamed list
+under a root no completed stream dated), when the data is stale, or when
+the last response carried errors no field holds; `storeAndNetwork` and
+`networkOnly` fetch, and `networkOnly` shows loading until its own response
+if nobody shows the handle yet. One fetch is in flight per handle at a
+time. *Held by* script `phase`, the fetch of stale data by script `ages`,
+and the fetch for a streamed list under an undated root by script
+`streams`; the fetches for deferred parts not held and for errors no field
+holds are *unheld*.
 
 **The fetch is a value beside the phase.** Idle, in flight, or failed with
 the failure and when it failed. A fetch that fails behind data leaves the

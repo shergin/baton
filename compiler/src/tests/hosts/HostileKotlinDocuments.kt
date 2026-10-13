@@ -57,7 +57,7 @@ import baton.Subscription
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
       variables: name type: name name: name document: name kind: name
       errorBehavior: name cacheExpirationSeconds: name throwsOnFieldError: name bubbles: name
-      hasDeferred: name plan: name selection: name selection0: name Data: name Action: name
+      hasIncremental: name plan: name selection: name selection0: name Data: name Action: name
       OptimisticResponse: name invoke: name commit: name variable: name payload: name
       # What a class, a data class, an enum and a collection give.
       copy: name component1: name component2: name javaClass: name of: name scalarText: name
@@ -127,7 +127,7 @@ fun KotlinScalars() {}
       variables: origin { id } type: origin { id } name: origin { id }
       document: origin { id } kind: origin { id } errorBehavior: origin { id }
       cacheExpirationSeconds: origin { id } throwsOnFieldError: origin { id } bubbles: origin { id }
-      hasDeferred: origin { id } plan: origin { id } selection: origin { id }
+      hasIncremental: origin { id } plan: origin { id } selection: origin { id }
       selection0: origin { id } Data: origin { id } Action: origin { id }
       OptimisticResponse: origin { id } invoke: origin { id } commit: origin { id }
       variable: origin { id } payload: origin { id }
@@ -234,7 +234,7 @@ fun KotlinLinks() {}
       ... @alias(as: "document") { name } ... @alias(as: "kind") { name }
       ... @alias(as: "errorBehavior") { name } ... @alias(as: "cacheExpirationSeconds") { name }
       ... @alias(as: "throwsOnFieldError") { name } ... @alias(as: "bubbles") { name }
-      ... @alias(as: "hasDeferred") { name } ... @alias(as: "plan") { name }
+      ... @alias(as: "hasIncremental") { name } ... @alias(as: "plan") { name }
       ... @alias(as: "selection") { name } ... @alias(as: "selection0") { name }
       ... @alias(as: "Data") { name } ... @alias(as: "Action") { name }
       ... @alias(as: "OptimisticResponse") { name } ... @alias(as: "invoke") { name }
@@ -426,7 +426,7 @@ fun KotlinSpreadTarget() {}
       ... @alias(as: "cacheExpirationSeconds") { ...KotlinSpreadTarget_character }
       ... @alias(as: "throwsOnFieldError") { ...KotlinSpreadTarget_character }
       ... @alias(as: "bubbles") { ...KotlinSpreadTarget_character }
-      ... @alias(as: "hasDeferred") { ...KotlinSpreadTarget_character }
+      ... @alias(as: "hasIncremental") { ...KotlinSpreadTarget_character }
       ... @alias(as: "plan") { ...KotlinSpreadTarget_character }
       ... @alias(as: "selection") { ...KotlinSpreadTarget_character }
       ... @alias(as: "selection0") { ...KotlinSpreadTarget_character }
@@ -591,7 +591,7 @@ fun KotlinCaughtTarget() {}
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
       variables: name type: name name: name document: name kind: name
       errorBehavior: name cacheExpirationSeconds: name throwsOnFieldError: name bubbles: name
-      hasDeferred: name plan: name selection: name selection0: name Data: name Action: name
+      hasIncremental: name plan: name selection: name selection0: name Data: name Action: name
       OptimisticResponse: name invoke: name commit: name variable: name payload: name
       # What a class, a data class, an enum and a collection give.
       copy: name component1: name component2: name javaClass: name of: name scalarText: name
@@ -666,7 +666,7 @@ fun KotlinBodies() {}
           variables: totalCount type: totalCount name: totalCount
           document: totalCount kind: totalCount errorBehavior: totalCount
           cacheExpirationSeconds: totalCount throwsOnFieldError: totalCount bubbles: totalCount
-          hasDeferred: totalCount plan: totalCount selection: totalCount selection0: totalCount
+          hasIncremental: totalCount plan: totalCount selection: totalCount selection0: totalCount
           Data: totalCount Action: totalCount OptimisticResponse: totalCount invoke: totalCount
           commit: totalCount variable: totalCount payload: totalCount
           # What a class, a data class, an enum and a collection give.
@@ -736,7 +736,7 @@ fun KotlinConnection() {}
           # What an operation value, its companion, a mutation's action and its optimistic response declare.
           variables: name type: name name: name document: name kind: name
           errorBehavior: name cacheExpirationSeconds: name throwsOnFieldError: name bubbles: name
-          hasDeferred: name plan: name selection: name selection0: name Data: name Action: name
+          hasIncremental: name plan: name selection: name selection0: name Data: name Action: name
           OptimisticResponse: name invoke: name commit: name variable: name payload: name
           # What a class, a data class, an enum and a collection give.
           copy: name component1: name component2: name javaClass: name of: name scalarText: name
@@ -791,7 +791,7 @@ fun KotlinRequired() {}
       optimistic: id text: id fields: id
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
       variables: id type: id name: id document: id kind: id errorBehavior: id
-      cacheExpirationSeconds: id throwsOnFieldError: id bubbles: id hasDeferred: id plan: id
+      cacheExpirationSeconds: id throwsOnFieldError: id bubbles: id hasIncremental: id plan: id
       selection: id selection0: id Data: id Action: id OptimisticResponse: id invoke: id commit: id
       variable: id payload: id
       # What a class, a data class, an enum and a collection give.
@@ -857,7 +857,7 @@ fun KotlinAbstract() {}
       variables: name @catch type: name @catch name: name @catch
       document: name @catch kind: name @catch errorBehavior: name @catch
       cacheExpirationSeconds: name @catch throwsOnFieldError: name @catch bubbles: name @catch
-      hasDeferred: name @catch plan: name @catch selection: name @catch selection0: name @catch
+      hasIncremental: name @catch plan: name @catch selection: name @catch selection0: name @catch
       Data: name @catch Action: name @catch OptimisticResponse: name @catch invoke: name @catch
       commit: name @catch variable: name @catch payload: name @catch
       # What a class, a data class, an enum and a collection give.
@@ -963,7 +963,7 @@ fun KotlinCaught() {}
       document: name @required(action: LOG) kind: name @required(action: LOG)
       errorBehavior: name @required(action: LOG) cacheExpirationSeconds: name @required(action: LOG)
       throwsOnFieldError: name @required(action: LOG) bubbles: name @required(action: LOG)
-      hasDeferred: name @required(action: LOG) plan: name @required(action: LOG)
+      hasIncremental: name @required(action: LOG) plan: name @required(action: LOG)
       selection: name @required(action: LOG) selection0: name @required(action: LOG)
       Data: name @required(action: LOG) Action: name @required(action: LOG)
       OptimisticResponse: name @required(action: LOG) invoke: name @required(action: LOG)
@@ -1052,7 +1052,7 @@ fun KotlinRequiredFields() {}
       $count: ID! $optimistic: ID! $text: ID! $fields: ID!
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
       $name: ID! $document: ID! $kind: ID! $errorBehavior: ID! $cacheExpirationSeconds: ID!
-      $throwsOnFieldError: ID! $bubbles: ID! $hasDeferred: ID! $plan: ID! $selection: ID!
+      $throwsOnFieldError: ID! $bubbles: ID! $hasIncremental: ID! $plan: ID! $selection: ID!
       $selection0: ID! $Action: ID! $OptimisticResponse: ID! $invoke: ID! $commit: ID!
       $variable: ID! $payload: ID!
       # What a class, a data class, an enum and a collection give.
@@ -1078,7 +1078,7 @@ fun KotlinRequiredFields() {}
       $run: ID! $let: ID! $takeIf: ID! $map: ID! $lazy: ID! $listOf: ID! $mapOf: ID! $emptyList: ID!
       $emptyMap: ID! $mutableListOf: ID! $getOrThrow: ID! $success: ID! $failure: ID!
     ) @throwOnFieldError {
-      charactersByIds(ids: [$as, $break, $class, $continue, $do, $else, $false, $for, $fun, $if, $in, $interface, $is, $null, $object, $package, $return, $super, $this, $throw, $true, $try, $typealias, $typeof, $val, $var, $when, $while, $_, $by, $catch, $constructor, $delegate, $dynamic, $field, $file, $finally, $get, $import, $init, $param, $property, $receiver, $set, $setparam, $value, $where, $abstract, $actual, $annotation, $companion, $const, $crossinline, $data, $enum, $expect, $external, $final, $infix, $inline, $inner, $internal, $lateinit, $noinline, $open, $operator, $out, $override, $private, $protected, $public, $reified, $sealed, $suspend, $tailrec, $vararg, $context, $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $other, $it, $element, $count, $optimistic, $text, $fields, $name, $document, $kind, $errorBehavior, $cacheExpirationSeconds, $throwsOnFieldError, $bubbles, $hasDeferred, $plan, $selection, $selection0, $Action, $OptimisticResponse, $invoke, $commit, $variable, $payload, $copy, $component1, $component2, $javaClass, $of, $scalarText, $Undeclared, $size, $keys, $values, $entries, $Types, $Slots, $AbstractSlots, $Sites, $Guards, $schemaDigest, $format, $transient, $baton, $MappedScalar, $AbstractSlot, $Anchor, $ArgumentSite, $ConnectionCursor, $ConnectionPlan, $ConnectionSlots, $Document, $DynamicKey, $Edit, $ErrorBehavior, $FieldError, $FieldErrors, $Generated, $GeneratedEnum, $Guard, $InputObject, $KeyArgument, $KeyPart, $Lens, $LensList, $Lookup, $Members, $MutationAction, $MutationOperation, $OperationKind, $OperationType, $QueryType, $MutationType, $SubscriptionType, $Payload, $Plan, $PlanField, $QueryOperation, $Refetch, $Registry, $ScalarKind, $Selection, $Slot, $StorageKey, $SubscriptionOperation, $Transient, $TypeID, $Any, $Boolean, $Double, $Int, $List, $Long, $Map, $Pair, $Result, $String, $Unit, $Stable, $Immutable, $JvmName, $JvmField, $OptIn, $run, $let, $takeIf, $map, $lazy, $listOf, $mapOf, $emptyList, $emptyMap, $mutableListOf, $getOrThrow, $success, $failure]) { id name }
+      charactersByIds(ids: [$as, $break, $class, $continue, $do, $else, $false, $for, $fun, $if, $in, $interface, $is, $null, $object, $package, $return, $super, $this, $throw, $true, $try, $typealias, $typeof, $val, $var, $when, $while, $_, $by, $catch, $constructor, $delegate, $dynamic, $field, $file, $finally, $get, $import, $init, $param, $property, $receiver, $set, $setparam, $value, $where, $abstract, $actual, $annotation, $companion, $const, $crossinline, $data, $enum, $expect, $external, $final, $infix, $inline, $inner, $internal, $lateinit, $noinline, $open, $operator, $out, $override, $private, $protected, $public, $reified, $sealed, $suspend, $tailrec, $vararg, $context, $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $other, $it, $element, $count, $optimistic, $text, $fields, $name, $document, $kind, $errorBehavior, $cacheExpirationSeconds, $throwsOnFieldError, $bubbles, $hasIncremental, $plan, $selection, $selection0, $Action, $OptimisticResponse, $invoke, $commit, $variable, $payload, $copy, $component1, $component2, $javaClass, $of, $scalarText, $Undeclared, $size, $keys, $values, $entries, $Types, $Slots, $AbstractSlots, $Sites, $Guards, $schemaDigest, $format, $transient, $baton, $MappedScalar, $AbstractSlot, $Anchor, $ArgumentSite, $ConnectionCursor, $ConnectionPlan, $ConnectionSlots, $Document, $DynamicKey, $Edit, $ErrorBehavior, $FieldError, $FieldErrors, $Generated, $GeneratedEnum, $Guard, $InputObject, $KeyArgument, $KeyPart, $Lens, $LensList, $Lookup, $Members, $MutationAction, $MutationOperation, $OperationKind, $OperationType, $QueryType, $MutationType, $SubscriptionType, $Payload, $Plan, $PlanField, $QueryOperation, $Refetch, $Registry, $ScalarKind, $Selection, $Slot, $StorageKey, $SubscriptionOperation, $Transient, $TypeID, $Any, $Boolean, $Double, $Int, $List, $Long, $Map, $Pair, $Result, $String, $Unit, $Stable, $Immutable, $JvmName, $JvmField, $OptIn, $run, $let, $takeIf, $map, $lazy, $listOf, $mapOf, $emptyList, $emptyMap, $mutableListOf, $getOrThrow, $success, $failure]) { id name }
     }
     """)
 fun KotlinVariables() {}
@@ -1120,7 +1120,7 @@ fun KotlinVariables() {}
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
       $name: Boolean! $document: Boolean! $kind: Boolean!
       $errorBehavior: Boolean! $cacheExpirationSeconds: Boolean! $throwsOnFieldError: Boolean!
-      $bubbles: Boolean! $hasDeferred: Boolean! $plan: Boolean! $selection: Boolean!
+      $bubbles: Boolean! $hasIncremental: Boolean! $plan: Boolean! $selection: Boolean!
       $selection0: Boolean! $Action: Boolean! $invoke: Boolean! $commit: Boolean!
       $variable: Boolean! $payload: Boolean!
       # What a class, a data class, an enum and a collection give.
@@ -1220,7 +1220,7 @@ fun KotlinVariables() {}
           ... @include(if: $errorBehavior) { name }
           ... @include(if: $cacheExpirationSeconds) { name }
           ... @include(if: $throwsOnFieldError) { name } ... @include(if: $bubbles) { name }
-          ... @include(if: $hasDeferred) { name } ... @include(if: $plan) { name }
+          ... @include(if: $hasIncremental) { name } ... @include(if: $plan) { name }
           ... @include(if: $selection) { name } ... @include(if: $selection0) { name }
           ... @include(if: $Action) { name } ... @include(if: $invoke) { name }
           ... @include(if: $commit) { name } ... @include(if: $variable) { name }
@@ -1327,7 +1327,7 @@ fun KotlinNamesake() {}
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
       $name: Boolean! $document: Boolean! $kind: Boolean! $errorBehavior: Boolean!
       $cacheExpirationSeconds: Boolean! $throwsOnFieldError: Boolean! $bubbles: Boolean!
-      $hasDeferred: Boolean! $plan: Boolean! $selection: Boolean! $selection0: Boolean!
+      $hasIncremental: Boolean! $plan: Boolean! $selection: Boolean! $selection0: Boolean!
       $Action: Boolean! $OptimisticResponse: Boolean! $invoke: Boolean! $commit: Boolean!
       $variable: Boolean! $payload: Boolean!
       # What a class, a data class, an enum and a collection give.
@@ -1426,7 +1426,7 @@ fun KotlinNamesake() {}
           ... @include(if: $kind) { cursor } ... @include(if: $errorBehavior) { cursor }
           ... @include(if: $cacheExpirationSeconds) { cursor }
           ... @include(if: $throwsOnFieldError) { cursor } ... @include(if: $bubbles) { cursor }
-          ... @include(if: $hasDeferred) { cursor } ... @include(if: $plan) { cursor }
+          ... @include(if: $hasIncremental) { cursor } ... @include(if: $plan) { cursor }
           ... @include(if: $selection) { cursor } ... @include(if: $selection0) { cursor }
           ... @include(if: $Action) { cursor } ... @include(if: $OptimisticResponse) { cursor }
           ... @include(if: $invoke) { cursor } ... @include(if: $commit) { cursor }
@@ -1568,7 +1568,7 @@ fun KotlinSubscriptionVariables() {}
       cacheExpirationSeconds: {type: "Boolean", defaultValue: true}
       throwsOnFieldError: {type: "Boolean", defaultValue: true}
       bubbles: {type: "Boolean", defaultValue: true}
-      hasDeferred: {type: "Boolean", defaultValue: true} plan: {type: "Boolean", defaultValue: true}
+      hasIncremental: {type: "Boolean", defaultValue: true} plan: {type: "Boolean", defaultValue: true}
       selection: {type: "Boolean", defaultValue: true}
       selection0: {type: "Boolean", defaultValue: true}
       Action: {type: "Boolean", defaultValue: true}
@@ -1707,7 +1707,7 @@ fun KotlinSubscriptionVariables() {}
       ... @include(if: $kind) { name } ... @include(if: $errorBehavior) { name }
       ... @include(if: $cacheExpirationSeconds) { name }
       ... @include(if: $throwsOnFieldError) { name } ... @include(if: $bubbles) { name }
-      ... @include(if: $hasDeferred) { name } ... @include(if: $plan) { name }
+      ... @include(if: $hasIncremental) { name } ... @include(if: $plan) { name }
       ... @include(if: $selection) { name } ... @include(if: $selection0) { name }
       ... @include(if: $Action) { name } ... @include(if: $OptimisticResponse) { name }
       ... @include(if: $invoke) { name } ... @include(if: $commit) { name }
@@ -1798,7 +1798,7 @@ fun KotlinArguments() {}
         count: false optimistic: false text: false fields: false
         # What an operation value, its companion, a mutation's action and its optimistic response declare.
         name: false document: false kind: false errorBehavior: false cacheExpirationSeconds: false
-        throwsOnFieldError: false bubbles: false hasDeferred: false plan: false selection: false
+        throwsOnFieldError: false bubbles: false hasIncremental: false plan: false selection: false
         selection0: false Action: false OptimisticResponse: false invoke: false commit: false
         variable: false payload: false
         # What a class, a data class, an enum and a collection give.
@@ -1861,7 +1861,7 @@ fun KotlinArgumentSpread() {}
           # What an operation value, its companion, a mutation's action and its optimistic response declare.
           variables: name type: name name: name document: name kind: name
           errorBehavior: name cacheExpirationSeconds: name throwsOnFieldError: name bubbles: name
-          hasDeferred: name plan: name selection: name selection0: name Data: name Action: name
+          hasIncremental: name plan: name selection: name selection0: name Data: name Action: name
           OptimisticResponse: name invoke: name commit: name payload: name
           # What a class, a data class, an enum and a collection give.
           copy: name component1: name component2: name javaClass: name of: name scalarText: name
@@ -1924,7 +1924,7 @@ fun KotlinArgumentSpread() {}
         variables: note { id } type: note { id } name: note { id }
         document: note { id } kind: note { id } errorBehavior: note { id }
         cacheExpirationSeconds: note { id } throwsOnFieldError: note { id } bubbles: note { id }
-        hasDeferred: note { id } plan: note { id } selection: note { id } selection0: note { id }
+        hasIncremental: note { id } plan: note { id } selection: note { id } selection0: note { id }
         Data: note { id } Action: note { id } OptimisticResponse: note { id } invoke: note { id }
         commit: note { id } payload: note { id }
         # What a class, a data class, an enum and a collection give.
@@ -2001,7 +2001,7 @@ fun KotlinArgumentSpread() {}
           variables: episode { id } type: episode { id }
           name: episode { id } document: episode { id } kind: episode { id }
           errorBehavior: episode { id } cacheExpirationSeconds: episode { id }
-          throwsOnFieldError: episode { id } bubbles: episode { id } hasDeferred: episode { id }
+          throwsOnFieldError: episode { id } bubbles: episode { id } hasIncremental: episode { id }
           plan: episode { id } selection: episode { id } selection0: episode { id }
           Data: episode { id } Action: episode { id } OptimisticResponse: episode { id }
           invoke: episode { id } commit: episode { id } payload: episode { id }
@@ -2097,7 +2097,7 @@ fun KotlinInlineScalarsReach() {}
       # What an operation value, its companion, a mutation's action and its optimistic response declare.
       variables: name type: name name: name document: name kind: name
       errorBehavior: name cacheExpirationSeconds: name throwsOnFieldError: name bubbles: name
-      hasDeferred: name plan: name selection: name selection0: name Data: name Action: name
+      hasIncremental: name plan: name selection: name selection0: name Data: name Action: name
       OptimisticResponse: name invoke: name commit: name variable: name payload: name
       # What a class, a data class, an enum and a collection give.
       copy: name component1: name component2: name javaClass: name of: name scalarText: name
@@ -2211,7 +2211,7 @@ fun KotlinInlineLinksReach() {}
       variables: origin { id } type: origin { id } name: origin { id }
       document: origin { id } kind: origin { id } errorBehavior: origin { id }
       cacheExpirationSeconds: origin { id } throwsOnFieldError: origin { id } bubbles: origin { id }
-      hasDeferred: origin { id } plan: origin { id } selection: origin { id }
+      hasIncremental: origin { id } plan: origin { id } selection: origin { id }
       selection0: origin { id } Data: origin { id } Action: origin { id }
       OptimisticResponse: origin { id } invoke: origin { id } commit: origin { id }
       variable: origin { id } payload: origin { id }
@@ -2338,7 +2338,7 @@ fun KotlinInlinePluralsReach() {}
       variables: episode { id } type: episode { id } name: episode { id }
       document: episode { id } kind: episode { id } errorBehavior: episode { id }
       cacheExpirationSeconds: episode { id } throwsOnFieldError: episode { id }
-      bubbles: episode { id } hasDeferred: episode { id } plan: episode { id }
+      bubbles: episode { id } hasIncremental: episode { id } plan: episode { id }
       selection: episode { id } selection0: episode { id } Data: episode { id }
       Action: episode { id } OptimisticResponse: episode { id } invoke: episode { id }
       commit: episode { id } variable: episode { id } payload: episode { id }
@@ -2554,7 +2554,7 @@ fun KotlinInlineSpreadsReach() {}
       ... @alias(as: "cacheExpirationSeconds") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "throwsOnFieldError") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "bubbles") { ...KotlinInlineSpreadTarget_character }
-      ... @alias(as: "hasDeferred") { ...KotlinInlineSpreadTarget_character }
+      ... @alias(as: "hasIncremental") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "plan") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "selection") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "selection0") { ...KotlinInlineSpreadTarget_character }

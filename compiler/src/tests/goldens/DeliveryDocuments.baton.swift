@@ -220,7 +220,7 @@ nonisolated public struct TestOverlapQuery: Baton.Query {
 
     public static let name = "TestOverlapQuery"
     public static let document: Baton.Document = .text(#"query TestOverlapQuery($id:ID!){character(id:$id){name,episode{id},...TestAppearances_character@defer(label:"TestOverlapQuery$defer$TestAppearances_character"),id}}fragment TestAppearances_character on Character{episode{name,air_date,id}}"#)
-    @_spi(Generated) public static let hasDeferred = true
+    @_spi(Generated) public static let hasIncremental = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -289,7 +289,7 @@ nonisolated public struct TestProfileQuery: Baton.Query {
 
     public static let name = "TestProfileQuery"
     public static let document: Baton.Document = .text(#"query TestProfileQuery($id:ID!){character(id:$id){...TestProfile_character,...TestStrict_character,...TestAppearances_character@defer(label:"TestProfileQuery$defer$TestAppearances_character"),id}}fragment TestAppearances_character on Character{episode{name,air_date,id}}fragment TestProfile_character on Character{name,origin{name,id},status,image,location{name,dimension,id},gender}fragment TestStrict_character on Character{species,type}"#)
-    @_spi(Generated) public static let hasDeferred = true
+    @_spi(Generated) public static let hasIncremental = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])
@@ -422,6 +422,171 @@ nonisolated public struct TestRosterQuery: Baton.Query {
     }
 }
 
+/// Operation value for `query TestStreamedEpisodes`.
+nonisolated public struct TestStreamedEpisodes: Baton.Query {
+    public var id: String
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestStreamedEpisodes"
+    public static let document: Baton.Document = .text(#"query TestStreamedEpisodes($id:ID!){character(id:$id){id,name,episode@stream(label:"TestStreamedEpisodes$stream$episodes",initialCount:1){id,name}}}"#)
+    @_spi(Generated) public static let hasIncremental = true
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(self.id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.variable("id")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+        .linked("episode", key: .fixed(Slots.Character.episode), plural: true, streamed: "TestStreamedEpisodes$stream$episodes", selection: selection2),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.Episode, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
+        .scalar("name", key: .fixed(Slots.Episode.name), kind: .string, list: false),
+    ])
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
+
+        nonisolated public struct Character: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+            @MainActor public var episode: Baton.List<Episode> { anchor.requiredList(Slots.Character.episode) }
+
+            nonisolated public struct Episode: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String? { anchor.string(Slots.Episode.id) }
+                @MainActor public var name: String? { anchor.string(Slots.Episode.name) }
+            }
+        }
+    }
+}
+
+/// Operation value for `query TestStreamedNotes`.
+nonisolated public struct TestStreamedNotes: Baton.Query {
+    public var id: String
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestStreamedNotes"
+    public static let document: Baton.Document = .text(#"query TestStreamedNotes($id:ID!){character(id:$id){id,notes(first:2){edges@stream(label:"TestStreamedNotes$stream$TestStreamedNotes_notes",initialCount:1){node{id,text,__typename},cursor},...@defer(label:"TestStreamedNotes$defer$TestStreamedNotes_notes$pageInfo"){pageInfo{endCursor,hasNextPage}}}}}"#)
+    @_spi(Generated) public static let hasIncremental = true
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(self.id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("character", key: .dynamic(Slots.Query.character_bca4f9), plural: false, lookup: Baton.Lookup(type: Types.Character, key: [.variable("id")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+        .linked("notes", key: .fixed(Slots.Character.notes_29a6d8), plural: false, connection: Baton.ConnectionPlan(key: .fixed(Slots.Character.__TestStreamedNotes_notes_connection), slots: Baton.ConnectionSlots(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)), selection: selection2),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.NoteConnection, key: [], abstract: false, fields: [
+        .linked("edges", key: .fixed(Slots.NoteConnection.edges), plural: true, streamed: "TestStreamedNotes$stream$TestStreamedNotes_notes", selection: selection4),
+        .linked("pageInfo", key: .fixed(Slots.NoteConnection.pageInfo), plural: false, deferred: "TestStreamedNotes$defer$TestStreamedNotes_notes$pageInfo", selection: selection3),
+    ])
+    private static let selection3: Baton.Selection = Baton.Selection(type: Types.PageInfo, key: [], abstract: false, fields: [
+        .scalar("endCursor", key: .fixed(Slots.PageInfo.endCursor), kind: .string, list: false),
+        .scalar("hasNextPage", key: .fixed(Slots.PageInfo.hasNextPage), kind: .bool, list: false),
+    ])
+    private static let selection4: Baton.Selection = Baton.Selection(type: Types.NoteEdge, key: [], abstract: false, fields: [
+        .linked("node", key: .fixed(Slots.NoteEdge.node), plural: false, selection: selection5),
+        .scalar("cursor", key: .fixed(Slots.NoteEdge.cursor), kind: .string, list: false),
+    ])
+    private static let selection5: Baton.Selection = Baton.Selection(type: Types.Note, key: ["id"], abstract: false, fields: [
+        .scalar("__typename", key: .fixed(Slots.Note.__typename), kind: .string, list: false),
+        .scalar("id", key: .fixed(Slots.Note.id), kind: .string, list: false),
+        .scalar("text", key: .fixed(Slots.Note.text), kind: .string, list: false),
+    ])
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        @MainActor public var character: Character? { anchor.linked(anchor.owner.slot(Slots.Query.character_bca4f9)).map(Character.init(anchor:)) }
+
+        nonisolated public struct Character: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            @MainActor public var notes: Notes { Notes(anchor: anchor.requiredLinked(Slots.Character.__TestStreamedNotes_notes_connection, type: Types.NoteConnection)) }
+
+            nonisolated public struct Notes: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var edges: Baton.List<Edges>? { anchor.list(Slots.NoteConnection.edges) }
+                @MainActor public var pageInfo: PageInfo { PageInfo(anchor: anchor.requiredLinked(Slots.NoteConnection.pageInfo, type: Types.PageInfo)) }
+                /// The connection's slots: edges, nodes, cursors and the page info, for the store's merge and the state below.
+                @_spi(Generated) public static let connection: Baton.ConnectionSlots = .init(connection: Types.NoteConnection, edge: Types.NoteEdge, pageInfo: Types.PageInfo)
+                /// The edges' nodes, in order, without nulls.
+                @MainActor public var nodes: [Edges.Node] { anchor.nodes(Self.connection) }
+                /// Whether the server has edges after the last one, from the merged `pageInfo`.
+                @MainActor public var hasNext: Bool { anchor.hasNext(Self.connection) }
+                @MainActor public var hasPrevious: Bool { anchor.hasPrevious(Self.connection) }
+                @MainActor public var isLoadingNext: Bool { anchor.isLoadingNext(Self.connection) }
+                @MainActor public var isLoadingPrevious: Bool { anchor.isLoadingPrevious(Self.connection) }
+                /// Relay's connection id, for the `connections` argument of the edge directives.
+                @MainActor public var connectionID: String { anchor.record.key }
+
+                nonisolated public struct Edges: Baton.Lens {
+                    @_spi(Generated) public let anchor: Baton.Anchor
+                    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                    @MainActor public var node: Node? { anchor.linked(Slots.NoteEdge.node).map(Node.init(anchor:)) }
+                    @MainActor public var cursor: String { anchor.requiredString(Slots.NoteEdge.cursor) }
+
+                    nonisolated public struct Node: Baton.Lens {
+                        @_spi(Generated) public let anchor: Baton.Anchor
+                        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                        @MainActor public var id: String? { anchor.string(Slots.Note.id) }
+                        @MainActor public var text: String? { anchor.string(Slots.Note.text) }
+                    }
+                }
+
+                nonisolated public struct PageInfo: Baton.Lens {
+                    @_spi(Generated) public let anchor: Baton.Anchor
+                    @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                    @MainActor public var endCursor: String? { anchor.string(Slots.PageInfo.endCursor) }
+                    @MainActor public var hasNextPage: Bool { anchor.requiredBool(Slots.PageInfo.hasNextPage) }
+                }
+            }
+        }
+    }
+}
+
 /// Operation value for `query TestStrictDeferred`.
 nonisolated public struct TestStrictDeferred: Baton.Query {
     public var id: String
@@ -434,7 +599,7 @@ nonisolated public struct TestStrictDeferred: Baton.Query {
     public static let name = "TestStrictDeferred"
     public static let document: Baton.Document = .text(#"query TestStrictDeferred($id:ID!){character(id:$id){id,name,...TestAppearances_character@defer(label:"TestStrictDeferred$defer$TestAppearances_character")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}"#)
     @_spi(Generated) public static let throwsOnFieldError = true
-    @_spi(Generated) public static let hasDeferred = true
+    @_spi(Generated) public static let hasIncremental = true
 
     public var variables: Baton.Variables {
         Baton.Variables(["id": Baton.Variable(self.id)])

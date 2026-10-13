@@ -21,7 +21,7 @@ fragment HostileAbstract_node on Node {
   RefetchQuery: id
   # What an operation value, a mutation's action and its optimistic response declare.
   variables: id resolution: id name: id document: id text: id plan: id errorBehavior: id
-  throwsOnFieldError: id bubbles: id hasDeferred: id cacheExpiration: id Data: id Action: id OptimisticResponse: id
+  throwsOnFieldError: id bubbles: id hasIncremental: id cacheExpiration: id Data: id Action: id OptimisticResponse: id
   hash: id commit: id callAsFunction: id Op: id variable: id payload: id
   # What the runtime's protocols give a generated type.
   hashValue: id phase: id isRefreshing: id isStale: id retry: id subscription: id

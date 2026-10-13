@@ -156,7 +156,7 @@ public final class Environment {
             document: Op.document,
             variables: variables,
             errorBehavior: Op.errorBehavior,
-            incremental: Op.hasDeferred
+            incremental: Op.hasIncremental
         )
     }
 
@@ -316,7 +316,7 @@ public final class Environment {
         // The operation's root: a handle's, or one made here, which waits in
         // the release buffer once dated if nothing retains it.
         let root = store.root(Store.rootKey(Op.name, variables), resolved: resolved, record: store.root)
-        if !Op.hasDeferred {
+        if !Op.hasIncremental {
             // The request is sent from the main actor, as every transport
             // call is; the response is awaited where it is read, off the
             // actor, so the actor is entered once, for the commit, and not
@@ -330,30 +330,44 @@ public final class Environment {
         var committed = Committed()
         var delivery = Delivery(store: store, resolved: resolved)
         var first = true
+        var completed = false
         for try await part in transport.send(request) {
             if first {
                 first = false
                 let opening = try await Ingest.normalizedFirstPart(part, plan: resolved, rootKey: Store.rootKey, complete: true)
                 try Task.checkCancellation()
                 committed.add(commit(opening.changes))
+                delivery.committed(opening.changes)
                 delivery.announce(opening.pending)
                 firstPart?(committed)
-                if !opening.hasNext { break }
+                if !opening.hasNext { completed = true; break }
                 continue
             }
             let incremental = try await Ingest.incrementalPart(part)
             delivery.announce(incremental.pending)
-            let changes = try await Ingest.normalized(delivery.objects(of: incremental))
+            let objects = delivery.objects(of: incremental)
+            let changes = try await Ingest.normalized(objects)
             let failures = delivery.failures(of: incremental)
             try Task.checkCancellation()
-            for change in changes { committed.add(commit(change)) }
+            for (object, change) in zip(objects, changes) {
+                // A streamed item whose list another commit changed since the
+                // stream left it is stale and dropped.
+                guard delivery.fits(object) else { continue }
+                committed.add(commit(change))
+                delivery.committed(change)
+            }
             for failure in failures {
                 _ = commit(failure.changes)
                 committed.add(failure)
             }
-            if !incremental.hasNext { break }
+            if !incremental.hasNext { completed = true; break }
         }
-        // A deferred response is fetched, and fresh, once its stream completes.
+        // A stream the transport ended before the part that says it is the
+        // last is cut short: the response is incomplete, and nothing dates
+        // the root, so the next attach fetches it whole.
+        guard completed else { throw IngestError(offset: 0, message: "the incremental response ended before its last part") }
+        // An incremental response is fetched, and fresh, once its stream
+        // completes.
         evict(store.date(root))
         return committed
     }

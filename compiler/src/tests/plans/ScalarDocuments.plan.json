@@ -205,7 +205,7 @@
       "text": "query TestAssetPricesQuery{assets{uuid,price,listedAt,page,prices,id}}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {
@@ -574,7 +574,7 @@
       "text": "query TestPricedAssetsQuery($price:Decimal!,$among:[Decimal!]){assetsPricedAbove(price:$price,among:$among){uuid,...TestCaughtPrices_asset,...TestThrowingPrices_asset,...TestRequiredPrice_asset,id}}fragment TestCaughtPrices_asset on Asset{price,listedAt,page}fragment TestRequiredPrice_asset on Asset{price}fragment TestThrowingPrices_asset on Asset{price,prices}",
       "throws_on_field_error": false,
       "bubbles": false,
-      "has_deferred": false,
+      "has_incremental": false,
       "error_behavior": null,
       "reader": [
         {

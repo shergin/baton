@@ -141,8 +141,9 @@ pub struct OperationPlan {
     pub throws_on_field_error: bool,
     /// Whether a `@required` field at the root can null the whole result.
     pub bubbles: bool,
-    /// Whether any part of the response may arrive incrementally.
-    pub has_deferred: bool,
+    /// Whether the response may arrive in parts: a deferred fragment or a
+    /// streamed list somewhere in it.
+    pub has_incremental: bool,
     /// The `onError` value `baton.json` names.
     pub error_behavior: Option<OnError>,
     /// `@cacheExpiration(seconds:)`: how old the query's data may be before
@@ -505,6 +506,9 @@ pub enum SelectionPlan {
         storage_key: StorageKeyPlan,
         lookup: Option<LookupPlan>,
         connection: Option<ConnectionPlan>,
+        /// `@stream`: the label the streamed items carry.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        streamed: Option<String>,
         edit: Option<EditPlan>,
         required: Option<RequiredPlan>,
         catch: Option<CatchPlan>,

@@ -118,7 +118,7 @@ fragment HostileSpreads_character on Character {
   ... @alias(as: "errorBehavior") { ...HostileSpreadTarget_character }
   ... @alias(as: "throwsOnFieldError") { ...HostileSpreadTarget_character }
   ... @alias(as: "bubbles") { ...HostileSpreadTarget_character }
-  ... @alias(as: "hasDeferred") { ...HostileSpreadTarget_character }
+  ... @alias(as: "hasIncremental") { ...HostileSpreadTarget_character }
   ... @alias(as: "cacheExpiration") { ...HostileSpreadTarget_character }
   ... @alias(as: "Data") { ...HostileSpreadTarget_character }
   ... @alias(as: "Action") { ...HostileSpreadTarget_character }

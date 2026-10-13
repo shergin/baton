@@ -77,7 +77,11 @@ public enum Format16 {}
 public enum Format17 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 18 and the runtime reads format 19: a streamed list and the operation's `hasIncremental`; rebuild with the compiler of this release")
 public enum Format18 {}
+
+@_spi(Generated)
+public enum Format19 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.
@@ -333,6 +337,8 @@ public struct PlanField: Sendable {
     public let edit: Edit?
     /// The `@defer` label of the part that carries the field, when deferred.
     public let deferred: String?
+    /// The `@stream` label the field's items carry, when the list streams.
+    public let streamed: String?
     /// Whether the field or an ancestor carries `@catch`, so an error on it
     /// does not fail a `@throwOnFieldError` operation.
     public let caught: Bool
@@ -353,12 +359,13 @@ public struct PlanField: Sendable {
     /// lookup, its connection or its edit, or a field below it.
     let readsVariables: Bool
 
-    init(responseKey: String, key: StorageKey, kind: Kind, edit: Edit?, deferred: String?, caught: Bool, client: Bool, transient: Bool, guards: [[Guard]]) {
+    init(responseKey: String, key: StorageKey, kind: Kind, edit: Edit?, deferred: String?, streamed: String? = nil, caught: Bool, client: Bool, transient: Bool, guards: [[Guard]]) {
         self.responseKey = responseKey
         self.key = key
         self.kind = kind
         self.edit = edit
         self.deferred = deferred
+        self.streamed = streamed
         self.caught = caught
         self.client = client
         self.transient = transient
@@ -382,8 +389,8 @@ public struct PlanField: Sendable {
         PlanField(responseKey: responseKey, key: key, kind: .scalar(kind, list: list), edit: edit, deferred: deferred, caught: caught, client: client, transient: transient, guards: guards)
     }
 
-    public static func linked(_ responseKey: String, key: StorageKey, plural: Bool, lookup: Lookup? = nil, connection: ConnectionPlan? = nil, edit: Edit? = nil, deferred: String? = nil, caught: Bool = false, client: Bool = false, transient: Bool = false, guards: [[Guard]] = [], selection: Selection) -> PlanField {
-        PlanField(responseKey: responseKey, key: key, kind: .linked(selection, plural: plural, lookup: lookup, connection: connection), edit: edit, deferred: deferred, caught: caught, client: client, transient: transient, guards: guards)
+    public static func linked(_ responseKey: String, key: StorageKey, plural: Bool, lookup: Lookup? = nil, connection: ConnectionPlan? = nil, edit: Edit? = nil, deferred: String? = nil, streamed: String? = nil, caught: Bool = false, client: Bool = false, transient: Bool = false, guards: [[Guard]] = [], selection: Selection) -> PlanField {
+        PlanField(responseKey: responseKey, key: key, kind: .linked(selection, plural: plural, lookup: lookup, connection: connection), edit: edit, deferred: deferred, streamed: streamed, caught: caught, client: client, transient: transient, guards: guards)
     }
 
     /// Whether the variables select the field.
@@ -547,6 +554,7 @@ public final class Selection: Sendable {
                 )
             },
             deferred: field.deferred,
+            streamed: field.streamed,
             caught: field.caught,
             client: field.client
         )

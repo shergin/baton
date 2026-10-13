@@ -2322,6 +2322,159 @@
         ],
         "value": "Edited"
       }
+    },
+    {
+      "name": "tests/character-streamed",
+      "operation": "TestStreamedEpisodes",
+      "kind": "query",
+      "document": "documents/TestStreamedEpisodes.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/character-streamed-1.json",
+        "tests/character-streamed-2.json",
+        "tests/character-streamed-3.json"
+      ],
+      "records": "tests/character-streamed.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.episode.0.name",
+          "value": "Pilot"
+        },
+        {
+          "path": "character.episode.1.name",
+          "value": "Lawnmower Dog"
+        },
+        {
+          "path": "character.episode.2.name",
+          "value": "Anatomy Park"
+        }
+      ]
+    },
+    {
+      "name": "tests/character-streamed-pending",
+      "operation": "TestStreamedEpisodes",
+      "kind": "query",
+      "document": "documents/TestStreamedEpisodes.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/character-streamed-1-pending.json",
+        "tests/character-streamed-2-pending.json"
+      ],
+      "records": "tests/character-streamed-pending.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.episode.0.name",
+          "value": "Pilot"
+        },
+        {
+          "path": "character.episode.1.name",
+          "value": "Lawnmower Dog"
+        },
+        {
+          "path": "character.episode.2.name",
+          "value": "Anatomy Park"
+        }
+      ]
+    },
+    {
+      "name": "tests/character-streamed-unordered",
+      "operation": "TestStreamedEpisodes",
+      "kind": "query",
+      "document": "documents/TestStreamedEpisodes.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/character-streamed-1.json",
+        "tests/character-streamed-3-first.json",
+        "tests/character-streamed-2.json",
+        "tests/character-streamed-end.json"
+      ],
+      "records": "tests/character-streamed-unordered.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.episode.0.name",
+          "value": "Pilot"
+        },
+        {
+          "path": "character.episode.1.name",
+          "value": "Lawnmower Dog"
+        },
+        {
+          "path": "character.episode.2.name",
+          "value": "Anatomy Park"
+        }
+      ]
+    },
+    {
+      "name": "tests/character-streamed-failed",
+      "operation": "TestStreamedEpisodes",
+      "kind": "query",
+      "document": "documents/TestStreamedEpisodes.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/character-streamed-1-pending.json",
+        "tests/character-streamed-2-failed.json"
+      ],
+      "records": "tests/character-streamed-failed.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "character.episode.0.name",
+          "value": "Pilot"
+        }
+      ]
+    },
+    {
+      "name": "tests/notes-streamed",
+      "operation": "TestStreamedNotes",
+      "kind": "query",
+      "document": "documents/TestStreamedNotes.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/notes-streamed-1.json",
+        "tests/notes-streamed-2.json",
+        "tests/notes-streamed-3.json"
+      ],
+      "records": "tests/notes-streamed.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.notes.edges.0.node.id",
+          "value": "n1"
+        },
+        {
+          "path": "character.notes.edges.1.node.text",
+          "value": "Portal gun needs charging"
+        }
+      ]
     }
   ],
   "scripts": [
@@ -2336,6 +2489,7 @@
     "scripts/end.json",
     "scripts/events.json",
     "scripts/subscriptions.json",
-    "scripts/transport.json"
+    "scripts/transport.json",
+    "scripts/streams.json"
   ]
 }

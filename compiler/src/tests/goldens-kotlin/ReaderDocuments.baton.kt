@@ -272,7 +272,7 @@ class TestCaughtPartQuery(val id: String) : QueryOperation<TestCaughtPartQuery.D
         override val document: Document = Document.Text("query TestCaughtPartQuery(\$id:ID!){character(id:\$id){id,name,...TestCaughtAppearances_character@defer(label:\"TestCaughtPartQuery\$defer\$TestCaughtAppearances_character\")}}fragment TestCaughtAppearances_character on Character{episode{name,id}}")
         override val kind = OperationKind.QUERY
         override val throwsOnFieldError = true
-        override val hasDeferred = true
+        override val hasIncremental = true
         override val plan: Plan by lazy { Plan(root = `TestCaughtPartQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
@@ -1642,7 +1642,7 @@ class TestTwoFieldPartQuery(val id: String) : QueryOperation<TestTwoFieldPartQue
         override val name = "TestTwoFieldPartQuery"
         override val document: Document = Document.Text("query TestTwoFieldPartQuery(\$id:ID!){character(id:\$id){id,name,...TestOriginAndEpisode_character@defer(label:\"TestTwoFieldPartQuery\$defer\$TestOriginAndEpisode_character\")}}fragment TestOriginAndEpisode_character on Character{origin{name,id},episode{name,id}}")
         override val kind = OperationKind.QUERY
-        override val hasDeferred = true
+        override val hasIncremental = true
         override val plan: Plan by lazy { Plan(root = `TestTwoFieldPartQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)
@@ -1815,7 +1815,7 @@ class TestUncaughtPartQuery(val id: String) : QueryOperation<TestUncaughtPartQue
         override val document: Document = Document.Text("query TestUncaughtPartQuery(\$id:ID!){character(id:\$id){id,name,...TestAppearances_character@defer(label:\"TestUncaughtPartQuery\$defer\$TestAppearances_character\")}}fragment TestAppearances_character on Character{episode{name,air_date,id}}")
         override val kind = OperationKind.QUERY
         override val throwsOnFieldError = true
-        override val hasDeferred = true
+        override val hasIncremental = true
         override val plan: Plan by lazy { Plan(root = `TestUncaughtPartQuery-plan`.selection0, transient = Types.transient) }
 
         override fun data(anchor: Anchor): Data = Data(anchor)

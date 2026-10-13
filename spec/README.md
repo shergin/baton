@@ -113,8 +113,8 @@ omitted for none.
 | `optimistic` | `operation`, `variables`, `response`, `as` | Applies the response as an optimistic layer of the mutation, named `as` for later steps. |
 | `resolve` | `layer`, `response` | The server's answer to the layer's mutation replaces the layer in one batch. |
 | `revert` | `layer` | Reverts the layer, as a failed mutation does. |
-| `attach` | `operation`, `variables`, `policy`, `as` | Makes the operation's handle in the script's environment with the fetch policy (`storeOrNetwork`, the default, `storeAndNetwork`, `networkOnly`, `storeOnly`), retains it, and names it `as`. The transport answers the fetch this makes from `response` when the step gives one, and fails it with `failure` (`transport`, `request`, `malformed`) when the step gives that; with neither the fetch stays in flight. |
-| `answer` | `handle`, `response` or `failure` | Answers the handle's fetch in flight, or fails it. |
+| `attach` | `operation`, `variables`, `policy`, `as` | Makes the operation's handle in the script's environment with the fetch policy (`storeOrNetwork`, the default, `storeAndNetwork`, `networkOnly`, `storeOnly`), retains it, and names it `as`. The transport answers the fetch this makes from `response` when the step gives one, and fails it with `failure` (`transport`, `request`, `malformed`) when the step gives that; with neither the fetch stays in flight. For an operation whose response arrives in parts, `response` is one part: the stream stays open while the part says `hasNext`, and a later `answer` delivers the next. |
+| `answer` | `handle`, `response` or `failure` | Answers the handle's fetch in flight, or fails it; for a stream left open, delivers the next part into it, or fails the stream. |
 | `refetch` | `handle`, `response` or `failure` | Refetches the handle, answered or failed as `answer` is. |
 | `retry` | `handle`, and `response` or `failure` or neither | Retries the handle after a failure, answered or failed as `attach` is. |
 | `release` | `handle` | Ends the handle's retention. |

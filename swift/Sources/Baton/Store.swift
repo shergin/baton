@@ -833,6 +833,15 @@ public final class Store {
             switch edit {
             case .merge(let connection, let page, let slots, let mode):
                 merge(objects[Int(connection)], page: objects[Int(page)], slots: slots, mode: mode, &batch)
+            case .place(let parent, let slot, let index, let item):
+                // The delivery checked the list before this batch, on this
+                // actor; a parent that holds no list here was changed by
+                // this very change set, which cannot be.
+                let record = objects[Int(parent)]
+                guard !record.deleted, case .refs(var list) = record.peek(slot) else { continue }
+                if list.count <= index { list.append(contentsOf: repeatElement(nil, count: index + 1 - list.count)) }
+                list[index] = objects[Int(item)]
+                set(record, slot, .refs(list), &batch)
             case .insertEdge(let edge, let connections, let prepend):
                 for key in connections {
                     insert(edge: objects[Int(edge)], into: key, prepend: prepend, &batch)
@@ -964,14 +973,24 @@ public final class Store {
     /// incremental part's `path`. Nil when the path leads through data the
     /// store never received.
     func walk(_ path: [Ingest.PathSegment], _ selection: ResolvedSelection, from record: Record? = nil) -> (Record, ResolvedSelection)? {
+        locate(path, selection, from: record).map { ($0.record, $0.selection) }
+    }
+
+    /// Where a response path leads through the store: the record and the
+    /// selection that reads it, and, when the last link followed was a
+    /// connection field, the connection its page merges into, by the key
+    /// the ingest gives it.
+    func locate(_ path: [Ingest.PathSegment], _ selection: ResolvedSelection, from record: Record? = nil) -> (record: Record, selection: ResolvedSelection, connection: (key: String, resolved: ResolvedConnection)?)? {
         var record = record ?? root
         var selection = selection
+        var connection: (key: String, resolved: ResolvedConnection)?
         var segments = path[...]
         while let segment = segments.popFirst() {
             let variant = selection.variant(for: record.type)
             guard case .name(let name) = segment, let index = variant.field(named: name),
-                  case .linked(let child, _, _, _) = variant.fields[index].kind
+                  case .linked(let child, _, _, let through) = variant.fields[index].kind
             else { return nil }
+            connection = through.map { (record.key + ":" + $0.storageKey, $0) }
             switch record.peek(variant.fields[index].slot) {
             case .ref(let target):
                 record = target
@@ -983,7 +1002,7 @@ public final class Store {
             }
             selection = child
         }
-        return (record, selection)
+        return (record, selection, connection)
     }
 
     /// The live entities with this id among the named types.
