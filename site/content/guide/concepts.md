@@ -16,7 +16,7 @@ A query, a mutation, a subscription or a fragment, carried by a marker in source
 
 ## Directive
 
-The only way behaviour attaches to data. The set is Relay's: `@connection`, `@refetchable`, `@argumentDefinitions`, `@arguments`, `@alias`, `@required`, `@catch`, `@throwOnFieldError`, `@defer`, `@inline`, `@include`, `@skip`, and the edge directives `@appendEdge`, `@prependEdge`, `@appendNode`, `@prependNode`, `@deleteEdge` and `@deleteRecord`; the one exception, which Relay has no word for, is `@cacheExpiration(seconds:)`. Nothing is configured by an object at run time. [In the terminology.](../../terminology/#term-directive)
+The only way behaviour attaches to data. The set is Relay's: `@connection`, `@refetchable`, `@argumentDefinitions`, `@arguments`, `@alias`, `@required`, `@catch`, `@throwOnFieldError`, `@defer`, `@stream`, `@stream_connection`, `@inline`, `@include`, `@skip`, and the edge directives `@appendEdge`, `@prependEdge`, `@appendNode`, `@prependNode`, `@deleteEdge` and `@deleteRecord`; the one exception, which Relay has no word for, is `@cacheExpiration(seconds:)`. Nothing is configured by an object at run time. [In the terminology.](../../terminology/#term-directive)
 
 {{host comments | Four directives in one figure: a refetchable connection with its argument definitions, and a mutation whose payload edge is appended to that connection.}}
 
@@ -64,7 +64,7 @@ The session: one store, one transport, and the door everything from outside come
 
 ## Transport
 
-A protocol with one verb, `send`, which takes a request and yields a stream of payloads: one for a query, several for a deferred response, many for a subscription. The built-in transports are the platform's HTTP and sockets; everything a production endpoint needs beyond that, a retry, a challenge, a deadline, is a transport that wraps a transport, which the app owns. [In the terminology.](../../terminology/#term-transport)
+A protocol with one verb, `send`, which takes a request and yields a stream of payloads: one for a query, several for an incremental response, many for a subscription. The built-in transports are the platform's HTTP and sockets; everything a production endpoint needs beyond that, a retry, a challenge, a deadline, is a transport that wraps a transport, which the app owns. [In the terminology.](../../terminology/#term-transport)
 
 {{script transport steps=1 | What the transport is handed: the standard encoding of one request, the operation's text and its variables, compared byte for byte.}}
 

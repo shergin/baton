@@ -1,6 +1,6 @@
 # Live data
 
-Two ways data arrives after the first response: a subscription, a stream of events the server pushes, and a deferred fragment, a part of a response the server sends later. Both go through the same door as a query's response, into the same records, so a view that reads a record it names updates as after any commit.
+Three ways data arrives after the first response: a subscription, a stream of events the server pushes; a deferred fragment, a part of a response the server sends later; and a streamed list, whose items the server sends one by one. All three go through the same door as a query's response, into the same records, so a view that reads a record it names updates as after any commit.
 
 ## A subscription is a stream of events into the store
 
@@ -43,6 +43,16 @@ A spread marked `@defer` is a part the server may deliver in a later part of the
 {{host live CharacterScreen | A screen that renders the name at once and the notes when their part lands: the spread's accessor is optional, nil until then.}}
 
 The built-in HTTP transport reads `multipart/mixed` for the parts, and the environment assembles each at the record its path names. A deferred part the server addresses to a place the store does not have is dropped and logged, never applied somewhere else.
+
+## A list that grows: `@stream`
+
+A plural field marked `@stream(initialCount:)` comes with its first items, and the server sends the rest one or a few at a time, in the same response. Each item lands at its index in the list, keyed as it would be had it come with the first part, so a view that reads the list sees it grow in place; the list has no accessor the directive adds, and the handle's fetch is in flight while the stream runs, so `isRefreshing` says whether more is to come. A connection marked `@stream_connection(key:, initial_count:)` streams its edges and defers its page info, as Relay rewrites it, and each edge merges into the connection as it lands.
+
+{{host live EpisodeList | A list that shows three episodes at once and the rest as they arrive, with a spinner while the stream runs.}}
+
+{{script streams steps=1,2,3,5 | The specification's stream script: the first part renders one episode with the fetch in flight; an item for index 2 arrives before index 1 and reads in its place, the hole skipped; the item for index 1 fills it and notifies the one list slot; the last part ends the stream and the fetch.}}
+
+An item whose list another commit changed since the stream left it is dropped and logged, as Relay's executor drops it, so a mutation that replaced the list meanwhile is not overwritten by a stale order. A stream the transport ends before the part that says it is the last fails the fetch, and nothing dates the operation's root, so the next attach fetches the list whole.
 
 ## What a view does not do
 

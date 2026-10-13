@@ -205,7 +205,7 @@ pub fn sections(root: &Path) -> Vec<Section> {
                 content(
                     "/guide/live/",
                     "Live data",
-                    "Subscriptions as a stream of events into the store, deferred fragments, and what a handle does when the connection drops or the app sleeps.",
+                    "Subscriptions as a stream of events into the store, deferred fragments, streamed lists, and what a handle does when the connection drops or the app sleeps.",
                     "guide/live.md",
                 ),
                 content(

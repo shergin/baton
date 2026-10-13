@@ -22,7 +22,7 @@ Injected once at the root, `.environment(\.baton, environment)` in SwiftUI and `
 
 ## The transport has one verb
 
-A transport takes a request and yields a stream of payloads: one for a query or a mutation, the parts of a deferred response, the events of a subscription. A request says its kind, so a wrapper never retries a mutation a server may have received, and carries the operation's document, text or id. One function, the encoding, turns a request into the JSON a server receives; a server with another convention replaces the function and keeps the transport.
+A transport takes a request and yields a stream of payloads: one for a query or a mutation, the parts of an incremental response, the events of a subscription. A request says its kind, so a wrapper never retries a mutation a server may have received, and carries the operation's document, text or id. One function, the encoding, turns a request into the JSON a server receives; a server with another convention replaces the function and keeps the transport.
 
 The built-in transports are the platform's: `URLSessionTransport` and `GraphQLTransportWebSocket` in Swift; `HttpTransport` over `java.net` and `GraphQLTransportWebSocket` over the JVM's socket in Kotlin, with `OkHttpTransport` and `OkHttpWebSocketClient` in the `baton-okhttp` edge for an app that has an OkHttp client. All read credentials per attempt from a function, so a rotated token reaches the next request without a new environment.
 

@@ -160,7 +160,7 @@ The vocabulary is closed and short. A feature is a composition of these, or a Re
 <li><a href="guide/lists/">Lists</a><span>Connections, pages merged, edge directives.</span></li>
 <li><a href="guide/writes/">Writes</a><span>Actions, optimistic responses, payloads.</span></li>
 <li><a href="guide/honest-data/">Honest data</a><span>Nulls, errors, missing data, enums, scalars.</span></li>
-<li><a href="guide/live/">Live data</a><span>Subscriptions and deferred fragments.</span></li>
+<li><a href="guide/live/">Live data</a><span>Subscriptions, deferred fragments and streamed lists.</span></li>
 <li><a href="guide/compiler/">The compiler</a><span>What it checks, what it writes, how the build runs it.</span></li>
 <li><a href="guide/environment/">The environment</a><span>The transport, the session, the log, tests.</span></li>
 <li><a href="guide/kotlin/">Compose</a><span>The same screens in Kotlin.</span></li>
