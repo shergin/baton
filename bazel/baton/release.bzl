@@ -2,6 +2,6 @@
 bundle's checksum. The release workflow writes both into the release
 commit, beside the same pair in `Package.swift`."""
 
-VERSION = "0.15.0"
+VERSION = "0.16.0"
 
-BUNDLE_SHA256 = "27eecd74172873116cebacb292c42f36d65b35799cdb5f77f0a514ec2c8f9250"
+BUNDLE_SHA256 = "1728e73c55aef6f4ef5a79540836d0951983eb6c0c0042a5025814a4ecc1f265"
