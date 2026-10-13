@@ -947,7 +947,7 @@ package enum Ingest {
                         let start = Int32(changes.refs.count)
                         changes.refs.append(contentsOf: linked[depth])
                         scratch[depth].append((matched, .refs(start: start, count: Int32(linked[depth].count))))
-                        if fields[matched].streamed != nil { changes.streams.append((record, fields[matched].slot)) }
+                        if fields[matched].streams { changes.streams.append((record, fields[matched].slot)) }
                         if let edit = fields[matched].edit {
                             for target in linked[depth] where target >= 0 { insertion(edit, target) }
                         }

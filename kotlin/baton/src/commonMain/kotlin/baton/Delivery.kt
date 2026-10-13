@@ -76,12 +76,12 @@ internal class Delivery(private val store: Store, private val resolved: Resolved
             }
             val items = item.items
             if (items != null) {
-                objects.addAll(streamed(items, base, label, item.errors))
+                objects.addAll(streamed(items, base, item.errors))
                 continue
             }
             if (base.lastOrNull() is PathSegment.Index) {
                 // Relay's shape: one item, its path ending in its index.
-                objects.addAll(streamed(listOf(item.data), base, label, item.errors))
+                objects.addAll(streamed(listOf(item.data), base, item.errors))
                 continue
             }
             val path = base + (item.subPath ?: emptyList())
@@ -104,9 +104,10 @@ internal class Delivery(private val store: Store, private val resolved: Resolved
      * The items of a streamed list as objects, each placed at its index in
      * the list at the parent record the path names. The path ends in the
      * first item's index, or in the field, when the items follow the last
-     * one the stream left.
+     * one the stream left. The path names the list; the part's label is not
+     * read again, since the plan marks the field that streams.
      */
-    private fun streamed(items: List<ByteArray>, base: List<PathSegment>, label: String, errors: List<ResponseError>): List<ObjectPart> {
+    private fun streamed(items: List<ByteArray>, base: List<PathSegment>, errors: List<ResponseError>): List<ObjectPart> {
         var listPath = base
         var start: Int? = null
         val last = listPath.lastOrNull()
@@ -123,7 +124,7 @@ internal class Delivery(private val store: Store, private val resolved: Resolved
         val field = place.selection.variant(place.record.type).field(name)
         val kind = field?.kind as? ResolvedField.Kind.Linked
         val current = field?.let { place.record.peek(it.slot) as? Value.Refs }
-        if (field == null || field.streamed != label || kind == null || !kind.plural || current == null) {
+        if (field == null || !field.streams || kind == null || !kind.plural || current == null) {
             dropped(base)
             return emptyList()
         }
@@ -204,7 +205,7 @@ internal class Delivery(private val store: Store, private val resolved: Resolved
             val name = (pending.path.lastOrNull() as? PathSegment.Name)?.name
             val parent = if (name == null) null else store.locate(pending.path.dropLast(1), resolved)
             val field = if (parent == null || name == null) null else parent.selection.variant(parent.record.type).field(name)
-            if (parent != null && field != null && field.streamed == label) {
+            if (parent != null && field != null && field.streams) {
                 failures.add(Ingest.failedStream(field, parent.record.key, parent.record.type, parent.record.isEntity, pending.path, completion.errors))
                 continue
             }

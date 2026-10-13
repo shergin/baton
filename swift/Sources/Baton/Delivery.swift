@@ -50,12 +50,12 @@ struct Delivery {
                 continue
             }
             if let items = item.items {
-                objects.append(contentsOf: streamed(items, at: base, label: label, errors: item.errors))
+                objects.append(contentsOf: streamed(items, at: base, errors: item.errors))
                 continue
             }
             if case .index? = base.last {
                 // Relay's shape: one item, its path ending in its index.
-                objects.append(contentsOf: streamed([item.data], at: base, label: label, errors: item.errors))
+                objects.append(contentsOf: streamed([item.data], at: base, errors: item.errors))
                 continue
             }
             let path = base + (item.subPath ?? [])
@@ -78,8 +78,9 @@ struct Delivery {
     /// The items of a streamed list as objects, each placed at its index in
     /// the list at the parent record the path names. The path ends in the
     /// first item's index, or in the field, when the items follow the last
-    /// one the stream left.
-    private mutating func streamed(_ items: [Data], at base: [Ingest.PathSegment], label: String, errors: [Ingest.ResponseError]) -> [Ingest.ObjectPart] {
+    /// one the stream left. The path names the list; the part's label is
+    /// not read again, since the plan marks the field that streams.
+    private mutating func streamed(_ items: [Data], at base: [Ingest.PathSegment], errors: [Ingest.ResponseError]) -> [Ingest.ObjectPart] {
         var listPath = base
         var start: Int?
         if case .index(let index)? = listPath.last {
@@ -96,7 +97,7 @@ struct Delivery {
             return []
         }
         let field = variant.fields[position]
-        guard field.streamed == label, case .linked(let child, plural: true, _, _) = field.kind, case .refs = place.record.peek(field.slot) else {
+        guard field.streams, case .linked(let child, plural: true, _, _) = field.kind, case .refs = place.record.peek(field.slot) else {
             dropped(base)
             return []
         }
@@ -167,7 +168,7 @@ struct Delivery {
             }
             if case .name(let name)? = pending.path.last, let place = store.locate(Array(pending.path.dropLast()), resolved),
                let position = place.selection.variant(for: place.record.type).field(named: name),
-               case let field = place.selection.variant(for: place.record.type).fields[position], field.streamed == label {
+               case let field = place.selection.variant(for: place.record.type).fields[position], field.streams {
                 failures.append(Ingest.failedStream(field, key: place.record.key, type: place.record.type, entity: place.record.isEntity, at: pending.path, errors: completion.errors))
                 continue
             }

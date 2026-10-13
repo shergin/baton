@@ -1426,12 +1426,9 @@ extension DeliveryTests {
     }
 
     @Test
-    func a_streamed_part_naming_a_field_the_plan_does_not_stream_or_under_a_label_it_does_not_know_is_dropped_and_logged_at_its_path() async throws {
+    func a_streamed_part_naming_a_field_the_plan_does_not_stream_or_announced_at_a_field_that_is_no_list_is_dropped_and_logged_at_its_path() async throws {
         let unstreamed = #"{"data":{"id":"9","name":"Nowhere"},"path":["character","name",1],"label":"\#(Self.episodesLabel)","hasNext":true}"#
         #expect(try await droppedStreamParts(["character-streamed-1", unstreamed, "character-streamed-end"]) == ["character.name.1"])
-
-        let unknown = #"{"incremental":[{"items":[{"id":"9","name":"Nowhere"}],"path":["character","episode",1],"label":"TestStreamedEpisodes$stream$unknown"}],"hasNext":true}"#
-        #expect(try await droppedStreamParts(["character-streamed-1", unknown, "character-streamed-end"]) == ["character.episode.1"])
 
         let announced = #"{"data":{"character":{"id":"1","name":"Rick Sanchez","episode":[{"id":"1","name":"Pilot"}]}},"pending":[{"id":"0","path":["character","name"],"label":"\#(Self.episodesLabel)"}],"hasNext":true}"#
         #expect(try await droppedStreamParts([announced, "character-streamed-2-pending"]) == ["character.name"])

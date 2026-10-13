@@ -315,7 +315,7 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
                         val start = changes.addRefs(frame.linked.values, frame.linked.size)
                         frame.fields.add(matched)
                         frame.values.add(Raw.REFS, start.toLong(), frame.linked.size)
-                        if (field.streamed != null) changes.streams.add(record to field.slot.index)
+                        if (field.streams) changes.streams.add(record to field.slot.index)
                         val edit = field.edit
                         if (edit != null) {
                             for (position in 0 until frame.linked.size) {

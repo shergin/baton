@@ -274,4 +274,9 @@ class Selection(
 
     internal val readsVariables: Boolean = variants.any { variant -> variant.fields.any { it.readsVariables } }
     internal val transient: Boolean = variants.any { variant -> variant.fields.any { it.transient } }
+
+    /** Whether a list somewhere in the selection streams, so that its data is whole only under a root a completed stream dated; decided once here. */
+    internal val streams: Boolean = variants.any { variant ->
+        variant.fields.any { it.streamed != null || (it.kind as? PlanField.Kind.Linked)?.selection?.streams == true }
+    }
 }

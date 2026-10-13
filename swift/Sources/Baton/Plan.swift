@@ -457,6 +457,10 @@ public final class Selection: Sendable {
     /// Whether a field of the selection is a transient root field: an
     /// operation selecting one leaves no fetch stamp in the image.
     let transient: Bool
+    /// Whether a list somewhere in the selection streams, so that its data
+    /// is whole only under a root a completed stream dated; decided once,
+    /// here, and carried by every resolution.
+    let streams: Bool
     private let resolution = Mutex<ResolvedSelection?>(nil)
 
     /// A selection every type reads alike.
@@ -472,6 +476,11 @@ public final class Selection: Sendable {
         self.variants = variants
         readsVariables = variants.contains { $0.fields.contains(where: \.readsVariables) }
         transient = variants.contains { $0.fields.contains(where: \.transient) }
+        streams = variants.contains { $0.fields.contains { field in
+            if field.streamed != nil { return true }
+            if case .linked(let child, _, _, _) = field.kind { return child.streams }
+            return false
+        } }
     }
 
     /// Binds the variables: fields whose guards fail are dropped, keys with
@@ -506,7 +515,7 @@ public final class Selection: Sendable {
         }
         // A selection that reads no variables renders no key, and its
         // resolution is shared by every store: it holds no store's keys.
-        return ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: others, listed: listed, conditions: conditions, memberships: memberships, hold: readsVariables ? hold : nil, transient: transient)
+        return ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: others, listed: listed, conditions: conditions, memberships: memberships, hold: readsVariables ? hold : nil, transient: transient, streams: streams)
     }
 
     /// A field with its variables bound, its slot on the selection's own type.
@@ -554,7 +563,7 @@ public final class Selection: Sendable {
                 )
             },
             deferred: field.deferred,
-            streamed: field.streamed,
+            streams: field.streamed != nil,
             caught: field.caught,
             client: field.client
         )

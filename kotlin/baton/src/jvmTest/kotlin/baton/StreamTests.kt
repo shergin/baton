@@ -45,10 +45,8 @@ class StreamTests {
             delivery.announce(first.pending)
         }
 
-        fun part(path: String) = part(Spec.bytes(path))
-
-        fun part(bytes: ByteArray) {
-            val part = Ingest.incremental(bytes)
+        fun part(path: String) {
+            val part = Ingest.incremental(Spec.bytes(path))
             delivery.announce(part.pending)
             val objects = delivery.objects(part)
             val failures = delivery.failures(part)
@@ -121,7 +119,7 @@ class StreamTests {
     }
 
     @Test
-    fun `a part naming a field the plan does not have or does not stream under its label is dropped and logged`() {
+    fun `a part naming a field the plan does not have is dropped and logged`() {
         val store = Store()
         val events = ArrayList<LogEvent>()
         store.log = { events.add(it) }
@@ -132,13 +130,6 @@ class StreamTests {
         streaming.part("tests/character-streamed-stray.json")
         assertEquals(listOf<LogEvent>(LogEvent.PartDropped("character.nonexistent.0")), events.dropped())
         assertEquals(before, store.dump(), "a stray part writes nothing")
-
-        // The streamed field under a label that is not its stream's: the plan does not stream it so.
-        events.clear()
-        val relabeled = Spec.text("tests/character-streamed-2.json").replace("\$stream\$episodes", "\$stream\$elsewhere")
-        streaming.part(relabeled.encodeToByteArray())
-        assertEquals(listOf<LogEvent>(LogEvent.PartDropped("character.episode.1")), events.dropped())
-        assertEquals(before, store.dump())
     }
 
     @Test
