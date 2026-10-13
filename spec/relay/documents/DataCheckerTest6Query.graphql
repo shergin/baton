@@ -1,0 +1,1 @@
+query DataCheckerTest6Query($id:ID!){node(id:$id){__typename,...DataCheckerTest7Fragment,id}}fragment DataCheckerTest7Fragment on Feedback{id,actors@stream(label:"DataCheckerTest7Fragment$stream$TestFragmentActors",initial_count:0){__typename,name,id}}

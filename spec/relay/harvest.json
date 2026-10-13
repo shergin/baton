@@ -161,8 +161,6 @@
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes when if condition is false",
       "operation": "RelayResponseNormalizerTest11Query",
       "calls": 1,
-      "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton",
       "name": "relay/normalizer/stream-normalizes-when-if-condition-is-false"
     },
     {
@@ -171,8 +169,6 @@
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes and returns metadata when `if` is true (literal value)",
       "operation": "RelayResponseNormalizerTestQuery",
       "calls": 1,
-      "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton",
       "name": "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-literal-value"
     },
     {
@@ -181,8 +177,6 @@
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes and returns metadata when `if` is true (variable value)",
       "operation": "RelayResponseNormalizerTest12Query",
       "calls": 1,
-      "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton",
       "name": "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-variable-value"
     },
     {
@@ -191,8 +185,6 @@
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes and returns metadata for @stream within a plural",
       "operation": "RelayResponseNormalizerTest13Query",
       "calls": 1,
-      "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton",
       "name": "relay/normalizer/stream-normalizes-and-returns-metadata-for-stream-within-a-plural"
     },
     {
@@ -201,8 +193,6 @@
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream returns metadata with prefixed path",
       "operation": "RelayResponseNormalizerTest14Query",
       "calls": 1,
-      "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton",
       "name": "relay/normalizer/stream-returns-metadata-with-prefixed-path"
     },
     {
@@ -855,11 +845,9 @@
       "origin": "DataChecker-test.js: check() when @stream directive is present returns true when streamed selections are fetched",
       "operation": "DataCheckerTest6Query",
       "calls": 1,
-      "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton",
       "name": "relay/scripts/checker-when-stream-directive-is-present-returns-true-when-streamed-selections-are-fetched.json",
       "script": true,
-      "document": "relay/unsupported/DataCheckerTest6Query.graphql"
+      "document": "relay/documents/DataCheckerTest6Query.graphql"
     },
     {
       "suite": "DataChecker-test",
@@ -867,11 +855,9 @@
       "origin": "DataChecker-test.js: check() when @stream directive is present returns false when streamed selections are not fetched",
       "operation": "DataCheckerTest6Query",
       "calls": 1,
-      "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton",
       "name": "relay/scripts/checker-when-stream-directive-is-present-returns-false-when-streamed-selections-are-not-fetched.json",
       "script": true,
-      "document": "relay/unsupported/DataCheckerTest6Query.graphql"
+      "document": "relay/documents/DataCheckerTest6Query.graphql"
     },
     {
       "suite": "DataChecker-test",

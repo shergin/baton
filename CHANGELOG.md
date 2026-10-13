@@ -3,6 +3,15 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
+## Unreleased
+
+- The Relay harvest runs its `@stream` cases. The five normalizer tests
+  and the two availability checks of `RelayResponseNormalizer-test.js`
+  and `DataChecker-test.js` that batonc rejected before 0.16.0 now
+  compile, and every one passes on both runtimes. The three
+  `@stream_connection` reader tests read a fragment at a record, which
+  the harvest does not express, and stay `not-ingested`.
+
 ## 0.16.0 (Pampushka) — 2026-10-13
 
 - `@stream` and `@stream_connection`. A plural linked field under

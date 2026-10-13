@@ -136,6 +136,114 @@ struct RelayDocuments {
     var relayResponseNormalizerTest6Fragment: RelayResponseNormalizerTest6Fragment
 
     @Query("""
+        query RelayResponseNormalizerTest11Query(
+          $id: ID!
+          $enableStream: Boolean!
+        ) {
+          node(id: $id) {
+            ...RelayResponseNormalizerTest7Fragment @alias
+          }
+        }
+        """)
+    var relayResponseNormalizerTest11Query: RelayResponseNormalizerTest11Query
+
+    @Fragment("""
+        fragment RelayResponseNormalizerTest7Fragment on Feedback {
+          id
+          actors @stream(label: "actors", if: $enableStream, initial_count: 0) {
+            name
+          }
+        }
+        """)
+    var relayResponseNormalizerTest7Fragment: RelayResponseNormalizerTest7Fragment
+
+    @Query("""
+        query RelayResponseNormalizerTestQuery($id: ID!) {
+          node(id: $id) {
+            ...RelayResponseNormalizerTest8Fragment @alias
+          }
+        }
+        """)
+    var relayResponseNormalizerTestQuery: RelayResponseNormalizerTestQuery
+
+    @Fragment("""
+        fragment RelayResponseNormalizerTest8Fragment on Feedback {
+          id
+          actors @stream(label: "actors", if: true, initial_count: 0) {
+            name
+          }
+        }
+        """)
+    var relayResponseNormalizerTest8Fragment: RelayResponseNormalizerTest8Fragment
+
+    @Query("""
+        query RelayResponseNormalizerTest12Query(
+          $id: ID!
+          $enableStream: Boolean!
+        ) {
+          node(id: $id) {
+            ...RelayResponseNormalizerTest9Fragment @alias
+          }
+        }
+        """)
+    var relayResponseNormalizerTest12Query: RelayResponseNormalizerTest12Query
+
+    @Fragment("""
+        fragment RelayResponseNormalizerTest9Fragment on Feedback {
+          id
+          actors @stream(label: "actors", if: $enableStream, initial_count: 0) {
+            name
+          }
+        }
+        """)
+    var relayResponseNormalizerTest9Fragment: RelayResponseNormalizerTest9Fragment
+
+    @Query("""
+        query RelayResponseNormalizerTest13Query($id: ID!) {
+          node(id: $id) {
+            ...RelayResponseNormalizerTest10Fragment
+              @alias
+          }
+        }
+        """)
+    var relayResponseNormalizerTest13Query: RelayResponseNormalizerTest13Query
+
+    @Fragment("""
+        fragment RelayResponseNormalizerTest10Fragment on Feedback {
+          id
+          actors {
+            ... on User {
+              name
+              actors @stream(label: "actors", if: true, initial_count: 0) {
+                name
+              }
+            }
+          }
+        }
+        """)
+    var relayResponseNormalizerTest10Fragment: RelayResponseNormalizerTest10Fragment
+
+    @Query("""
+        query RelayResponseNormalizerTest14Query($id: ID!) {
+          node(id: $id) {
+            ...RelayResponseNormalizerTest11Fragment
+              @alias
+          }
+        }
+        """)
+    var relayResponseNormalizerTest14Query: RelayResponseNormalizerTest14Query
+
+    @Fragment("""
+        fragment RelayResponseNormalizerTest11Fragment on Feedback {
+          id
+          actors @stream(label: "actors", initial_count: 0) {
+            name
+          }
+        }
+        """)
+    var relayResponseNormalizerTest11Fragment: RelayResponseNormalizerTest11Fragment
+
+    @Query("""
         query RelayResponseNormalizerTest16Query {
           me {
             author {
@@ -657,6 +765,25 @@ struct RelayDocuments {
         }
         """)
     var dataCheckerTest6Fragment: DataCheckerTest6Fragment
+
+    @Query("""
+        query DataCheckerTest6Query($id: ID!) {
+          node(id: $id) {
+            ...DataCheckerTest7Fragment @alias
+          }
+        }
+        """)
+    var dataCheckerTest6Query: DataCheckerTest6Query
+
+    @Fragment("""
+        fragment DataCheckerTest7Fragment on Feedback {
+          id
+          actors @stream(label: "TestFragmentActors", initial_count: 0) {
+            name
+          }
+        }
+        """)
+    var dataCheckerTest7Fragment: DataCheckerTest7Fragment
 
     @Query("""
         query RelayReaderTestReadsQueryDataFooQuery($id: ID, $size: [Int]) {
@@ -1189,6 +1316,11 @@ extension RelayDocuments {
         "RelayResponseNormalizerTest8Query": RelayResponseNormalizerTest8Query.self,
         "RelayResponseNormalizerTest9Query": RelayResponseNormalizerTest9Query.self,
         "RelayResponseNormalizerTest10Query": RelayResponseNormalizerTest10Query.self,
+        "RelayResponseNormalizerTest11Query": RelayResponseNormalizerTest11Query.self,
+        "RelayResponseNormalizerTestQuery": RelayResponseNormalizerTestQuery.self,
+        "RelayResponseNormalizerTest12Query": RelayResponseNormalizerTest12Query.self,
+        "RelayResponseNormalizerTest13Query": RelayResponseNormalizerTest13Query.self,
+        "RelayResponseNormalizerTest14Query": RelayResponseNormalizerTest14Query.self,
         "RelayResponseNormalizerTest16Query": RelayResponseNormalizerTest16Query.self,
         "RelayResponseNormalizerTest17Query": RelayResponseNormalizerTest17Query.self,
         "RelayResponseNormalizerTest15Query": RelayResponseNormalizerTest15Query.self,
@@ -1217,6 +1349,7 @@ extension RelayDocuments {
         "RelayResponseNormalizerTest43Query": RelayResponseNormalizerTest43Query.self,
         "DataCheckerTestQuery": DataCheckerTestQuery.self,
         "DataCheckerTest9Query": DataCheckerTest9Query.self,
+        "DataCheckerTest6Query": DataCheckerTest6Query.self,
         "RelayReaderTestReadsQueryDataFooQuery": RelayReaderTestReadsQueryDataFooQuery.self,
         "RelayReaderRequiredFieldsTest2Query": RelayReaderRequiredFieldsTest2Query.self,
         "RelayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithoutTypeQuery": RelayReaderRequiredFieldsTestBubbleToAliasedInlineFragmentWithoutTypeQuery.self,

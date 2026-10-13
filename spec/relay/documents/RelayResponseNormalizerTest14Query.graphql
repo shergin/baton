@@ -1,0 +1,1 @@
+query RelayResponseNormalizerTest14Query($id:ID!){node(id:$id){__typename,...RelayResponseNormalizerTest11Fragment,id}}fragment RelayResponseNormalizerTest11Fragment on Feedback{id,actors@stream(label:"RelayResponseNormalizerTest11Fragment$stream$actors",initial_count:0){__typename,name,id}}

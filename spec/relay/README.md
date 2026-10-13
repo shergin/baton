@@ -118,12 +118,12 @@ The translator writes this table.
 
 | Status | Meaning | `RelayResponseNormalizer` | `DataChecker` | `RelayReader` | `RelayReader-RequiredFields` | `RelayReader-CatchFields` | `RelayReader-RelayErrorHandling` |
 |---|---|---|---|---|---|---|---|
-| `passes` | Baton agrees with Relay; the case must pass. | 13 | 2 | 1 | 18 | 9 | 4 |
+| `passes` | Baton agrees with Relay; the case must pass. | 18 | 4 | 1 | 18 | 9 | 4 |
 | `possible-bug` | Baton is probably wrong; the case runs and its result is ignored. | 2 | 0 | 0 | 1 | 2 | 0 |
 | `unspecified-behaviour` | GraphQL does not say, and Relay chose; the case runs and its result is ignored. | 7 | 0 | 0 | 0 | 3 | 2 |
 | `invalid-input` | the payload is one a conforming server does not send; the case runs and its result is ignored. | 1 | 0 | 0 | 0 | 0 | 0 |
 | `by-design` | Baton parts from Relay on purpose, by a decision; the case runs and its result is ignored. | 0 | 1 | 0 | 0 | 0 | 0 |
-| `unsupported-feature` | Relay has something Baton does not; the case is ingested and left out of the runs. | 31 | 13 | 0 | 1 | 2 | 4 |
+| `unsupported-feature` | Relay has something Baton does not; the case is ingested and left out of the runs. | 26 | 11 | 0 | 1 | 2 | 4 |
 | `not-ingested` | the harvest cannot express the test yet; nothing is written. | 6 | 47 | 34 | 10 | 3 | 10 |
 
 ### `RelayResponseNormalizer-test.js`
@@ -145,11 +145,11 @@ The translator writes this table.
 | @defer returns metadata when `if` is true (variable value) | `unspecified-behaviour` | The initial payload already holds the deferred fragment's fields. Relay skips them on purpose (`_normalizeDefer`: data for a deferred selection 'should not be present') and waits for a later part; Baton writes what the response holds. The fields in the test's payload are incidental to what it asserts, the placeholder. Decision: Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's. |
 | @defer returns metadata for @defer within a plural | `unspecified-behaviour` | The initial payload already holds the deferred fragment's fields. Relay skips them on purpose (`_normalizeDefer`: data for a deferred selection 'should not be present') and waits for a later part; Baton writes what the response holds. The fields in the test's payload are incidental to what it asserts, the placeholder. Decision: Open. Relay's skip is deliberate, but a server that answers a deferred fragment inline sends no later part, and Relay then never writes the fields; the recommendation is to keep Baton's. |
 | @defer returns metadata with prefixed path | `passes` |  |
-| @stream normalizes when if condition is false | `unsupported-feature` | batonc: `@stream` on a field has no meaning in Baton |
-| @stream normalizes and returns metadata when `if` is true (literal value) | `unsupported-feature` | batonc: `@stream` on a field has no meaning in Baton |
-| @stream normalizes and returns metadata when `if` is true (variable value) | `unsupported-feature` | batonc: `@stream` on a field has no meaning in Baton |
-| @stream normalizes and returns metadata for @stream within a plural | `unsupported-feature` | batonc: `@stream` on a field has no meaning in Baton |
-| @stream returns metadata with prefixed path | `unsupported-feature` | batonc: `@stream` on a field has no meaning in Baton |
+| @stream normalizes when if condition is false | `passes` |  |
+| @stream normalizes and returns metadata when `if` is true (literal value) | `passes` |  |
+| @stream normalizes and returns metadata when `if` is true (variable value) | `passes` |  |
+| @stream normalizes and returns metadata for @stream within a plural | `passes` |  |
+| @stream returns metadata with prefixed path | `passes` |  |
 | Client Extensions skips client fields not present in the payload but present in the store | `not-ingested` | a store seeded by hand before the first payload |
 | Client Extensions skips client fields not present in the payload or store | `not-ingested` | a store seeded by hand before the first payload |
 | Client Extensions ignores linked client fields not present in the payload | `not-ingested` | a store seeded by hand before the first payload |
@@ -221,8 +221,8 @@ The translator writes this table.
 | when @module directive is present returns true when the field/record exists but does not match any @module selection | `unsupported-feature` | batonc: `@module` on a fragment spread has no meaning in Baton |
 | when @defer directive is present returns true when deferred selections are fetched | `not-ingested` | the response the seeded store stands for gives Relay another answer (missing, not available) |
 | when @defer directive is present returns false when deferred selections are not fetched | `by-design` | The deferred fragment's fields are not in the store. Relay's check answers missing; Baton's answers from the selection outside the deferred parts, which checks them apart, and the operation fetches either way (spec/runtime.md, 'The deferred parts are checked apart'). Decision: Open. The recommendation is no change, since the answer only decides whether the rest renders while the deferred part is fetched. |
-| when @stream directive is present returns true when streamed selections are fetched | `unsupported-feature` | batonc: `@stream` on a field has no meaning in Baton |
-| when @stream directive is present returns false when streamed selections are not fetched | `unsupported-feature` | batonc: `@stream` on a field has no meaning in Baton |
+| when @stream directive is present returns true when streamed selections are fetched | `passes` |  |
+| when @stream directive is present returns false when streamed selections are not fetched | `passes` |  |
 | when the data is complete returns available | `passes` |  |
 | when some data is missing returns missing on missing records | `not-ingested` | a check of a fragment at `1`; Baton checks an operation from its root |
 | when some data is missing returns missing on missing fields | `not-ingested` | a check of a fragment at `1`; Baton checks an operation from its root |

@@ -232,11 +232,9 @@
     {
       "name": "relay/normalizer/stream-normalizes-when-if-condition-is-false",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes when if condition is false",
-      "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton",
       "operation": "RelayResponseNormalizerTest11Query",
       "kind": "query",
-      "document": "relay/unsupported/RelayResponseNormalizerTest11Query.graphql",
+      "document": "relay/documents/RelayResponseNormalizerTest11Query.graphql",
       "variables": {
         "id": "1",
         "enableStream": false
@@ -249,11 +247,9 @@
     {
       "name": "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-literal-value",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes and returns metadata when `if` is true (literal value)",
-      "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton",
       "operation": "RelayResponseNormalizerTestQuery",
       "kind": "query",
-      "document": "relay/unsupported/RelayResponseNormalizerTestQuery.graphql",
+      "document": "relay/documents/RelayResponseNormalizerTestQuery.graphql",
       "variables": {
         "id": "1"
       },
@@ -265,11 +261,9 @@
     {
       "name": "relay/normalizer/stream-normalizes-and-returns-metadata-when-if-is-true-variable-value",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes and returns metadata when `if` is true (variable value)",
-      "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton",
       "operation": "RelayResponseNormalizerTest12Query",
       "kind": "query",
-      "document": "relay/unsupported/RelayResponseNormalizerTest12Query.graphql",
+      "document": "relay/documents/RelayResponseNormalizerTest12Query.graphql",
       "variables": {
         "id": "1",
         "enableStream": true
@@ -282,11 +276,9 @@
     {
       "name": "relay/normalizer/stream-normalizes-and-returns-metadata-for-stream-within-a-plural",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream normalizes and returns metadata for @stream within a plural",
-      "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton",
       "operation": "RelayResponseNormalizerTest13Query",
       "kind": "query",
-      "document": "relay/unsupported/RelayResponseNormalizerTest13Query.graphql",
+      "document": "relay/documents/RelayResponseNormalizerTest13Query.graphql",
       "variables": {
         "id": "1"
       },
@@ -298,11 +290,9 @@
     {
       "name": "relay/normalizer/stream-returns-metadata-with-prefixed-path",
       "origin": "RelayResponseNormalizer-test.js: RelayResponseNormalizer @stream returns metadata with prefixed path",
-      "status": "unsupported-feature",
-      "note": "batonc: `@stream` on a field has no meaning in Baton",
       "operation": "RelayResponseNormalizerTest14Query",
       "kind": "query",
-      "document": "relay/unsupported/RelayResponseNormalizerTest14Query.graphql",
+      "document": "relay/documents/RelayResponseNormalizerTest14Query.graphql",
       "variables": {
         "id": "1"
       },
