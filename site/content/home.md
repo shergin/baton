@@ -183,6 +183,7 @@ The vocabulary is closed and short. A feature is a composition of these, or a Re
 <li><a href="principles/fragment-is-a-lens/">The principles</a><span>Eight constraints, each with the failure it avoids.</span></li>
 <li><a href="decisions/">Decisions</a><span>Every choice, with its evidence and what would reopen it.</span></li>
 <li><a href="#faster-by-skipping-steps">Faster, by skipping steps</a><span>What Apollo does on every response and every read that Baton does not.</span></li>
+<li><a href="articles/">Articles</a><span>The design argued at length: Relay without the read side, what Meta built, why it is fast, the first frame, two runtimes, the compiler, the honest store, twelve words.</span></li>
 </ul>
 </section>
 

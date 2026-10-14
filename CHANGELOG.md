@@ -5,6 +5,15 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- Eight articles under `docs/articles/`, and an Articles section on the
+  site: the design argued at length, one essay per choice that shapes the
+  library, with its evidence and the alternatives it refused. Relay
+  without the read side; what Meta built, and what you can download;
+  materialization is the bill; the first frame has the data; two runtimes,
+  no bridge; a compiler, not a configuration; how a fast store stays
+  honest; twelve words, and why the list is closed. Every number in them
+  is one `BENCHMARKS.md` already holds, with its machine and date, or is
+  attributed to the public source it came from.
 - The Relay harvest runs its `@stream` cases. The five normalizer tests
   and the two availability checks of `RelayResponseNormalizer-test.js`
   and `DataChecker-test.js` that batonc rejected before 0.16.0 now

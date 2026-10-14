@@ -12,9 +12,10 @@ and in every binary: a parser, a validator, an executor over selection
 metadata, string-keyed records, type policies looked up by name. It also
 cannot tell a developer at build time that a field does not exist, that a
 parent never spread the fragment a child reads, or that two operations will
-collide in the cache. Meta's native apps compiled operations ahead of time
-and shipped ids instead of text before Relay existed; the clients that did
-not are the ones with 150 ms of type mapping behind 6 ms of parsing.
+collide in the cache. Meta's native apps built their queries once at build
+time and sent an identifier instead of the text, before Relay Modern adopted
+the same model; the clients that did not are the ones with about 159 ms of
+type mapping behind 6 ms of parsing.
 
 The opposite failure is a compiler that knows too little: one that validates
 documents but leaves aggregation, identity and cache behaviour to runtime

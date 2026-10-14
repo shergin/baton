@@ -319,6 +319,10 @@ pub fn sections(root: &Path) -> Vec<Section> {
             pages: why(root),
         },
         Section {
+            title: "Articles".to_string(),
+            pages: articles(),
+        },
+        Section {
             title: "Reference".to_string(),
             pages: vec![
                 repo_with(
@@ -499,6 +503,68 @@ fn why(root: &Path) -> Vec<Page> {
     pages
 }
 
+/// The design argued at length: one essay per choice that shapes the
+/// library, in reading order, each read from `docs/articles/`.
+fn articles() -> Vec<Page> {
+    let essays: &[(&str, &str, &str)] = &[
+        (
+            "relay-without-the-read-side",
+            "Relay without the read side",
+            "Why Baton keeps Relay's compiler and the write side of its store and deletes the read side: Observation and snapshot state already answer the question Relay's runtime was built to answer.",
+        ),
+        (
+            "what-meta-built",
+            "What Meta built, and what you can download",
+            "Meta's native apps run an in-house GraphQL client that is not public. What its engineers have said about it, where Baton makes the same choices, and where Baton goes further.",
+        ),
+        (
+            "materialization-is-the-bill",
+            "Materialization is the bill",
+            "Why Baton is faster than Apollo iOS and Apollo Kotlin on the same data: not a faster store, but three steps it never takes. The numbers on a Mac and on a phone, and the caveats.",
+        ),
+        (
+            "the-first-frame",
+            "The first frame has the data",
+            "A warm cache that still shows a spinner is a design, not a bug. Why reads are synchronous on the main actor, what the image on disk does before the first body, and what a phone measured.",
+        ),
+        (
+            "two-runtimes-no-bridge",
+            "Two runtimes, no bridge",
+            "The compiler is Rust; the runtimes are Swift and Kotlin, written twice on purpose. Why a shared core would cost the read path the design exists for, and what holds two runtimes to one behaviour.",
+        ),
+        (
+            "a-compiler-not-a-configuration",
+            "A compiler, not a configuration",
+            "Every operation is static, so identity, storage keys, masking, persisted ids and diagnostics are settled at build time. Why the runtime has no parser and no policy object, and why that matters more now that agents write screens.",
+        ),
+        (
+            "how-a-fast-store-stays-honest",
+            "How a fast store stays honest",
+            "A normalized store is a chain of clever steps, and every step is a place to lose a value. The oracle, the fixtures, Relay's own tests and the benches that keep Baton's answers equal to the server's, on both runtimes.",
+        ),
+        (
+            "twelve-words",
+            "Twelve words, and why the list is closed",
+            "GraphQL clients die of configuration. Baton's vocabulary is twelve concepts and Relay's directives; what that refuses, what it buys, and how it looks beside a client that dropped GraphQL.",
+        ),
+    ];
+    let mut pages = vec![page(
+        "/articles/",
+        "Articles",
+        "The design argued at length: one essay per choice that shapes the library, with the evidence behind it and the alternatives it refused.",
+        Source::Index,
+    )];
+    for (stem, title, blurb) in essays {
+        pages.push(repo(
+            &format!("/articles/{stem}/"),
+            title,
+            blurb,
+            &format!("docs/articles/{stem}.md"),
+        ));
+    }
+    pages
+}
+
 /// A repository document's title, from its first heading, and its blurb,
 /// from the first paragraph after it.
 fn title_and_blurb(path: &Path) -> (String, String) {
@@ -563,6 +629,7 @@ pub fn url_for(sections: &[Section], repo_path: &str) -> Option<String> {
         "README.md" | "site/README.md" | "docs/README.md" | "docs" => Some("/"),
         "docs/principles" => Some("/vision/#principles"),
         "docs/decisions" | "docs/decisions/README.md" => Some("/decisions/"),
+        "docs/articles" | "docs/articles/README.md" => Some("/articles/"),
         "docs/recipes" => Some("/recipes/"),
         "docs/openings" => Some("/vision/#openings"),
         "examples" => Some("/examples/"),

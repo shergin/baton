@@ -10,9 +10,12 @@ reference and a context.
 Every native GraphQL client before this one decoded responses into models.
 Apollo's generated structs wrap a dictionary and cast on every access; its
 Kotlin sibling parses into models, re-serializes them into records, and
-rebuilds the model tree on every read. Meta measured the consequence in 2015:
-tokenizing a response was cheap, building objects from it was the frame
-budget. The models also leak. A parent that holds a child's fragment as a
+rebuilds the model tree on every read. Meta measured the cost in 2015:
+parsing a 20 KB response on Android took 35 ms, more than a frame, and the
+fix that removed it was a format read in place, with no objects built.
+Baton's own bench shows where the time goes: Foundation tokenizes a 686 KB
+response in 4.47 ms, and Apollo iOS builds its models from the same bytes
+in 317 ms. The models also leak. A parent that holds a child's fragment as a
 struct can read its fields, so components grow implicit dependencies, and the
 generated code grows with every field merged into every type that mentions
 it: twenty megabytes of app size from one codegen option, in one reported
