@@ -19,8 +19,9 @@ What to read when.
 - **Why this shape, argued at length?**
   [articles/](articles/) — one essay per choice that shapes the library:
   Relay without the read side, what Meta built, why it is fast, the first
-  frame, two runtimes, the compiler, how a fast store stays honest, and
-  the twelve words.
+  frame, two runtimes, the compiler, how a fast store stays honest, the
+  twelve words, Baton beside fate, the small lies a client tells, and how
+  it is built.
 - **What does this word mean?**
   [terminology.md](terminology.md) — the vocabulary contract, updated in the
   same change as the code. Concepts marked *(planned)* do not exist yet.

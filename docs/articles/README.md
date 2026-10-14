@@ -31,5 +31,15 @@ long ones, in reading order.
   oracle, the fixtures, Relay's own tests measured against, and the benches
   that keep every claim checkable.
 - [Twelve words, and why the list is closed](twelve-words.md): the closed
-  vocabulary, what it refused and why, and how it looks beside a client that
-  dropped GraphQL and the clients that chose configuration.
+  vocabulary, what it refused and why, and how it looks beside a client
+  that dropped GraphQL and the clients that chose configuration.
+- [Baton beside fate](baton-beside-fate.md): a client that took Relay's
+  insights and removed GraphQL, beside one that kept the compiler; where
+  they agree, where they part, three mechanisms watched, and a proof against
+  fate's own server.
+- [The small lies a client tells](the-small-lies.md): six ways GraphQL
+  clients lie about data, and the types, directives and events that keep
+  Baton from each.
+- [Settled stays settled](settled-stays-settled.md): how Baton is built,
+  habit by habit, each with the mechanism that fails when the habit is
+  dropped.
