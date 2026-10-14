@@ -547,6 +547,21 @@ fn articles() -> Vec<Page> {
             "Twelve words, and why the list is closed",
             "GraphQL clients die of configuration. Baton's vocabulary is twelve concepts and Relay's directives; what that refuses, what it buys, and how it looks beside a client that dropped GraphQL.",
         ),
+        (
+            "baton-beside-fate",
+            "Baton beside fate",
+            "fate takes Relay's three insights and removes GraphQL; Baton takes them and keeps the compiler. Where the two agree, where they part, three of fate's mechanisms Baton watches, and a proof against fate's own server.",
+        ),
+        (
+            "the-small-lies",
+            "The small lies a client tells",
+            "Every field optional, an error hidden behind a null, a failure that is a string, missing data that is nothing, a value that does not fit read as zero, cached served as fresh: six lies, and the mechanism that refuses each.",
+        ),
+        (
+            "settled-stays-settled",
+            "Settled stays settled",
+            "How Baton is built: research first, principles with the mechanism that fails when they rot, decisions with the condition that reopens them, spikes with gates written first, fixtures as the oracle, and a release whenever there is something to use.",
+        ),
     ];
     let mut pages = vec![page(
         "/articles/",
