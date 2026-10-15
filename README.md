@@ -277,6 +277,12 @@ A Kotlin document is a `$$"""…"""` string, since `$` starts a template in a
 plain one and GraphQL's variables need it. The view marker stands on the
 composable, and the composable remembers the operation value it shows.
 
+Views are one host, not the only one. A service, a background refresh or a
+notification handler calls the same environment, with no view involved:
+`fetch` commits an operation, a handle reads it, a retention keeps it, and
+`mutate` returns its data
+([outside views](docs/recipes/outside-views.md)).
+
 ## What it is, and will be
 
 - **A fragment per view.** GraphQL lives in the Swift file, next to the view
