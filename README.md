@@ -13,6 +13,8 @@ In Swift, UIKit and AppKit are supported too: a controller holds the same
 handle a view does ([the recipe](docs/recipes/uikit.md)). Code that is not a
 view at all, a service or a background refresh, fetches, reads and writes
 through the same environment ([outside views](docs/recipes/outside-views.md)).
+An app with accounts ends the environment at sign-out and keeps each
+account's image apart ([accounts](docs/recipes/accounts.md)).
 
 A view declares the GraphQL fragment it reads, beside its body. The compiler
 aggregates the fragments of a screen into one operation, validates everything

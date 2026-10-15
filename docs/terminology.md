@@ -679,8 +679,9 @@ next is the account in the image's path or in its version; removing the
 file after the end is hygiene, under a marker that has the next open finish
 a deletion a crash interrupts. See
 [the contract](../spec/runtime.md#9-the-image),
-[the decision](decisions/an-image-belongs-to-one-store.md) and
-[the file's](decisions/the-images-file-is-protected-and-waited-for.md).
+[the decision](decisions/an-image-belongs-to-one-store.md),
+[the file's](decisions/the-images-file-is-protected-and-waited-for.md) and
+[the accounts recipe](recipes/accounts.md).
 Swift: `Persistence(url:)` or `Persistence(name:)`, handed to
 `Store(persistence:)`; the version is `version`, the protection class
 `Persistence(protection:)`, and the removal `removeAll()`.
@@ -1057,8 +1058,9 @@ reads failed with the environment gone and tells its observers, a lens still
 held finds its records cleared, and every later call on the environment
 fails with the same error. The order of a sign-out is the app's: end the
 environment, remove the image, forget the credential last. See
-[the contract](../spec/runtime.md#7-the-lifetime-roots-retention-ages-collection)
-and [the decision](decisions/the-environment-is-the-session.md).
+[the contract](../spec/runtime.md#7-the-lifetime-roots-retention-ages-collection),
+[the decision](decisions/the-environment-is-the-session.md) and
+[the accounts recipe](recipes/accounts.md).
 Swift: the end is `Environment.end()`; a handle still held reads
 `.failed(EnvironmentError.gone)`. A store dropped without an end clears its
 records when it is deallocated: the net, not the end.

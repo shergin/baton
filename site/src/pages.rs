@@ -274,6 +274,12 @@ pub fn sections(root: &Path) -> Vec<Section> {
                     "docs/recipes/outside-views.md",
                 ),
                 repo(
+                    "/recipes/accounts/",
+                    "Accounts",
+                    "A sign-out, a switch and what the disk keeps: the environment is the session, and the account is in the image's identity.",
+                    "docs/recipes/accounts.md",
+                ),
+                repo(
                     "/recipes/derived-state/",
                     "Derived state outside views",
                     "A model over `Observations` that keeps a value computed from the store.",

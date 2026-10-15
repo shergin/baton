@@ -5,6 +5,17 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `docs/recipes/accounts.md`: a sign-out, a switch of accounts, and what
+  the disk keeps. Where the account lives, in the image's path or its
+  `version`; the order of a sign-out, end the environment, remove the
+  image, forget the credential last, and what a crash after each step
+  leaves; what a held view, handle, lens, fetch, mutation and subscription
+  see after the end; the walkthrough an adopter asked for, A signs out, B
+  signs in, relaunch offline, with the persistence and lifetime tests that
+  prove each step; and the three ways to keep data off the disk,
+  `transient`, the protection class and no image. It quotes both GitHub
+  samples' sign-out. The README, the docs index, the terminology's session
+  and image entries, the Relay porting table and the site link it.
 - Eleven articles under `docs/articles/`, and an Articles section on the
   site: the design argued at length, one essay per choice that shapes the
   library, with its evidence and the alternatives it refused. Relay

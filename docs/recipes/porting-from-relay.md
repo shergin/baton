@@ -53,7 +53,8 @@ below links its reason.
   class in Kotlin, typed from the schema.
 - **The session is the environment.** Signing out is `await environment.end()`,
   a `suspend` call in Kotlin, and a new environment; there is no
-  `replaceStore`.
+  `replaceStore`. The order of a sign-out and the account in the image's
+  identity are [the accounts recipe](accounts.md).
 - **Client fields are described and committed**, through `schemaExtensions`
   and `commitPayload`; there are no resolvers and no `commitLocalUpdate`.
 

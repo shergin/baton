@@ -40,7 +40,8 @@ What to read when.
   [UIKit and AppKit](recipes/uikit.md), a handle held by a controller,
   [views and view models](recipes/views.md), a Kotlin handle without a
   composition, [outside views](recipes/outside-views.md), a fetch, a read
-  and a write from code that is not a view, and
+  and a write from code that is not a view, [accounts](recipes/accounts.md),
+  a sign-out, a switch and what the disk keeps, and
   [porting from Relay](recipes/porting-from-relay.md), Relay's words beside
   Baton's, and [derived state outside views](recipes/derived-state.md), a
   model over `Observations` or `snapshotFlow`, and [discover once, refresh through
