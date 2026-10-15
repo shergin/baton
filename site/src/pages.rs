@@ -268,6 +268,12 @@ pub fn sections(root: &Path) -> Vec<Section> {
                     "docs/recipes/views.md",
                 ),
                 repo(
+                    "/recipes/outside-views/",
+                    "Outside views",
+                    "A fetch, a read and a write from code that is not a view: a service, a background refresh, a notification handler.",
+                    "docs/recipes/outside-views.md",
+                ),
+                repo(
                     "/recipes/derived-state/",
                     "Derived state outside views",
                     "A model over `Observations` that keeps a value computed from the store.",

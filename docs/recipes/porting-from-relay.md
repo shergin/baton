@@ -28,6 +28,7 @@ below links its reason.
 | `commitPayload(operationDescriptor, payload)` | `environment.commitPayload(Q(...), Payload(data))` | `environment.commitPayload(Q(...), Payload(bytes))`, a `suspend` function |
 | `RecordSource` persisted by hand | `Persistence(name:version:)`: an image on disk the launch renders from | `Persistence.named(name, version = ...)` or `Persistence(path)`, handed to `Store(persistence)`; on Android under the app's `cacheDir` |
 | `environment.getStore().invalidateStore()` | `environment.invalidate()`; `revalidate()` refetches what is stale when the app returns | The same |
+| `fetchQuery` | `environment.fetch(Q(...))`, which commits and returns nothing; `handle(for: Q(...), fetchPolicy: .storeOnly)` reads it ([outside views](outside-views.md)) | `environment.fetch(Q(...))`, a `suspend` function; `handle(Q(...), FetchPolicy.STORE_ONLY)` reads it |
 | `fetchPolicy: 'store-or-network'` and friends | `FetchPolicy` on `handle(for:fetchPolicy:)`: `storeOrNetwork`, `networkOnly`, `storeOnly`, `storeAndNetwork` | `FetchPolicy` on `rememberQuery(operation, fetchPolicy)` and `handle(operation, fetchPolicy)`: `STORE_OR_NETWORK`, `NETWORK_ONLY`, `STORE_ONLY`, `STORE_AND_NETWORK` |
 | `log: LogFunction` | `environment.log`, a closure of value-free `LogEvent`s | `environment.log`, a function of value-free `LogEvent`s |
 | `relay-compiler` | `batonc`, Relay's front end behind a Swift emitter; a build plugin runs it, or the command line does | `batonc` with its Kotlin emitter; the Gradle plugin `com.shergin.baton` runs it |

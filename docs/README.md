@@ -39,7 +39,8 @@ What to read when.
   [previews and tests](recipes/testing.md), a store without a server,
   [UIKit and AppKit](recipes/uikit.md), a handle held by a controller,
   [views and view models](recipes/views.md), a Kotlin handle without a
-  composition, and
+  composition, [outside views](recipes/outside-views.md), a fetch, a read
+  and a write from code that is not a view, and
   [porting from Relay](recipes/porting-from-relay.md), Relay's words beside
   Baton's, and [derived state outside views](recipes/derived-state.md), a
   model over `Observations` or `snapshotFlow`, and [discover once, refresh through

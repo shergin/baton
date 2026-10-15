@@ -10,7 +10,9 @@ where a field changed. New to GraphQL? [Why GraphQL](docs/why-graphql.md)
 answers what mobile engineers ask first.
 
 In Swift, UIKit and AppKit are supported too: a controller holds the same
-handle a view does ([the recipe](docs/recipes/uikit.md)).
+handle a view does ([the recipe](docs/recipes/uikit.md)). Code that is not a
+view at all, a service or a background refresh, fetches, reads and writes
+through the same environment ([outside views](docs/recipes/outside-views.md)).
 
 A view declares the GraphQL fragment it reads, beside its body. The compiler
 aggregates the fragments of a screen into one operation, validates everything

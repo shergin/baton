@@ -15,6 +15,12 @@ are expected and listed without apology.
   small lies a client tells; settled stays settled. Every number in them
   is one `BENCHMARKS.md` already holds, with its machine and date, or is
   attributed to the public source it came from.
+- `docs/recipes/outside-views.md`: how code that is not a view, a
+  service or a background refresh, fetches, reads once through a
+  `storeOnly` handle, keeps data with a retention, and writes, in Swift
+  and Kotlin, and why `fetch` returns no data. The README links it, and
+  the Relay porting table maps `fetchQuery` to it. `OutsideViewsTests`
+  prove it on both runtimes.
 - The Relay harvest runs its `@stream` cases. The five normalizer tests
   and the two availability checks of `RelayResponseNormalizer-test.js`
   and `DataChecker-test.js` that batonc rejected before 0.16.0 now
