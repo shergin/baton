@@ -196,7 +196,7 @@ fn index_source(section: &Section, index: &Page) -> String {
     let mut out = String::new();
     // A decisions index keeps the repository's README as its text.
     if index.url == "/decisions/" {
-        out.push_str("<p class=\"section-intro\">These are not principles: a principle must not rot, a decision may be superseded, and says so in its status line. Each record has the same shape: a status line, then Context, Decision, Evidence, Not chosen. The list is read from the directory, so a new record is a new page.</p>\n\n");
+        out.push_str("<p class=\"section-intro\">These are not principles. A principle must not rot, while a decision may be superseded, and its status line says so. Each record has the same shape: a status line, then Context, Decision, Evidence, Not chosen. The list is read from the directory, so a new record is a new page.</p>\n\n");
     }
     out.push_str("<ul class=\"index\">\n");
     for page in &section.pages {

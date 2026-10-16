@@ -5,6 +5,9 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The site, the articles, the principles, the vision, and the recipes are
+  written in plain sentences. The claims, the numbers, the code samples,
+  and the decision records are unchanged.
 - `docs/recipes/accounts.md`: a sign-out, a switch of accounts, and what
   the disk keeps. Where the account lives, in the image's path or its
   `version`; the order of a sign-out, end the environment, remove the

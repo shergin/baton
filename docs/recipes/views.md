@@ -1,17 +1,18 @@
 # Views and view models: a handle without a composition
 
-Baton's Kotlin reads are synchronous on the store's thread and its handles
-are snapshot state, so a screen with no composition, a `ViewModel` behind
-Android Views, a desktop window, a service, uses them without Compose UI:
-it asks the environment for the handle, holds the retention that keeps
-the handle's data alive, and reads what it shows through `snapshotFlow`,
-which emits again when a field it read changed. Nothing here is a second
-API; it is the same handle `rememberQuery` resolves. This is the Kotlin
-twin of [derived state outside views](derived-state.md), where Swift
-reads through `Observations`.
+Baton's Kotlin reads are synchronous on the store's thread, and its
+handles are snapshot state. A screen with no composition uses them
+without Compose UI: a `ViewModel` behind Android Views, a desktop window,
+a service. You ask the environment for the handle, hold the retention that
+keeps the handle's data alive, and read what the screen shows through
+`snapshotFlow`. The flow emits again when a field it read changed. Nothing
+here is a second API: it is the same handle `rememberQuery` resolves.
+This is the Kotlin twin of [derived state outside views](derived-state.md),
+where Swift reads through `Observations`.
 
 The code below is compiled in this repository, as `ViewsTests` under
-`kotlin/baton/src/jvmTest`, which proves what this page says of it.
+`kotlin/baton/src/jvmTest`, and that test proves what this page says of
+it.
 
 ## The model
 
@@ -55,8 +56,8 @@ class CharactersModel(environment: Environment) {
 }
 ```
 
-The flow is collected on the main dispatcher, where the store is read, and
-each screen is rendered as it comes:
+Collect the flow on the main dispatcher, where the store is read, and
+render each screen as it comes:
 
 ```kotlin
 scope.launch(Dispatchers.Main.immediate) {
@@ -71,39 +72,40 @@ scope.launch(Dispatchers.Main.immediate) {
 ```
 
 A lens read inside the block registers the fields it reads, as a read in
-a composition does, so the flow emits when one of them changes and stays
-quiet when nothing it read did: a response that changes a field no row
+a composition does. The flow emits when one of them changes, and stays
+quiet when nothing it read did. A response that changes a field no row
 shows emits nothing.
 
 ## What sends the change
 
 Compose UI's frame clock sends the snapshot system's apply notifications,
-which is what `snapshotFlow` listens for. Without a composition nothing
-would, so the environment sends them itself: it observes the writes the
-runtime makes, a commit's cells, a handle's fetch, a root's date, and
-posts one send behind each burst of them on its main dispatcher. With
-Compose UI present the frame clock sends the same notifications, and
-whichever comes second finds nothing left to send.
+which is what `snapshotFlow` listens for. Without a composition, nothing
+would, so the environment sends them itself. It observes the writes the
+runtime makes (a commit's cells, a handle's fetch, a root's date) and
+posts one send behind each burst of them, on its main dispatcher. With
+Compose UI present, the frame clock sends the same notifications.
+Whichever comes second finds nothing left to send.
 
 ## Release
 
-The hold is the retention: the handle's data stays in the store while the
-model holds it, and is collected after the model releases it, as the
-composable's leaving releases `rememberQuery`'s. A `ViewModel` releases it
-in `onCleared`; a window when it closes.
+The hold is the retention. The handle's data stays in the store while the
+model holds it, and is collected after the model releases it, as leaving
+the composable releases `rememberQuery`'s. A `ViewModel` releases the
+hold in `onCleared`, and a window releases it when the window closes.
 
 ## The app's lifecycle
 
-`environment.isActive` parks the retained subscriptions while it is false
-and resumes them when it is true again; `environment.revalidate()` refetches
-the retained operations that went stale or failed. The app says when, from
-its own lifecycle, and holds the observer for as long as the environment
-lives. On Android the lifecycle is the process's, `ProcessLifecycleOwner`
-from `androidx.lifecycle:lifecycle-process`, not an activity's: the
-environment is the app's, and an activity recreated for a rotation does
-not make the app inactive. The code below is `Activation.kt` in
+`environment.isActive` parks the retained subscriptions while it is false,
+and resumes them when it is true again. `environment.revalidate()`
+refetches the retained operations that went stale or failed. The app says
+when, from its own lifecycle, and holds the observer for as long as the
+environment lives. On Android the lifecycle is the process's,
+`ProcessLifecycleOwner` from `androidx.lifecycle:lifecycle-process`, not
+an activity's. The environment is the app's, so an activity recreated
+for a rotation does not make the app inactive. The code below is
+`Activation.kt` in
 [`kotlin/samples/android`](../../kotlin/samples/android/src/main/kotlin/baton/sample/android/Activation.kt),
-compiled with the sample; its view model makes one beside the environment
+compiled with the sample. Its view model makes one beside the environment
 and closes it in `onCleared`, before the environment ends.
 
 ```kotlin
@@ -132,15 +134,16 @@ class Activation(
 ```
 
 The observer is called on the main thread, where the store lives, so the
-writes are made where the environment's synchronous calls are. `ON_STOP`
+writes land where the environment's synchronous calls do. `ON_STOP`
 arrives once the last activity has stopped, after the short delay the
-lifecycle library keeps so a configuration change sends nothing, and
-`ON_START` with the first activity; adding the observer to a started
-lifecycle delivers `ON_START` at once, and a revalidation with nothing
-retained does nothing. The runtime depends on no lifecycle library; the
-wiring is the app's, as `examples/Controllers` is on iOS and macOS
+lifecycle library keeps so a configuration change sends nothing.
+`ON_START` arrives with the first activity, and adding the observer to a
+started lifecycle delivers `ON_START` at once. A revalidation with nothing
+retained does nothing. The runtime depends on no lifecycle library, and
+the wiring is the app's, as `examples/Controllers` is on iOS and macOS
 ([`uikit.md`](uikit.md#the-apps-lifecycle)).
 
-On the desktop a window stays on screen while another app is frontmost, so
-the desktop samples park nothing; an app that wants a revalidation when a
-window regains focus calls `revalidate()` from the window's focus listener.
+On the desktop, a window stays on screen while another app is frontmost,
+so the desktop samples park nothing. An app that wants a revalidation
+when a window regains focus calls `revalidate()` from the window's focus
+listener.

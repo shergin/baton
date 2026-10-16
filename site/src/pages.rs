@@ -134,31 +134,31 @@ pub fn sections(root: &Path) -> Vec<Section> {
                 page(
                     "/",
                     "Baton",
-                    "Relay for SwiftUI and Compose: a fragment beside every view, one request per screen, cached data in the first frame, and a re-render only where a field changed.",
+                    "Relay for SwiftUI and Compose. You write a fragment beside each view. One request per screen, cached data on the first frame, and a re-render only where a field changed.",
                     Source::Home,
                 ),
                 content(
                     "/start/",
                     "Getting started",
-                    "Install, the schema, the first screen, the first fragment, and the first list. SwiftUI and Compose side by side.",
+                    "The package, the schema, the environment, and the first screen. Then a fragment, a list, and a write. SwiftUI and Compose, side by side.",
                     "start.md",
                 ),
                 content(
                     "/graphql/",
                     "GraphQL for mobile engineers",
-                    "What a schema is, what a document asks, why the response has the document's shape, what an id buys, and what Relay adds. No prior GraphQL needed.",
+                    "GraphQL, explained from REST. The menu, the order, the one id, and the lists. No prior GraphQL needed.",
                     "graphql.md",
                 ),
                 content(
                     "/walkthrough/",
                     "One screen, end to end",
-                    "A screen followed from the fragment beside its view to the frame it renders: the operation the compiler assembles, the request, the response, the records, the reads, the one view that re-renders, and the image on disk.",
+                    "One character's header, followed from the fragment beside the view to the next launch. Every step on the page is program output.",
                     "walkthrough.md",
                 ),
                 page(
                     "/playground/",
                     "Playground",
-                    "Write a fragment and a query in the browser and watch the compiler answer: the lens in Swift and Kotlin, the operation's text, and the diagnostic that names the character that is wrong.",
+                    "Type a fragment. Read the lens in Swift and Kotlin, the text the server would get, and the diagnostic that points at the typo.",
                     Source::Playground,
                 ),
             ],
@@ -169,61 +169,61 @@ pub fn sections(root: &Path) -> Vec<Section> {
                 content(
                     "/guide/concepts/",
                     "The twelve words",
-                    "Schema, document, directive, lens, record, store, plan, operation value, connection, environment, transport, phase: the closed vocabulary, one plate each.",
+                    "Twelve words, and then the list is closed. One plate each, so you can see the thing the word names.",
                     "guide/concepts.md",
                 ),
                 content(
                     "/guide/reads/",
                     "Reads",
-                    "A query per screen, a fragment per view, a lens per fragment, and a phase a view switches over. Fetch policies, refetch, retry.",
+                    "One query per screen, one fragment per view, and a phase you can switch on. Fetch policies, refetch, and retry.",
                     "guide/reads.md",
                 ),
                 content(
                     "/guide/store/",
                     "The store",
-                    "Records by type and id, the commit, what a view observes, roots and collection, and the image on disk that renders the next launch.",
+                    "Records by type and id, what a view actually watches, and the image on disk that draws the next launch.",
                     "guide/store.md",
                 ),
                 content(
                     "/guide/lists/",
                     "Lists",
-                    "A connection on a refetchable fragment: pages merged in the store, `loadNext` on the lens, and the edge directives that add to or remove from it.",
+                    "A list that pages in the store. `loadNext` on the lens, and a directive to add or remove an edge.",
                     "guide/lists.md",
                 ),
                 content(
                     "/guide/writes/",
                     "Writes",
-                    "A mutation is an action; an optimistic response shows at once and is reverted on failure; nothing edits the cache by hand.",
+                    "A mutation is an action. The optimistic change shows at once, and comes off if the server says no.",
                     "guide/writes.md",
                 ),
                 content(
                     "/guide/honest-data/",
                     "Honest data",
-                    "Nullability as the schema says it, `@required` and `@catch`, field errors that survive caching, missing data that heals, enums and mapped scalars.",
+                    "Null means what the schema says. `@required` and `@catch`, errors that survive the cache, and missing data that gets healed.",
                     "guide/honest-data.md",
                 ),
                 content(
                     "/guide/live/",
                     "Live data",
-                    "Subscriptions as a stream of events into the store, deferred fragments, streamed lists, and what a handle does when the connection drops or the app sleeps.",
+                    "Subscriptions, deferred fragments, and streamed lists. What the handle does when the connection drops, or the app sleeps.",
                     "guide/live.md",
                 ),
                 content(
                     "/guide/compiler/",
                     "The compiler",
-                    "What `batonc` reads, what it checks, what it writes, and how the build runs it: SwiftPM, Gradle, Bazel, or the command line.",
+                    "What `batonc` reads, checks, and writes. SwiftPM, Gradle, Bazel, or the command line.",
                     "guide/compiler.md",
                 ),
                 content(
                     "/guide/environment/",
                     "The environment",
-                    "The one door: the transport with one verb, the session that ends at sign-out, the log of value-free events, and a store without a server for previews and tests.",
+                    "One door. A transport with one verb, a session that ends at sign-out, and a store you can use with no server.",
                     "guide/environment.md",
                 ),
                 content(
                     "/guide/kotlin/",
                     "Compose",
-                    "The same screens in Kotlin: where the marker stands, what differs in spelling, and the Gradle setup.",
+                    "The same screens in Kotlin. Where the marker stands, what the spelling changes, and the Gradle setup.",
                     "guide/kotlin.md",
                 ),
             ],
@@ -234,7 +234,7 @@ pub fn sections(root: &Path) -> Vec<Section> {
                 page(
                     "/recipes/",
                     "Recipes",
-                    "One page per composition of what ships: the shape of a screen, the exchange, testing, UIKit, view models, porting from Relay, and the build integrations.",
+                    "One page for each thing you actually put together. A screen, the exchange, tests, UIKit, view models, Relay, and the builds.",
                     Source::Index,
                 ),
                 repo(
@@ -322,7 +322,7 @@ pub fn sections(root: &Path) -> Vec<Section> {
             pages: vec![page(
                 "/examples/",
                 "The gallery",
-                "Every sample in the repository, Swift and Kotlin, with what the compiler found in it: the GitHub triage apps, Rick and Morty, UIKit and AppKit controllers, the exchange, and Caton.",
+                "Every sample, Swift and Kotlin, and what the compiler found in it. GitHub triage, Rick and Morty, UIKit, the exchange, and Caton.",
                 Source::Gallery,
             )],
         },
@@ -410,7 +410,7 @@ fn why(root: &Path) -> Vec<Page> {
         repo_with(
             "/vision/",
             "Vision",
-            "The argument: three commitments and five rules.",
+            "Three commitments and five rules. The data layer gets out of the way of the screen.",
             "docs/vision.md",
             &[(
                 "## The rules",
@@ -420,7 +420,7 @@ fn why(root: &Path) -> Vec<Page> {
         repo_with(
             "/why-graphql/",
             "Why GraphQL",
-            "For iOS and Android engineers who build on REST and view models: what it is, what it changes, what it costs.",
+            "For people who build iOS and Android screens on REST and view models. What GraphQL changes, and what it costs.",
             "docs/why-graphql.md",
             &[
                 (
@@ -522,63 +522,63 @@ fn articles() -> Vec<Page> {
         (
             "relay-without-the-read-side",
             "Relay without the read side",
-            "Why Baton keeps Relay's compiler and the write side of its store and deletes the read side: Observation and snapshot state already answer the question Relay's runtime was built to answer.",
+            "Baton keeps Relay's compiler and the write side of its store, and drops the read side. Observation and snapshot state already know which view read which field.",
         ),
         (
             "what-meta-built",
             "What Meta built, and what you can download",
-            "Meta's native apps run an in-house GraphQL client that is not public. What its engineers have said about it, where Baton makes the same choices, and where Baton goes further.",
+            "Meta's native apps run a GraphQL client you cannot download. What its engineers have said, where Baton agrees, and where Baton goes further.",
         ),
         (
             "materialization-is-the-bill",
             "Materialization is the bill",
-            "Why Baton is faster than Apollo iOS and Apollo Kotlin on the same data: not a faster store, but three steps it never takes. The numbers on a Mac and on a phone, and the caveats.",
+            "Baton is faster than Apollo on the same data because it skips three steps, not because the store is cleverer. The numbers, on a Mac and on a phone, with the caveats.",
         ),
         (
             "the-first-frame",
             "The first frame has the data",
-            "A warm cache that still shows a spinner is a design, not a bug. Why reads are synchronous on the main actor, what the image on disk does before the first body, and what a phone measured.",
+            "A warm cache that still shows a spinner is a design. Reads are synchronous, the image on disk feeds the first body, and a phone measured it.",
         ),
         (
             "two-runtimes-no-bridge",
             "Two runtimes, no bridge",
-            "The compiler is Rust; the runtimes are Swift and Kotlin, written twice on purpose. Why a shared core would cost the read path the design exists for, and what holds two runtimes to one behaviour.",
+            "The compiler is Rust. The runtimes are Swift and Kotlin, written twice on purpose. A shared core would cost the read path this design exists for.",
         ),
         (
             "a-compiler-not-a-configuration",
             "A compiler, not a configuration",
-            "Every operation is static, so identity, storage keys, masking, persisted ids and diagnostics are settled at build time. Why the runtime has no parser and no policy object, and why that matters more now that agents write screens.",
+            "Every operation is known at build time. The runtime has no parser and no policy object. That matters more now that agents write the screens.",
         ),
         (
             "how-a-fast-store-stays-honest",
             "How a fast store stays honest",
-            "A normalized store is a chain of clever steps, and every step is a place to lose a value. The oracle, the fixtures, Relay's own tests and the benches that keep Baton's answers equal to the server's, on both runtimes.",
+            "A fast store is a chain of clever steps, and every step can drop a value. The fixtures, Relay's own tests, and the benches that keep the answer equal to the server's.",
         ),
         (
             "twelve-words",
             "Twelve words, and why the list is closed",
-            "GraphQL clients die of configuration. Baton's vocabulary is twelve concepts and Relay's directives; what that refuses, what it buys, and how it looks beside a client that dropped GraphQL.",
+            "GraphQL clients die of configuration. Baton's vocabulary is twelve words and Relay's directives. What that refuses, and what it buys.",
         ),
         (
             "baton-beside-fate",
             "Baton beside fate",
-            "fate takes Relay's three insights and removes GraphQL; Baton takes them and keeps the compiler. Where the two agree, where they part, three of fate's mechanisms Baton watches, and a proof against fate's own server.",
+            "fate takes Relay's insights and removes GraphQL. Baton takes them and keeps the compiler. Where they agree, where they part, and a proof against fate's own server.",
         ),
         (
             "the-small-lies",
             "The small lies a client tells",
-            "Every field optional, an error hidden behind a null, a failure that is a string, missing data that is nothing, a value that does not fit read as zero, cached served as fresh: six lies, and the mechanism that refuses each.",
+            "Six small ways a GraphQL client lies about data, and the mechanism that refuses each one.",
         ),
         (
             "settled-stays-settled",
             "Settled stays settled",
-            "How Baton is built: research first, principles with the mechanism that fails when they rot, decisions with the condition that reopens them, spikes with gates written first, fixtures as the oracle, and a release whenever there is something to use.",
+            "How the library is built. Research first, a mechanism for each principle, a condition that reopens each decision, and a release when there is something to use.",
         ),
     ];
     let mut pages = vec![page(
         "/articles/",
         "Articles",
-        "The design argued at length: one essay per choice that shapes the library, with the evidence behind it and the alternatives it refused.",
+        "The long version. One essay per choice, with the numbers, the alternatives, and what was refused.",
         Source::Index,
     )];
     for (stem, title, blurb) in essays {
