@@ -8,13 +8,13 @@ A subscription is the third kind of operation. You declare it like a query, and 
 
 {{host live CharacterNotes | A notes list with a subscription for new notes. The event's edge is appended to the connection the list's lens named, exactly as a mutation's would be.}}
 
-{{operation live NoteAdded | What the server receives for the subscription. The operation's text, with the edge directive left out, since it is the client's business.}}
+{{operation live NoteAdded | What the server receives for the subscription is the operation's text, with the edge directive left out, since it is the client's business.}}
 
 ## The stream as a value
 
-The handle reads the stream as a value. You never await it. `idle` means parked while the app is inactive. `connecting` lasts until the first event. Then the stream is `open`. `waiting` means it will reconnect after a failure, by a fixed backoff: a step that doubles from one second to thirty, jittered, and reset by an event. `ended` means the server completed, or a request error the server would repeat, or the environment ended. `resumptions` counts the reopenings, because events may have been missed across each one. An owner that cares observes it and refetches its baseline. `retry()` opens a waiting or ended stream at once.
+The handle reads the stream as a value, and you never await it. `idle` means parked while the app is inactive. `connecting` lasts until the first event, and then the stream is `open`. `waiting` means it will reconnect after a failure, by a fixed backoff: a step that doubles from one second to thirty, jittered, and reset by an event. `ended` means the server completed, or a request error the server would repeat, or the environment ended. `resumptions` counts the reopenings, because events may have been missed across each one. An owner that cares observes it and refetches its baseline. `retry()` opens a waiting or ended stream at once.
 
-{{script subscriptions | The specification's subscription script. A stream connecting, open on its first event, and still open after an event of errors and no data. Parked while the app is inactive, and resumed when it returns. Completed by the server. Waiting after a transport failure.}}
+{{script subscriptions | The specification's subscription script shows a stream connecting, open on its first event, and still open after an event of errors and no data. It also shows the stream parked while the app is inactive and resumed when it returns, completed by the server, and waiting after a transport failure.}}
 
 The environment's active flag is yours to set, from the scene phase in Swift and from the process lifecycle on Android. While the flag is false, every retained subscription is parked. A `revalidate()` on the return refetches what went stale meanwhile. The Android sample's `Activation` and the UIKit recipe's lifecycle section are the two spellings.
 
@@ -42,7 +42,7 @@ A spread marked `@defer` is a part the server may deliver later, in the same res
 
 {{host live CharacterScreen | A screen that renders the name at once and the notes when their part lands. The spread's accessor is optional, and nil until then.}}
 
-The built-in HTTP transport reads `multipart/mixed` for the parts, and the environment assembles each part at the record its path names. A deferred part addressed to a place the store does not have is dropped and logged. It is never applied somewhere else.
+The built-in HTTP transport reads `multipart/mixed` for the parts, and the environment assembles each part at the record its path names. A deferred part addressed to a place the store does not have is dropped and logged, and never applied somewhere else.
 
 ## A list that grows: `@stream`
 
@@ -50,7 +50,7 @@ A plural field marked `@stream(initialCount:)` arrives with its first items. The
 
 {{host live EpisodeList | A list that shows three episodes at once and the rest as they arrive, with a spinner while the stream runs.}}
 
-{{script streams steps=1,2,3,5 | The specification's stream script. The first part renders one episode, with the fetch in flight. An item for index 2 arrives before index 1 and reads in its place, the hole skipped. The item for index 1 fills the hole and notifies the one list slot. The last part ends the stream and the fetch.}}
+{{script streams steps=1,2,3,5 | In the specification's stream script, the first part renders one episode, with the fetch in flight. An item for index 2 arrives before index 1 and reads in its place, the hole skipped. The item for index 1 fills the hole and notifies the one list slot. The last part ends the stream and the fetch.}}
 
 An item is dropped and logged when another commit has changed its list since the stream left it, as Relay's executor drops it. A mutation that replaced the list meanwhile is not overwritten by a stale order. A stream the transport ends before the part that says it is the last fails the fetch. Nothing dates the operation's root, so the next attach fetches the list whole.
 

@@ -1,8 +1,8 @@
 # Twelve words, and why the list is closed
 
-GraphQL clients die of configuration. Each real complaint becomes an option.
-A cache policy here. A type policy there. A merge function. A link in a
-chain. A flag on codegen.
+GraphQL clients die of configuration. Each real complaint becomes an option:
+a cache policy here, a type policy there, a merge function, a link in a
+chain, a flag on codegen.
 
 Ten years later the client has four codegen modes, a dozen cache policies,
 and a documentation site explaining which combinations work. The complaints
@@ -16,33 +16,36 @@ way.
 
 ## The twelve
 
-Schema, document, directive, lens, record, store, plan, operation value,
-connection, environment, transport, phase. In that order.
+The twelve are schema, document, directive, lens, record, store, plan,
+operation value, connection, environment, transport, and phase, in that
+order.
 
-The server's menu. A query, a mutation, a subscription, or a fragment beside
-a view. The only way behaviour attaches to data. A typed, read-only view
-over one record. An observable object, keyed by type and id. All records,
-owned by the main thread. How a response becomes records, decided by the
-compiler. An operation's variables, the thing a parent constructs. A list
-that pages, merged in the store. The session: one store and one transport.
-One verb, `send`, yielding payloads. Loading, ready, or failed, always
-readable.
+A schema is the server's menu. A document is a query, a mutation, a
+subscription, or a fragment beside a view. A directive is the only way
+behaviour attaches to data. A lens is a typed, read-only view over one
+record. A record is an observable object, keyed by type and id. A store is
+all records, owned by the main thread. A plan is how a response becomes
+records, decided by the compiler. An operation value is an operation's
+variables, the thing a parent constructs. A connection is a list that pages,
+merged in the store. An environment is the session: one store and one
+transport. A transport is one verb, `send`, yielding payloads. A phase is
+loading, ready, or failed, always readable.
 
 [The terminology](../terminology.md) marks each of its entries with its place
-in that inventory. The concept it is, or is a form of, or the concepts it is
+in that inventory: the concept it is, or is a form of, or the concepts it is
 a composition of. An owner is a lens and an operation value. A mutation's
 action is an operation value and a payload. A heal is a phase, a store
 event, and a fetch. Nothing ships that is not named there. A name comes
 before a type in code.
 
 A concept enters through one test, with two clauses, both required. Real
-screens demand it. Screens people build, rather than screens a completeness
-argument names. And no composition of the existing concepts expresses it
-([the principle](../principles/what-earns-a-concept.md)).
+screens demand it, and those are screens people build rather than screens a
+completeness argument names. No composition of the existing concepts
+expresses it ([the principle](../principles/what-earns-a-concept.md)).
 
-Two words are Baton's own, because the things they name are new. A lens,
-which is Relay's fragment reference and fragment data as one value. A plan,
-the normalization artifact as data. Everything else is Relay's, or the
+Two words are Baton's own, because the things they name are new. A lens is
+Relay's fragment reference and fragment data as one value. A plan is the
+normalization artifact as data. Everything else is Relay's, or the
 specification's.
 
 ## What the rule refused
@@ -52,14 +55,16 @@ Answering them is the best record of the rule at work. Each refusal carries
 the reason, and the condition that would reopen it. The decisions directory
 has the long form.
 
-- **A retention policy per type.** The request was a budget. Keep so many of
-  these. Evict those first. The answer is the mechanism that already exists.
-  A release buffer of ten roots. Collection from the roots. Eviction from the
-  image by launch, and a size limit. A budget per type was refused, with no
+- **A retention policy per type.** The request was a budget: keep so many of
+  these, and evict those first. The answer is the mechanism that already
+  exists: a release buffer of ten roots, collection from the roots, and
+  eviction from the image by launch and a size limit. A budget per type was
+  refused, with no
   reopening condition, as a policy object at run time for what recency
   decides ([the decision](../decisions/the-image-evicts-by-launch.md)).
-- **Shipped transport wrappers.** Retries, a deadline, a token refresh. The
-  transport has one verb. Credentials are read per attempt. The wrapper is
+- **Shipped transport wrappers.** Retries, a deadline, and a token refresh
+  were refused. The transport has one verb, and credentials are read per
+  attempt. The wrapper is
   [a recipe](../recipes/exchange.md) of a few dozen lines the app owns,
   compiled in both languages and tested over a loopback server. A library
   wrapper would be a policy object with options.
@@ -69,8 +74,8 @@ has the long form.
   decision](../decisions/a-fragment-has-one-reading.md)).
 - **A store swapped under live handles at sign-out.**
   `Environment.replaceStore` would have needed a generation checked on every
-  write path. Instead the environment is the session. A sign-in makes one. A
-  sign-out ends it. A handle still held reads `gone` ([the
+  write path. Instead the environment is the session: a sign-in makes one,
+  and a sign-out ends it. A handle still held reads `gone` ([the
   decision](../decisions/the-environment-is-the-session.md)).
 - **Imperative store updaters.** Every write so far has been a directive on
   a fragment, or a payload for an operation. `commitPayload` is the one door
@@ -104,11 +109,11 @@ dependencies, and views colocated with their data. It drops the language as
 the adoption barrier. A view is a plain object literal. A spread is an
 object spread. A planner flattens views into field paths at run time.
 
-It is a serious piece of work by one author. Where it agrees with Baton, it
-agrees with decisions Baton had already settled. A release buffer of ten. An
-optimistic layer over the confirmed base, rebased beneath later writes. A
-partial optimistic record, whose absent fields leave the store alone. A
-request marked stalled after one refetch. An expiration per request. A
+fate is a serious piece of work by one author. Where it agrees with Baton, it
+agrees with decisions Baton had already settled: a release buffer of ten; an
+optimistic layer over the confirmed base, rebased beneath later writes; a
+partial optimistic record, whose absent fields leave the store alone; a
+request marked stalled after one refetch; an expiration per request; and a
 hydration scope that refuses another client's snapshot. That is evidence,
 from a different starting point, that the mechanisms are right.
 
@@ -130,7 +135,7 @@ concept Baton would have had to add.
   it says so on the first page. The concept is on a watch list kept in the
   planning notes, with its trigger.
 
-None of this is a verdict on fate for the web. It is the closed inventory
+None of this is a verdict on fate for the web, but the closed inventory
 doing its job. Each of those four would have been a thirteenth word. The
 test says what each would have had to show first.
 
@@ -162,23 +167,25 @@ cache.
 
 ## What it buys
 
-A vocabulary that fits on one page, so a new engineer, or a coding agent,
-can hold the whole model. One way to do each thing, so a review asks whether
-the fragment is right, and not which of three mechanisms was chosen. A
-second runtime, written against the same twelve words within a week, because
-there were only twelve to write. Documentation that is short because the
-surface is.
+What it buys is a vocabulary that fits on one page, so a new engineer, or a
+coding agent, can hold the whole model. There is one way to do each thing,
+so a review asks whether the fragment is right, and not which of three
+mechanisms was chosen. A second runtime was written against the same twelve
+words within a week, because there were only twelve to write. The
+documentation is short because the surface is.
 
-And depth where it counts. Each concept was designed, measured against the
-oracle, and built once per runtime. A client that covers twice the ground
+There is also depth where it counts. Each concept was designed, measured
+against the oracle, and built once per runtime. A client that covers twice
+the ground
 does that half as well, and the half shows in the first frame and in the
 bugs.
 
 The cost is that some problems are not solved here. An app whose state is
-mostly not a graph on a server. One that needs offline sync. One that pages
-by number, against a server that cannot change. That app finds the edge of
-the inventory quickly. The watch list in the planning notes says what would
-move it.
+mostly not a graph on a server, one that needs offline sync, or one that
+pages by number against a server that cannot change, finds the edge of the
+inventory quickly. The watch list in the planning notes says what would move
+it.
 
-Better a few strict rules than lots of features. That is how a screen stays
-one request, a view stays one fragment, and a change stays one re-render.
+A few strict rules are better than lots of features, which is how a screen
+stays one request, a view stays one fragment, and a change stays one
+re-render.

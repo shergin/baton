@@ -7,7 +7,7 @@ ms.
 
 The reason is three steps Apollo takes, on every response or every read,
 that Baton does not take at all. Apollo builds a model of the operation from
-the bytes. It rebuilds that model from the store on every read. It reads the
+the bytes, rebuilds that model from the store on every read, and reads the
 store asynchronously. Each is work a view never asked for.
 
 This page itemizes the bill, on a Mac and on a phone, with the caveats that
@@ -15,12 +15,13 @@ go with it.
 
 ## The bill on a Mac
 
-The fixture is a recorded page of the Rick and Morty API. 686,254 bytes.
-About 6,500 JSON objects. 899 records after normalization. Both clients key
-entities by `id`. Apollo's own query adds `__typename` to every object, so
-its response is 849,101 bytes. Apple M1 Pro, macOS 26.5.2, release builds, 2
-October 2026. Apollo iOS 2.4.0 with its in-memory cache, configured as its
-documentation says ([BENCHMARKS.md](../../BENCHMARKS.md), the 0.1.0 entry).
+The fixture is a recorded page of the Rick and Morty API: 686,254 bytes,
+about 6,500 JSON objects, and 899 records after normalization. Both clients
+key entities by `id`. Apollo's own query adds `__typename` to every object,
+so its response is 849,101 bytes. The numbers are from an Apple M1 Pro,
+macOS 26.5.2, release builds, 2 October 2026, against Apollo iOS 2.4.0 with
+its in-memory cache, configured as its documentation says
+([BENCHMARKS.md](../../BENCHMARKS.md), the 0.1.0 entry).
 
 | Step | Baton | Apollo iOS 2.4 |
 |---|---|---|
@@ -36,12 +37,12 @@ Read the rows, not the ratios. The store is not where Apollo's time goes.
 Its publish is as fast as Baton's commit. The 317 ms is the materialization:
 the response parsed into a tree, then the tree walked into generated models
 and cache records. It matches a report the maintainers' own tracker already
-held. About 6 ms of JSON deserialization, against about 159 ms of type
+held: about 6 ms of JSON deserialization, against about 159 ms of type
 mapping, for an 874 KB response
 ([apollo-ios#3600](https://github.com/apollographql/apollo-ios/issues/3600),
 2024).
 
-Then a read pays the mapping again. 228 ms to execute the query against the
+Then a read pays the mapping again: 228 ms to execute the query against the
 cache, into a new model tree, before a view can read one field. A refetch
 that changes nothing costs 3.99 ms and a new tree, because nothing compares
 the old one with the new.
@@ -60,9 +61,10 @@ Apollo Kotlin is not Apollo iOS. Its write is faster by an order of
 magnitude, and its 2026 normalized cache is the best disk cache in this
 comparison. The shape is the same.
 
-Google Pixel 9, Tensor G4, Android 17, release builds, 7 October 2026.
-Apollo Kotlin 5.2.0 with the normalized cache 1.0.9, the memory cache, keys
-configured as its documentation says ([BENCHMARKS.md](../../BENCHMARKS.md),
+The numbers are from a Google Pixel 9, Tensor G4, Android 17, release
+builds, 7 October 2026, against Apollo Kotlin 5.2.0 with the normalized
+cache 1.0.9, the memory cache, keys configured as its documentation says
+([BENCHMARKS.md](../../BENCHMARKS.md),
 "Apollo Kotlin 5.2.0, same operation, same graph").
 
 | Step | Baton | Apollo Kotlin 5.2 |
@@ -72,9 +74,9 @@ configured as its documentation says ([BENCHMARKS.md](../../BENCHMARKS.md),
 | From the store to something a view can read | A 1.2 ms availability check; the lens then reads slots | 25 ms to rebuild the query into models |
 | One field | 43 ns | 2 ns, after that rebuild |
 
-Apollo parses the bytes into the generated models. It writes the models back
-to a map. It normalizes the map into records. That is 30 ms of the 44. It is
-more than three frames at 120 Hz, off the main thread, as its documentation
+Apollo parses the bytes into the generated models, writes the models back to
+a map, and normalizes the map into records. That is 30 ms of the 44, more
+than three frames at 120 Hz, off the main thread, as its documentation
 requires. Reading the query back rebuilds the model tree, 25 ms. Only then
 is a field a property load.
 
@@ -92,13 +94,13 @@ report against Apollo iOS 2.1.2 measured a cold read of 4,922 records from
 SQLite at 6 seconds, later more than 9, against 0.72 seconds from memory
 ([the
 thread](https://community.apollographql.com/t/ios-sqlitenormalizedcache-cold-start-can-be-slower-than-reloading-data-from-backend/9344)).
-Those are not numbers from this repository. They are the same bill, itemized
-by the people who pay it.
+Those are not numbers from this repository, but the same bill, itemized by
+the people who pay it.
 
 ## What a user feels
 
 Store benches are not screens. The end-to-end entry drives the Kotlin sample
-and its Apollo Kotlin twin. The same two Compose screens, over each client,
+and its Apollo Kotlin twin, the same two Compose screens, over each client,
 on the same Pixel 9, on 8 October 2026, against a server in the app's own
 process, so that every run gets the same bytes
 ([BENCHMARKS.md](../../BENCHMARKS.md), "end to end on a phone").
@@ -112,8 +114,8 @@ process, so that every run gets the same bytes
 
 Scrolling is a tie, and it should be. The rows are the same composables over
 data already read, and neither client is on the scroll path. The differences
-are where the clients are. The first frame after a launch. A tap into a
-detail whose header is already in the store. A page turn.
+are where the clients are: the first frame after a launch, a tap into a
+detail whose header is already in the store, and a page turn.
 
 On Apollo's side, the first frame of a warm start, and of a detail, is a
 spinner. Its cache is read off the main thread, and the collected `watch()`
@@ -122,10 +124,11 @@ side, the data is in the first frame, because the read is synchronous.
 
 ## The three steps, and what replaces them
 
-**No model tree.** The compiler emits a normalization plan per operation.
-One selection per distinct selection set. Each field has its storage key and
-its kind. The ingest follows the plan through the bytes, off the main actor,
-keys each object by its type's key fields, and writes a change set of slots.
+**No model tree.** The compiler emits a normalization plan per operation:
+one selection per distinct selection set, and each field has its storage key
+and its kind. The ingest follows the plan through the bytes, off the main
+actor, keys each object by its type's key fields, and writes a change set
+of slots.
 String values stay as byte ranges into the response until the commit decides
 which entry won. A value the store already holds is compared as bytes and
 never allocated. There is no `Codable`, no dictionary, and no `Any` on the
@@ -137,7 +140,7 @@ whose value is equal, and notifies the observed fields that changed, once,
 when the batch ends. A refetch of an unchanged page notifies nobody.
 
 A connection page merges into one list and notifies once, on the connection,
-rather than once per row on screen. 41 pages, 2,100 nodes, 41 notifications,
+rather than once per row on screen: 41 pages, 2,100 nodes, 41 notifications,
 in the 0.4.0 entry. An optimistic cycle, a layer applied, the server's
 answer landing, and the layer resolved, costs 413 µs on the Mac and notifies
 only what differs in the end.
@@ -157,13 +160,14 @@ edited. The comparison harnesses are in the repository, with the commands
 that run them: `benchmarks/apollo-comparison` for Swift, and
 `kotlin/benchmarks/apollo-comparison` for Kotlin.
 
-CI gates structure rather than wall-clock time. The bytes of generated code
-per accessor line. A file of deterministic counts, such as the notifications
-a commit sends, diffed on every run. A claim without a bench does not ship.
+CI gates structure rather than wall-clock time: the bytes of generated code
+per accessor line, and a file of deterministic counts, such as the
+notifications a commit sends, diffed on every run. A claim without a bench
+does not ship.
 
 The caveats matter, and they are in the file. The iOS numbers are from a
-Mac, not a phone. It is one fixture, large and repetitive, chosen because it
-is public and reproducible. Apollo iOS is measured with default options and
+Mac, not a phone, and from one fixture, large and repetitive, chosen because
+it is public and reproducible. Apollo iOS is measured with default options and
 no SQLite. Apollo Kotlin is measured with its memory cache. Both clients are
 called directly, with no network, no interceptor chain, and no watcher.
 Apollo's response is 24% larger by construction, on both.
@@ -175,7 +179,7 @@ install base, and the deployment floor on iOS, [the
 comparison](../comparison.md) says so.
 
 What the shape gives an app is not a ratio. It is a response in the store a
-few milliseconds after the bytes arrive. A refetch that changes one field,
-re-rendering one row. A screen the app has seen, rendering from the store in
-its first frame. Those are the things a data layer can promise a product
-team, and they are the things this one measures.
+few milliseconds after the bytes arrive, a refetch that changes one field
+and re-renders one row, and a screen the app has seen, rendering from the
+store in its first frame. Those are the things a data layer can promise a
+product team, and they are the things this one measures.

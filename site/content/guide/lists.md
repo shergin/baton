@@ -8,7 +8,7 @@ Three directives make a connection. `@connection(key:)` names the list in the st
 
 {{host issue-list IssueList | The connection fragment, the row it spreads, and the screen that spreads it. The screen's query never mentions `first` or `after`.}}
 
-The lens of a connection reads `nodes`, the records in order across every page. It also reads `hasNext`, `isLoadingNext`, and `pageInfo` with its cursors. `connectionID` is the key an edge directive names the list by. `loadNext(count)` fetches the next page with the fragment's query and its arguments. `refetch()` on the fragment's own lens fetches the first page again and replaces the list.
+The lens of a connection reads `nodes`, the records in order across every page, and also `hasNext`, `isLoadingNext`, and `pageInfo` with its cursors. `connectionID` is the key an edge directive names the list by. `loadNext(count)` fetches the next page with the fragment's query and its arguments. `refetch()` on the fragment's own lens fetches the first page again and replaces the list.
 
 {{lens issue-list IssueList_repository | The connection as the compiler reported it. The paging surface is generated beside these accessors.}}
 
@@ -16,22 +16,22 @@ The lens of a connection reads `nodes`, the records in order across every page. 
 
 The connection lives under its key in the store, apart from the pages. A page is a slot of its own under the field's storage key, `notes(first:2)`. The connection record under the key, `__TestNotes_notes_connection`, links the edges of every page in order. A refetch replaces the merged edges with the first page. A page fetched after a cursor that is no longer the connection's end is ignored.
 
-{{script connections | The specification's connection script, step by step. The first page. The second, merged. A refetch that replaces. An edge appended by a mutation. A page fetched after a cursor the connection has moved past, which the merge ignores and which notifies nothing.}}
+{{script connections | The specification's connection script goes step by step: the first page, the second merged, a refetch that replaces, and an edge appended by a mutation. A page fetched after a cursor the connection has moved past is ignored by the merge, and it notifies nothing.}}
 
 ## Edge directives
 
 A mutation that adds to or removes from a list says so on its payload. The store does the edit in the same batch as the payload's own records.
 
-- `@appendEdge(connections:)` and `@prependEdge(connections:)` on a payload field that is an edge.
-- `@appendNode(connections:, edgeTypeName:)` and `@prependNode(connections:, edgeTypeName:)` on a payload field that is a node.
-- `@deleteEdge(connections:)` on a payload field holding the id of the node to remove from the lists.
-- `@deleteRecord` on a payload field holding the id of a record to delete outright. Every list skips that record, and every link reads it as null.
+- `@appendEdge(connections:)` and `@prependEdge(connections:)` go on a payload field that is an edge.
+- `@appendNode(connections:, edgeTypeName:)` and `@prependNode(connections:, edgeTypeName:)` go on a payload field that is a node.
+- `@deleteEdge(connections:)` goes on a payload field holding the id of the node to remove from the lists.
+- `@deleteRecord` goes on a payload field holding the id of a record to delete outright. Every list skips that record, and every link reads it as null.
 
 The `connections` variable carries the connection ids the view read from its lenses, so the same mutation can add to one list or to three. Nothing edits the cache by hand, and nothing has to know which screens show the list.
 
 {{host comments CommentComposer | A comment appended to the issue's comments. The composer takes the `connectionID` the list's lens read and passes it in `connections`.}}
 
-{{script connections steps=4 | What `@appendEdge` leaves in the store. The new note's record, the new edge, and the connection's edge list one longer, with no refetch.}}
+{{script connections steps=4 | What `@appendEdge` leaves in the store is the new note's record, the new edge, and the connection's edge list one longer, with no refetch.}}
 
 ## Page-based lists
 

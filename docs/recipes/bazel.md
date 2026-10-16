@@ -1,15 +1,15 @@
 # Bazel: the compiler as a toolchain, and one rule over its command
 
-`rules_baton` is [the command's contract](batonc.md) spelled in Starlark.
-A toolchain the module fetches from the release's artifact bundle, and
+`rules_baton` is [the command's contract](batonc.md) spelled in Starlark:
+a toolchain the module fetches from the release's artifact bundle, and
 `baton_generate`, which runs `batonc generate` as one sandboxed action.
-Every input and output is declared. The action yields the generated
-sources for the library rule you already have. It lives under `bazel/` in
-this repository and is versioned with Baton, so `rules_baton` 0.11.0
-fetches the bundle 0.11.0 published and writes the format the runtime
-reads. It holds no logic of its own. Which source writes which output,
-the header for a source without GraphQL, staleness, and diagnostics are
-the compiler's
+Every input and output is declared, and the action yields the generated
+sources for the library rule you already have. The module lives under
+`bazel/` in this repository and is versioned with Baton, so `rules_baton`
+0.11.0 fetches the bundle 0.11.0 published and writes the format the
+runtime reads. It holds no logic of its own: which source writes which
+output, the header for a source without GraphQL, staleness, and
+diagnostics are the compiler's
 ([the decision](../decisions/a-build-integration-holds-no-logic.md)).
 
 ## The runtime
@@ -19,8 +19,8 @@ The runtime arrives as any Swift package does under
 `@swiftpkg_baton//:Baton`, with `BatonTesting` and `BatonInspector` beside
 it, and the macros as a compiler plugin target. The SwiftPM build-tool
 plugin and the compiler's binary target are skipped by design, since
-`rules_swift_package_manager` runs no plugin. This module is what runs
-the compiler instead. On the Kotlin side, `language = "kotlin"` writes
+`rules_swift_package_manager` runs no plugin, and this module is what
+runs the compiler instead. On the Kotlin side, `language = "kotlin"` writes
 `.baton.kt` for a `kt_jvm_library` or a `kt_android_library` over the
 runtime's Maven artifact, `com.shergin.baton:baton`
 ([the Gradle recipe](gradle.md) names them).
@@ -98,7 +98,7 @@ swift_library(
 - **The default output is the generated sources,** to list in the `srcs`
   of your `swift_library`, `kt_jvm_library`, or in-house macro, with the
   runtime and the macro plugin in that rule's own attributes. The report
-  is the output group `report`. Under `persistConfig`, the persisted
+  is the output group `report`, and under `persistConfig` the persisted
   documents file is the output group `persisted`, named by the
   `persisted` attribute, since a rule declares its outputs before it can
   read the configuration:
@@ -118,14 +118,14 @@ swift_library(
   A registration step or a review bot depends on the group and never
   rebuilds the library.
 - **Diagnostics** are `path:line:column: error: message`, pointing into
-  the GraphQL text in the host file. A document with an error fails the
-  action with nothing written.
+  the GraphQL text in the host file, and a document with an error fails
+  the action with nothing written.
 
 ## `baton_check_test`
 
 For a team that commits its generated code, use the same inputs as a
 `baton_generate`, plus the committed files. The test runs
-`batonc generate --check` over them. It fails with each stale or missing
+`batonc generate --check` over them and fails with each stale or missing
 output named on stderr.
 
 ```python
@@ -142,8 +142,8 @@ baton_check_test(
 ```
 
 The committed `Generated/` is the `baton_generate` target's output, copied
-from `bazel-bin`. Or it is `batonc generate --out Generated`, run from the
-package's directory, which names the outputs by the same rule.
+from `bazel-bin`, or the result of `batonc generate --out Generated`, run
+from the package's directory, which names the outputs by the same rule.
 
 ## The example
 
@@ -152,11 +152,11 @@ screens from `examples/RickAndMorty` and
 `spec/rickandmorty/schema.graphql`. Those are read in place through
 `new_local_repository`, against the module at `../..`.
 `scripts/check-bazel.sh` builds that example in the sandbox, over the
-compiler built in the checkout. It copies the output into `Generated/`,
-runs the check test, edits one file, and runs the test again. CI's
-`bazel` job is that script. The example compiles nothing. The generated
-Swift is what the SwiftPM plugin writes for the same sources, and the
-package's own build compiles it.
+compiler built in the checkout. The script copies the output into
+`Generated/` and runs the check test. Then it edits one file and runs
+the test again. CI's `bazel` job is that script. The example compiles
+nothing: the generated Swift is what the SwiftPM plugin writes for the
+same sources, and the package's own build compiles it.
 
 ## What the module does not do
 

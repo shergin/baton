@@ -5,13 +5,13 @@ transport is a protocol with one verb. A preview, a test, and a benchmark
 each get a store the way an app does, and never a mock of Baton's types.
 This page is the catalogue, each piece in Swift and then in Kotlin. Every
 piece lives in `BatonTesting`, a product of the package nothing in the app
-links, or in Kotlin in the module `baton-testing`. That module is a test
-dependency on the JVM and on Android. The exception is `commitPayload`,
-which is the environment's own.
+links, or in Kotlin in the module `baton-testing`, a test dependency on
+the JVM and on Android. The exception is `commitPayload`, which is the
+environment's own.
 
 A Kotlin test outside a composition gives the environment a test
-dispatcher as both its main dispatcher and its ingest dispatcher. It runs
-under `runTest`, as the runtime's own tests do:
+dispatcher as both its main dispatcher and its ingest dispatcher, and
+runs under `runTest`, as the runtime's own tests do:
 
 ```kotlin
 val dispatcher = StandardTestDispatcher(testScheduler)
@@ -29,15 +29,14 @@ let environment = Environment(transport: SilentTransport())
 try await environment.commitPayload(CharacterQuery(id: "1"), Payload(fixture))
 ```
 
-`commitPayload` runs the operation's plan over a payload. The payload is
-bytes in a response's shape. The call commits them as a fetch's response
-is committed, so the preview draws from the fixture through the same
-lenses. `SilentTransport` never answers, so nothing behind the preview
-waits on a network. The payload may carry part of what the operation
-selects. What it leaves out reads as missing, as a partial response
-would.
+`commitPayload` runs the operation's plan over a payload, bytes in a
+response's shape. The call commits them as a fetch's response is
+committed, so the preview draws from the fixture through the same lenses.
+`SilentTransport` never answers, so nothing behind the preview waits on a
+network. The payload may carry part of what the operation selects, and
+what it leaves out reads as missing, as a partial response would.
 
-In Kotlin, `commitPayload` is a suspend function. It runs on the
+In Kotlin, `commitPayload` is a suspend function that runs on the
 environment's main dispatcher, whatever thread calls it. `Payload` wraps
 a `ByteArray` or a JSON `String`:
 
@@ -80,15 +79,15 @@ transport.held[0].respond(fixture("set-favorite-1"))
 
 `ScriptedTransport` holds a mutation, or any operation the test names,
 until the test replies or refuses it. The window between an optimistic
-apply and the server's answer is observable. It drives a subscription's
-events by hand (`driven[i].send`, `complete`, `fail`), and it lists its
-requests by kind. `wait(until:)` waits on the main actor for a handle or
-a store to settle, with a timeout, yielding between checks.
+apply and the server's answer is observable. The transport drives a
+subscription's events by hand (`driven[i].send`, `complete`, `fail`) and
+lists its requests by kind. `wait(until:)` waits on the main actor for a
+handle or a store to settle, with a timeout, yielding between checks.
 
 In Kotlin, the mutation runs in a coroutine the test launches. `held` is
-a list whose entries `respond` or `refuse`. `driven` is a list whose
-entries `send`, `complete`, or `fail`. `requests(kind)` lists one kind.
-`wait` is a suspend function that yields between checks:
+a list whose entries `respond` or `refuse`, and `driven` is a list whose
+entries `send`, `complete`, or `fail`. `requests(kind)` lists one kind,
+and `wait` is a suspend function that yields between checks:
 
 ```kotlin
 val transport = ScriptedTransport(mapOf(CharacterQuery.name to fixture("character-1")))
@@ -111,8 +110,8 @@ func isSeriesRegular(_ character: CharacterValue_character) -> Bool {
 
 A rule outside a view takes the value an `@inline` fragment compiles to.
 The test builds one with the value's initializer, field by field, and
-needs no store at all. The app hands it the value the spread's accessor
-read. The same rule over a lens would need a store to read from.
+needs no store at all. The app hands the rule the value the spread's
+accessor read. The same rule over a lens would need a store to read from.
 
 In Kotlin the value is a `data class` whose primary constructor takes the
 fields:
@@ -149,20 +148,20 @@ val seen = mutableListOf<LogEvent>()
 environment.log = { event -> seen.add(event) }
 ```
 
-and asserts `LogEvent.Missing("Character", "name") in seen`.
+The assertion is `LogEvent.Missing("Character", "name") in seen`.
 
 ## A bug report that becomes a fixture
 
 `StoreExport.text(of: environment.store)`, from `BatonInspector`, writes
 the store in the dump format the fixtures under `spec/` use: every record
 by key, sorted, one a line. A dump from a debug menu, or the inspector's
-share button, is a fixture a test can start from. A diff of two dumps is
-a reviewable change to identity or layout. In Kotlin the same text is
+share button, is a fixture a test can start from, and a diff of two dumps
+is a reviewable change to identity or layout. In Kotlin the same text is
 `StoreExport.text(environment.store)`, from `baton-inspector`.
 
 ## What these are not
 
-Not mocks. Each is a transport like any other, and nothing behind it can
-tell. The environment, the store, the handles, and the lenses run the
-code the app runs. A test of the app's own layer over Baton therefore
-tests that layer, not a stand-in for the library.
+These are not mocks. Each is a transport like any other, and nothing
+behind it can tell. The environment, the store, the handles, and the
+lenses run the code the app runs, so a test of the app's own layer over
+Baton tests that layer, not a stand-in for the library.

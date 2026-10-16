@@ -7,15 +7,16 @@ language](https://engineering.fb.com/2015/09/14/core-infra/graphql-a-data-query-
 Meta's native apps, Facebook and Instagram among them, have run an in-house
 client ever since.
 
-Its current incarnation is called Pando. It is not open source. Meta has not
-published its storage layout, or a single performance number for it. What is
-public is a trail of engineering posts from 2012 to 2015, a 2017 post on
-where Relay Modern's ideas came from, a 2025 podcast with an engineer on the
-Mobile GraphQL Platform team, and a handful of conference abstracts.
+Its current incarnation is called Pando, and it is not open source. Meta has
+not published its storage layout, or a single performance number for it.
+What is public is a trail of engineering posts from 2012 to 2015, a 2017
+post on where Relay Modern's ideas came from, a 2025 podcast with an
+engineer on the Mobile GraphQL Platform team, and a handful of conference
+abstracts.
 
 That trail is the best available evidence on what a native GraphQL client
-needs at the extreme. It is worth reading beside Baton. Baton makes most of
-the same choices, and goes further on the one Meta calls a goal.
+needs at the extreme, and it is worth reading beside Baton. Baton makes
+most of the same choices, and goes further on the one Meta calls a goal.
 
 ## The public record
 
@@ -30,10 +31,11 @@ store, and it had become the bottleneck. Entities had gone from dozens to
 hundreds. Every parse ran a fetch-or-create. Creating and querying model
 objects took longer with every entity added.
 
-The replacement had three principles. Models are immutable. Storage is
-denormalized, with a cache per part of the app. Consistency is asynchronous
-and opt-in: a controller on background queues that notices a field change
-and issues updated models. News Feed came out nearly 50% faster ([Making
+The replacement had three principles: models are immutable; storage is
+denormalized, with a cache per part of the app; and consistency is
+asynchronous and opt-in: a controller on background queues that notices a
+field change and issues updated models. News Feed came out nearly 50%
+faster ([Making
 News Feed nearly 50% faster on
 iOS](https://engineering.fb.com/2014/10/31/ios/making-news-feed-nearly-50-faster-on-ios/)).
 
@@ -66,9 +68,9 @@ The 2025 podcast is the only public description of the client as it is now.
 The engineer calls it a framework "very similar to Relay", named Pando,
 implemented in C++ in a shared layer, with native wrappers around it.
 
-It has two parts for a product developer. A build-time component that
+It has two parts for a product developer: a build-time component that
 generates type-safe accessors, in Kotlin or Java and in Objective-C or
-Swift, for exactly the fields a query selected. A runtime that executes
+Swift, for exactly the fields a query selected, and a runtime that executes
 queries and integrates the network, the cache, and the consistency engine.
 
 The models are immutable. Consistency is a publish-subscribe engine that
@@ -134,27 +136,27 @@ list is long.
 view that renders it, in the Swift or Kotlin file, as a real GraphQL
 document. The compiler assembles the screen's operation from the fragments
 spread into it. Nobody writes the screen's query. The 2025 podcast names
-this as where Meta's mobile stack is trying to get. It is where Baton
+this as where Meta's mobile stack is trying to get, and it is where Baton
 starts.
 
 **The typed view points at a live record, not at a copy.** Meta's family of
 designs, from the 2014 iOS layer to Pando, hands product code an immutable
 model tree. A consistency engine republishes new trees when an entity
-changes. Reads of a tree are free. Updates cost work proportional to the
-trees that mention the id. The app holds two copies of every fact, one in
-the cache and one in the model.
+changes. Reads of a tree are free, and updates cost work proportional to
+the trees that mention the id. The app holds two copies of every fact, one
+in the cache and one in the model.
 
-Baton collapses the two. The normalized record is the only copy. The lens is
-the immutable typed view Meta generates, pointed at a live slot. The
+Baton collapses the two, so the normalized record is the only copy. The
+lens is the immutable typed view Meta generates, pointed at a live slot. The
 consistency engine is the UI framework's own observation. A commit notifies
 the slots that changed, and the bodies that read them run ([Relay without
 the read side](relay-without-the-read-side.md)). There is no second tree to
 rebuild, and no engine to keep it consistent.
 
-**No shared C++ core.** Pando is C++ with wrappers. That is one
-implementation of the hard parts, for two platforms. Baton's compiler is
-Rust, and it runs on the build machine. The runtimes are Swift and Kotlin,
-written twice on purpose, held to one behaviour by one compiler's plans and
+**No shared C++ core.** Pando is C++ with wrappers, one implementation of
+the hard parts for two platforms. Baton's compiler is Rust, and it runs on
+the build machine. The runtimes are Swift and Kotlin, written twice on
+purpose, held to one behaviour by one compiler's plans and
 one set of fixtures ([Two runtimes, no
 bridge](two-runtimes-no-bridge.md)).
 
@@ -176,9 +178,9 @@ That is the kind of evidence that would move it.
 
 **Relay's words, Relay's compiler.** Because the front end is Relay's own,
 pinned behind Baton's driver, a team that runs Relay on the web and Baton on
-native speaks one language. The same directives. The same connection
-specification. The same error directives. Meta's web and native stacks share
-a north star. Baton's share a parser.
+native speaks one language: the same directives, the same connection
+specification, and the same error directives. Meta's web and native stacks
+share a north star. Baton's share a parser.
 
 **Every number is public.** Meta has not published Pando's numbers. Baton's
 are in [BENCHMARKS.md](../../BENCHMARKS.md), with the revision, the machine,
@@ -209,15 +211,15 @@ speak of.
 ## The lesson
 
 Every public description of Meta's native stack, from 2014 to 2025, has the
-same shape. Compile the operation ahead of time. Hand product code immutable
-typed accessors for exactly the fields it asked for. Never materialize what
-a view does not read. Keep the synchronous read path cheaper than a frame.
-Show cached content first.
+same shape. Compile the operation ahead of time, and hand product code
+immutable typed accessors for exactly the fields it asked for. Never
+materialize what a view does not read. Keep the synchronous read path
+cheaper than a frame, and show cached content first.
 
 That is the shape Baton ships, for SwiftUI and Compose, with the platform's
 own observation in place of the consistency engine, and the fragment on the
 view today. It is the design the people with the hardest version of the
-problem converged on. It is the one you can add to a package manifest this
+problem converged on, and the one you can add to a package manifest this
 afternoon.
 
 ## Sources

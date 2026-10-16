@@ -8,9 +8,9 @@ SwiftPM on either platform, and a Bazel toolchain, select theirs from the
 one file. `scripts/build-compiler.sh` builds the host's binary from
 `compiler/` in a checkout. Its command line is the contract a build
 outside SwiftPM uses: Bazel, a committed-output step, an editor's check.
-What follows is that contract. The output is deterministic. The same
-schema, configuration, and sources produce the same bytes. The goldens
-under `compiler/src/tests` fix those bytes.
+What follows is that contract. The output is deterministic: the same
+schema, configuration, and sources produce the same bytes, and the
+goldens under `compiler/src/tests` fix those bytes.
 
 ## Commands
 
@@ -23,23 +23,24 @@ batonc print <OperationName> --config <baton.json> [--language swift|kotlin] <fi
 `--schema <sdl>` may replace `--config` when there is no configuration.
 Beside a configuration, it overrides that configuration's `schema`, for a
 schema that is a build's own output. Otherwise the configuration's
-`schema` is the schema, relative to the configuration's directory. So are
+`schema` is the schema, relative to the configuration's directory, as are
 its `schemaExtensions` and, unless `--persisted` names it, the persisted
 documents file.
 
 `<files...>` are the target's host sources, Swift or Kotlin, and its
 `.graphql` or `.gql` documents. The compiler reads the GraphQL out of the
 markers (`@Fragment`, `@Query`, `@Mutation`, `@Subscription`, bare or
-qualified as `@Baton.Query` in Swift and `@baton.Query` in Kotlin). It
+qualified as `@Baton.Query` in Swift and `@baton.Query` in Kotlin) and
 compiles every document of the target together, since a fragment spread
 in one file is declared in another.
 
 ### The language
 
-A run writes one language. `--language` names it, `swift` or `kotlin`.
-Without that flag, the first host file's extension does: `.swift` or
-`.kt`. A run of `.graphql` files alone writes Swift. A host file of the
-other language is an error at that file. Run `batonc` once per language.
+A run writes one language, which `--language` names as `swift` or
+`kotlin`. Without that flag, the first host file's extension does:
+`.swift` or `.kt`. A run of `.graphql` files alone writes Swift, and a
+host file of the other language is an error at that file. Run `batonc`
+once per language.
 The Kotlin target writes the operation values with their plans, and the
 shared file. A fragment's lens, the fields of an operation's `Data`, and
 a mutation's optimistic builder come with the Kotlin runtime's readers.
@@ -50,7 +51,7 @@ after a run of dollars, `$$"""…"""`. In that last form, a run of fewer
 dollars than the prefix is text. A GraphQL variable is a template in a
 string without enough dollars, so write a document with a variable in a
 `$$` string. A template is an error at the marker. A raw string is read
-dedented. Its common indentation is removed, and a blank first and last
+dedented: its common indentation is removed, and a blank first and last
 line are dropped, so it equals the `.graphql` file an author would write.
 A bare `@Query` in a file that imports another library's `Query`, Room's
 or Retrofit's, is that library's.
@@ -77,7 +78,7 @@ The Kotlin target reads two entries of `baton.json`:
   by the source's path relative to the working directory. Each separator
   becomes an underscore, and `.baton.swift` stands in place of `.swift`
   (`Sources/App/Screen.swift` writes `Sources_App_Screen.baton.swift`).
-  In a Kotlin run, `.baton.kt` stands in place of `.kt`. Or the file is
+  In a Kotlin run, `.baton.kt` stands in place of `.kt`, or the file is
   written exactly where `--emit <source>=<output>` says. A source an
   `--emit` names that holds no document gets a header only, whether or
   not it names a marker, so a build system declares one output per source
@@ -85,33 +86,33 @@ The Kotlin target reads two entries of `baton.json`:
   language in the directory that this run did not write is removed, so a
   renamed source leaves nothing behind.
 - **The shared file**, `Baton.baton.swift`, or `Baton.baton.kt` in a
-  Kotlin run, under `--out` or `--shared <file>`. It holds the types
-  every output names, the schema's digest, and the format marker.
-- **The persisted documents file**, under `persistConfig`. It goes where
+  Kotlin run, under `--out` or `--shared <file>`, holds the types every
+  output names, the schema's digest, and the format marker.
+- **The persisted documents file**, under `persistConfig`, goes where
   `--persisted <file>` says, since a build system declares its outputs
-  before it reads the configuration. Else under `--out` when given. Else
-  beside the configuration. `--persisted` without `persistConfig` is an
-  error.
+  before it reads the configuration. Otherwise it goes under `--out` when
+  given, and otherwise beside the configuration. `--persisted` without
+  `persistConfig` is an error.
 - **The report**, `--report <file>`: what the target compiled, as JSON,
   each lens with its accessors' names, keys, and shapes. See
   [Report](../terminology.md#compiler).
 
 `--check` writes nothing. Every output is computed and compared with the
-file at its path. Each stale or missing one is named on stderr, and the
-exit code is 1 when any is. A team that commits its generated code runs
+file at its path, and each stale or missing one is named on stderr, with
+exit code 1 when any is. A team that commits its generated code runs
 `generate` as a developer step and `generate --check` in CI.
 
 ### `validate`
 
-The same compilation, with no output. You get diagnostics and an exit
-code, for an editor or a pre-commit hook.
+`validate` runs the same compilation and writes no output. You get
+diagnostics and an exit code, for an editor or a pre-commit hook.
 
 ### `print`
 
-The same compilation, printing one operation's text. That text is the
-exact text the app sends, compact on one line as the compiler prints it,
-preceded by `# documentId: <id>` under `persistConfig`. Paste it into a
-server's tool, which formats it.
+`print` runs the same compilation, printing one operation's text. That
+text is the exact text the app sends, compact on one line as the compiler
+prints it, and preceded by `# documentId: <id>` under `persistConfig`.
+Paste it into a server's tool, which formats it.
 
 ## Diagnostics and exit codes
 
@@ -130,10 +131,10 @@ line. A warning does not fail the command.
 
 The plugin runs one `generate` per target, with `--out` in its own output
 directory, `--shared`, `--report`, and an `--emit` for each Swift source
-that names a marker. The generated Swift joins the target's sources. The
-report and the persisted documents file sit beside them, undeclared, so
-SwiftPM does not bundle them as resources. `baton.json` is read from the
-target's directory, then the package root.
+that names a marker. The generated Swift joins the target's sources,
+while the report and the persisted documents file sit beside them,
+undeclared, so SwiftPM does not bundle them as resources. `baton.json`
+is read from the target's directory, then the package root.
 
 ## Outside SwiftPM: committed output
 
@@ -152,6 +153,6 @@ batonc generate --config Sources/App/baton.json --out Sources/App/Generated --ch
 
 `rules_baton`, under `bazel/` in this repository, is this command as a
 Bazel rule, and the release's bundle as a toolchain. Every input is
-declared. There is one output per source. The report and the persisted
-documents file are output groups. A test runs over `--check` for
-committed output. [Bazel](bazel.md) is its page.
+declared, there is one output per source, and the report and the
+persisted documents file are output groups. A test runs over `--check`
+for committed output. [Bazel](bazel.md) is its page.

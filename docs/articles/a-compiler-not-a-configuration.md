@@ -2,18 +2,18 @@
 
 A GraphQL client that reasons about GraphQL at run time pays for it on every
 request, and again in the binary. The binary carries a parser, a validator,
-and an executor over selection metadata. Records are keyed by strings. Type
-policies are looked up by name.
+and an executor over selection metadata. Records are keyed by strings, and
+type policies are looked up by name.
 
 That client also cannot tell you, at build time, that a field does not
-exist. It cannot tell you that a parent never spread the fragment a child
-reads. It cannot tell you that two operations will collide in the cache.
+exist, that a parent never spread the fragment a child reads, or that two
+operations will collide in the cache.
 
 Baton's runtime parses no GraphQL. Every operation is static, so every
 question a cache has to answer is answered before the app runs. The runtime
 is a tokenizer that follows a plan, a store that merges slots, accessors
-that read them, and a transport. The transport sends the text, or the id the
-build registered.
+that read them, and a transport that sends the text, or the id the build
+registered.
 
 ## What the compiler settles
 
@@ -36,14 +36,14 @@ compiler then settles the following.
 - **Storage keys.** Every key without a variable is computed and emitted as
   a constant. A key with variables is rendered once per owner. No path a
   view or a commit takes hashes a field name.
-- **Masking.** A fragment compiles to a lens. A lens is a typed, read-only
-  view over one record: one accessor per field you declared, and no accessor
-  for anything else. A spread compiles to an accessor that returns the child's
-  lens. The parent cannot read through it.
+- **Masking.** A fragment compiles to a lens, a typed, read-only view over
+  one record: one accessor per field you declared, and no accessor for
+  anything else. A spread compiles to an accessor that returns the child's
+  lens, which the parent cannot read through.
 - **The wire.** The operation's text is printed compact and hashed to an id.
   Under Relay's `persistConfig`, the build writes the registration file, and
   the app sends the id alone.
-- **The report.** What a dependent target's compilation would read: every
+- **The report.** What a dependent target's compilation would read is every
   operation, fragment, and lens, the schema's digest, the reachable
   fragments, and the unused ones. The report is for tools and for the
   inspector.
@@ -54,9 +54,9 @@ fixtures catch that.
 
 ## Relay's front end, pinned, behind Baton's driver
 
-The front end is Relay's own compiler. That is its parser, its schema, its
-typed IR, its spec validation, and its transforms. Baton consumes them as
-Rust crates, pinned to a tag, behind a driver that is Baton's.
+The front end is Relay's own compiler: its parser, its schema, its typed IR,
+its spec validation, and its transforms. Baton consumes them as Rust crates,
+pinned to a tag, behind a driver that is Baton's.
 
 Everything in front of that front end is Baton's: finding GraphQL in Swift
 and Kotlin sources. Everything behind it is Baton's too: the plan IR, the
@@ -67,7 +67,7 @@ and generated code through a plugin for the JavaScript Relay compiler. Relay
 13 replaced that compiler in January 2022 and removed the plugin API.
 Relay.swift stopped.
 
-rescript-relay forks the Rust compiler. In October 2026 it was 675 commits
+rescript-relay forks the Rust compiler and, in October 2026, was 675 commits
 behind upstream. Apollo iOS bundles GraphQL.js, so syntax the JavaScript
 reference implementation does not parse yet is syntax Apollo iOS cannot
 accept.
@@ -88,8 +88,8 @@ decision](../decisions/a-build-integration-holds-no-logic.md)).
 ## Slots are numbered by the process
 
 One detail shows how far the principle goes, and where it stops. A record
-stores a field's value at a slot. A slot is a small integer, one per storage
-key and type.
+stores a field's value at a slot, a small integer, one per storage key and
+type.
 
 The obvious reading of "the compiler decides" is that the compiler writes
 those integers into the generated code. It does not. Modules compile apart
@@ -126,9 +126,8 @@ the compiler never sees, broken in production.
 In Baton, identity is configuration the compiler reads and checks. When a
 type is keyed by something other than `id`, you name it once in
 `baton.json`. The key can be several fields, or it can go through an
-interface. The compiler validates the
-fields against the schema and selects them wherever the type is read. The
-plan carries the key per selection ([the
+interface. The compiler validates the fields against the schema and selects
+them wherever the type is read. The plan carries the key per selection ([the
 decision](../decisions/identity-is-configured.md)).
 
 Fetch behaviour is a directive, or a value on a handle: `@connection`,
@@ -139,26 +138,26 @@ omissions.
 
 ## Byte-stable output, and names that try to break it
 
-Generated output is deterministic and byte-stable. Golden tests cover every
-emitter in both languages. What generated code names in the runtime is a
-format with a number. A change to it raises the number on both sides in one
-commit. Generated code of an older format fails to compile at its marker,
-with a message that says to rebuild.
+Generated output is deterministic and byte-stable, and golden tests cover
+every emitter in both languages. What generated code names in the runtime is
+a format with a number, and a change to it raises the number on both sides
+in one commit. Generated code of an older format fails to compile at its
+marker, with a message that says to rebuild.
 
 The compiler's tests fence the bytes of generated code per accessor line at
 120, over the goldens, so a lens cannot quietly grow.
 
 Then there are the names. A schema can call a field `init`, `Type`,
-`description`, `self`, or `suspend`. It can call a fragment `Variables` or
-`Companion`. It can put an enum value `UNKNOWN` beside `Unknown`.
+`description`, `self`, or `suspend`, a fragment `Variables` or `Companion`,
+and an enum value `UNKNOWN` beside `Unknown`.
 
 A corpus of hostile names, in every position a name can take, is compiled
 into a host file for each language. A sweep type-checks the generated code
-one document at a time, in CI. A field spelled like a keyword is escaped. A
-name that would clash with a generated member is refused, with a diagnostic
-at the name. The generated case for an enum value the build did not know
-cannot collide with a schema value spelled `UNKNOWN`. On a case-insensitive
-disk, that would be the same class file.
+one document at a time, in CI. A field spelled like a keyword is escaped,
+and a name that would clash with a generated member is refused, with a
+diagnostic at the name. The generated case for an enum value the build did
+not know cannot collide with a schema value spelled `UNKNOWN`. On a
+case-insensitive disk, that would be the same class file.
 
 That is work a run-time client never has to do. If you adopt a compiler, you
 should never notice it.
@@ -186,11 +185,11 @@ run. The compiler is the reviewer that never gets tired.
 
 ## What it costs
 
-A Rust toolchain, for Baton's own development. A prebuilt binary and a build
-step, for adopters, with a plugin trust prompt in Xcode the first time. A
-pinned revision of the front end, which Baton advances on its own schedule.
-A schema checked into the build, so a change to it is a change the build
-sees.
+The cost is a Rust toolchain, for Baton's own development, and a prebuilt
+binary and a build step, for adopters, with a plugin trust prompt in Xcode
+the first time. It is also a pinned revision of the front end, which Baton
+advances on its own schedule, and a schema checked into the build, so a
+change to it is a change the build sees.
 
 Nothing is configurable at run time that could be decided at build time. An
 app with a genuinely dynamic schema would find that too strict, and such an

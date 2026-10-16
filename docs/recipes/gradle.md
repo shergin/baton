@@ -8,7 +8,7 @@ bundle. The plugin lives under `kotlin/baton-gradle` in this repository
 and is versioned with Baton, so the plugin 0.16.0 fetches the bundle
 0.16.0 published and writes the format the runtime 0.16.0 reads. The
 version the snippets below quote is the latest release, as `CHANGELOG.md`
-names it. It holds no logic of its own. Which source writes which output,
+names it. It holds no logic of its own: which source writes which output,
 the header for a source without GraphQL, the shared file, staleness, and
 diagnostics are the compiler's
 ([the decision](../decisions/a-build-integration-holds-no-logic.md)).
@@ -29,8 +29,8 @@ resolves to the variant a module compiles against:
 The runtime depends on the Compose runtime, which generated code names
 (`@Stable`), on kotlinx-coroutines, and on the AndroidX SQLite driver
 API, with the bundled driver on the JVM. Compose UI is the app's own. On
-Android it starts at API 23. It needs no R8 or ProGuard rules, and it
-ships none. The runtime, its modules, and the generated Kotlin use no
+Android the runtime starts at API 23 and needs no R8 or ProGuard rules,
+and it ships none. The runtime, its modules, and the generated Kotlin use no
 reflection, no serialization, and no lookup of a class or a member by
 name, so a minified build keeps what the code calls. The AndroidX pieces
 are on Google's Maven repository. Gradle does not search that repository
@@ -67,8 +67,8 @@ dependencyResolutionManagement {
 The module that holds the screens applies the plugin beside the Kotlin
 plugin, names its hosts, and adds the task's output to the source set
 that compiles them. The snippet is a Multiplatform module. A JVM-only
-module applies `kotlin("jvm")`, adds the directory to `sourceSets.main`,
-and declares the dependency at the top level:
+module instead applies `kotlin("jvm")`, adds the directory to
+`sourceSets.main`, and declares the dependency at the top level:
 
 ```kotlin
 // build.gradle.kts
@@ -100,7 +100,7 @@ kotlin {
 ```
 
 An Android application module adds the directory through the variant API
-instead. That is how `kotlin/benchmarks/android` does it:
+instead, which is how `kotlin/benchmarks/android` does it:
 
 ```kotlin
 androidComponents {
@@ -119,10 +119,10 @@ the schema, the identity, the lookups, and the scalars, as
 The compiler is the release's. On first use the plugin downloads
 `batonc.artifactbundle.zip` of the release it is versioned with, the one
 file SwiftPM and Bazel download. It checks that zip against the checksum
-the release wrote into `kotlin/release.properties`, and unpacks it whole
-into `caches/baton/<version>/batonc.artifactbundle/` under the Gradle
-user home, once per home. It then runs the variant its `info.json` lists
-for the host: macOS or Linux, x86_64 or aarch64. A checkout that builds
+the release wrote into `kotlin/release.properties`, unpacks it whole into
+`caches/baton/<version>/batonc.artifactbundle/` under the Gradle user
+home, once per home, and then runs the variant its `info.json` lists for
+the host: macOS or Linux, x86_64 or aarch64. A checkout that builds
 its own compiler names it instead, as `Package.swift` and the Bazel
 extension take `BATON_COMPILER`. That value is a `batonc` binary, or a
 bundle directory holding an `info.json`:
@@ -153,7 +153,7 @@ against two schemas registers a second task of the same type.
   and the `schemaExtensions` the configuration names. The plugin reads
   those from the configuration's text, through a provider Gradle tracks,
   so an edit to the schema regenerates and you name nothing twice. The
-  compiler binary is an input when `BATON_COMPILER` names one. The
+  compiler binary is an input when `BATON_COMPILER` names one, and the
   release's version and checksum are inputs when it does not. The task is
   cacheable and runs under the configuration cache.
 - **One output per source,** named as the SwiftPM plugin and the Bazel
@@ -164,5 +164,5 @@ against two schemas registers a second task of the same type.
   `src_commonMain_kotlin_app_Screen.baton.kt`). A renamed source leaves
   nothing behind, since the compiler removes an output it did not write.
 - **Diagnostics** are `path:line:column: error: message`, pointing into
-  the GraphQL text in the host file. Gradle and the IDE show them at the
-  line. A document with an error fails the task with nothing written.
+  the GraphQL text in the host file, so Gradle and the IDE show them at
+  the line. A document with an error fails the task with nothing written.

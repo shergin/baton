@@ -1,12 +1,12 @@
 # Compose
 
-The Kotlin runtime is the same machine, written for its platform. Same compiler, same plans, same fixtures under `spec/`, in Kotlin's words. The figures on this site show the Compose spelling beside the SwiftUI one. This page is what differs, and the setup.
+The Kotlin runtime is the same machine, written for its platform: the same compiler, the same plans, the same fixtures under `spec/`, in Kotlin's words. The figures on this site show the Compose spelling beside the SwiftUI one. This page is what differs, and the setup.
 
 ## Where the marker stands
 
-In Swift the marker is a macro on a stored property. In Kotlin it is an annotation on the composable that renders, holds, or acts. A fragment's composable takes the lens as a parameter. A query's composable resolves the operation value with `rememberQuery`. A mutation's composable takes its action from `rememberMutation`. The markers repeat, so one composable may carry a fragment and two mutations.
+In Swift the marker is a macro on a stored property. In Kotlin it is an annotation on the composable that renders, holds, or acts. A fragment's composable takes the lens as a parameter, a query's composable resolves the operation value with `rememberQuery`, and a mutation's composable takes its action from `rememberMutation`. The markers repeat, so one composable may carry a fragment and two mutations.
 
-{{host star StarButton.kt | One composable hosting the fragment it renders and the two mutations it calls.}}
+{{host star StarButton.kt | One composable hosts the fragment it renders and the two mutations it calls.}}
 
 A document with a variable is written in a raw string delimited by `$$"""` and `"""`. `$` starts a template in a plain string, and GraphQL's variables need `$`. A document without a variable may be a plain string. The compiler reads the string dedented, so it equals the `.graphql` file an author would write.
 
@@ -29,9 +29,9 @@ A document with a variable is written in a raw string delimited by `$$"""` and `
 | Observation | Observation, through the record's registrar | Compose snapshot state, one channel per slot read |
 | The store's thread | The main actor | The thread that made the store; the environment's main dispatcher |
 
-Everything else is the same by construction. The same operation text, the same records, the same notifications, the same phases, proven by the same fixtures run through code the compiler generates for Kotlin.
+Everything else is the same by construction: the same operation text, the same records, the same notifications, the same phases, proven by the same fixtures run through code the compiler generates for Kotlin.
 
-{{host issues IssuesScreen.kt | The README's screen in Compose. `rememberQuery` holds the retention while the composable stays, and releases it when the composable leaves.}}
+{{host issues IssuesScreen.kt | The README's screen in Compose, where `rememberQuery` holds the retention while the composable stays, and releases it when the composable leaves.}}
 
 ## The environment in a composition
 
@@ -59,8 +59,8 @@ The store belongs to the thread that made it, and its entry points check the cal
 
 ## The build
 
-The runtime is `com.shergin.baton:baton` on Maven Central, with `baton-testing`, `baton-okhttp`, and `baton-inspector` beside it. The Gradle plugin `com.shergin.baton` runs the compiler as a task, with every input and output declared, and it fetches the release's prebuilt binary on first use. [Gradle](../../recipes/gradle/) is the page. [The Kotlin runtime](../../kotlin/) is the tree's own README, with the layout, the dependencies, and how the runtime is built and published.
+The runtime is `com.shergin.baton:baton` on Maven Central, with `baton-testing`, `baton-okhttp`, and `baton-inspector` beside it. The Gradle plugin `com.shergin.baton` runs the compiler as a task, with every input and output declared, and it fetches the release's prebuilt binary on first use. [Gradle](../../recipes/gradle/) is the page, and [The Kotlin runtime](../../kotlin/) is the tree's own README, with the layout, the dependencies, and how the runtime is built and published.
 
 ## Without Compose UI
 
-A view model behind Android Views, a desktop window, a service. Each one asks the environment for the handle, holds the retention, and reads what the handle shows through `snapshotFlow`. That flow emits again when a field it read has changed. [Views and view models](../../recipes/views/) is the recipe, with the code the runtime's tests compile.
+A view model behind Android Views, a desktop window, or a service: each one asks the environment for the handle, holds the retention, and reads what the handle shows through `snapshotFlow`. That flow emits again when a field it read has changed. [Views and view models](../../recipes/views/) is the recipe, with the code the runtime's tests compile.

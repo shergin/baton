@@ -38,7 +38,7 @@ const ENTRIES: &[Entry] = &[
         config: Some("examples/GitHubTriage"),
         hosts: ".",
         language: Language::Swift,
-        story: "The work a person actually has to look at. Open issues and pull requests assigned to them, or opened by them. A repository with a star toggle. An issue with its comments and reactions. Reads, writes with optimistic responses, interfaces and a union, a connection a mutation appends to, `@required` and `@catch`, and a lookup by id. The schema is about 1,800 definitions. The screen on the README is this app.",
+        story: "The work a person actually has to look at: open issues and pull requests assigned to them or opened by them, a repository with a star toggle, and an issue with its comments and reactions. The sample covers reads, writes with optimistic responses, interfaces and a union, a connection a mutation appends to, `@required` and `@catch`, and a lookup by id. The schema is about 1,800 definitions, and the screen on the README is this app.",
         run: "GITHUB_TOKEN=$(gh auth token) swift run GitHubTriage",
     },
     Entry {
@@ -88,7 +88,7 @@ const ENTRIES: &[Entry] = &[
         config: None,
         hosts: ".",
         language: Language::Swift,
-        story: "The few dozen lines a production endpoint needs, which the library does not ship. A transport that wraps a transport. One replay of a challenge. A bounded retry with backoff. A deadline across every attempt. And the rule that a mutation is never sent twice. The Kotlin twin is `kotlin/samples/exchange`. The recipe is [the exchange](/recipes/exchange/).",
+        story: "The few dozen lines a production endpoint needs, which the library does not ship: a transport that wraps a transport, one replay of a challenge, a bounded retry with backoff, a deadline across every attempt, and the rule that a mutation is never sent twice. The Kotlin twin is `kotlin/samples/exchange`. The recipe is [the exchange](/recipes/exchange/).",
         run: "",
     },
 ];

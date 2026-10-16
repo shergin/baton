@@ -1,12 +1,11 @@
 # Accounts: a sign-out, a switch, and what the disk keeps
 
-An app with accounts holds data for one of them. That data sits in memory
-and in the store's image on disk. After a sign-out, none of it may stay
-readable. Not in memory. Not on disk. Not through a response that lands
-late.
+An app with accounts holds data for one of them, in memory and in the
+store's image on disk. After a sign-out, none of it may stay readable:
+not in memory, not on disk, and not through a response that lands late.
 
 Baton has no session type, and no switch on the store for this. The
-environment is the session. A sign-in makes one. A sign-out ends it.
+environment is the session: a sign-in makes one, and a sign-out ends it.
 Which one is current is the app's state
 ([the decision](../decisions/the-environment-is-the-session.md)). The
 image belongs to that one environment. What keeps one account's rows from
@@ -27,9 +26,9 @@ An image is one SQLite file, made for one store with a path and a
 in the transaction that opens it, before anything is read. Put the account
 in one or the other:
 
-- **In the path**, one file per account. Caches coexist. A switch back to
-  an account finds its cache warm. Pick this when users switch accounts
-  and expect each to open as they left it.
+- **In the path**, one file per account. Caches coexist, and a switch
+  back to an account finds its cache warm. Pick this when users switch
+  accounts and expect each to open as they left it.
 - **In the `version`**, one file for the app. Opened for another account,
   the file is emptied before any read. Pick this when one account at a
   time is enough, and one file is simpler to protect, inspect, or delete.
@@ -53,13 +52,13 @@ directory from the app, `Persistence.named(name, directory =
 cacheDir.path, version = …)`. `Persistence(url:)` in Swift and
 `Persistence(path)` in Kotlin place the file where the app says.
 
-`account` is the identity the app learned at sign-in. It is a user id from
-the sign-in response, not the credential. A refreshed token is the same
-identity and the same environment. The built-in transports read
-credentials per attempt for that reason. The two GitHub samples take one
-personal access token and no account, so their images carry the schema's
-digest alone. The generated `Types.schemaDigest` already folds the
-`transient` lists into that digest.
+`account` is the identity the app learned at sign-in, a user id from the
+sign-in response, not the credential. A refreshed token is the same
+identity and the same environment, which is why the built-in transports
+read credentials per attempt. The two GitHub samples take one personal
+access token and no account, so their images carry the schema's digest
+alone. The generated `Types.schemaDigest` already folds the `transient`
+lists into that digest.
 
 ## The order of a sign-out
 
@@ -108,14 +107,14 @@ onSignOut = {
 ```
 
 Three steps, in this order. A crash after any of them leaves the account
-signed in, and nothing readable by another:
+signed in, and leaves nothing another account can read:
 
 1. **End the environment.** `end()` cancels every fetch and stream the
    environment started. It drops the roots, clears every record, forgets
    the session's keys, and closes the image, giving its file back. In
    Kotlin it is a `suspend` function. A crash here leaves the file intact
-   under the account's own identity. The next launch, still signed in,
-   reads its own cache.
+   under the account's own identity, and the next launch, still signed
+   in, reads its own cache.
 2. **Remove the image.** `removeAll()` deletes the file, the interned
    names and argument values with it, and drops the work queued before it.
    The log goes before the database, so an interrupted removal leaves a
@@ -123,10 +122,10 @@ signed in, and nothing readable by another:
    A marker beside the file has the next open finish a deletion a crash
    interrupted, or one a locked device put off
    ([the decision](../decisions/the-images-file-is-protected-and-waited-for.md)).
-   The removal is hygiene. It can be interrupted and repeated. The
+   The removal is hygiene: it can be interrupted and repeated. The
    identity is what keeps another account out.
 3. **Forget the credential last.** A crash before this step leaves the
-   account signed in, with or without its cache. That is the state the
+   account signed in, with or without its cache, which is the state the
    next launch can finish from.
 
 Signing out and signing in again is a new environment. The Swift sample's
@@ -159,8 +158,8 @@ opens the other account's file, and the first stays warm. With the
 account in the `version`, the next environment empties the one file, and
 the first account refetches when it returns. Either way, the second
 account never reads the first account's rows. An image opened under
-another `version` is emptied before any read. Another path is another
-file.
+another `version` is emptied before any read, and another path is
+another file.
 
 ## The walkthrough: A signs out, B signs in, relaunch offline
 
@@ -173,17 +172,17 @@ Check this case before you ship. Step by step, with the account in the
    credential. If A's response was still in flight, it lands after the
    end and reaches neither memory nor the image. If the removal was
    interrupted, the next open finishes it.
-3. **B signs in.** A new environment, with its own image on the same path.
-   The file is gone. Or, had the removal been skipped, B's open empties
-   it before any read. B opens the same screen. The check misses, and the
-   screen fetches from the network.
+3. **B signs in.** That sign-in is a new environment, with its own image
+   on the same path. The file is gone. Had the removal been skipped, B's open
+   empties it before any read. B opens the same screen, the check misses,
+   and the screen fetches from the network.
 4. **Relaunch offline as B.** B's image holds B's rows and B's fetch
    time, so the screen renders from disk and is not stale.
 5. **A signs in again.** A's environment finds nothing of A's earlier
    session, because the file was removed. With the account in the path,
    and the switch above instead of the sign-out, A's cache is still warm.
 
-The Swift persistence tests prove each step. "each step of a sign-out
+The Swift persistence tests prove each step: "each step of a sign-out
 leaves nothing another account can read: after the end, another account
 reads nothing and the same account still reads its data; after
 removeAll, neither does", "a response the user who signed out was
@@ -204,17 +203,18 @@ before it. The two-account walkthrough is not yet a Kotlin test.
 
 ## Keeping data off the disk
 
-A purge is weaker than never writing. Three controls. Each is decided
-when the image is made, or at build time. None is a switch at run time:
+A purge is weaker than never writing. There are three controls, each
+decided when the image is made or at build time, and none is a switch
+at run time:
 
 - **`transient` types and root fields.** `baton.json`'s `transient` block
   names types whose records never reach the image, an interface standing
   for its implementers, and root fields such as `Query.search`. Those
   fields' cells, storage keys, and fetch stamps are never written, since
   a root field's key carries its arguments and an operation's stamp
-  carries its variables. Memory is unaffected. The next launch misses on
-  what was left out and fetches it. The lists join the image's `version`,
-  so a changed list is an image started again
+  carries its variables. Memory is unaffected, and the next launch misses
+  on what was left out and fetches it. The lists join the image's
+  `version`, so a changed list is an image started again
   ([the decision](../decisions/what-may-reach-the-image.md); the fixtures
   `spec/tests/secrets.json` and `character-secret.json`).
 
@@ -226,7 +226,7 @@ when the image is made, or at build time. None is a switch at run time:
   ```
 
 - **The platform's protection class.** `Persistence(name:version:protection:)`
-  takes a `FileProtectionType`. Apple's SQLite makes the file and its
+  takes a `FileProtectionType`, and Apple's SQLite makes the file and its
   write-ahead log under it. Under `.complete` the file cannot be opened
   while the device is locked. The writer keeps its work for the next try,
   and a read meanwhile misses, rather than the image being discarded. An
@@ -236,5 +236,5 @@ when the image is made, or at build time. None is a switch at run time:
   and the end clears it.
 
 To wipe everything an account has, for a security setting or a remote
-sign-out, do what the sign-out does. End the environment, remove the
+sign-out, do what the sign-out does: end the environment, remove the
 image, and make a new environment for whoever is signed in next.

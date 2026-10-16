@@ -4,7 +4,7 @@ You add four things, in order: the package, the schema, the environment, the fir
 
 ## Install
 
-In Swift, you add the package. You put the build plugin on each target that holds GraphQL. The plugin runs the compiler over the target's sources at build time. The binary comes with the release, prebuilt for macOS and Linux.
+In Swift, add the package and put the build plugin on each target that holds GraphQL. The plugin runs the compiler over the target's sources at build time. The binary comes with the release, prebuilt for macOS and Linux.
 
 ```swift
 // Package.swift
@@ -20,7 +20,7 @@ targets: [
 ]
 ```
 
-In Kotlin, the runtime is on Maven Central. The Gradle plugin runs the compiler as a task. The plugin fetches the same prebuilt binary the Swift plugin uses.
+In Kotlin, the runtime is on Maven Central and the Gradle plugin runs the compiler as a task. The plugin fetches the same prebuilt binary the Swift plugin uses.
 
 ```kotlin
 // build.gradle.kts
@@ -50,7 +50,7 @@ kotlin {
 
 ## The schema
 
-The compiler needs the server's schema as SDL, the schema written out as text, checked in beside the code. You download it with whatever your server offers, the server's own tooling or an introspection query. You name it in `baton.json`, in the target's directory.
+The compiler needs the server's schema as SDL, the schema written out as text, checked in beside the code. Download it with whatever your server offers, the server's own tooling or an introspection query, and name it in `baton.json` in the target's directory.
 
 ```json
 {
@@ -58,11 +58,11 @@ The compiler needs the server's schema as SDL, the schema written out as text, c
 }
 ```
 
-That is a complete configuration for a schema whose objects carry an `id`. Identity is configurable when they do not. Custom scalars can map to your types. Persisted operations are one more key. [The compiler](../guide/compiler/) lists them. The Kotlin target adds `"kotlin": {"package": "app"}` for the generated shared file.
+That is a complete configuration for a schema whose objects carry an `id`. Identity is configurable when they do not, custom scalars can map to your types, and persisted operations are one more key. [The compiler](../guide/compiler/) lists them. The Kotlin target adds `"kotlin": {"package": "app"}` for the generated shared file.
 
 ## The environment
 
-You make one environment per session, at the root of the app, and inject it once. It holds the store, the transport, and the image on disk. For an endpoint that takes a bearer token:
+Make one environment per session, at the root of the app, and inject it once. It holds the store, the transport, and the image on disk. For an endpoint that takes a bearer token:
 
 ```swift tab
 @main
@@ -104,23 +104,23 @@ fun App(tokens: TokenStore) {
 
 ## The first screen
 
-A screen declares one query and switches over its phase. The query is a document, the GraphQL text, in a marker right in the file. A marker holds that text where the compiler can find it.
+A screen declares one query and switches over its phase. The query is a document, the GraphQL text, in a marker right in the file, where the compiler can find it.
 
 {{host issues IssuesScreen | The screen's query and its three cases. `IssuesQuery` is generated from the document. It is a value of the two variables, which the parent constructs.}}
 
-The parent constructs the operation value, `IssuesQuery(owner:name:)`. The view resolves it against the store when it appears. Data already there renders in the first body. Otherwise the environment fetches. `phase` is `loading`, `ready(data)`, or `failed(error)`. `retry` is right there for the failed case.
+The parent constructs the operation value, `IssuesQuery(owner:name:)`, and the view resolves it against the store when it appears. Data already there renders in the first body. Otherwise the environment fetches, and `phase` is `loading`, `ready(data)`, or `failed(error)`, with `retry` right there for the failed case.
 
 ## The first fragment
 
-The screen's query already spreads `IssueRow_issue`, so the row has to exist. You write the fields that one view reads, beside that view. That piece of GraphQL is a fragment. The view takes the fragment's lens as its one input. A lens is a typed window onto one record.
+The screen's query already spreads `IssueRow_issue`, so the row has to exist. Write the fields that one view reads, beside that view. That piece of GraphQL is a fragment, and the view takes the fragment's lens as its one input. A lens is a typed window onto one record.
 
 {{host issues IssueRow | The row's fragment and its body. The parent writes `IssueRow(issue: node.issueRow)`. `issueRow` is the accessor the spread compiled to.}}
 
-Two rules make the rest work. A view reads only through its own lens. A parent never reads a child's fields. Add a field to the row's fragment and the row gets it. Nothing in the screen changes.
+Two rules make the rest work. A view reads only through its own lens, and a parent never reads a child's fields. Add a field to the row's fragment and the row gets it. Nothing in the screen changes.
 
 ## The first list
 
-A list that pages is a connection on a refetchable fragment. Refetchable means that fragment has its own query for the next page. The fragment owns the pagination. The store owns the merged pages. The view reads them like any other field.
+A list that pages is a connection on a refetchable fragment, which means the fragment has its own query for the next page. The fragment owns the pagination, the store owns the merged pages, and the view reads them like any other field.
 
 {{host issue-list IssueList | The connection fragment, the row it spreads, and a screen that spreads the fragment in place of its own `issues` field. `loadNext` fetches the next page with the fragment's own query. The store merges it in.}}
 
@@ -128,7 +128,7 @@ A list that pages is a connection on a refetchable fragment. Refetchable means t
 
 ## The first write
 
-A mutation compiles to an action. You call it with one argument per variable. When the user should see the result at once, you also pass a typed optimistic response. That is a value shown at once, and reverted if the server refuses.
+A mutation compiles to an action. Call it with one argument per variable, and, when the user should see the result at once, pass a typed optimistic response: a value shown immediately and reverted if the server refuses.
 
 {{host star StarButton | A star toggle: a fragment for what it reads, two mutations for what it does. The optimistic response is a typed value. It is reverted if the server refuses.}}
 

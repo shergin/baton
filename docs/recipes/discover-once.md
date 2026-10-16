@@ -2,10 +2,9 @@
 
 Some subjects arrive by a natural key, such as a repository's owner and
 name, or an issue's number from a notification. You cannot ask for a
-changing
-count of them in one operation. Operations are fixed at build time, and
-the count of aliases cannot vary. The pattern these apps settle on has
-two halves. The GitHub samples, Swift and Kotlin, show both.
+changing count of them in one operation: operations are fixed at build
+time, and the count of aliases cannot vary. The pattern these apps settle
+on has two halves, and the GitHub samples, Swift and Kotlin, show both.
 
 ## Discover once, by natural key
 
@@ -20,14 +19,14 @@ query IssueQuery($owner: String!, $name: String!, $number: Int!) {
 }
 ```
 
-The record is keyed by that `id` from then on, whatever path reached it.
-Every later read, by any operation, finds the same record.
+The record is keyed by that `id` from then on, whatever path reached it,
+so every later read, by any operation, finds the same record.
 
 ## Refresh through `nodes(ids:)`
 
 Once the ids are known, one operation refreshes any number of them.
-GitHub's `nodes(ids: [ID!]!)` returns the records in the order you asked.
-The sample spreads the same row fragments its lists render:
+GitHub's `nodes(ids: [ID!]!)` returns the records in the order you asked,
+and the sample spreads the same row fragments its lists render:
 
 ```graphql
 query RefreshRowsQuery($ids: [ID!]!) {
@@ -53,17 +52,17 @@ val ids = rows.mapNotNull { it.asIssue?.id ?: it.asPullRequest?.id }
 environment.fetch(RefreshRowsQuery(ids = ids.take(50)))
 ```
 
-The response commits into the records the lists already show, by identity.
-Every row re-renders with its new fields, and nothing else changes. The
-list's own query is not refetched. Its connection's edges stay where they
-were. Fifty ids a request is GitHub's comfortable batch. Caton, the app
-this pattern comes from, refreshed five hundred subjects in ten requests.
-Discovery had cost five hundred.
+The response commits into the records the lists already show, by
+identity. Every row re-renders with its new fields, and nothing else
+changes. The list's own query is not refetched, and its connection's
+edges stay where they were. Fifty ids a request is GitHub's comfortable
+batch. Caton, the app this pattern comes from, refreshed five hundred
+subjects in ten requests. Discovery had cost five hundred.
 
 ## Why not a variable-length batch of aliases
 
 A compiler feature that expands `issue(number:)` into as many aliases as
 the app has keys would be a concept for one app's cold start. The
-discovery cost is paid once per subject, not per launch. After that, the
-id is in the store and the image. `nodes(ids:)` is the server's batch.
-Baton's identity makes the two halves meet in one record.
+discovery cost is paid once per subject, not per launch, and after that
+the id is in the store and the image. `nodes(ids:)` is the server's
+batch, and Baton's identity makes the two halves meet in one record.

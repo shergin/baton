@@ -58,13 +58,13 @@ The store below is a real response from the Rick and Morty API. The screen besid
 
 ## The shape of a screen
 
-A screen is one query. Each view on it is one fragment. The compiler builds the query out of the fragments spread into it. Nobody writes the screen's request by hand.
+A screen is one query, and each view on it is one fragment. The compiler builds the query from the fragments spread into it, so nobody writes the screen's request by hand.
 
 {{host issues IssuesScreen | The screen names the repository with its variables, and spreads the row's fragment into the open issues. The row's accessor, `issueRow`, is the baton. The parent hands it over, and cannot read through it.}}
 
-{{operation issues IssuesQuery | What the compiler sends. The operation, then the fragment it reaches. The `id` fields identity needs, added. The whole text on one line, hashed to an id. Under `persistConfig` the request carries that id and nothing else.}}
+{{operation issues IssuesQuery | What the compiler sends: the operation, then the fragment it reaches, with the `id` fields identity needs added. The whole text is one line, hashed to an id. Under `persistConfig` the request carries that id and nothing else.}}
 
-{{lens issues IssueRow_issue | The row's lens, as the compiler reported it. One accessor per field the fragment declared. No accessor for anything else. Masking is not a house rule. It is the shape of the type.}}
+{{lens issues IssueRow_issue | The row's lens, as the compiler reported it: one accessor per field the fragment declared, and no accessor for anything else. Masking is not a house rule. It is the shape of the type.}}
 
 <div class="tiles">
 
@@ -80,7 +80,7 @@ A screen is one query. Each view on it is one fragment. The compiler builds the 
 
 <h3>Lists that page in the store</h3>
 
-<p>A list is a Relay connection on a refetchable fragment. The lens pages with <code>loadNext</code>. The store merges the pages. A mutation adds an edge with a directive, not with a cache updater. <a href="guide/lists/">Lists</a> walks the fixture that proves it.</p>
+<p>A list is a Relay connection on a refetchable fragment. The lens pages with <code>loadNext</code>, the store merges the pages, and a mutation adds an edge with a directive rather than a cache updater. <a href="guide/lists/">Lists</a> walks the fixture that proves it.</p>
 
 </div>
 
@@ -96,7 +96,7 @@ A screen is one query. Each view on it is one fragment. The compiler builds the 
 
 <h3>Honest data</h3>
 
-<p>Nullability is what the schema says. <code>@required</code> moves a null up to where the product wants to deal with it. <code>@catch</code> turns a field error into a <code>Result</code>. A field error survives caching. Missing data is reported and healed. It is never invented. <a href="guide/honest-data/">Honest data</a> has the directives.</p>
+<p>Nullability is what the schema says. <code>@required</code> moves a null up to where the product wants to deal with it, and <code>@catch</code> turns a field error into a <code>Result</code>. A field error survives caching. Missing data is reported and healed, never invented. <a href="guide/honest-data/">Honest data</a> has the directives.</p>
 
 </div>
 
@@ -104,7 +104,7 @@ A screen is one query. Each view on it is one fragment. The compiler builds the 
 
 <h3>The first frame has the data</h3>
 
-<p>Reads are synchronous on the main actor. A handle resolves against the store before the first body runs. After a launch, the store reads what the handle needs from its image on disk. A screen the app has seen does not flash a spinner. <a href="walkthrough/">The walkthrough</a> follows one screen through to the next launch.</p>
+<p>Reads are synchronous on the main actor, so a handle resolves against the store before the first body runs. After a launch, the store reads what the handle needs from its image on disk, and a screen the app has seen does not flash a spinner. <a href="walkthrough/">The walkthrough</a> follows one screen through to the next launch.</p>
 
 </div>
 
@@ -120,7 +120,7 @@ A screen is one query. Each view on it is one fragment. The compiler builds the 
 
 ## Twelve words
 
-Twelve words. That is the whole vocabulary. A feature is some combination of these, or a Relay directive the compiler already understands. Otherwise it does not ship.
+Twelve words, and that is the whole vocabulary. A feature is some combination of these, or a Relay directive the compiler already understands, or it does not ship.
 
 <ul class="words">
 <li><a href="guide/concepts/#schema">schema</a>the server's menu, checked in and compiled in</li>
@@ -201,7 +201,7 @@ Twelve words. That is the whole vocabulary. A feature is some combination of the
 
 ## Faster, by skipping steps
 
-Baton is faster than Apollo iOS and Apollo Kotlin on the same data. The store is not the trick. The stores write at about the same speed. Apollo takes three steps, on every response or every read, that Baton does not take at all.
+Baton is faster than Apollo iOS and Apollo Kotlin on the same data, and the store is not the trick: the stores write at about the same speed. Apollo takes three steps, on every response or every read, that Baton does not take at all.
 
 <div class="numbers">
 <div><span class="big word">No model tree</span><p>Apollo builds a model of the operation from the response's bytes, and builds it again from the store on every read. Baton decodes the bytes straight into record slots, by the plan the compiler emitted. A view reads a slot.</p></div>

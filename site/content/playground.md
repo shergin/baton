@@ -1,6 +1,6 @@
 # Playground
 
-Write a fragment and a query against the Rick and Morty schema, and read what the compiler makes of them. The lens in Swift and in Kotlin. A lens is a typed window onto one record. The operation's text, as the server would receive it. The diagnostic that names the character that is wrong. The compiler on this page is `batonc`, built to WebAssembly. It is the same crate the build plugins run, so what it writes here is what it writes in a build.
+Write a fragment and a query against the Rick and Morty schema, and read what the compiler makes of them: the lens in Swift and in Kotlin, the operation's text as the server would receive it, and the diagnostic that names the wrong character. A lens is a typed window onto one record. The compiler on this page is `batonc`, built to WebAssembly, the same crate the build plugins run, so what it writes here is what it writes in a build.
 
 {{playground}}
 

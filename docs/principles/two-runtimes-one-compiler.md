@@ -1,51 +1,51 @@
 # Two runtimes, one compiler
 
-Each runtime is written in its platform's language and feels like it.
-Nothing is shared through a bridge.
+Each runtime is written in its platform's language and feels like it, and
+nothing is shared through a bridge.
 
 What the platforms share is decided before the app runs: the compiler, the
 plan it emits, the vocabulary, and the fixtures both runtimes must pass.
 
 ## Why
 
-A compiler written in Rust makes a shared Rust runtime look natural. One
+A compiler written in Rust makes a shared Rust runtime look natural: one
 store, one ingest, one persistence layer, thin bindings. The design forbids
-it at its heart. A view body reads a field as a synchronous slot load that
-registers with Observation. A Rust record behind a foreign-function call
-would hand back a string to copy on every render, or be mirrored by a native
-cache that is a second store. The registrar the UI framework tracks is a
-native object per record in any case. Whatever walks records lives where the
-records live: commits, garbage collection, availability checks, optimistic
-rebase, connection merging. The large native apps that run a shared C++ core
-pay for it with materialized native copies of their data. That is the model
-this library exists to avoid.
+that runtime, at its heart. A view body reads a field as a synchronous slot
+load that registers with Observation. A Rust record behind a foreign-function
+call would hand back a string to copy on every render, or be mirrored by a
+native cache that is a second store. The registrar the UI framework tracks
+is a native object per record in any case. Whatever walks records lives
+where the records live: commits, garbage collection, availability checks,
+optimistic rebase, connection merging. The large native apps that run a
+shared C++ core pay for it with materialized native copies of their data.
+That is the model this library exists to avoid.
 
-The opposite failure is two runtimes that drift. A response normalizes one
-way on iOS and another on Android. A connection merges differently. An error
-survives caching on one platform only.
+The opposite failure is two runtimes that drift: a response normalizes one
+way on iOS and another on Android, a connection merges differently, and an
+error survives caching on one platform only.
 
 ## The idea
 
 Move the shared part to build time. The compiler aggregates fragments,
-applies arguments, inserts identity fields, interns storage keys and hashes
-persisted ids. It emits a normalization plan per operation and a lens per
-fragment. Both runtimes interpret the same plans, so most of the semantics
-is computed once, in one language. The native code is a small interpreter,
-plus the platform's own networking, observation and storage.
+applies arguments and inserts identity fields. It interns storage keys and
+hashes persisted ids, then emits a normalization plan per operation and a
+lens per fragment. Both runtimes interpret the same plans, so most of the
+semantics is computed once, in one language. The native code is a small
+interpreter, plus the platform's own networking, observation and storage.
 
 What remains written twice is the tokenizer, the store, retention,
-connections and the image. Those are specified in files no language owns.
-The runtime contract says what a runtime does with a plan, a response and a
-store. The fixtures are recorded responses, with the store contents and lens
-reads they must produce. A divergence is a failing test on both sides. The
-image's bytes are each runtime's own. What is shared is that a second store
-over the image reads the same records.
+connections and the image, specified in files no language owns. The runtime
+contract says what a runtime does with a plan, a response and a store, and
+the fixtures are recorded responses, with the store contents and lens reads
+they must produce. A divergence is a failing test on both sides. The
+image's bytes are each runtime's own, and what is shared is that a second
+store over the image reads the same records.
 
 ## Consequences
 
 - The Swift runtime depends on Foundation, Observation and the SQLite the
-  system ships. The Kotlin runtime depends on the platform's equivalents. No
-  native library ships inside either.
+  system ships, and the Kotlin runtime depends on the platform's
+  equivalents. No native library ships inside either.
 - You can read, fix and vendor your runtime without the other platform's
   toolchain.
 - Networking uses the platform stack, with its TLS, proxies, background

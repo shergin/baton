@@ -2,10 +2,10 @@
 
 A model that is not a view sometimes wants a value computed from the
 store: a badge count over a connection, a sort of rows by a field, a flag
-over several lenses. Baton adds no API for it. A lens's fields and a handle's
-phase are observable. `Observations`, on the 26 floor, turns what a
-closure reads into a sequence. That sequence yields when any of it
-changes. The model reads through it and keeps the derived value itself.
+over several lenses. Baton adds no API for it. A lens's fields and a
+handle's phase are observable, and `Observations`, on the 26 floor, turns
+what a closure reads into a sequence that yields when any of it changes.
+The model reads through that sequence and keeps the derived value itself.
 
 ## The shape
 
@@ -40,9 +40,9 @@ final class TriageBadge {
 
 `count()` reads the phase, the search's rows, and each row's type. The
 sequence yields when any of them changes, once per commit, after the
-commit's notifications. It does not yield for a commit that touched
+commit's notifications, and it does not yield for a commit that touched
 nothing it read. Spell the element type in the generic parameters, as
-above. Swift 6.3's compiler crashes on a closure that states
+above, because Swift 6.3's compiler crashes on a closure that states
 `@MainActor () -> Int` itself. The retention keeps the operation's data
 alive for the model's life, as a view's storage would.
 
@@ -50,8 +50,8 @@ alive for the model's life, as a view's storage would.
 
 Compose's snapshot state records what a block reads, as Observation does.
 `snapshotFlow` turns the block into a flow that emits when any of it
-changes. The model reads the handle inside the block and keeps the value.
-The shape:
+changes. The model reads the handle inside the block and keeps the value,
+in this shape:
 
 ```kotlin
 class TriageBadge(environment: Environment) {
@@ -76,12 +76,12 @@ this page's Kotlin twin, with the model compiled and proven.
 
 - Not a commit signal. Caton asked twice for one. A model that observes
   what it reads does not need to know that a commit happened. It needs to
-  know that a value it derives from changed. `Observations` says exactly
-  that.
+  know that a value it derives from changed, and `Observations` says
+  exactly that.
 - Not a second read API. The closure reads the same lenses a view reads,
   synchronously, on the main actor or on the store's thread.
 - Not a cache in the store. The derived value belongs to the model that
-  derives it. The store holds what the server said.
+  derives it, and the store holds what the server said.
 
 See [UIKit and AppKit](uikit.md) for the same pattern driving a controller
 and a cell, and

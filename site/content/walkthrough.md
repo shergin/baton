@@ -4,7 +4,7 @@ A character's header, small enough to follow every step: a name, a status, a spe
 
 ## 1. A fragment beside the view
 
-The view declares the fields it reads, next to its body. It takes a lens as its one input. A lens is a typed window onto one record. The view cannot read a field it did not declare, because the lens has no accessor for one.
+The view declares the fields it reads, next to its body, and takes a lens as its one input. A lens is a typed window onto one record, so the view cannot read a field it did not declare: the lens has no accessor for one.
 
 {{host header CharacterHeader | The header's fragment and its body. `origin { name }` reads through a link to another record. The lens makes that a nested lens.}}
 
@@ -16,7 +16,7 @@ The screen declares one query and spreads the header's fragment into it. The par
 
 ## 3. What the compiler makes of them
 
-The compiler reads the schema and every document in the module. It validates them. It assembles the operation with the fragments it reaches, and it adds the fields identity needs. This is the text the app will send, printed on one line as the compiler prints it.
+The compiler reads the schema and every document in the module, validates them, assembles the operation from the fragments it reaches, and adds the fields identity needs. This is the text the app will send, printed on one line as the compiler prints it.
 
 {{operation header CharacterQuery | The operation's text, the fragment printed after it. The compiler added `id` to the character and under `origin`, because both types are keyed by id and the store needs the keys to make the records. The directive on the query stays out of the text, since it is the client's business.}}
 
@@ -24,7 +24,7 @@ For each fragment and each operation, the compiler emits a lens. You get one acc
 
 {{lens header CharacterHeader_character | The header's lens. `name` is optional because the schema says so. `origin` is a nested lens. Nothing else exists on the type.}}
 
-The compiler writes the code too. The generated Swift is one line per field, plus the data tables the runtime walks a response by. There is no model, no decoder, and no cache policy in it.
+The compiler writes the code too. The generated Swift is one line per field, plus the data tables the runtime walks a response by, and there is no model, no decoder, and no cache policy in it.
 
 {{generated header | What the compiler wrote for the two files above. The lens reads a slot per field through the anchor it holds. A slot is one field of one record. The anchor is the record the lens is looking at. The operation value carries its variables, its text, and its plan.}}
 
@@ -58,7 +58,7 @@ The view's body runs. `character.name` loads a slot. So do `status`, `species`, 
 
 ## 8. A field changes
 
-Later a refetch, another screen's query, a mutation's payload, or a subscription's event changes a record. The commit compares each slot before it writes. It notifies only the slots that changed. The specification scripts this on a character with notes.
+Later a refetch, another screen's query, a mutation's payload, or a subscription's event changes a record. The commit compares each slot before it writes, and notifies only the slots that changed. The specification scripts this on a character with notes.
 
 {{script notifications steps=1,2,3 | The same response committed again notifies nothing. A response that renames the character notifies one slot, `Character:1.name`. The bodies that read it run. A body that read only the notes does not.}}
 
@@ -66,7 +66,7 @@ That is the whole re-render story. No watcher re-executes the query. No snapshot
 
 ## 9. A write, seen at once
 
-A mutation's optimistic response is a typed value. It goes through the same ingest as a server's answer. Ingest is how a payload becomes records. It is applied as a layer. The layer shows in the turn of the call. The server's answer replaces it. A failure reverts it. The store notifies only what differs in the end.
+A mutation's optimistic response is a typed value that goes through the same ingest as a server's answer. Ingest is how a payload becomes records. The value is applied as a layer, shows in the turn of the call, and is replaced by the server's answer or reverted if the server refuses. The store notifies only what differs in the end.
 
 {{script optimistic steps=2,4,5,6 | A rename applied optimistically notifies `name`. The server's answer resolves it with no further notification, since the value is the same. A second layer applied and reverted leaves the resolved name in place.}}
 
@@ -80,7 +80,7 @@ The image is a cache, not a database. An image written under another schema, ano
 
 ## 11. Signing out
 
-The environment is the session. Ending it cancels what it started. It closes the image. It leaves every handle failed as gone. A new environment makes its own store, on the same file or another.
+The environment is the session. Ending it cancels what it started, closes the image, and leaves every handle failed as gone. A new environment makes its own store, on the same file or another.
 
 {{script end steps=1,2,3,4 | Two handles attached, one still fetching, and an optimistic rename applied. Then the environment ends. Every handle reads as gone, the records are cleared, and nothing is logged. Signing out is `await environment.end()` and a new environment.}}
 

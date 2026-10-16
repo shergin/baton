@@ -1,11 +1,11 @@
 # Vision
 
 Baton is Relay for native apps. You declare the fields a view reads next to
-its body. That piece of GraphQL is a fragment. The compiler aggregates a
-screen's fragments into one operation. It checks every field against the
-schema before the app runs. The runtime normalizes responses into records
-the UI framework itself observes. A screen fetches once. It renders cached
-data in the first frame. It re-renders only the views whose fields changed.
+its body, and that piece of GraphQL is a fragment. The compiler gathers a
+screen's fragments into one operation and checks every field against the
+schema before the app runs. The runtime turns responses into records that
+the UI framework itself observes, so a screen fetches once, renders cached
+data in the first frame, and re-renders only the views whose fields changed.
 
 The goal is not the biggest feature list. It is the smallest set of concepts
 that makes the data layer disappear from product code. A few strict rules
@@ -28,36 +28,36 @@ That means three commitments:
   read what are replaced by what SwiftUI and Compose can see.
 
 Relay built a runtime to answer one question: which component read which
-field, so a change re-renders exactly those. SwiftUI's Observation answers
-that question. Compose's snapshot state answers it too. Baton keeps Relay's
-compiler and the write side of its store. It deletes the read side rather
-than porting it.
+field, so a change re-renders exactly those. SwiftUI's Observation and
+Compose's snapshot state answer that question already. Baton therefore
+keeps Relay's compiler and the write side of its store, and deletes the
+read side rather than porting it.
 
-- The compiler finds the GraphQL in source. It validates that GraphQL
-  against the schema. It aggregates fragments into operations, and applies
-  fragment arguments. It computes every storage key. It hashes persisted
-  ids. It emits a typed lens per fragment and a normalization plan per
-  operation. Errors point at the GraphQL text inside the Swift file.
+- The compiler finds the GraphQL in source and validates it against the
+  schema. It aggregates fragments into operations, applies fragment
+  arguments, computes every storage key, hashes persisted ids, and emits a
+  typed lens per fragment and a normalization plan per operation. Errors
+  point at the GraphQL text inside the Swift file.
 - The transport can send a persisted id and variables, and it streams bytes
   back.
 - The ingest decodes a response's bytes straight into record slots, off the
   main actor, with no intermediate model.
-- The store commits a change set on the main actor. It writes the slots that
-  changed. It notifies the fields that observed views read.
+- The store commits a change set on the main actor: writes for the slots
+  that changed, and notifications for the fields that observed views read.
 - A lens reads a record's slots synchronously, and registers each read with
   the framework. A view body is invalidated by the fields it read, and by
   nothing else.
 - Persistence is a write-behind image, hydrated before the first body. An
   entry that cannot be read is a miss, never a migration.
 
-Adoption may follow. It is never chased. No parity race with Apollo, no
+Adoption may follow. It is never chased: no parity race with Apollo, no
 feature bazaar, no runtime knobs.
 
 ## Who it is for
 
 Teams that already run Relay on the web and want the same model on iOS and
 Android come first. The schema conventions, the directives and the
-vocabulary carry over. The native screens gain what the web ones have.
+vocabulary carry over, and the native screens gain what the web ones have.
 
 Native teams on GraphQL come second. They are tired of loading flashes,
 whole-screen re-renders, hand-maintained queries and caches that grow
@@ -73,21 +73,20 @@ platform and feels like it.
 Five rules, one axis each: what a fragment means, what the UI reads, what is
 true, who decides, and what the words are.
 
-1. **A fragment is a lens.** A fragment compiles to a lens. A lens is a
-   typed, read-only view over one record: a reference, and one accessor per
-   field you declared. Nothing is decoded into a model to hand it to a view.
-   A parent passes a reference and a context. Masking is not enforced. It is
-   structural. The lens has no accessor for a field the fragment did not
-   declare.
+1. **A fragment is a lens.** A fragment compiles to a lens, a typed
+   read-only view over one record: a reference and one accessor per field
+   you declared. Nothing is decoded into a model to hand to a view. A
+   parent passes a reference and a context. Masking is structural rather
+   than enforced, because the lens has no accessor for a field the fragment
+   did not declare.
 2. **The store is the UI's state.** Records are observable objects. A body
    that read a field is invalidated when that field of that record changes,
-   and at no other time. Reads are synchronous on the main actor. Commits
-   are atomic batches on it. The availability check runs there too, and it
-   reads the image when memory lacks a record. Collection runs there. So
-   does the normalization of an optimistic response, whose layer shows in
-   the turn of the call. Decoding and normalizing a response run off the
-   main actor. The image's writes run off it too. There is no asynchronous
-   read path for views.
+   and at no other time. Reads are synchronous on the main actor, and
+   commits are atomic batches there. The availability check runs there too,
+   and reads the image when memory lacks a record. Collection runs there,
+   and so does the normalization of an optimistic response, whose layer
+   shows in the turn of the call. Decoding a response and writing the image
+   run off the main actor. There is no asynchronous read path for views.
 3. **The response is the oracle.** Whatever path a value takes, through
    ingest, interned slots, optimistic overlays and persisted images,
    reading it through a lens equals reading the raw response at the same
@@ -96,7 +95,7 @@ true, who decides, and what the words are.
    reported and healed, never invented silently.
 4. **The compiler decides; the runtime executes.** Every operation is
    static. Identity, aggregation, masking, storage keys, persisted ids and
-   diagnostics are settled at build time. The runtime interprets plans. It
+   diagnostics are settled at build time. The runtime interprets plans and
    never parses GraphQL or consults a policy object. No path a view or a
    commit takes hashes a field name. The compiler emits a constant per
    storage key, and the process numbers it once

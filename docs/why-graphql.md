@@ -22,7 +22,7 @@ the comments, each with its author. On REST that takes:
 4. A contract the compiler never sees. A field the server renamed is a
    decoding failure in production.
 
-None of this is the screen. It is plumbing. It is most of the code.
+None of this is the screen. It is plumbing, and it is most of the code.
 
 ## What GraphQL solves
 
@@ -73,9 +73,9 @@ Relay puts the data a view reads beside the view.
   reference, not data. The child reads its own fields through it.
 - **One store.** Every response is normalized into records by type and id.
   The list and the detail read the same record, so a change shows in both.
-- **Declarative writes.** A mutation selects what it changed. It names the
+- **Declarative writes.** A mutation selects what it changed and names the
   list it adds to with a directive. It may carry an optimistic response,
-  which shows at once and reverts if the server refuses it. No code edits
+  which shows at once and reverts if the server refuses. No code edits
   the cache.
 
 The view model's data work, the decoding and the cache updates are gone
@@ -104,12 +104,12 @@ struct CommentRow: View {
 ```
 
 The fragment compiles to a typed [lens](terminology.md#generated) over the
-store's records. A lens is a typed window onto one record. SwiftUI's
-Observation and Compose's snapshot state observe the records directly. A
-view re-renders when a field it read changes, and at no other time. A
-screen whose data is already in the store renders it in the first frame.
-No GraphQL is parsed on the device. The [README](../README.md) has the
-Compose spelling and the numbers.
+store's records, a window onto one record with one accessor per field the
+fragment declared. SwiftUI's Observation and Compose's snapshot state
+observe the records directly, so a view re-renders when a field it read
+changes and at no other time. A screen whose data is already in the store
+renders it in the first frame, and no GraphQL is parsed on the device. The
+[README](../README.md) has the Compose spelling and the numbers.
 
 ## What stays yours
 

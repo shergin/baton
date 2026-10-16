@@ -1,6 +1,6 @@
 # The environment
 
-One environment per session. It holds the store, the transport that fills it, the image on disk, and the log. It is the one door everything from outside comes through: a server's response, an optimistic layer, a payload committed by hand. It is also the one thing an app ends at sign-out. This chapter is what it is made of, and what it does.
+One environment per session. It holds the store, the transport that fills it, the image on disk, and the log. That is the one door everything from outside comes through: a server's response, an optimistic layer, a payload committed by hand. An app ends the environment at sign-out. This chapter is what the environment is made of, and what it does.
 
 ## Making one
 
@@ -22,19 +22,19 @@ You inject it once, at the root. That is `.environment(\.baton, environment)` in
 
 ## The transport has one verb
 
-A transport takes a request and yields a stream of payloads. One payload for a query or a mutation, the parts of an incremental response, the events of a subscription. A request says its kind, so a wrapper never retries a mutation a server may have received. The request carries the operation's document, as text or as an id. One function, the encoding, turns a request into the JSON a server receives. If the server uses another convention, you replace that function and keep the transport.
+A transport takes a request and yields a stream of payloads: one payload for a query or a mutation, the parts of an incremental response, the events of a subscription. A request says its kind, so a wrapper never retries a mutation a server may have received. The request carries the operation's document, as text or as an id. One function, the encoding, turns a request into the JSON a server receives. If the server uses another convention, you replace that function and keep the transport.
 
 The built-in transports are the platform's. Swift has `URLSessionTransport` and `GraphQLTransportWebSocket`. Kotlin has `HttpTransport` over `java.net`, and `GraphQLTransportWebSocket` over the JVM's socket. `OkHttpTransport` and `OkHttpWebSocketClient` live in the `baton-okhttp` edge, for an app that has an OkHttp client. All of them read credentials per attempt, from a function, so a rotated token reaches the next request without a new environment.
 
-{{script transport steps=1,2,4,6 | What a transport is handed, compared byte for byte. The standard encoding of a request, with `operationName`, `variables`, and the text, or `documentId` under `persistConfig`. An enum variable is sent as its text. An input object is sent as its fields. A nullable variable left unset is absent.}}
+{{script transport steps=1,2,4,6 | What a transport is handed, compared byte for byte, is the standard encoding of a request, with `operationName`, `variables`, and the text, or `documentId` under `persistConfig`. An enum variable is sent as its text, an input object is sent as its fields, and a nullable variable left unset is absent.}}
 
-Anything a production endpoint needs beyond that is a transport that wraps a transport, written once around the one verb, and owned by the app. One replay of an authorization challenge. A bounded retry with backoff, over the failures a retry can mend. A deadline across the attempts. [The exchange](../../recipes/exchange/) walks through the one the GitHub samples send through, in both languages.
+Anything a production endpoint needs beyond that is a transport that wraps a transport, written once around the one verb, and owned by the app. Examples are one replay of an authorization challenge, a bounded retry with backoff over the failures a retry can mend, and a deadline across the attempts. [The exchange](../../recipes/exchange/) walks through the one the GitHub samples send through, in both languages.
 
 ## The session
 
-An environment pairs a store with the transport that fills it, and it replaces neither. A sign-in makes one. A sign-out ends it. Which one is current is the app's state. Ending it cancels every fetch and stream it started, drops the roots, clears every record, and closes the image, giving its file back. A response that lands later reaches neither memory nor the image. A handle still held reads as gone. Every later call fails with the same error.
+An environment pairs a store with the transport that fills it, and it replaces neither. A sign-in makes one, and a sign-out ends it. Which one is current is the app's state. Ending it cancels every fetch and stream it started, drops the roots, clears every record, and closes the image, giving its file back. A response that lands later reaches neither memory nor the image. A handle still held reads as gone, and every later call fails with the same error.
 
-{{script end | The specification's end script. Handles attached, a layer applied, the environment ended, and everything after it refused.}}
+{{script end | The specification's end script shows handles attached, a layer applied, the environment ended, and everything after it refused.}}
 
 The order of a sign-out is the app's. End the environment, remove the image, and forget the credential last.
 
@@ -52,13 +52,13 @@ token = null
 
 ## Activity
 
-The environment has an active flag, and the app sets it from its lifecycle. The flag is false when the app goes to the background, and true on its return, with `revalidate()` beside it to refetch what went stale meanwhile. While the environment is inactive, every retained subscription is parked and resumed on the return. In Swift the flag follows the scene phase. On Android the sample's `Activation` observes the process lifecycle.
+The environment has an active flag, and the app sets it from its lifecycle. The flag is false when the app goes to the background, and true on its return, with `revalidate()` beside it to refetch what went stale meanwhile. While the environment is inactive, every retained subscription is parked and resumed on the return. In Swift the flag follows the scene phase, and on Android the sample's `Activation` observes the process lifecycle.
 
 ## The log
 
-The environment calls its log with each event of its work. A fetch started, completed with its duration, or failed with its failure's kind. A commit, with its kind and the count of slots it changed. A field error that no `@catch` handled, by operation and path. The image opened, written, or failed. The missing-data cases, each by type and field name. Every event is value-free: names and counts, never a record, a value, or a response body. An app can route the log to its logging and metrics without logging anything a user typed.
+The environment calls its log with each event of its work: a fetch that started, completed with its duration, or failed with its failure's kind, and a commit with its kind and the count of slots it changed. A field error that no `@catch` handled is logged by operation and path. The image is logged when it is opened, written, or failed, and the missing-data cases are logged by type and field name. Every event is value-free: names and counts, never a record, a value, or a response body. An app can route the log to its logging and metrics without logging anything a user typed.
 
-{{script events steps=1,2,3,4,7,8 | What the specification requires the log to say. A commit. A fetch that fails by the transport, and one that fails by a request error. A response whose field error no `@catch` handles. An optimistic layer applied, and resolved.}}
+{{script events steps=1,2,3,4,7,8 | The specification requires the log to say these things: a commit, a fetch that fails by the transport and one that fails by a request error, a response whose field error no `@catch` handles, and an optimistic layer applied and resolved.}}
 
 In Swift, a debug build prints the missing-data events until a log is set. In Kotlin, an environment made with `debug = true` does. A test sets no log, or it collects the events and asserts on a name.
 

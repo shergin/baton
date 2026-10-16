@@ -1,6 +1,6 @@
 # The compiler
 
-`batonc` finds the GraphQL in Swift and Kotlin sources, and in `.graphql` files. It validates every document against the schema, assembles the operations, and writes the lenses and the plans. It decides at build time everything a runtime client decides at run time: identity, aggregation, masking, storage keys, persisted ids, nullability, diagnostics. The runtime interprets what it wrote, and it never parses GraphQL.
+`batonc` finds the GraphQL in Swift and Kotlin sources, and in `.graphql` files. It validates every document against the schema, assembles the operations, and writes the lenses and the plans. At build time it decides everything a runtime client decides at run time: identity, aggregation, masking, storage keys, persisted ids, nullability, diagnostics. The runtime interprets what `batonc` wrote and never parses GraphQL.
 
 ## What it reads
 
@@ -22,33 +22,33 @@ The hosts are every Swift or Kotlin file of the target, and every `.graphql` fil
 
 ## What it checks
 
-It checks everything Relay's compiler checks, because the front end is Relay's, pinned to a release. Unknown fields, wrong arguments, missing variables, a spread of an undefined fragment, a directive where it cannot go. The diagnostic names the file, the line, and the column inside the GraphQL text in the host file, so the editor shows it on the line. A document with an error writes nothing.
+It checks everything Relay's compiler checks, because the front end is Relay's, pinned to a release: unknown fields, wrong arguments, missing variables, a spread of an undefined fragment, a directive where it cannot go. The diagnostic names the file, the line, and the column inside the GraphQL text in the host file, so the editor shows it on the line. A document with an error writes nothing.
 
-{{diagnostics typo | A misspelled field, with the schema's suggestion.}}
+{{diagnostics typo | The diagnostic is a misspelled field, with the schema's suggestion.}}
 
 {{diagnostics unknown-fragment | A query that spreads a fragment nobody declared.}}
 
-Baton adds its own checks on top. A name that generated code reserves. A fragment that is both a lens and a value. An operation made of client fields alone. A Kotlin document with a template in a plain string. A fragment spread by no operation is a warning, since nothing could ever read it.
+Baton adds its own checks on top: a name that generated code reserves, a fragment that is both a lens and a value, an operation made of client fields alone, and a Kotlin document with a template in a plain string. A fragment spread by no operation is a warning, since nothing could ever read it.
 
 ## What it writes
 
-One output per source that declares GraphQL, named by the source's path, and one shared file per target. The shared file holds the types and the storage keys every output names. The generated code is one line per field, plus the data tables the runtime walks a response by. There is no model, no decoder, no cache policy, and no reflection.
+There is one output per source that declares GraphQL, named by the source's path, and one shared file per target. The shared file holds the types and the storage keys every output names. The generated code is one line per field, plus the data tables the runtime walks a response by. There is no model, no decoder, no cache policy, and no reflection.
 
-{{generated issues IssueRow | The lens of one fragment. A struct in Swift and a class in Kotlin, holding its anchor and one accessor per field. A linked field is a nested lens. An abstract field reads its slot on the concrete type.}}
+{{generated issues IssueRow | The lens of one fragment is a struct in Swift and a class in Kotlin, holding its anchor and one accessor per field. A linked field is a nested lens. An abstract field reads its slot on the concrete type.}}
 
-{{generated issues shared | The shared file. The schema's digest, the format the runtime must declare, and every type and storage key the target's documents name, interned once per process.}}
+{{generated issues shared | The shared file holds the schema's digest, the format the runtime must declare, and every type and storage key the target's documents name, interned once per process.}}
 
-The format is a number. The shared file names it, and the runtime declares it. Generated code of another format fails to compile at that one line, with a message, so a runtime and a compiler from different releases never meet silently.
+The format is a number: the shared file names it, and the runtime declares it. Generated code of another format fails to compile at that one line, with a message, so a runtime and a compiler from different releases never meet silently.
 
 ## The report
 
-`--report` writes what the target compiled, as JSON. Each operation has its kind, its variables, the fragments it reaches, and its text. Each fragment has its type and the operations that spread it. Each lens has its accessors, what each reads, and as what. A reviewer reads the report for a contract change. A dependent target's compilation would read it too. Every lens plate on this site is drawn from it.
+`--report` writes what the target compiled, as JSON. Each operation has its kind, its variables, the fragments it reaches, and its text. A fragment has its type and the operations that spread it, and a lens has its accessors, what each reads, and as what. A reviewer reads the report for a contract change. A dependent target's compilation would read it too, and every lens plate on this site is drawn from it.
 
-{{lens comments IssueComments_issue | A fragment's lens from the report. The response key each accessor reads under, whether it may read absent, and the nested lenses.}}
+{{lens comments IssueComments_issue | A fragment's lens from the report shows the response key each accessor reads under, whether it may read absent, and the nested lenses.}}
 
 ## Persisted operations
 
-Under `persistConfig`, the compiler hashes each operation's text and writes Relay's map from id to text, for the server to register. The artifact carries the id and no text. The request then sends `documentId`, and the server runs nothing it has not seen. Without `persistConfig`, the artifact carries the text and no id. The build decides, and no transport has a mode or a fallback.
+Under `persistConfig`, the compiler hashes each operation's text and writes Relay's map from id to text, for the server to register. The artifact carries the id and no text, so the request sends `documentId` and the server runs nothing it has not seen. Without `persistConfig`, the artifact carries the text and no id. The build decides, and no transport has a mode or a fallback.
 
 {{operation issues IssuesQuery | An operation under `persistConfig`. The id it is sent as, and the text the server registers it under. `batonc print` prints both.}}
 
@@ -64,7 +64,7 @@ batonc validate --config baton.json Sources/App/*.swift
 batonc generate --config baton.json --out Sources/App/Generated --check Sources/App/*.swift
 ```
 
-The output is deterministic. The same schema, the same configuration, and the same sources produce the same bytes. Goldens in the repository fix those bytes for both languages. In a checkout, `scripts/build-compiler.sh` builds the binary, and `BATON_COMPILER` points any of the integrations at it.
+The output is deterministic: the same schema, the same configuration, and the same sources produce the same bytes. Goldens in the repository fix those bytes for both languages. In a checkout, `scripts/build-compiler.sh` builds the binary, and `BATON_COMPILER` points any of the integrations at it.
 
 ## Why it is this way
 

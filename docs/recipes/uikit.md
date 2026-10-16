@@ -4,7 +4,7 @@ Baton's reads are synchronous on the main actor, and its handles are
 `@Observable` classes. A `UIViewController` or an `NSViewController` uses
 them without SwiftUI. You ask the environment for the handle, hold the
 retention that keeps the handle's data alive, render what you read, and
-render again when that changes. Nothing here is a second API. It is the
+render again when that changes. Nothing here is a second API: it is the
 same handle the `@Query` wrapper resolves.
 
 The code below is compiled in this repository, as the `Controllers` target
@@ -16,7 +16,7 @@ UIKit half for the iOS Simulator and the AppKit half for macOS.
 
 ## Where the GraphQL lives
 
-`@Query` on a property is a view's storage. It resolves the handle from
+`@Query` on a property is a view's storage that resolves the handle from
 SwiftUI's environment, which a controller does not have. Put a
 controller's operations in a `.graphql` file in the target. The build
 plugin compiles them with the target's Swift sources:
@@ -74,12 +74,12 @@ public final class CharacterViewController: UIViewController {
 
 `handle(for:)` returns the one handle every holder of an equal operation
 value shares. It attaches with the fetch policy you give, `storeOrNetwork`
-by default. Call `retain()` when the view loads. It returns a `Retention`.
-While the controller holds it, the operation's root is the store's and its
-records stay. When the controller goes, so does the retention, and the
-collector may reclaim what nothing else keeps. Hold it in a property,
-never in a local. The AppKit controller is the same, over
-`NSViewController`.
+by default. Call `retain()` when the view loads; it returns a
+`Retention`. While the controller holds that retention, the operation's
+root is the store's and its records stay. When the controller goes, so
+does the retention, and the collector may reclaim what nothing else
+keeps. Hold the retention in a property, never in a local. The AppKit
+controller is the same, over `NSViewController`.
 
 ## Rendering on change
 
@@ -135,16 +135,16 @@ public override func viewDidLoad() {
 }
 ```
 
-A commit that renames the character yields once. A commit that changes a
-field the controller does not show yields nothing. A loop that observed
-`handle.phase` alone, and read the fields in its body, would render the
-first response and never the rename.
+A commit that renames the character yields once, and a commit that
+changes a field the controller does not show yields nothing. A loop that
+observed `handle.phase` alone, and read the fields in its body, would
+render the first response and never the rename.
 
 The first `render` call is not redundant. `Observations` is a sequence,
 and it delivers its first value after a suspension. A controller that
 waited for it would show one blank frame, even when the store already
-holds the data. The synchronous read draws that frame from the store. The
-sequence's first value then renders the same thing again.
+holds the data. The synchronous read draws that frame from the store, and
+the sequence's first value then renders the same thing again.
 
 `retry()` on the handle after a failed phase, `refetch()` behind a refresh
 control, and `isStale` for whether to show one, are the handle's, as they
@@ -188,7 +188,7 @@ public final class CharacterCell: UITableViewCell {
 }
 ```
 
-The lens is a value over the store. It reads synchronously and costs
+The lens is a value over the store that reads synchronously and costs
 nothing to hold, so a bound cell renders in the call. The cell cancels
 its observation on reuse, so a recycled cell does not render the row it
 left. The AppKit cell is an `NSTableCellView` with the same `bind` and
@@ -203,8 +203,8 @@ platform says when, from its own notifications. The app holds one
 `Activation` for as long as the environment lives.
 
 On iOS, use the application's notifications, not a scene's. The
-environment is the app's. One scene leaving the screen while another stays
-does not make the app inactive.
+environment is the app's, so one scene leaving the screen while another
+stays does not make the app inactive.
 
 ```swift
 observers = [
@@ -221,7 +221,8 @@ observers = [
 ```
 
 On macOS a window stays on screen while another app is frontmost, so
-resigning active parks nothing. Hiding does. Returning revalidates.
+resigning active parks nothing. Hiding parks the subscriptions, and
+returning revalidates.
 
 ```swift
 observers = [
@@ -237,11 +238,11 @@ observers = [
 ]
 ```
 
-Writes are the environment's, whatever hosts them.
+Writes are the environment's, whatever hosts them. Call
 `try await environment.mutate(SetFavorite(id: id, favorite: true), optimistic: ...)`
 from an action, and the optimistic layer shows in the turn of the call.
 
-Nothing in the runtime imports UIKit or AppKit. `Observations` and the
+Nothing in the runtime imports UIKit or AppKit: `Observations` and the
 handles are Foundation and Observation.
 
 The Kotlin wiring, an Android app's process lifecycle told to the

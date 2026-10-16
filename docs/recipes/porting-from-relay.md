@@ -1,11 +1,11 @@
 # Porting from Relay
 
 Baton keeps Relay's words and directives, so a Relay app ports by
-spelling, not by rethinking. A fragment stays a fragment. A connection
-stays a connection. `@required` and `@catch` mean what they mean. What
-differs is what Swift, Kotlin, and a native runtime make better, and what
-Baton leaves out on purpose. The table gives each word in Swift and in
-Kotlin. Each "not this" below links its reason.
+spelling, not by rethinking. A fragment stays a fragment, a connection
+stays a connection, and `@required` and `@catch` mean what they mean.
+What differs is what Swift, Kotlin, and a native runtime make better, and
+what Baton leaves out on purpose. The table gives each word in Swift and
+in Kotlin, and each "not this" below links its reason.
 
 ## The same words
 
@@ -40,12 +40,13 @@ Kotlin. Each "not this" below links its reason.
   that owns the record. Nothing in a view waits.
 - **Identity is configured, not assumed.** `id` keys a record by default.
   Types keyed otherwise, including composite keys and interfaces, are
-  named in `baton.json`. The compiler asks the server for the key fields.
+  named in `baton.json`, and the compiler asks the server for the key
+  fields.
 - **Custom scalars read as the app's types.** `customScalarTypes` maps a
   scalar to `Decimal`, `Date`, `URL`, `UUID`, or the app's own
   `MappedScalar`, as a string or under `swift` in an object by language.
   Under `kotlin`, the mapping is a Kotlin type with the `ScalarConverter`
-  object for it. The conversion happens at the read. A value the type
+  object for it. The conversion happens at the read, and a value the type
   cannot hold is a field error.
 - **Enums are generated**, with a case for a value the build did not know:
   Swift's `unknown`, Kotlin's `Undeclared`.
@@ -56,7 +57,8 @@ Kotlin. Each "not this" below links its reason.
   environment. There is no `replaceStore`. The order of a sign-out, and
   the account in the image's identity, are [the accounts recipe](accounts.md).
 - **Client fields are described and committed**, through `schemaExtensions`
-  and `commitPayload`. There are no resolvers and no `commitLocalUpdate`.
+  and `commitPayload`, and there are no resolvers and no
+  `commitLocalUpdate`.
 
 ## Not ported, and why
 
@@ -71,5 +73,5 @@ Kotlin. Each "not this" below links its reason.
 | Imperative store updaters | Directives and payloads have expressed every write so far | A real write neither can express |
 | Automatic persisted queries | They need text and id at run time; the working group dropped them | none |
 
-Relay's docs stay the reference for what the directives mean. Baton's
+Relay's docs stay the reference for what the directives mean, and Baton's
 [terminology](../terminology.md) is the contract for every word above.

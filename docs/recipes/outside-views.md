@@ -7,9 +7,9 @@ timeline. Nothing here is a second API. The environment has a call to
 commit data, a handle to read it, and a retention to keep it. A view's
 storage is made of the same three.
 
-What does not change outside a view: an operation is compiled, never
-parsed at run time. Reads run on the main actor in Swift, and on the
-store's thread in Kotlin.
+What does not change outside a view is that an operation is compiled,
+never parsed at run time, and that reads run on the main actor in Swift
+and on the store's thread in Kotlin.
 
 ## Where the GraphQL lives
 
@@ -18,7 +18,7 @@ keeps its operations in a `.graphql` file in the target. The build plugin
 compiles them with the target's Swift sources into the same operation
 types. In Kotlin, `@Query` is a marker the compiler reads the text from.
 It can sit on the function that sends the operation, as the GitHub
-sample's `Environment.refreshRows` does. Or the operation goes in a
+sample's `Environment.refreshRows` does, or the operation can go in a
 `.graphql` document the Gradle task reads.
 
 ## Which call
@@ -34,9 +34,9 @@ sample's `Environment.refreshRows` does. Or the operation goes in a
 
 `fetch` always asks the network. It ingests the response off the main
 actor, commits it, and returns nothing. The commit makes the operation's
-root. A root that nothing retains waits in the store's release buffer,
-ten roots deep by default. A `storeOnly` handle then reads that root
-without sending a request:
+root, and a root that nothing retains waits in the store's release
+buffer, ten roots deep by default. A `storeOnly` handle then reads that
+root without sending a request:
 
 ```swift
 @MainActor
@@ -58,11 +58,11 @@ suspend fun Environment.characterName(id: String): String? {
 ```
 
 Read the values out when the call returns. A lens is a view onto records,
-not a copy of them. The records stay only while some root reaches them.
-Once enough other roots are released after this one, the buffer lets it
-go. The collector may reclaim its records. A lens held past that point
-reads only what other roots keep. Code that holds data longer retains it,
-as the next section shows.
+not a copy of them, and the records stay only while some root reaches
+them. Once enough other roots are released after this one, the buffer
+lets it go and the collector may reclaim its records. A lens held past
+that point reads only what other roots keep, so code that holds data
+longer retains it, as the next section shows.
 
 The same `storeOnly` handle, with nothing fetched first, is an offline
 read. When the store cannot answer, its phase is `.failed(MissingDataError)`
@@ -72,12 +72,13 @@ and no request is sent.
 
 A service that lives longer than one call holds the handle and its
 retention in properties, as a view's storage does. The default policy,
-`storeOrNetwork`, sends a request only when the store cannot answer or the
-data is stale. The data stays while the retention lives. The service reads
-the phase where it needs it, or observes what it reads. In Swift that is
-through `Observations`, over a lens's fields and the handle's phase, both
-`@Observable`. In Kotlin it is through `snapshotFlow`, over the same
-values as snapshot state. The compiled shapes are in three other recipes:
+`storeOrNetwork`, sends a request only when the store cannot answer or
+the data is stale, and the data stays while the retention lives. The
+service reads the phase where it needs it, or observes what it reads: in
+Swift through `Observations`, over a lens's fields and the handle's
+phase, both `@Observable`, and in Kotlin through `snapshotFlow`, over the
+same values as snapshot state. The compiled shapes are in three other
+recipes:
 
 - [derived state outside views](derived-state.md): a model that is not a
   view, in Swift and Kotlin;
@@ -101,18 +102,18 @@ shows in the turn of the call, wherever the caller is.
 
 Relay's `fetchQuery` does not retain what it fetched either. Its
 documentation sends code that wants the data kept to `environment.retain()`
-on the query. Baton makes the same split. `fetch` commits, a handle reads,
-and a retention keeps. If `fetch` returned a lens, the caller would hold a
-value whose records nothing keeps alive.
+on the query. Baton makes the same split: `fetch` commits, a handle
+reads, and a retention keeps. If `fetch` returned a lens, the caller
+would hold a value whose records nothing keeps alive.
 
 ## Off the main actor
 
 A service running elsewhere hops to read. In Swift the environment and its
 handles are `@MainActor`, so a caller off the main actor awaits each call
 there. In Kotlin, the environment's `suspend` calls run on its main
-dispatcher from whatever thread calls them. A phase or a lens is read on
-that dispatcher. The request and the ingest already run off the main actor
-or the store's thread. Only the commit and the read run on it.
+dispatcher from whatever thread calls them, and a phase or a lens is read
+on that dispatcher. The request and the ingest already run off the main
+actor or the store's thread, and only the commit and the read run on it.
 
 `OutsideViewsTests`, under `swift/Tests/BatonTests` and
 `kotlin/baton/src/jvmTest`, prove what this page says on both runtimes.

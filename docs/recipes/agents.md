@@ -9,13 +9,13 @@ differ, that file is right.
 
 A SwiftPM checkout of Baton carries this `docs/` tree, so you read it
 locally, at the version the app resolved. The Maven artifact carries no
-docs. Read them on GitHub at the tag the app depends on.
+docs, so read them on GitHub at the tag the app depends on.
 
 ## Read first
 
-1. The [README](../../README.md). What Baton is and is not, and the
+1. The [README](../../README.md): what Baton is and is not, and the
    SwiftUI and Compose spellings side by side.
-2. [`terminology.md`](../terminology.md). The closed vocabulary. Do not
+2. [`terminology.md`](../terminology.md), the closed vocabulary. Do not
    name a concept it does not name.
 3. The platform's build:
    - SwiftPM: add the package, `https://github.com/shergin/baton`. Depend
@@ -29,12 +29,12 @@ docs. Read them on GitHub at the tag the app depends on.
      the plugin `com.shergin.baton`.
    - Bazel: [`bazel.md`](bazel.md).
    - Anything else: [`batonc.md`](batonc.md), the command's contract.
-4. [`testing.md`](testing.md). A store without a server, for previews and
+4. [`testing.md`](testing.md), a store without a server, for previews and
    tests.
 
 Then read one sample screen whole before writing one. Swift is under
-`examples/GitHubTriage/`. Kotlin is under `kotlin/samples/github/`. They
-cover a query, fragments, a connection, a mutation with an optimistic
+`examples/GitHubTriage/`, and Kotlin is under `kotlin/samples/github/`.
+They cover a query, fragments, a connection, a mutation with an optimistic
 response, an edge directive, `@required`, and `@catch`. Coming from Relay,
 [`porting-from-relay.md`](porting-from-relay.md) puts the words side by
 side.
@@ -42,8 +42,8 @@ side.
 ## The shape of a screen
 
 - **One query per screen.** The screen declares one `@Query` whose
-  document spreads its children's fragments. The compiler assembles the
-  operation. A part that may arrive later is a
+  document spreads its children's fragments, and the compiler assembles
+  the operation. A part that may arrive later is a
   [deferred fragment](../terminology.md#documents), not a second query.
   The parent, or a navigation path, constructs the query's
   [operation value](../terminology.md#generated) from its variables, as
@@ -68,9 +68,9 @@ side.
   adds to or removes from a list, the payload field carries an
   [edge directive](../terminology.md#lists): `@appendEdge`,
   `@prependEdge`, `@deleteEdge`, or `@deleteRecord`. The directive names
-  the connection through a `connections` variable. The view fills that
-  variable from the connection's `connectionID`. The optimistic response
-  is applied at once, and reverted if the server fails.
+  the connection through a `connections` variable, which the view fills
+  from the connection's `connectionID`. The optimistic response is applied
+  at once, and reverted if the server fails.
 - **The fields a view cannot do without** carry `@required(action: NONE |
   LOG | THROW)`. The fields whose errors the view shows carry `@catch`
   ([Required, Catch](../terminology.md#documents)). Otherwise nullability
@@ -78,8 +78,8 @@ side.
 - **The phase decides what the screen shows.** A query's handle has a
   [phase](../terminology.md#generated): loading, ready, or failed, and a
   `retry`. Render each case.
-- **The environment is injected once,** at the root of the app. In Swift,
-  `.environment(\.baton, environment)`. In Kotlin,
+- **The environment is injected once,** at the root of the app. Swift
+  uses `.environment(\.baton, environment)`, and Kotlin uses
   `CompositionLocalProvider(LocalBaton provides environment)`.
 
 Where Swift and Kotlin differ:
@@ -102,26 +102,26 @@ are the same screen: a lookup, a connection, and a mutation with
 ## What never to write
 
 - **A model layer, or a view model that copies fields.** The lens is the
-  model. The store is the only copy. A struct or data class that mirrors
-  a fragment's fields goes stale the moment the store changes, and it
-  defeats the per-field re-render. A Kotlin screen with no composition at
-  all holds the handle, as [`views.md`](views.md) shows. It does not hold
-  a copy.
+  model, and the store is the only copy. A struct or data class that
+  mirrors a fragment's fields goes stale the moment the store changes,
+  and it defeats the per-field re-render. A Kotlin screen with no
+  composition at all holds the handle, as [`views.md`](views.md) shows,
+  and does not hold a copy.
 - **A query file for a screen.** The screen's operation is assembled from
   the fragments spread into it. Write a fragment beside each view, and a
   query that spreads them. Never write a hand-merged query with every
   field. A `.graphql` file is for a host that is not a view, such as a
   UIKit controller ([`uikit.md`](uikit.md)).
 - **A cache updater.** There is no function that edits the store after a
-  mutation. What a mutation changes is what its payload selects. What it
-  adds to or removes from a list is an edge directive. What it shows
+  mutation. What a mutation changes is what its payload selects, what it
+  adds to or removes from a list is an edge directive, and what it shows
   before the server answers is its optimistic response.
 - **A runtime policy object.** Identity is schema configuration in
-  `baton.json`. Behaviour is a directive in the document, or a value on a
-  handle. Nothing is configured by an object at run time.
+  `baton.json`, and behaviour is a directive in the document or a value
+  on a handle. Nothing is configured by an object at run time.
 - **A GraphQL string built at run time,** or a parse of one. Every
   operation is known at build time.
-- **A field a view did not declare.** A view reads its own fragment. It
+- **A field a view did not declare.** A view reads its own fragment: it
   does not read through a parent's lens into a child's fields, and it
   does not add a field to a parent because a child needs it.
 
