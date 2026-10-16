@@ -1,10 +1,10 @@
 # Getting started
 
-Four things, in order: the package, the schema, the environment, the first screen. Then a fragment, a list and a write, which is most of what an app does. The GraphQL in every figure is compiled by the real compiler when this site is built, and the SwiftUI and Compose tabs show the same thing twice.
+You add four things, in order: the package, the schema, the environment, the first screen. Then a fragment, a list, and a write. That is most of what an app does. The GraphQL in every figure is compiled by the real compiler when this site is built, and the SwiftUI and Compose tabs show the same thing twice.
 
 ## Install
 
-In Swift, add the package and put the build plugin on each target that holds GraphQL. The plugin runs the compiler over the target's sources at build time; the binary comes with the release, prebuilt for macOS and Linux.
+In Swift, you add the package. You put the build plugin on each target that holds GraphQL. The plugin runs the compiler over the target's sources at build time. The binary comes with the release, prebuilt for macOS and Linux.
 
 ```swift
 // Package.swift
@@ -20,7 +20,7 @@ targets: [
 ]
 ```
 
-In Kotlin, the runtime is on Maven Central and the Gradle plugin runs the compiler as a task. The plugin fetches the same prebuilt binary the Swift plugin uses.
+In Kotlin, the runtime is on Maven Central. The Gradle plugin runs the compiler as a task. The plugin fetches the same prebuilt binary the Swift plugin uses.
 
 ```kotlin
 // build.gradle.kts
@@ -46,11 +46,11 @@ kotlin {
 }
 ```
 
-[Gradle](../recipes/gradle/) has the repositories, the Android variant wiring and the plugin's properties; [Bazel](../recipes/bazel/) has the rule; [the command line](../recipes/batonc/) is the contract everything else spells.
+[Gradle](../recipes/gradle/) has the repositories, the Android variant wiring, and the plugin's properties. [Bazel](../recipes/bazel/) has the rule. [The command line](../recipes/batonc/) is the contract everything else spells.
 
 ## The schema
 
-The compiler needs the server's schema as SDL, checked in beside the code. Download it with whatever your server offers, the server's own tooling or an introspection query, and name it in `baton.json` in the target's directory:
+The compiler needs the server's schema as SDL, the schema written out as text, checked in beside the code. You download it with whatever your server offers, the server's own tooling or an introspection query. You name it in `baton.json`, in the target's directory.
 
 ```json
 {
@@ -58,11 +58,11 @@ The compiler needs the server's schema as SDL, checked in beside the code. Downl
 }
 ```
 
-That is a complete configuration for a schema whose objects carry an `id`. Identity is configurable when they do not, custom scalars can map to your types, and persisted operations are one more key; [the compiler](../guide/compiler/) lists them. The Kotlin target adds `"kotlin": {"package": "app"}` for the generated shared file.
+That is a complete configuration for a schema whose objects carry an `id`. Identity is configurable when they do not. Custom scalars can map to your types. Persisted operations are one more key. [The compiler](../guide/compiler/) lists them. The Kotlin target adds `"kotlin": {"package": "app"}` for the generated shared file.
 
 ## The environment
 
-One environment per session, made at the root of the app and injected once. It holds the store, the transport and the image on disk. For an endpoint that takes a bearer token:
+You make one environment per session, at the root of the app, and inject it once. It holds the store, the transport, and the image on disk. For an endpoint that takes a bearer token:
 
 ```swift tab
 @main
@@ -100,49 +100,49 @@ fun App(tokens: TokenStore) {
 }
 ```
 
-`Types.schemaDigest` is generated: an image written under another schema starts again instead of being migrated. The credentials closure is read on every attempt, so a token the store renews reaches the next request without a new environment; on Android the image also needs a directory, `Persistence.named("App", version = Types.schemaDigest, directory = cacheDir.path)`. A production endpoint wants a retry and a deadline around that transport, which is [the exchange](../recipes/exchange/), a few dozen lines the app owns.
+`Types.schemaDigest` is generated. An image written under another schema starts again, instead of being migrated. The credentials closure is read on every attempt. A token the store renews reaches the next request without a new environment. On Android the image also needs a directory, `Persistence.named("App", version = Types.schemaDigest, directory = cacheDir.path)`. A production endpoint wants a retry and a deadline around that transport. That is [the exchange](../recipes/exchange/), a few dozen lines the app owns.
 
 ## The first screen
 
-A screen declares one query and switches over its phase. The query is a document in a marker, right in the file; the compiler finds it there.
+A screen declares one query and switches over its phase. The query is a document, the GraphQL text, in a marker right in the file. A marker holds that text where the compiler can find it.
 
-{{host issues IssuesScreen | The screen's query and its three cases. `IssuesQuery` is generated from the document: a value of the two variables, which the parent constructs.}}
+{{host issues IssuesScreen | The screen's query and its three cases. `IssuesQuery` is generated from the document. It is a value of the two variables, which the parent constructs.}}
 
-The parent constructs the operation value, `IssuesQuery(owner:name:)`, and the view resolves it against the store when it appears: data already there renders in the first body, otherwise the environment fetches. `phase` is `loading`, `ready(data)` or `failed(error)`, and `retry` is right there for the failed case.
+The parent constructs the operation value, `IssuesQuery(owner:name:)`. The view resolves it against the store when it appears. Data already there renders in the first body. Otherwise the environment fetches. `phase` is `loading`, `ready(data)`, or `failed(error)`. `retry` is right there for the failed case.
 
 ## The first fragment
 
-The screen's query already spreads `IssueRow_issue`, so the row has to exist. A fragment is the fields one view reads, beside that view, and the view takes the fragment's lens as its one input:
+The screen's query already spreads `IssueRow_issue`, so the row has to exist. You write the fields that one view reads, beside that view. That piece of GraphQL is a fragment. The view takes the fragment's lens as its one input. A lens is a typed window onto one record.
 
-{{host issues IssueRow | The row's fragment and its body. The parent writes `IssueRow(issue: node.issueRow)`; `issueRow` is the accessor the spread compiled to.}}
+{{host issues IssueRow | The row's fragment and its body. The parent writes `IssueRow(issue: node.issueRow)`. `issueRow` is the accessor the spread compiled to.}}
 
-Two rules that make the rest work: a view reads only through its own lens, and a parent never reads a child's fields. Add a field to the row's fragment and the row gets it; nothing in the screen changes.
+Two rules make the rest work. A view reads only through its own lens. A parent never reads a child's fields. Add a field to the row's fragment and the row gets it. Nothing in the screen changes.
 
 ## The first list
 
-A list that pages is a connection on a refetchable fragment. The fragment owns the pagination, the store owns the merged pages, and the view reads them like any other field:
+A list that pages is a connection on a refetchable fragment. Refetchable means that fragment has its own query for the next page. The fragment owns the pagination. The store owns the merged pages. The view reads them like any other field.
 
-{{host issue-list IssueList | The connection fragment, the row it spreads, and a screen that spreads the fragment in place of its own `issues` field. `loadNext` fetches the next page with the fragment's own query, and the store merges it in.}}
+{{host issue-list IssueList | The connection fragment, the row it spreads, and a screen that spreads the fragment in place of its own `issues` field. `loadNext` fetches the next page with the fragment's own query. The store merges it in.}}
 
 [Lists](../guide/lists/) shows what the store holds after each page, from the fixture that proves it.
 
 ## The first write
 
-A mutation compiles to an action. Call it with one argument per variable and, when the user should see the result at once, a typed optimistic response:
+A mutation compiles to an action. You call it with one argument per variable. When the user should see the result at once, you also pass a typed optimistic response. That is a value shown at once, and reverted if the server refuses.
 
-{{host star StarButton | A star toggle: a fragment for what it reads, two mutations for what it does. The optimistic response is a typed value that is reverted if the server refuses.}}
+{{host star StarButton | A star toggle: a fragment for what it reads, two mutations for what it does. The optimistic response is a typed value. It is reverted if the server refuses.}}
 
 [Writes](../guide/writes/) has the rest: edge directives for lists, payloads committed by hand, and why there is no cache updater.
 
 ## When something is wrong
 
-Misspell a field and the build fails at the character in the GraphQL text, in the file that carries it, with the schema's suggestion:
+Misspell a field. The build fails at that character in the GraphQL text, in the file that carries it, with the schema's suggestion.
 
-{{diagnostics typo | The compiler over a row with a typo. The position points into the string inside the Swift file, so the editor shows it on the line.}}
+{{diagnostics typo | The compiler over a row with a typo. The position points into the string inside the Swift file. The editor shows it on the line.}}
 
 ## Previews and tests
 
-A store is filled from a payload as well as from the network, so a preview or a test gets a real store without a server and without mocking anything of Baton's:
+A store is filled from a payload as well as from the network. A preview or a test gets a real store, with no server, and without mocking anything of Baton's.
 
 ```swift tab
 let environment = Environment(transport: SilentTransport())
@@ -154,11 +154,11 @@ val environment = Environment(SilentTransport())
 environment.commitPayload(IssuesQuery(owner = "shergin", name = "baton"), Payload(fixture))
 ```
 
-[Previews and tests](../recipes/testing/) is the catalogue: recorded transports, a held mutation to observe an optimistic layer, a rule tested with a value.
+[Previews and tests](../recipes/testing/) is the catalogue: recorded transports, a held mutation to observe an optimistic layer, and a rule tested with a value.
 
 ## Where next
 
-- [One screen, end to end](../walkthrough/): what just happened, step by step, from the fragment to the next launch.
-- [GraphQL for mobile engineers](../graphql/): the schema, the document and the response, if those words are new.
+- [One screen, end to end](../walkthrough/): what happened, step by step, from the fragment to the next launch.
+- [GraphQL for mobile engineers](../graphql/): the schema, the document, and the response, if those words are new.
 - [The twelve words](../guide/concepts/): the whole vocabulary on one page.
 - [Agents](../recipes/agents/): the shape of a screen and a review checklist, for a coding agent or for you.

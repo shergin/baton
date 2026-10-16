@@ -1,14 +1,14 @@
 # Compose
 
-The Kotlin runtime is the same machine written for its platform: the same compiler, the same plans, the same fixtures under `spec/`, in Kotlin's words. The figures on this site show the Compose spelling beside the SwiftUI one; this page is what differs, and the setup.
+The Kotlin runtime is the same machine, written for its platform. Same compiler, same plans, same fixtures under `spec/`, in Kotlin's words. The figures on this site show the Compose spelling beside the SwiftUI one. This page is what differs, and the setup.
 
 ## Where the marker stands
 
-In Swift the marker is a macro on a stored property; in Kotlin it is an annotation on the composable that renders, holds or acts. A fragment's composable takes the lens as a parameter; a query's composable resolves the operation value with `rememberQuery`; a mutation's takes its action from `rememberMutation`. The markers repeat, so one composable may carry a fragment and two mutations.
+In Swift the marker is a macro on a stored property. In Kotlin it is an annotation on the composable that renders, holds, or acts. A fragment's composable takes the lens as a parameter. A query's composable resolves the operation value with `rememberQuery`. A mutation's composable takes its action from `rememberMutation`. The markers repeat, so one composable may carry a fragment and two mutations.
 
 {{host star StarButton.kt | One composable hosting the fragment it renders and the two mutations it calls.}}
 
-A document with a variable is written in a `$$"""…"""` raw string, because `$` starts a template in a plain one and GraphQL's variables need it; a document without a variable may be a plain string. The compiler reads the string dedented, so it equals the `.graphql` file an author would write.
+A document with a variable is written in a raw string delimited by `$$"""` and `"""`. `$` starts a template in a plain string, and GraphQL's variables need `$`. A document without a variable may be a plain string. The compiler reads the string dedented, so it equals the `.graphql` file an author would write.
 
 ## The same words, Kotlin's shapes
 
@@ -29,9 +29,9 @@ A document with a variable is written in a `$$"""…"""` raw string, because `$`
 | Observation | Observation, through the record's registrar | Compose snapshot state, one channel per slot read |
 | The store's thread | The main actor | The thread that made the store; the environment's main dispatcher |
 
-Everything else is the same by construction: the same operation text, the same records, the same notifications, the same phases, proven by the same fixtures run through code the compiler generates for Kotlin.
+Everything else is the same by construction. The same operation text, the same records, the same notifications, the same phases, proven by the same fixtures run through code the compiler generates for Kotlin.
 
-{{host issues IssuesScreen.kt | The README's screen in Compose. `rememberQuery` holds the retention while the composable stays and releases it when the composable leaves.}}
+{{host issues IssuesScreen.kt | The README's screen in Compose. `rememberQuery` holds the retention while the composable stays, and releases it when the composable leaves.}}
 
 ## The environment in a composition
 
@@ -47,20 +47,20 @@ val environment = remember(token) {
 CompositionLocalProvider(LocalBaton provides environment) { Triage() }
 ```
 
-The store belongs to the thread that made it and its entry points check the caller's; in a composition that is the composition's dispatcher. A test outside a composition passes one test dispatcher as both the main and the ingest dispatcher and runs under `runTest`.
+The store belongs to the thread that made it, and its entry points check the caller's thread. In a composition, that thread is the composition's dispatcher. A test outside a composition passes one test dispatcher as both the main dispatcher and the ingest dispatcher, and runs under `runTest`.
 
 ## Android
 
-- The runtime starts at API 23 and needs no R8 or ProGuard rules: no reflection, no serialization, no lookup by name.
-- The runtime holds no `Context`, so an image named is placed by the app: `Persistence.named(name, directory = cacheDir.path)`.
-- The platform has no WebSocket client, so a subscription over a socket goes through `baton-okhttp`'s `OkHttpWebSocketClient` or an app's own client.
-- The process lifecycle tells the environment its activity: the sample's `Activation` observes `ProcessLifecycleOwner`, sets `isActive` and calls `revalidate()` on the return.
-- An Android application module adds the generated directory through the variant API; [Gradle](../../recipes/gradle/) has the lines.
+- The runtime starts at API 23 and needs no R8 or ProGuard rules. There is no reflection, no serialization, and no lookup by name.
+- The runtime holds no `Context`, so an image you name is placed by the app: `Persistence.named(name, directory = cacheDir.path)`.
+- The platform has no WebSocket client, so a subscription over a socket goes through `baton-okhttp`'s `OkHttpWebSocketClient`, or through an app's own client.
+- The process lifecycle tells the environment whether it is active. The sample's `Activation` observes `ProcessLifecycleOwner`, sets `isActive`, and calls `revalidate()` on the return.
+- An Android application module adds the generated directory through the variant API. [Gradle](../../recipes/gradle/) has the lines.
 
 ## The build
 
-The runtime is `com.shergin.baton:baton` on Maven Central, with `baton-testing`, `baton-okhttp` and `baton-inspector` beside it, and the Gradle plugin `com.shergin.baton` runs the compiler as a task with every input and output declared, fetching the release's prebuilt binary on first use. [Gradle](../../recipes/gradle/) is the page; [the Kotlin runtime](../../kotlin/) is the tree's own README, with the layout, the dependencies and how it is built and published.
+The runtime is `com.shergin.baton:baton` on Maven Central, with `baton-testing`, `baton-okhttp`, and `baton-inspector` beside it. The Gradle plugin `com.shergin.baton` runs the compiler as a task, with every input and output declared, and it fetches the release's prebuilt binary on first use. [Gradle](../../recipes/gradle/) is the page. [The Kotlin runtime](../../kotlin/) is the tree's own README, with the layout, the dependencies, and how the runtime is built and published.
 
 ## Without Compose UI
 
-A view model behind Android Views, a desktop window, a service: each asks the environment for the handle, holds the retention, and reads what it shows through `snapshotFlow`, which emits again when a field it read changed. [Views and view models](../../recipes/views/) is the recipe, with the code the runtime's tests compile.
+A view model behind Android Views, a desktop window, a service. Each one asks the environment for the handle, holds the retention, and reads what the handle shows through `snapshotFlow`. That flow emits again when a field it read has changed. [Views and view models](../../recipes/views/) is the recipe, with the code the runtime's tests compile.

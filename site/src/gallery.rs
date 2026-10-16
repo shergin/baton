@@ -38,7 +38,7 @@ const ENTRIES: &[Entry] = &[
         config: Some("examples/GitHubTriage"),
         hosts: ".",
         language: Language::Swift,
-        story: "What the viewer has to look at: open issues and pull requests assigned to or created by them, a repository with a star toggle, and an issue with its comments and reactions. Reads, writes with optimistic responses, interfaces and a union, a connection a mutation appends to, `@required` and `@catch`, and a lookup by id, against a schema of about 1,800 definitions. The README's screen is this app's.",
+        story: "The work a person actually has to look at. Open issues and pull requests assigned to them, or opened by them. A repository with a star toggle. An issue with its comments and reactions. Reads, writes with optimistic responses, interfaces and a union, a connection a mutation appends to, `@required` and `@catch`, and a lookup by id. The schema is about 1,800 definitions. The screen on the README is this app.",
         run: "GITHUB_TOKEN=$(gh auth token) swift run GitHubTriage",
     },
     Entry {
@@ -48,7 +48,7 @@ const ENTRIES: &[Entry] = &[
         config: Some("kotlin/samples/github"),
         hosts: "src/jvmMain/kotlin/baton/github",
         language: Language::Kotlin,
-        story: "The same screens over GitHub's API, as a Compose for Desktop app: the same documents, the same lenses and the same phase, in Kotlin's words. It sends through the Kotlin exchange and keeps an image in the user's cache directory, so a relaunch renders before the network answers.",
+        story: "The same screens, over GitHub's API, as a Compose for Desktop app. Same documents, same lenses, same phase, in Kotlin's words. It sends through the Kotlin exchange and keeps an image in the user's cache directory. Relaunch, and the screen draws before the network answers.",
         run: "GITHUB_TOKEN=$(gh auth token) gradle :samples:github:run",
     },
     Entry {
@@ -58,7 +58,7 @@ const ENTRIES: &[Entry] = &[
         config: Some("examples/RickAndMorty"),
         hosts: ".",
         language: Language::Swift,
-        story: "The public Rick and Morty API through Baton: characters, their details, episodes and locations share one store, so a character seen in a list, in an episode's cast and among a location's residents is one record. The store keeps an image on disk: quit and launch again, and the screens seen before are drawn from it before the network answers. The schema is small enough to read whole, which is why this site's GraphQL chapter uses it.",
+        story: "The public Rick and Morty API, through Baton. Characters, their details, episodes, and locations share one store. Rick in the list, Rick in an episode's cast, and Rick among a location's residents are one record. The store keeps an image on disk. Quit and launch again, and the screens you already saw draw from it before the network answers. The schema is small enough to read whole, which is why the GraphQL chapter uses it.",
         run: "swift run RickAndMorty",
     },
     Entry {
@@ -68,7 +68,7 @@ const ENTRIES: &[Entry] = &[
         config: Some("kotlin/samples/shared"),
         hosts: "src/commonMain/kotlin/baton/sample",
         language: Language::Kotlin,
-        story: "The same screens as Compose Multiplatform, shared by a Compose for Desktop app (`kotlin/samples/desktop`, with an inspector pane over the store) and an Android app (`kotlin/samples/android`, which tells the environment the process's lifecycle). The Android app has an Apollo Kotlin twin, `kotlin/samples/apollo-android`, the same two screens over Apollo Kotlin, for a head-to-head over the same launch.",
+        story: "The same screens as Compose Multiplatform. A Compose for Desktop app (`kotlin/samples/desktop`, with an inspector pane over the store) and an Android app (`kotlin/samples/android`, which tells the environment the process's lifecycle) share them. The Android app has an Apollo Kotlin twin, `kotlin/samples/apollo-android`: the same two screens, for a head-to-head over the same launch.",
         run: "gradle :samples:desktop:run",
     },
     Entry {
@@ -78,7 +78,7 @@ const ENTRIES: &[Entry] = &[
         config: Some("examples/Controllers"),
         hosts: ".",
         language: Language::Swift,
-        story: "A `UIViewController` and an `NSViewController` holding the same handle a view does: the operations live in a `.graphql` file, the controller asks the environment for the handle, holds the retention, renders what it reads, and renders again when that changes. The recipe is [UIKit and AppKit](/recipes/uikit/).",
+        story: "A `UIViewController` and an `NSViewController` hold the same handle a view does. The operations live in a `.graphql` file. The controller asks the environment for the handle, holds the retention, draws what it reads, and draws again when that changes. The recipe is [UIKit and AppKit](/recipes/uikit/).",
         run: "swift build --target Controllers",
     },
     Entry {
@@ -88,7 +88,7 @@ const ENTRIES: &[Entry] = &[
         config: None,
         hosts: ".",
         language: Language::Swift,
-        story: "The few dozen lines a production endpoint needs and the library does not ship: a transport that wraps a transport, with one replay of a challenge, a bounded retry with backoff, a deadline across every attempt, and the rule that a mutation is never sent twice. The Kotlin twin is `kotlin/samples/exchange`. The recipe is [the exchange](/recipes/exchange/).",
+        story: "The few dozen lines a production endpoint needs, which the library does not ship. A transport that wraps a transport. One replay of a challenge. A bounded retry with backoff. A deadline across every attempt. And the rule that a mutation is never sent twice. The Kotlin twin is `kotlin/samples/exchange`. The recipe is [the exchange](/recipes/exchange/).",
         run: "",
     },
 ];
@@ -119,7 +119,7 @@ pub fn url_for(repo_path: &str) -> Option<String> {
 pub fn render(context: &Context) -> Body {
     let root = &context.site.root;
     let mut source = String::new();
-    source.push_str("<p class=\"section-intro\">Every sample is compiled in the repository's checks, and what each plate below lists was found by the compiler when this page was built: the operations each sample sends and the fragments its views declare. The sources are linked; read one screen whole before writing one.</p>\n\n");
+    source.push_str("<p class=\"section-intro\">Every sample is compiled in the repository's checks. Each plate below is what the compiler found when this page was built: the operations the sample sends, and the fragments its views declare. The sources are linked. Read one screen whole before you write one.</p>\n\n");
     source.push_str("<div class=\"gallery-index\"><ol>");
     for entry in ENTRIES {
         source.push_str(&format!(
@@ -154,7 +154,7 @@ pub fn render(context: &Context) -> Body {
         }
     }
     source.push_str("## Caton {#caton}\n\n");
-    source.push_str("[Caton](https://github.com/shergin/caton) is the demo app: a macOS menu bar inbox for GitHub notifications, built to show this framework in a real product. It joins each notification to the live state of its pull request or issue, and the number in the menu bar is the number of things waiting on you.\n");
+    source.push_str("[Caton](https://github.com/shergin/caton) is the demo app. A macOS menu bar inbox for GitHub notifications, built to show this framework in a real product. It joins each notification to the live state of its pull request or issue. The number in the menu bar is the number of things waiting on you.\n");
     markdown::render(&source, context)
 }
 

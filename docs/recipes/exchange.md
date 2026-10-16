@@ -1,22 +1,22 @@
 # The exchange: a challenge, a retry and a deadline over one verb
 
-Baton's transport has one verb, `send`: a request yields a stream of
+Baton's transport has one verb, `send`. A request yields a stream of
 payloads. The built-in transports read credentials per attempt from a
 function, so a rotated token reaches the next request without a new
 environment. What a production endpoint needs beyond that is a composition
-of that verb, and compositions ship as examples, not as library types: a
-transport that wraps a transport is written once, around one method, and
-the app owns it and its numbers. Two copies are compiled in this
-repository, one per runtime, and this page walks through them:
-[`examples/Exchange/Exchange.swift`](../../examples/Exchange/Exchange.swift),
-which the Swift GitHub sample sends through, and
-[`kotlin/samples/exchange/src/commonMain/kotlin/baton/exchange/Exchange.kt`](../../kotlin/samples/exchange/src/commonMain/kotlin/baton/exchange/Exchange.kt),
-which the Kotlin one sends through. Copy the one for your runtime, and
-change the numbers to the endpoint's.
+of that verb. Compositions ship as examples, not as library types. You
+write a transport that wraps a transport once, around one method. The app
+owns it, and it owns the numbers. Two copies are compiled in this
+repository, one per runtime. This page walks through them.
+[`examples/Exchange/Exchange.swift`](../../examples/Exchange/Exchange.swift)
+is the one the Swift GitHub sample sends through.
+[`kotlin/samples/exchange/src/commonMain/kotlin/baton/exchange/Exchange.kt`](../../kotlin/samples/exchange/src/commonMain/kotlin/baton/exchange/Exchange.kt)
+is the one the Kotlin sample sends through. Copy the one for your
+runtime, and change the numbers to the endpoint's.
 
 ## What it does, in order
 
-1. **Credentials per attempt** are the base transport's: its `credentials`
+1. **Credentials per attempt** are the base transport's. Its `credentials`
    function is read on every attempt, so a token renewed between two
    attempts reaches the second. The exchange adds no header of its own.
 2. **One replay of a challenge.** A 401 calls `challenged()` once per
@@ -24,32 +24,32 @@ change the numbers to the endpoint's.
    second 401 fails the request. A 401 was refused before execution, so
    the replay applies to a mutation as well.
 3. **A mutation is never sent twice** otherwise. The server may have
-   received it; a second send would apply it again.
+   received it. A second send would apply it again.
 4. **A bounded retry with backoff** over the outcomes a retry can mend: a
-   5xx status, or a connection that was lost or timed out. The wait doubles
-   from the first step and is jittered. A 4xx other than 401, a request
-   error (the server answered with errors) and a malformed response are not
-   retried: they would repeat. In Swift a lost connection is the platform's
-   `URLError`; in Kotlin the built-in transports report it as a
-   `TransportError` of status 0 whose `cause` is the connection's own
-   exception, and a status 0 with no cause, a request the transport could
-   not make, is not retried either.
-5. **A deadline spanning every attempt**, the waits included: a retry whose
-   wait would pass it fails with the last error instead. The time one
-   attempt may take is the session's own timeout.
-6. **A stream that delivered is not sent again.** Once a payload reached the
-   caller, a later failure ends the stream: a deferred response's remaining
-   parts are not fetched twice, and a subscription reconnects by its
-   handle's own rule, not here.
+   5xx status, or a connection that was lost or timed out. The wait
+   doubles from the first step and is jittered. A 4xx other than 401, a
+   request error (the server answered with errors), and a malformed
+   response are not retried. They would repeat. In Swift a lost
+   connection is the platform's `URLError`. In Kotlin the built-in
+   transports report it as a `TransportError` of status 0 whose `cause`
+   is the connection's own exception. A status 0 with no cause, a request
+   the transport could not make, is not retried either.
+5. **A deadline spanning every attempt**, the waits included. A retry
+   whose wait would pass it fails with the last error instead. The time
+   one attempt may take is the session's own timeout.
+6. **A stream that delivered is not sent again.** Once a payload reached
+   the caller, a later failure ends the stream. A deferred response's
+   remaining parts are not fetched twice. A subscription reconnects by
+   its handle's own rule, not here.
 
 ## Credentials stay with their host
 
 Credentials belong to one endpoint. Keep them in the base transport whose
-`url` is that endpoint, never in a wrapper that could be pointed elsewhere:
-an `Exchange` over a `URLSessionTransport(url: api, credentials: token)`,
-or over an `HttpTransport(api, credentials = token)`, sends the token to
-`api` and nowhere else, because nothing but that transport reads the
-function.
+`url` is that endpoint, never in a wrapper that could be pointed
+elsewhere. An `Exchange` over a `URLSessionTransport(url: api,
+credentials: token)`, or over an `HttpTransport(api, credentials =
+token)`, sends the token to `api` and nowhere else. Nothing but that
+transport reads the function.
 
 ## Wiring
 
@@ -71,7 +71,7 @@ let environment = Environment(
 )
 ```
 
-In Kotlin, the same shape over the runtime's `HttpTransport`; the GitHub
+In Kotlin, the same shape over the runtime's `HttpTransport`. The GitHub
 sample's `Main.kt` wires `Environment(Exchange(HttpTransport(url,
 credentials = { mapOf("Authorization" to "Bearer $token") })), store = ...)`
 with the defaults:
@@ -91,11 +91,11 @@ val environment = Environment(
 ```
 
 A subscription sent through the exchange gets its retry too, until its
-first event; after that the handle's reconnection takes over. A socket
-transport renews its own connection, so it usually stands alone, as above.
-In Kotlin the socket transport takes the client it opens sockets with: on
-the JVM `GraphQLTransportWebSocket(url, credentials = ...)` picks the
-JVM's own, and on Android, whose platform has none,
+first event. After that, the handle's reconnection takes over. A socket
+transport renews its own connection, so it usually stands alone, as
+above. In Kotlin the socket transport takes the client it opens sockets
+with. On the JVM, `GraphQLTransportWebSocket(url, credentials = ...)`
+picks the JVM's own. On Android, whose platform has none,
 `GraphQLTransportWebSocket(url, credentials = ..., client =
 OkHttpWebSocketClient(okHttp))` from `baton-okhttp`, beside an
 `OkHttpTransport(okHttp, url)` for the queries, which the exchange wraps
@@ -104,9 +104,9 @@ the same way.
 ## The loop, in Kotlin
 
 The Kotlin exchange is one `flow` around the base transport's `send`. The
-flow is cold, so each collection is one exchange, and a consumer that goes
-away cancels the attempt under it; the deadline is read off the monotonic
-clock, and the waits are `delay`s. This is the compiled code:
+flow is cold, so each collection is one exchange, and a consumer that
+goes away cancels the attempt under it. The deadline is read off the
+monotonic clock, and the waits are `delay`s. This is the compiled code:
 
 ```kotlin
 override fun send(request: Request): Flow<ByteArray> = flow {
@@ -149,8 +149,8 @@ override fun send(request: Request): Flow<ByteArray> = flow {
 }
 ```
 
-Whether a failure is one a retry can mend is one function, which an app
-with another transport, or another judgement, edits:
+Whether a failure is one a retry can mend is one function. An app with
+another transport, or another judgement, edits that function:
 
 ```kotlin
 /**
@@ -173,20 +173,21 @@ The Swift exchange is the same loop over an `AsyncThrowingStream`, with
 ## What the tests prove
 
 The Swift package's tests (`ExchangeTests` under `swift/Tests/BatonTests`)
-run the sample over a scripted transport: a 401 then a success is sent
-twice and renews the token between; a 503 then a 200 is sent twice; a
-deadline that expires during the backoff fails with the 503 and no wait; a
-mutation refused with a 503 is sent once and fails; a query whose stream
-delivered a payload before failing is not sent again; the credentials the
-base transport reads change between two attempts; and a held mutation's
-optimistic layer stays applied while a query beside it is retried.
+run the sample over a scripted transport. A 401 then a success is sent
+twice and renews the token between. A 503 then a 200 is sent twice.
+A deadline that expires during the backoff fails with the 503 and no wait.
+A mutation refused with a 503 is sent once and fails. A query whose stream
+delivered a payload before failing is not sent again.
+The credentials the base transport reads change between two attempts. A
+held mutation's optimistic layer stays applied while a query beside it is
+retried.
 
 The Kotlin runtime's JVM tests (`ExchangeTests` under
 `kotlin/baton/src/jvmTest`) prove the same of the Kotlin exchange over
-`baton-testing`'s `ScriptedTransport` and a loopback server: the replayed
-challenge carries the renewed token; a second challenge fails; a 503 then
-a 200 is sent twice; the attempts bound the sends; a deadline that expires
-during the backoff fails at once; a mutation refused with a 503 is sent
-once; a cancelled consumer ends the held attempt; an environment over an
-exchange reads ready after a retry; and a held mutation's optimistic layer
+`baton-testing`'s `ScriptedTransport` and a loopback server. The replayed
+challenge carries the renewed token. A second challenge fails. A 503 then
+a 200 is sent twice. The attempts bound the sends. A deadline that expires
+during the backoff fails at once. A mutation refused with a 503 is sent
+once. A cancelled consumer ends the held attempt. An environment over an
+exchange reads ready after a retry. A held mutation's optimistic layer
 stands through a retry beside it.
