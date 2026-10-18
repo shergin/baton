@@ -356,7 +356,7 @@ What an agent reads first, and checks before handing a change back, is
 
 ## Status
 
-0.16.0 (Pampushka). On Swift, reads, writes, lists, errors and persistence
+0.17.0 (Kulich). On Swift, reads, writes, lists, errors and persistence
 run through every layer, with tests and benchmarks behind the claims: cached
 data in the first body, one changed field re-rendering one row, optimistic
 responses that show at once and revert on failure, connections that merge

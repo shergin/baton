@@ -5,8 +5,8 @@ Gradle. A task runs `batonc generate` with every input and output
 declared, and yields the generated Kotlin for the source set you already
 have. The plugin fetches the compiler from the release's artifact
 bundle. The plugin lives under `kotlin/baton-gradle` in this repository
-and is versioned with Baton, so the plugin 0.16.0 fetches the bundle
-0.16.0 published and writes the format the runtime 0.16.0 reads. The
+and is versioned with Baton, so the plugin 0.17.0 fetches the bundle
+0.17.0 published and writes the format the runtime 0.17.0 reads. The
 version the snippets below quote is the latest release, as `CHANGELOG.md`
 names it. It holds no logic of its own: which source writes which output,
 the header for a source without GraphQL, the shared file, staleness, and
@@ -76,7 +76,7 @@ import baton.gradle.BatonGenerate
 
 plugins {
     kotlin("multiplatform") version "2.4.20"
-    id("com.shergin.baton") version "0.16.0"
+    id("com.shergin.baton") version "0.17.0"
 }
 
 // The hosts: every Kotlin file the compiler scans for `@Fragment`, `@Query`,
@@ -92,7 +92,7 @@ kotlin {
         commonMain {
             kotlin.srcDir(generateBaton.flatMap { it.outputDirectory })
             dependencies {
-                implementation("com.shergin.baton:baton:0.16.0")
+                implementation("com.shergin.baton:baton:0.17.0")
             }
         }
     }

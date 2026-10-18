@@ -3,7 +3,7 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
-## Unreleased
+## 0.17.0 (Kulich) — 2026-10-18
 
 - `@deletes(type:id:)`, the second directive that is not Relay's: a mutation
   whose payload carries no id of the record it deletes names the record by
