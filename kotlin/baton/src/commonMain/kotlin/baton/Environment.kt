@@ -260,7 +260,7 @@ class Environment(
             if (ended) throw EnvironmentError.Gone
             val type = operation.type
             val root = store.root(Store.rootKey(type.name, operation.variables), store.resolve(type.plan, operation.variables), store.root(type.kind))
-            val committed = commit(payload.bytes, root.resolved, root, checkingCancellation = false, complete = false)
+            val committed = commit(payload.bytes, root.resolved, root, checkingCancellation = false, complete = false, deletions = type.plan.deletionKeys(operation.variables))
             if (type.throwsOnFieldError && committed.uncaught.isNotEmpty()) throw FieldErrors(committed.uncaught)
         }
     }
@@ -279,12 +279,18 @@ class Environment(
         if (ended) throw EnvironmentError.Gone
         val type = operation.type
         val resolved = store.resolve(type.plan, operation.variables)
+        // The records `@deletes` names, rendered once for the optimistic layer and the server's commit alike.
+        val deletions = type.plan.deletionKeys(operation.variables)
         val root = store.root(Store.rootKey(type.name, operation.variables), resolved, store.mutationRoot)
-        val layer = optimistic?.let { store.applyOptimistic(Ingest.normalize(it.bytes, resolved, Store.MUTATION_ROOT_KEY)) }
+        val layer = optimistic?.let {
+            val changes = Ingest.normalize(it.bytes, resolved, Store.MUTATION_ROOT_KEY)
+            changes.edits.addAll(deletions.map(ChangeSet.Edit::DeleteByKey))
+            store.applyOptimistic(changes)
+        }
         val committed = try {
             withContext(NonCancellable) {
                 val payload = transport.payload(request(type, operation.variables))
-                commit(payload, resolved, root, checkingCancellation = false, replacing = layer)
+                commit(payload, resolved, root, checkingCancellation = false, replacing = layer, deletions = deletions)
             }
         } catch (error: Throwable) {
             if (layer != null && !ended) store.revertOptimistic(layer)
@@ -443,8 +449,10 @@ class Environment(
         checkingCancellation: Boolean = true,
         complete: Boolean = true,
         replacing: Store.OptimisticLayer? = null,
+        deletions: List<String> = emptyList(),
     ): Committed {
         val changes = withContext(ingestDispatcher) { Ingest.normalize(payload, plan, root.record.key, complete) }
+        changes.edits.addAll(deletions.map(ChangeSet.Edit::DeleteByKey))
         if (checkingCancellation) currentCoroutineContext().ensureActive()
         return commit(changes, root, complete, replacing)
     }

@@ -477,7 +477,7 @@ fn a_cache_expiration_on_a_mutation_or_from_a_variable_is_an_error() {
             "mutation Probe @cacheExpiration(seconds: 30) { rename(id: \"1\", name: \"a\") { character { id } } }"
         ),
         vec![
-            "`@cacheExpiration` on a mutation has no meaning in Baton; a mutation takes `@throwOnFieldError`"
+            "`@cacheExpiration` on a mutation has no meaning in Baton; a mutation takes `@throwOnFieldError`, `@deletes`"
         ]
     );
     assert_eq!(
@@ -488,6 +488,409 @@ fn a_cache_expiration_on_a_mutation_or_from_a_variable_is_an_error() {
         vec![
             "`@cacheExpiration(seconds:)` takes a constant: how old the data may be is the document's to say, not a variable's"
         ]
+    );
+}
+
+/// The tests' identity, `spec/tests/baton.json`'s: `Asset` keyed by `uuid`
+/// and `Quote` by `base` and `quote`, every other type by `id`.
+const SPEC_IDENTITY: &str =
+    r#"{"identity": {"types": {"Asset": ["uuid"], "Quote": ["base", "quote"]}}}"#;
+
+/// The plan compiling `text` against the test schema under the tests'
+/// identity gives.
+fn deleting(text: &str) -> Plan {
+    let (sdl, path) = schema();
+    let mut config: Config = serde_json::from_str(SPEC_IDENTITY).expect("the configuration parses");
+    config.path = PathBuf::from("baton.json");
+    compile(&sdl, &path, &[], &[document(text)], &config)
+        .unwrap_or_else(|errors| panic!("{errors:?}"))
+        .plan
+}
+
+/// The one error compiling the one-line `text` against `sdl` under
+/// `config` fails with, and the text it points at: the rest of the line
+/// from its column.
+fn deletes_error_in(sdl: &str, config: &str, text: &str) -> (String, String) {
+    let mut config: Config = serde_json::from_str(config).expect("the configuration parses");
+    config.path = PathBuf::from("baton.json");
+    let source = document(text);
+    let Err(diagnostics) = compile(
+        sdl,
+        "schema.graphql",
+        &[],
+        std::slice::from_ref(&source),
+        &config,
+    ) else {
+        panic!("`{text}` compiled");
+    };
+    assert_eq!(diagnostics.len(), 1, "{diagnostics:?}");
+    let rendered = crate::diagnostics::render(&diagnostics[0], &[source]);
+    assert_eq!(
+        (rendered.path.as_str(), rendered.line),
+        ("Pipeline.swift", 1)
+    );
+    let at = text[rendered.column as usize - 1..].to_string();
+    (diagnostics[0].message().to_string(), at)
+}
+
+/// The one error compiling the one-line `text` against the test schema
+/// under the tests' identity fails with, and the text it points at.
+fn deletes_error(text: &str) -> (String, String) {
+    let (sdl, _) = schema();
+    deletes_error_in(&sdl, SPEC_IDENTITY, text)
+}
+
+#[test]
+fn a_mutation_that_deletes_by_a_variable_carries_the_type_and_the_variable_in_its_plan() {
+    let plan = deleting(
+        "mutation Probe($id: ID!) @deletes(type: \"Note\", id: $id) { discardNote(id: $id) { deleted } }",
+    );
+    let operation = &plan.operations[0];
+    assert_eq!(
+        operation.deletes,
+        vec![DeletePlan {
+            type_name: "Note".to_string(),
+            variable: "id".to_string(),
+        }]
+    );
+    let json = serde_json::to_value(operation).expect("a plan serializes");
+    assert_eq!(
+        json["deletes"],
+        serde_json::json!([{"type": "Note", "variable": "id"}])
+    );
+}
+
+#[test]
+fn a_mutation_deletes_one_record_for_each_deletes_it_states_in_their_order() {
+    let plan = deleting(
+        "mutation Probe($uuid: String!, $id: ID!) @deletes(type: \"Asset\", id: $uuid) @deletes(type: \"Note\", id: $id) { discardAsset(uuid: $uuid) { deleted } discardNote(id: $id) { deleted } }",
+    );
+    assert_eq!(
+        plan.operations[0].deletes,
+        vec![
+            DeletePlan {
+                type_name: "Asset".to_string(),
+                variable: "uuid".to_string(),
+            },
+            DeletePlan {
+                type_name: "Note".to_string(),
+                variable: "id".to_string(),
+            },
+        ]
+    );
+}
+
+#[test]
+fn a_nullable_variable_of_the_key_type_is_one_deletes_may_name() {
+    let operation = operation(
+        DISCARDING,
+        "mutation Probe($id: ID!, $also: ID) @deletes(type: \"Note\", id: $also) { discardNote(id: $id, also: $also) { deleted } }",
+    );
+    assert_eq!(
+        operation.deletes,
+        vec![DeletePlan {
+            type_name: "Note".to_string(),
+            variable: "also".to_string(),
+        }]
+    );
+}
+
+#[test]
+fn a_plan_without_deletes_serializes_no_deletes() {
+    let plan = deleting(
+        "mutation Probe($id: ID!) { removeNote(id: $id) { removedNoteId @deleteRecord } }",
+    );
+    assert!(plan.operations[0].deletes.is_empty());
+    let json = serde_json::to_value(&plan.operations[0]).expect("a plan serializes");
+    assert!(json.get("deletes").is_none(), "{json}");
+}
+
+#[test]
+fn the_text_a_server_receives_does_not_say_deletes() {
+    let plan = deleting(
+        "mutation Probe($id: ID!) @deletes(type: \"Note\", id: $id) { discardNote(id: $id) { deleted } }",
+    );
+    let sent = &plan.operations[0].text;
+    assert_eq!(
+        sent,
+        "mutation Probe($id:ID!){discardNote(id:$id){deleted}}"
+    );
+    assert!(!sent.contains("deletes"), "{sent}");
+}
+
+#[test]
+fn deletes_of_a_malformed_shape_is_an_error_at_the_directive() {
+    let message = "`@deletes` takes `type`, the name of the record's type, and `id`, the variable the record's key is passed as";
+    for directive in [
+        "@deletes",
+        "@deletes(type: \"Note\")",
+        "@deletes(id: $id)",
+        "@deletes(type: Note, id: $id)",
+        "@deletes(type: \"Note\", id: \"n1\")",
+        "@deletes(type: \"Note\", key: $id)",
+        "@deletes(type: \"Note\", id: $id, also: $id)",
+        "@deletes(type: \"Note\", type: \"Note\")",
+    ] {
+        let text = format!(
+            "mutation Probe($id: ID!) {directive} {{ discardNote(id: $id) {{ deleted }} }}"
+        );
+        let (error, at) = deletes_error(&text);
+        assert_eq!(error, message, "{directive}");
+        assert!(at.starts_with("@deletes"), "{directive}: at `{at}`");
+    }
+}
+
+#[test]
+fn deletes_naming_a_variable_no_field_passes_is_an_error_at_the_variable() {
+    assert_eq!(
+        deletes_error(
+            "mutation Probe($id: ID!, $other: ID!) @deletes(type: \"Note\", id: $other) { discardNote(id: $id) { deleted } }"
+        ),
+        (
+            "`@deletes` names `$other`, which no field of `Probe` passes: a server refuses a variable its operation does not use".to_string(),
+            "$other) { discardNote(id: $id) { deleted } }".to_string()
+        )
+    );
+    assert_eq!(
+        deletes_error(
+            "mutation Probe @deletes(type: \"Note\", id: $id) { discardNote(id: \"n1\") { deleted } }"
+        )
+        .0,
+        "`@deletes` names `$id`, which no field of `Probe` passes: a server refuses a variable its operation does not use",
+        "a variable the mutation neither declares nor passes is one no field passes"
+    );
+}
+
+#[test]
+fn deletes_naming_a_type_the_schema_does_not_have_is_an_error_at_the_type() {
+    assert_eq!(
+        deletes_error(
+            "mutation Probe($id: ID!) @deletes(type: \"Robot\", id: $id) { discardNote(id: $id) { deleted } }"
+        ),
+        (
+            "`@deletes` names `Robot`, which the schema does not have".to_string(),
+            "\"Robot\", id: $id) { discardNote(id: $id) { deleted } }".to_string()
+        )
+    );
+}
+
+#[test]
+fn deletes_naming_an_interface_a_union_or_a_scalar_is_an_error_at_the_type() {
+    for type_name in [
+        "Node",
+        "SearchResult",
+        "Status",
+        "FilterCharacter",
+        "String",
+    ] {
+        let text = format!(
+            "mutation Probe($id: ID!) @deletes(type: \"{type_name}\", id: $id) {{ discardNote(id: $id) {{ deleted }} }}"
+        );
+        let (error, at) = deletes_error(&text);
+        assert_eq!(
+            error,
+            format!(
+                "`@deletes` names `{type_name}`, which is not an object type: name the record's own type"
+            )
+        );
+        assert!(at.starts_with(&format!("\"{type_name}\"")), "at `{at}`");
+    }
+}
+
+#[test]
+fn deletes_naming_a_type_with_no_key_is_an_error_at_the_type() {
+    for type_name in ["Deleted", "FavoritePayload"] {
+        let text = format!(
+            "mutation Probe($id: ID!) @deletes(type: \"{type_name}\", id: $id) {{ discardNote(id: $id) {{ deleted }} }}"
+        );
+        let (error, at) = deletes_error(&text);
+        assert_eq!(
+            error,
+            format!(
+                "`@deletes` names `{type_name}`, which has no key: a record of it is keyed by its path, and no value names it"
+            )
+        );
+        assert!(at.starts_with(&format!("\"{type_name}\"")), "at `{at}`");
+    }
+}
+
+#[test]
+fn deletes_naming_a_type_keyed_by_several_fields_is_an_error_at_the_type() {
+    assert_eq!(
+        deletes_error(
+            "mutation Probe($id: ID!) @deletes(type: \"Quote\", id: $id) { discardNote(id: $id) { deleted } }"
+        ),
+        (
+            "`Quote` is keyed by `base`, `quote`; `@deletes` names a record by one value"
+                .to_string(),
+            "\"Quote\", id: $id) { discardNote(id: $id) { deleted } }".to_string()
+        )
+    );
+}
+
+#[test]
+fn deletes_naming_a_variable_of_another_type_than_the_key_is_an_error_at_the_variable() {
+    assert_eq!(
+        deletes_error(
+            "mutation Probe($id: ID!) @deletes(type: \"Asset\", id: $id) { discardNote(id: $id) { deleted } }"
+        ),
+        (
+            "`@deletes` names `$id` of type `ID` for `Asset`, whose key `uuid` is of type `String`"
+                .to_string(),
+            "$id) { discardNote(id: $id) { deleted } }".to_string()
+        )
+    );
+    assert_eq!(
+        deletes_error(
+            "mutation Probe($uuid: String!) @deletes(type: \"Note\", id: $uuid) { discardAsset(uuid: $uuid) { deleted } }"
+        )
+        .0,
+        "`@deletes` names `$uuid` of type `String` for `Note`, whose key `id` is of type `ID`"
+    );
+}
+
+/// The plan compiling `texts`, each a document of one module, against the
+/// test schema under the tests' identity gives.
+fn deleting_across(texts: &[&str]) -> Plan {
+    let (sdl, path) = schema();
+    let mut config: Config = serde_json::from_str(SPEC_IDENTITY).expect("the configuration parses");
+    config.path = PathBuf::from("baton.json");
+    let documents: Vec<Document> = texts
+        .iter()
+        .enumerate()
+        .map(|(index, text)| Document {
+            index,
+            ..document(text)
+        })
+        .collect();
+    compile(&sdl, &path, &[], &documents, &config)
+        .unwrap_or_else(|errors| panic!("{errors:?}"))
+        .plan
+}
+
+/// The deletions of the one mutation in `plan`.
+fn deletions(plan: &Plan) -> Vec<DeletePlan> {
+    let mutations: Vec<&OperationPlan> = plan
+        .operations
+        .iter()
+        .filter(|operation| operation.kind == OperationKind::Mutation)
+        .collect();
+    assert_eq!(mutations.len(), 1);
+    mutations[0].deletes.clone()
+}
+
+/// The deletion the probes plan: a `Note` by `$id`.
+fn note_by_id() -> Vec<DeletePlan> {
+    vec![DeletePlan {
+        type_name: "Note".to_string(),
+        variable: "id".to_string(),
+    }]
+}
+
+#[test]
+fn a_mutation_that_passes_the_variable_only_inside_a_fragment_it_spreads_deletes_by_it() {
+    let plan = deleting(
+        "mutation Probe($id: ID!) @deletes(type: \"Note\", id: $id) { ...ProbeFields } fragment ProbeFields on Mutation { discardNote(id: $id) { deleted } }",
+    );
+    assert_eq!(deletions(&plan), note_by_id());
+    assert_eq!(
+        plan.operations[0].text,
+        "mutation Probe($id:ID!){...ProbeFields}fragment ProbeFields on Mutation{discardNote(id:$id){deleted}}",
+        "the server receives the variable through the fragment"
+    );
+}
+
+#[test]
+fn a_mutation_that_passes_the_variable_inside_a_fragment_of_another_document_deletes_by_it() {
+    let plan = deleting_across(&[
+        "mutation Probe($id: ID!) @deletes(type: \"Note\", id: $id) { ...ProbeFields }",
+        "fragment ProbeFields on Mutation { discardNote(id: $id) { deleted } }",
+    ]);
+    assert_eq!(deletions(&plan), note_by_id());
+    let plan = deleting_across(&[
+        "fragment ProbeFields on Mutation { discardNote(id: $id) { deleted } }",
+        "mutation Probe($id: ID!) @deletes(type: \"Note\", id: $id) { ...ProbeFields }",
+    ]);
+    assert_eq!(
+        deletions(&plan),
+        note_by_id(),
+        "the fragment's document may come first"
+    );
+}
+
+#[test]
+fn a_mutation_that_passes_the_variable_two_spreads_down_deletes_by_it() {
+    let plan = deleting(
+        "mutation Probe($id: ID!) @deletes(type: \"Note\", id: $id) { ...ProbeOuter } fragment ProbeOuter on Mutation { ...ProbeInner } fragment ProbeInner on Mutation { discardNote(id: $id) { deleted } }",
+    );
+    assert_eq!(deletions(&plan), note_by_id());
+}
+
+#[test]
+fn a_fragment_argument_of_the_variable_s_name_passes_it_only_when_the_spread_passes_it() {
+    let fragment = "fragment ProbeFields on Mutation @argumentDefinitions(id: {type: \"ID!\"}) { discardNote(id: $id) { deleted } }";
+    let plan = deleting(&format!(
+        "mutation Probe($id: ID!) @deletes(type: \"Note\", id: $id) {{ ...ProbeFields @arguments(id: $id) }} {fragment}"
+    ));
+    assert_eq!(deletions(&plan), note_by_id());
+
+    // Without `@arguments` the body's `$id` is the fragment's own argument,
+    // which the operation's variable does not reach.
+    assert_eq!(
+        deletes_error(&format!(
+            "mutation Probe($id: ID!) @deletes(type: \"Note\", id: $id) {{ ...ProbeFields }} {fragment}"
+        )),
+        (
+            "`@deletes` names `$id`, which no field of `Probe` passes: a server refuses a variable its operation does not use".to_string(),
+            format!("$id) {{ ...ProbeFields }} {fragment}")
+        )
+    );
+}
+
+#[test]
+fn two_deletes_naming_the_same_type_and_variable_plan_one_deletion() {
+    let plan = deleting(
+        "mutation Probe($id: ID!) @deletes(type: \"Note\", id: $id) @deletes(type: \"Note\", id: $id) { discardNote(id: $id) { deleted } }",
+    );
+    assert_eq!(deletions(&plan), note_by_id());
+}
+
+/// A schema whose mutations pass a list of ids and an id the payload does
+/// not name, for what the test schema's mutations cannot say.
+const DISCARDING: &str = "
+type Query { note(id: ID!): Note }
+type Mutation { discardNotes(ids: [ID!]!): Deleted discardNote(id: ID!, also: ID): Deleted }
+type Note { id: ID! text: String }
+type Deleted { deleted: Boolean! }
+";
+
+#[test]
+fn deletes_naming_a_list_variable_is_an_error_at_the_variable() {
+    assert_eq!(
+        deletes_error_in(
+            DISCARDING,
+            "{}",
+            "mutation Probe($ids: [ID!]!) @deletes(type: \"Note\", id: $ids) { discardNotes(ids: $ids) { deleted } }"
+        ),
+        (
+            "`@deletes` names `$ids`, a list; it names one record".to_string(),
+            "$ids) { discardNotes(ids: $ids) { deleted } }".to_string()
+        )
+    );
+}
+
+/// The lowering's own check of an undeclared variable is not reached from a
+/// document: a variable a field passes that the mutation does not declare
+/// is refused by Relay's front end first, and one no field passes is the
+/// syntax check's.
+#[test]
+fn deletes_naming_a_variable_the_mutation_does_not_declare_is_an_error() {
+    assert_eq!(
+        errors(
+            SPEC_IDENTITY,
+            "mutation Probe($id: ID!) @deletes(type: \"Note\", id: $undeclared) { discardNote(id: $id) { deleted @include(if: $undeclared) } }"
+        ),
+        vec!["Expected variable `$undeclared` to be defined on the operation 'Probe'"]
     );
 }
 

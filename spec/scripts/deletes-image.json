@@ -1,0 +1,44 @@
+{
+  "name": "deletes-image",
+  "image": true,
+  "steps": [
+    {
+      "commit": {"operation": "TestNotesQuery", "variables": {"id": "1"}, "response": "tests/notes-page-1.json"},
+      "records": "tests/notes-page-1.store.json"
+    },
+    {
+      "relaunch": {},
+      "records_held": ["client:root", "client:root:mutation", "client:root:subscription"]
+    },
+    {
+      "check": {"operation": "TestNotesQuery", "variables": {"id": "1"}},
+      "answer": "image"
+    },
+    {
+      "relaunch": {},
+      "records_held": ["client:root", "client:root:mutation", "client:root:subscription"]
+    },
+    {
+      "commit": {"operation": "TestDiscardNote", "variables": {"id": "n2"}, "response": "tests/discard-note-n2.json"},
+      "records_held": ["client:root", "client:root:mutation", "client:root:mutation:discardNote", "client:root:subscription"]
+    },
+    {
+      "attach": {"operation": "TestNotesQuery", "variables": {"id": "1"}, "policy": "storeOnly", "as": "notes"},
+      "phase": {"handle": "notes", "phase": {"failed": "missingData"}},
+      "sent": []
+    },
+    {
+      "relaunch": {}
+    },
+    {
+      "check": {"operation": "TestNotesQuery", "variables": {"id": "1"}},
+      "answer": "miss",
+      "reads": [{"operation": "TestNotesQuery", "variables": {"id": "1"}, "path": "character.name", "value": "Rick Sanchez"}]
+    },
+    {
+      "attach": {"operation": "TestNotesQuery", "variables": {"id": "1"}, "policy": "storeOnly", "as": "relaunched"},
+      "phase": {"handle": "relaunched", "phase": {"failed": "missingData"}},
+      "sent": []
+    }
+  ]
+}

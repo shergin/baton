@@ -67,7 +67,7 @@ import baton.Subscription
       transient: name baton: name MappedScalar: name
       # The runtime's names generated code spells.
       AbstractSlot: name Anchor: name ArgumentSite: name ConnectionCursor: name ConnectionPlan: name
-      ConnectionSlots: name Document: name DynamicKey: name Edit: name ErrorBehavior: name
+      ConnectionSlots: name Deletion: name Document: name DynamicKey: name Edit: name ErrorBehavior: name
       FieldError: name FieldErrors: name Generated: name GeneratedEnum: name Guard: name
       InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name Lookup: name
       Members: name MutationAction: name MutationOperation: name
@@ -141,7 +141,7 @@ fun KotlinScalars() {}
       baton: origin { id } MappedScalar: origin { id }
       # The runtime's names generated code spells.
       AbstractSlot: origin { id } Anchor: origin { id } ArgumentSite: origin { id }
-      ConnectionCursor: origin { id } ConnectionPlan: origin { id } ConnectionSlots: origin { id }
+      ConnectionCursor: origin { id } ConnectionPlan: origin { id } ConnectionSlots: origin { id } Deletion: origin { id }
       Document: origin { id } DynamicKey: origin { id } Edit: origin { id }
       ErrorBehavior: origin { id } FieldError: origin { id } FieldErrors: origin { id }
       Generated: origin { id } GeneratedEnum: origin { id } Guard: origin { id }
@@ -256,7 +256,7 @@ fun KotlinLinks() {}
       # The runtime's names generated code spells.
       ... @alias(as: "AbstractSlot") { name } ... @alias(as: "Anchor") { name }
       ... @alias(as: "ArgumentSite") { name } ... @alias(as: "ConnectionCursor") { name }
-      ... @alias(as: "ConnectionPlan") { name } ... @alias(as: "ConnectionSlots") { name }
+      ... @alias(as: "ConnectionPlan") { name } ... @alias(as: "ConnectionSlots") { name } ... @alias(as: "Deletion") { name }
       ... @alias(as: "Document") { name } ... @alias(as: "DynamicKey") { name }
       ... @alias(as: "Edit") { name } ... @alias(as: "ErrorBehavior") { name }
       ... @alias(as: "FieldError") { name } ... @alias(as: "FieldErrors") { name }
@@ -467,6 +467,7 @@ fun KotlinSpreadTarget() {}
       ... @alias(as: "ConnectionCursor") { ...KotlinSpreadTarget_character }
       ... @alias(as: "ConnectionPlan") { ...KotlinSpreadTarget_character }
       ... @alias(as: "ConnectionSlots") { ...KotlinSpreadTarget_character }
+      ... @alias(as: "Deletion") { ...KotlinSpreadTarget_character }
       ... @alias(as: "Document") { ...KotlinSpreadTarget_character }
       ... @alias(as: "DynamicKey") { ...KotlinSpreadTarget_character }
       ... @alias(as: "Edit") { ...KotlinSpreadTarget_character }
@@ -601,7 +602,7 @@ fun KotlinCaughtTarget() {}
       MappedScalar: name
       # The runtime's names generated code spells.
       AbstractSlot: name Anchor: name ArgumentSite: name ConnectionCursor: name ConnectionPlan: name
-      ConnectionSlots: name Document: name DynamicKey: name Edit: name ErrorBehavior: name
+      ConnectionSlots: name Deletion: name Document: name DynamicKey: name Edit: name ErrorBehavior: name
       FieldError: name FieldErrors: name Generated: name GeneratedEnum: name Guard: name
       InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name Lookup: name
       Members: name MutationAction: name MutationOperation: name
@@ -678,7 +679,7 @@ fun KotlinBodies() {}
           format: totalCount transient: totalCount baton: totalCount MappedScalar: totalCount
           # The runtime's names generated code spells.
           AbstractSlot: totalCount Anchor: totalCount ArgumentSite: totalCount
-          ConnectionCursor: totalCount ConnectionPlan: totalCount ConnectionSlots: totalCount
+          ConnectionCursor: totalCount ConnectionPlan: totalCount ConnectionSlots: totalCount Deletion: totalCount
           Document: totalCount DynamicKey: totalCount Edit: totalCount ErrorBehavior: totalCount
           FieldError: totalCount FieldErrors: totalCount Generated: totalCount
           GeneratedEnum: totalCount Guard: totalCount InputObject: totalCount
@@ -746,7 +747,7 @@ fun KotlinConnection() {}
           transient: name baton: name MappedScalar: name
           # The runtime's names generated code spells.
           AbstractSlot: name Anchor: name ArgumentSite: name ConnectionCursor: name
-          ConnectionPlan: name ConnectionSlots: name Document: name DynamicKey: name Edit: name
+          ConnectionPlan: name ConnectionSlots: name Deletion: name Document: name DynamicKey: name Edit: name
           ErrorBehavior: name FieldError: name FieldErrors: name Generated: name GeneratedEnum: name
           Guard: name InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name
           Lookup: name Members: name MutationAction: name MutationOperation: name
@@ -801,7 +802,7 @@ fun KotlinRequired() {}
       Sites: id Guards: id schemaDigest: id format: id transient: id baton: id MappedScalar: id
       # The runtime's names generated code spells.
       AbstractSlot: id Anchor: id ArgumentSite: id ConnectionCursor: id ConnectionPlan: id
-      ConnectionSlots: id Document: id DynamicKey: id Edit: id ErrorBehavior: id FieldError: id
+      ConnectionSlots: id Deletion: id Document: id DynamicKey: id Edit: id ErrorBehavior: id FieldError: id
       FieldErrors: id Generated: id GeneratedEnum: id Guard: id InputObject: id KeyArgument: id
       KeyPart: id Lens: id LensList: id Lookup: id Members: id MutationAction: id
       MutationOperation: id OperationKind: id OperationType: id QueryType: id MutationType: id SubscriptionType: id Payload: id
@@ -870,7 +871,7 @@ fun KotlinAbstract() {}
       MappedScalar: name @catch
       # The runtime's names generated code spells.
       AbstractSlot: name @catch Anchor: name @catch ArgumentSite: name @catch
-      ConnectionCursor: name @catch ConnectionPlan: name @catch ConnectionSlots: name @catch
+      ConnectionCursor: name @catch ConnectionPlan: name @catch ConnectionSlots: name @catch Deletion: name @catch
       Document: name @catch DynamicKey: name @catch Edit: name @catch ErrorBehavior: name @catch
       FieldError: name @catch FieldErrors: name @catch Generated: name @catch
       GeneratedEnum: name @catch Guard: name @catch InputObject: name @catch
@@ -985,7 +986,7 @@ fun KotlinCaught() {}
       # The runtime's names generated code spells.
       AbstractSlot: name @required(action: LOG) Anchor: name @required(action: LOG)
       ArgumentSite: name @required(action: LOG) ConnectionCursor: name @required(action: LOG)
-      ConnectionPlan: name @required(action: LOG) ConnectionSlots: name @required(action: LOG)
+      ConnectionPlan: name @required(action: LOG) ConnectionSlots: name @required(action: LOG) Deletion: name @required(action: LOG)
       Document: name @required(action: LOG) DynamicKey: name @required(action: LOG)
       Edit: name @required(action: LOG) ErrorBehavior: name @required(action: LOG)
       FieldError: name @required(action: LOG) FieldErrors: name @required(action: LOG)
@@ -1063,7 +1064,7 @@ fun KotlinRequiredFields() {}
       $format: ID! $transient: ID! $baton: ID! $MappedScalar: ID!
       # The runtime's names generated code spells.
       $AbstractSlot: ID! $Anchor: ID! $ArgumentSite: ID! $ConnectionCursor: ID! $ConnectionPlan: ID!
-      $ConnectionSlots: ID! $Document: ID! $DynamicKey: ID! $Edit: ID! $ErrorBehavior: ID!
+      $ConnectionSlots: ID! $Deletion: ID! $Document: ID! $DynamicKey: ID! $Edit: ID! $ErrorBehavior: ID!
       $FieldError: ID! $FieldErrors: ID! $Generated: ID! $GeneratedEnum: ID! $Guard: ID!
       $InputObject: ID! $KeyArgument: ID! $KeyPart: ID! $Lens: ID! $LensList: ID! $Lookup: ID!
       $Members: ID! $MutationAction: ID! $MutationOperation: ID!
@@ -1078,7 +1079,7 @@ fun KotlinRequiredFields() {}
       $run: ID! $let: ID! $takeIf: ID! $map: ID! $lazy: ID! $listOf: ID! $mapOf: ID! $emptyList: ID!
       $emptyMap: ID! $mutableListOf: ID! $getOrThrow: ID! $success: ID! $failure: ID!
     ) @throwOnFieldError {
-      charactersByIds(ids: [$as, $break, $class, $continue, $do, $else, $false, $for, $fun, $if, $in, $interface, $is, $null, $object, $package, $return, $super, $this, $throw, $true, $try, $typealias, $typeof, $val, $var, $when, $while, $_, $by, $catch, $constructor, $delegate, $dynamic, $field, $file, $finally, $get, $import, $init, $param, $property, $receiver, $set, $setparam, $value, $where, $abstract, $actual, $annotation, $companion, $const, $crossinline, $data, $enum, $expect, $external, $final, $infix, $inline, $inner, $internal, $lateinit, $noinline, $open, $operator, $out, $override, $private, $protected, $public, $reified, $sealed, $suspend, $tailrec, $vararg, $context, $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $other, $it, $element, $count, $optimistic, $text, $fields, $name, $document, $kind, $errorBehavior, $cacheExpirationSeconds, $throwsOnFieldError, $bubbles, $hasIncremental, $plan, $selection, $selection0, $Action, $OptimisticResponse, $invoke, $commit, $variable, $payload, $copy, $component1, $component2, $javaClass, $of, $scalarText, $Undeclared, $size, $keys, $values, $entries, $Types, $Slots, $AbstractSlots, $Sites, $Guards, $schemaDigest, $format, $transient, $baton, $MappedScalar, $AbstractSlot, $Anchor, $ArgumentSite, $ConnectionCursor, $ConnectionPlan, $ConnectionSlots, $Document, $DynamicKey, $Edit, $ErrorBehavior, $FieldError, $FieldErrors, $Generated, $GeneratedEnum, $Guard, $InputObject, $KeyArgument, $KeyPart, $Lens, $LensList, $Lookup, $Members, $MutationAction, $MutationOperation, $OperationKind, $OperationType, $QueryType, $MutationType, $SubscriptionType, $Payload, $Plan, $PlanField, $QueryOperation, $Refetch, $Registry, $ScalarKind, $Selection, $Slot, $StorageKey, $SubscriptionOperation, $Transient, $TypeID, $Any, $Boolean, $Double, $Int, $List, $Long, $Map, $Pair, $Result, $String, $Unit, $Stable, $Immutable, $JvmName, $JvmField, $OptIn, $run, $let, $takeIf, $map, $lazy, $listOf, $mapOf, $emptyList, $emptyMap, $mutableListOf, $getOrThrow, $success, $failure]) { id name }
+      charactersByIds(ids: [$as, $break, $class, $continue, $do, $else, $false, $for, $fun, $if, $in, $interface, $is, $null, $object, $package, $return, $super, $this, $throw, $true, $try, $typealias, $typeof, $val, $var, $when, $while, $_, $by, $catch, $constructor, $delegate, $dynamic, $field, $file, $finally, $get, $import, $init, $param, $property, $receiver, $set, $setparam, $value, $where, $abstract, $actual, $annotation, $companion, $const, $crossinline, $data, $enum, $expect, $external, $final, $infix, $inline, $inner, $internal, $lateinit, $noinline, $open, $operator, $out, $override, $private, $protected, $public, $reified, $sealed, $suspend, $tailrec, $vararg, $context, $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $other, $it, $element, $count, $optimistic, $text, $fields, $name, $document, $kind, $errorBehavior, $cacheExpirationSeconds, $throwsOnFieldError, $bubbles, $hasIncremental, $plan, $selection, $selection0, $Action, $OptimisticResponse, $invoke, $commit, $variable, $payload, $copy, $component1, $component2, $javaClass, $of, $scalarText, $Undeclared, $size, $keys, $values, $entries, $Types, $Slots, $AbstractSlots, $Sites, $Guards, $schemaDigest, $format, $transient, $baton, $MappedScalar, $AbstractSlot, $Anchor, $ArgumentSite, $ConnectionCursor, $ConnectionPlan, $ConnectionSlots, $Deletion, $Document, $DynamicKey, $Edit, $ErrorBehavior, $FieldError, $FieldErrors, $Generated, $GeneratedEnum, $Guard, $InputObject, $KeyArgument, $KeyPart, $Lens, $LensList, $Lookup, $Members, $MutationAction, $MutationOperation, $OperationKind, $OperationType, $QueryType, $MutationType, $SubscriptionType, $Payload, $Plan, $PlanField, $QueryOperation, $Refetch, $Registry, $ScalarKind, $Selection, $Slot, $StorageKey, $SubscriptionOperation, $Transient, $TypeID, $Any, $Boolean, $Double, $Int, $List, $Long, $Map, $Pair, $Result, $String, $Unit, $Stable, $Immutable, $JvmName, $JvmField, $OptIn, $run, $let, $takeIf, $map, $lazy, $listOf, $mapOf, $emptyList, $emptyMap, $mutableListOf, $getOrThrow, $success, $failure]) { id name }
     }
     """)
 fun KotlinVariables() {}
@@ -1133,7 +1134,7 @@ fun KotlinVariables() {}
       $MappedScalar: Boolean!
       # The runtime's names generated code spells.
       $AbstractSlot: Boolean! $Anchor: Boolean! $ArgumentSite: Boolean! $ConnectionCursor: Boolean!
-      $ConnectionPlan: Boolean! $ConnectionSlots: Boolean! $Document: Boolean! $DynamicKey: Boolean!
+      $ConnectionPlan: Boolean! $ConnectionSlots: Boolean! $Deletion: Boolean! $Document: Boolean! $DynamicKey: Boolean!
       $Edit: Boolean! $ErrorBehavior: Boolean! $FieldError: Boolean! $FieldErrors: Boolean!
       $Generated: Boolean! $GeneratedEnum: Boolean! $Guard: Boolean! $InputObject: Boolean!
       $KeyArgument: Boolean! $KeyPart: Boolean! $Lens: Boolean! $LensList: Boolean!
@@ -1241,7 +1242,7 @@ fun KotlinVariables() {}
           # The runtime's names generated code spells.
           ... @include(if: $AbstractSlot) { name } ... @include(if: $Anchor) { name }
           ... @include(if: $ArgumentSite) { name } ... @include(if: $ConnectionCursor) { name }
-          ... @include(if: $ConnectionPlan) { name } ... @include(if: $ConnectionSlots) { name }
+          ... @include(if: $ConnectionPlan) { name } ... @include(if: $ConnectionSlots) { name } ... @include(if: $Deletion) { name }
           ... @include(if: $Document) { name } ... @include(if: $DynamicKey) { name }
           ... @include(if: $Edit) { name } ... @include(if: $ErrorBehavior) { name }
           ... @include(if: $FieldError) { name } ... @include(if: $FieldErrors) { name }
@@ -1340,7 +1341,7 @@ fun KotlinNamesake() {}
       $MappedScalar: Boolean!
       # The runtime's names generated code spells.
       $AbstractSlot: Boolean! $Anchor: Boolean! $ArgumentSite: Boolean! $ConnectionCursor: Boolean!
-      $ConnectionPlan: Boolean! $ConnectionSlots: Boolean! $Document: Boolean! $DynamicKey: Boolean!
+      $ConnectionPlan: Boolean! $ConnectionSlots: Boolean! $Deletion: Boolean! $Document: Boolean! $DynamicKey: Boolean!
       $Edit: Boolean! $ErrorBehavior: Boolean! $FieldError: Boolean! $FieldErrors: Boolean!
       $Generated: Boolean! $GeneratedEnum: Boolean! $Guard: Boolean! $InputObject: Boolean!
       $KeyArgument: Boolean! $KeyPart: Boolean! $Lens: Boolean! $LensList: Boolean!
@@ -1447,7 +1448,7 @@ fun KotlinNamesake() {}
           # The runtime's names generated code spells.
           ... @include(if: $AbstractSlot) { cursor } ... @include(if: $Anchor) { cursor }
           ... @include(if: $ArgumentSite) { cursor } ... @include(if: $ConnectionCursor) { cursor }
-          ... @include(if: $ConnectionPlan) { cursor } ... @include(if: $ConnectionSlots) { cursor }
+          ... @include(if: $ConnectionPlan) { cursor } ... @include(if: $ConnectionSlots) { cursor } ... @include(if: $Deletion) { cursor }
           ... @include(if: $Document) { cursor } ... @include(if: $DynamicKey) { cursor }
           ... @include(if: $Edit) { cursor } ... @include(if: $ErrorBehavior) { cursor }
           ... @include(if: $FieldError) { cursor } ... @include(if: $FieldErrors) { cursor }
@@ -1598,6 +1599,7 @@ fun KotlinSubscriptionVariables() {}
       ConnectionCursor: {type: "Boolean", defaultValue: true}
       ConnectionPlan: {type: "Boolean", defaultValue: true}
       ConnectionSlots: {type: "Boolean", defaultValue: true}
+      Deletion: {type: "Boolean", defaultValue: true}
       Document: {type: "Boolean", defaultValue: true}
       DynamicKey: {type: "Boolean", defaultValue: true} Edit: {type: "Boolean", defaultValue: true}
       ErrorBehavior: {type: "Boolean", defaultValue: true}
@@ -1728,7 +1730,7 @@ fun KotlinSubscriptionVariables() {}
       # The runtime's names generated code spells.
       ... @include(if: $AbstractSlot) { name } ... @include(if: $Anchor) { name }
       ... @include(if: $ArgumentSite) { name } ... @include(if: $ConnectionCursor) { name }
-      ... @include(if: $ConnectionPlan) { name } ... @include(if: $ConnectionSlots) { name }
+      ... @include(if: $ConnectionPlan) { name } ... @include(if: $ConnectionSlots) { name } ... @include(if: $Deletion) { name }
       ... @include(if: $Document) { name } ... @include(if: $DynamicKey) { name }
       ... @include(if: $Edit) { name } ... @include(if: $ErrorBehavior) { name }
       ... @include(if: $FieldError) { name } ... @include(if: $FieldErrors) { name }
@@ -1809,7 +1811,7 @@ fun KotlinArguments() {}
         schemaDigest: false format: false transient: false baton: false MappedScalar: false
         # The runtime's names generated code spells.
         AbstractSlot: false Anchor: false ArgumentSite: false ConnectionCursor: false
-        ConnectionPlan: false ConnectionSlots: false Document: false DynamicKey: false Edit: false
+        ConnectionPlan: false ConnectionSlots: false Deletion: false Document: false DynamicKey: false Edit: false
         ErrorBehavior: false FieldError: false FieldErrors: false Generated: false
         GeneratedEnum: false Guard: false InputObject: false KeyArgument: false KeyPart: false
         Lens: false LensList: false Lookup: false Members: false MutationAction: false
@@ -1871,7 +1873,7 @@ fun KotlinArgumentSpread() {}
           transient: name baton: name MappedScalar: name
           # The runtime's names generated code spells.
           AbstractSlot: name Anchor: name ArgumentSite: name ConnectionCursor: name
-          ConnectionPlan: name ConnectionSlots: name Document: name DynamicKey: name Edit: name
+          ConnectionPlan: name ConnectionSlots: name Deletion: name Document: name DynamicKey: name Edit: name
           ErrorBehavior: name FieldError: name FieldErrors: name Generated: name GeneratedEnum: name
           Guard: name InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name
           Lookup: name Members: name MutationAction: name MutationOperation: name
@@ -1937,7 +1939,7 @@ fun KotlinArgumentSpread() {}
         MappedScalar: note { id }
         # The runtime's names generated code spells.
         AbstractSlot: note { id } Anchor: note { id } ArgumentSite: note { id }
-        ConnectionCursor: note { id } ConnectionPlan: note { id } ConnectionSlots: note { id }
+        ConnectionCursor: note { id } ConnectionPlan: note { id } ConnectionSlots: note { id } Deletion: note { id }
         Document: note { id } DynamicKey: note { id } Edit: note { id } ErrorBehavior: note { id }
         FieldError: note { id } FieldErrors: note { id } Generated: note { id }
         GeneratedEnum: note { id } Guard: note { id } InputObject: note { id }
@@ -2017,7 +2019,7 @@ fun KotlinArgumentSpread() {}
           # The runtime's names generated code spells.
           AbstractSlot: episode { id } Anchor: episode { id } ArgumentSite: episode { id }
           ConnectionCursor: episode { id } ConnectionPlan: episode { id }
-          ConnectionSlots: episode { id } Document: episode { id } DynamicKey: episode { id }
+          ConnectionSlots: episode { id } Deletion: episode { id } Document: episode { id } DynamicKey: episode { id }
           Edit: episode { id } ErrorBehavior: episode { id } FieldError: episode { id }
           FieldErrors: episode { id } Generated: episode { id } GeneratedEnum: episode { id }
           Guard: episode { id } InputObject: episode { id } KeyArgument: episode { id }
@@ -2123,7 +2125,7 @@ fun KotlinInlineScalars2Reach() {}
     fragment KotlinInlineScalars3_character on Character @inline @throwOnFieldError {
       # The runtime's names generated code spells.
       AbstractSlot: name Anchor: name ArgumentSite: name ConnectionCursor: name ConnectionPlan: name
-      ConnectionSlots: name Document: name DynamicKey: name Edit: name ErrorBehavior: name
+      ConnectionSlots: name Deletion: name Document: name DynamicKey: name Edit: name ErrorBehavior: name
       FieldError: name FieldErrors: name Generated: name GeneratedEnum: name Guard: name
       InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name Lookup: name
       Members: name MutationAction: name MutationOperation: name
@@ -2241,7 +2243,7 @@ fun KotlinInlineLinks2Reach() {}
     fragment KotlinInlineLinks3_character on Character @inline @throwOnFieldError {
       # The runtime's names generated code spells.
       AbstractSlot: origin { id } Anchor: origin { id } ArgumentSite: origin { id }
-      ConnectionCursor: origin { id } ConnectionPlan: origin { id } ConnectionSlots: origin { id }
+      ConnectionCursor: origin { id } ConnectionPlan: origin { id } ConnectionSlots: origin { id } Deletion: origin { id }
       Document: origin { id } DynamicKey: origin { id } Edit: origin { id }
       ErrorBehavior: origin { id } FieldError: origin { id } FieldErrors: origin { id }
       Generated: origin { id } GeneratedEnum: origin { id } Guard: origin { id }
@@ -2370,7 +2372,7 @@ fun KotlinInlinePlurals2Reach() {}
       # The runtime's names generated code spells.
       AbstractSlot: episode { id } Anchor: episode { id } ArgumentSite: episode { id }
       ConnectionCursor: episode { id } ConnectionPlan: episode { id }
-      ConnectionSlots: episode { id } Document: episode { id } DynamicKey: episode { id }
+      ConnectionSlots: episode { id } Deletion: episode { id } Document: episode { id } DynamicKey: episode { id }
       Edit: episode { id } ErrorBehavior: episode { id } FieldError: episode { id }
       FieldErrors: episode { id } Generated: episode { id } GeneratedEnum: episode { id }
       Guard: episode { id } InputObject: episode { id } KeyArgument: episode { id }
@@ -2611,6 +2613,7 @@ fun KotlinInlineSpreads2Reach() {}
       ... @alias(as: "ConnectionCursor") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "ConnectionPlan") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "ConnectionSlots") { ...KotlinInlineSpreadTarget_character }
+      ... @alias(as: "Deletion") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "Document") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "DynamicKey") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "Edit") { ...KotlinInlineSpreadTarget_character }

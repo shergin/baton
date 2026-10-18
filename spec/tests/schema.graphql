@@ -56,6 +56,8 @@ type Mutation {
   rename(id: ID!, name: String!): FavoritePayload
   addNote(characterId: ID!, text: String!): AddNotePayload
   removeNote(id: ID!): RemoveNotePayload
+  discardNote(id: ID!): Deleted
+  discardAsset(uuid: String!): Deleted
   setLists: ListsPayload
 }
 
@@ -79,6 +81,11 @@ type AddNotePayload {
 
 type RemoveNotePayload {
   removedNoteId: ID
+}
+
+"""A delete answered with a boolean, as servers outside Relay's conventions answer one."""
+type Deleted {
+  deleted: Boolean!
 }
 
 """Every kind of scalar list, for an optimistic response to write."""

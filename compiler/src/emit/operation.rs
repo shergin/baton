@@ -9,8 +9,8 @@ use super::builder::builder;
 use super::lens::lens;
 use super::plan::PlanSelections;
 use super::swift::{
-    SwiftType, member, parameter, raw_literal, runtime_value, swift_literal, variable_literal,
-    variable_type,
+    SwiftType, member, parameter, raw_literal, runtime_value, swift_literal, type_reference,
+    variable_literal, variable_type,
 };
 use super::writer::Writer;
 use crate::config::OnError;
@@ -211,9 +211,31 @@ fn value_members(
     } else {
         ", transient: Types.transient".to_string()
     };
+    // A mutation's `@deletes`, each a type and the variable its key is
+    // passed as, which the runtime renders to a record key per call.
+    let deletions = if operation.deletes.is_empty() {
+        String::new()
+    } else {
+        format!(
+            ", deletions: [{}]",
+            operation
+                .deletes
+                .iter()
+                .map(|deletion| {
+                    format!(
+                        "{}(type: {}, variable: {})",
+                        runtime_value("Deletion"),
+                        type_reference(&deletion.type_name),
+                        swift_literal(&deletion.variable)
+                    )
+                })
+                .collect::<Vec<_>>()
+                .join(", ")
+        )
+    };
     let selections = PlanSelections::new(&operation.normalization, writer.depth());
     writer.line(format!(
-        "@_spi(Generated) public static let plan = {}(root: {}{transient})",
+        "@_spi(Generated) public static let plan = {}(root: {}{transient}{deletions})",
         runtime_value("Plan"),
         selections.root()
     ));

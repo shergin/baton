@@ -4,12 +4,14 @@ import Baton
 /// refetchable fragment paginating a connection of notes forward and one
 /// paginating it backward, the screens that spread them with and without
 /// arguments, the mutations that edit the connection declaratively by edge
-/// and by node, one that only deletes a record, an aliased spread, a
-/// connection whose nodes defer a fragment, a query that fetches two
-/// pages of one connection, and refetchable fragments paginating forward
-/// and backward with fields named like the fragment and its refetch query,
-/// in its lens and in the connection's, and a refetchable fragment on a
-/// note paginating its author's notes, a link below the fragment's type.
+/// and by node, one that only deletes a record, two that name the record
+/// they delete by a variable, as a server that answers with a boolean
+/// needs, an aliased spread, a connection whose nodes defer a fragment, a
+/// query that fetches two pages of one connection, and refetchable
+/// fragments paginating forward and backward with fields named like the
+/// fragment and its refetch query, in its lens and in the connection's,
+/// and a refetchable fragment on a note paginating its author's notes, a
+/// link below the fragment's type.
 @MainActor
 struct ListDocuments {
     @Fragment("""
@@ -118,6 +120,20 @@ struct ListDocuments {
         }
         """)
     var deleteNote: TestDeleteNote.Action
+
+    @Mutation("""
+        mutation TestDiscardNote($id: ID!) @deletes(type: "Note", id: $id) {
+          discardNote(id: $id) { deleted }
+        }
+        """)
+    var discardNote: TestDiscardNote.Action
+
+    @Mutation("""
+        mutation TestDiscardAsset($uuid: String!) @deletes(type: "Asset", id: $uuid) {
+          discardAsset(uuid: $uuid) { deleted }
+        }
+        """)
+    var discardAsset: TestDiscardAsset.Action
 
     @Query("""
         query TestAliasQuery($id: ID!) {

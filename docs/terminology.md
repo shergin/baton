@@ -110,8 +110,8 @@ environment of the handle the lens was read from; a lens made by hand throws
 **Directive.** *Concept: directive.* GraphQL: an annotation on a selection
 or definition.
 Here: the only way behaviour is attached to data; the set is Relay's
-([Relay's words](principles/relays-words.md)), with one exception,
-[cache expiration](#documents).
+([Relay's words](principles/relays-words.md)), with two exceptions,
+[cache expiration](#documents) and [deletes](#lists).
 
 **Cache expiration.** *Concept: directive.* Baton's word. Relay has one
 expiration for a whole store, `queryCacheExpirationTime`, and no word for
@@ -452,9 +452,10 @@ never saw takes its variant from the response's own `__isX` answers, as
 [membership](#generated) says. Its values are sized by what was written,
 not by how many storage keys the type has, and the keys rendered from
 variables written to it are kept in a short list apart. A record
-`@deleteRecord` removed is *deleted*: links to it read as null, lists skip
-it, the bodies that read its fields and those that hold a link to it are
-told, and a payload that names it again revives it, told the same way; see
+`@deleteRecord` or `@deletes` removed is *deleted*: links to it read as
+null, lists skip it, the bodies that read its fields and those that hold a
+link to it are told, and a payload that names it again revives it, told
+the same way; see
 [the contract](../spec/runtime.md#1-types-keys-and-records),
 [its deletion](../spec/runtime.md#4-the-commit) and
 [A deletion is announced by its commit](decisions/deletion-is-announced-by-its-commit.md).
@@ -474,13 +475,14 @@ names each type's key, so the ingest knows no field by name. Objects whose
 fields do not include the key get a path-based client id, as in Relay; under
 an interface or union the path ends in the record's concrete type. The
 store has no index by id alone, and what names a record by one value, a
-lookup without a type (`node(id:)`), `@deleteRecord`, `@deleteEdge` and the
-image's forget, reaches single-field keys only: a lookup without a type and
-`@deleteRecord` probe `Type:id` for each possible type, and act only when
-exactly one live record has the id; an id that names live records of
-several types is logged as an ambiguous identity, and nothing is done for
-it. A configuration other than the default joins the schema's digest, so an
-image keyed another way is a miss and not a merge. See
+lookup without a type (`node(id:)`), `@deleteRecord`, `@deleteEdge`,
+`@deletes` and the image's forget, reaches single-field keys only: a
+lookup without a type and `@deleteRecord` probe `Type:id` for each
+possible type, and act only when exactly one live record has the id; an
+id that names live records of several types is logged as an ambiguous
+identity, and nothing is done for it. A configuration other than the
+default joins the schema's digest, so an image keyed another way is a
+miss and not a merge. See
 [the contract](../spec/runtime.md#1-types-keys-and-records) and
 [the decision](decisions/identity-is-configured.md).
 Swift: the event is `ambiguousIdentity`.
@@ -544,14 +546,14 @@ check the caller's.
 Here: a change set is the output of ingesting one response or applying one
 optimistic update: records, slots, references, errors, and the edits the
 plan asked for (a connection page's merge, an edge directive's insert or
-delete). A commit applies it on the main thread as a *batch*: the
-transaction that nets the notifications, the undo log of what changed, and
-a kind. A *server* batch is written to the image; an *optimistic* one keeps
-its undo with its layer and the image is not told; a *local* one, the
-runtime's own writes, a page's loading flag, a lookup's link bound, a link
-repaired, a cell filled from the image, neither. Nothing outside a batch
-writes a record, edits follow entries, and the observed fields that changed
-are notified when the batch ends. See
+delete, a mutation's [deletion by key](#lists)). A commit applies it on the
+main thread as a *batch*: the transaction that nets the notifications, the
+undo log of what changed, and a kind. A *server* batch is written to the
+image; an *optimistic* one keeps its undo with its layer and the image is
+not told; a *local* one, the runtime's own writes, a page's loading flag, a
+lookup's link bound, a link repaired, a cell filled from the image,
+neither. Nothing outside a batch writes a record, edits follow entries,
+and the observed fields that changed are notified when the batch ends. See
 [the contract](../spec/runtime.md#4-the-commit).
 Swift: the commit runs on the main actor.
 Kotlin: the commit runs on the store's thread, through the environment's main
@@ -966,11 +968,12 @@ transports and persistence; records, values, slots and type ids are the
 interface's.
 Swift: an artifact opens with `@_spi(Generated) import Baton`, which is that
 interface; the shared file names the format as `Types.format` and the
-runtime declares it as a marker type; an app's own files import `Baton`.
+runtime declares it as a marker type, `Baton.Format20`; an app's own files
+import `Baton`.
 Kotlin: an artifact opens with `@file:OptIn(baton.Generated::class)`, which
 is that interface; the Kotlin format has numbers of its own, starting at 1,
 and the shared file names it as `Types.format`, the runtime's marker object
-`baton.Format2`.
+`baton.Format4`.
 
 **Report.** *Composition: document, schema.* Baton's word.
 Here: what the compiler compiled for one target, written by
@@ -1387,6 +1390,39 @@ Swift: the plan's edit is `Edit`, the change set's `ChangeSet.Edit`.
 Kotlin: the plan's edit is `Edit`, with an `Edit.Kind` per directive and its
 connections an `Edit.Connections`; the change set's is the runtime's internal
 `ChangeSet.Edit`.
+
+**Deletes.** *Concept: directive.* Baton's word. Relay's `@deleteRecord`
+deletes the record whose id the payload field it sits on returns, and
+Relay's answer for a payload without one is an updater, runtime code that
+calls `store.delete`; the GraphQL specification has none.
+Here: `@deletes(type:, id:)` on a mutation names a record the mutation
+deletes, for a payload that carries no id of it: `type` a string constant
+naming an object type keyed by one field, `id` a variable of the key
+field's named type, not a list, that a field of the mutation also passes.
+It may repeat, one record each. The compiler takes it off the document
+before Relay's front end, checks it at its own position, and leaves it out
+of the text a server receives; the plan carries the type and the
+variable, and each run renders the key `Type:value` from the variable's
+value, as a lookup composes one, so no type is probed. An unset or null
+variable names nothing. The deletion is an edit of the commit, as an edge
+directive's is: an optimistic response carries it, a refusal reverts it
+with the layer, and the server's response or a payload committed for the
+mutation makes it. Any successful response makes it, since it reads
+nothing of the payload, where `@deleteRecord` acts only on a non-null
+field. The record is [deleted](#store) as `@deleteRecord` deletes one;
+a record memory does not hold is forgotten in the image by its key. A
+field of a record the payload does not reach is written by a
+[commit payload](#store) after the mutation, not by a directive. See
+[the contract](../spec/runtime.md#4-the-commit) and
+[the decision](decisions/a-mutation-names-the-record-it-deletes.md).
+Swift: the plan's `deletions`, each a `Deletion(type:variable:)`, as in
+`Baton.Plan(root:, transient:, deletions: [Baton.Deletion(type:
+Types.MediaList, variable: "id")])`; the change set's edit is
+`ChangeSet.Edit.deleteByKey(key:)`.
+Kotlin: the plan's `deletions`, a list of `Deletion(type, variable)`, as in
+`Plan(root = ..., transient = ..., deletions =
+listOf(Deletion(Types.MediaList, "id")))`; the change set's edit is the
+runtime's internal `ChangeSet.Edit.DeleteByKey(key)`.
 
 **Page.** *Composition: lens, operation value.*
 Here: a list fetched by page number or offset, as the sample API does. Not a

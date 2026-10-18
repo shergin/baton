@@ -1,0 +1,72 @@
+{
+  "name": "deletes",
+  "steps": [
+    {
+      "attach": {"operation": "TestNotesQuery", "variables": {"id": "1"}, "as": "notes", "response": "tests/notes-page-1.json"},
+      "records": "tests/notes-page-1.store.json"
+    },
+    {
+      "commit": {"operation": "TestDiscardNote", "variables": {"id": "n2"}, "response": "tests/discard-note-n2.json"},
+      "notified": [
+        {"record": "Character:1:notes(first:2):edges:1", "field": "node"},
+        {"record": "Note:n2", "field": "id"},
+        {"record": "Note:n2", "field": "text"}
+      ],
+      "records": "scripts/deletes-discarded.store.json",
+      "reads": [
+        {"handle": "notes", "path": "character.notes.edges.0.node.id", "value": "n1"},
+        {"handle": "notes", "path": "character.notes.edges.1.node.text", "value": null}
+      ]
+    },
+    {
+      "optimistic": {"operation": "TestDiscardNote", "variables": {"id": "n1"}, "response": "tests/discard-note-n2.json", "as": "discard"},
+      "notified": [
+        {"record": "Character:1:notes(first:2):edges:0", "field": "node"},
+        {"record": "Note:n1", "field": "id"},
+        {"record": "Note:n1", "field": "text"}
+      ],
+      "reads": [{"handle": "notes", "path": "character.notes.edges.0.node.id", "value": null}]
+    },
+    {
+      "revert": {"layer": "discard"},
+      "notified": [{"record": "Character:1:notes(first:2):edges:0", "field": "node"}],
+      "records": "scripts/deletes-discarded.store.json",
+      "reads": [{"handle": "notes", "path": "character.notes.edges.0.node.id", "value": "n1"}]
+    },
+    {
+      "optimistic": {"operation": "TestDiscardNote", "variables": {"id": "n1"}, "response": "tests/discard-note-n2.json", "as": "discard-again"},
+      "reads": [{"handle": "notes", "path": "character.notes.edges.0.node.id", "value": null}]
+    },
+    {
+      "resolve": {"layer": "discard-again", "response": "tests/discard-note-n2.json"},
+      "notified": [],
+      "records": "scripts/deletes-resolved.store.json",
+      "reads": [
+        {"handle": "notes", "path": "character.notes.edges.0.node.id", "value": null},
+        {"handle": "notes", "path": "character.notes.edges.1.node.text", "value": null}
+      ]
+    },
+    {
+      "attach": {"operation": "TestAssetsQuery", "as": "assets", "response": "tests/asset-list.json"},
+      "reads": [
+        {"handle": "assets", "path": "assets.0.name", "value": "Portal gun"},
+        {"handle": "assets", "path": "assets.1.name", "value": "Plumbus"}
+      ]
+    },
+    {
+      "payload": {"operation": "TestDiscardAsset", "variables": {"uuid": "a1"}, "response": "tests/discard-asset-a1.json"},
+      "notified": [
+        {"record": "client:root", "field": "assets"},
+        {"record": "Asset:a1", "field": "id"},
+        {"record": "Asset:a1", "field": "name"},
+        {"record": "Asset:a1", "field": "size"},
+        {"record": "Asset:a1", "field": "uuid"}
+      ],
+      "records": "scripts/deletes-asset.store.json",
+      "reads": [
+        {"handle": "assets", "path": "assets.0.name", "value": "Plumbus"},
+        {"handle": "assets", "path": "assets.1.name", "value": null}
+      ]
+    }
+  ]
+}

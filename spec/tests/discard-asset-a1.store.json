@@ -1,0 +1,6 @@
+{
+  "client:root": {"__typename": "Query"},
+  "client:root:mutation": {"__typename": "Mutation", "discardAsset": {"__ref": "client:root:mutation:discardAsset"}},
+  "client:root:mutation:discardAsset": {"__typename": "Deleted", "deleted": true},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

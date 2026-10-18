@@ -7,7 +7,26 @@ package baton
  * `spec/runtime.md`, section 2.
  */
 @Generated
-class Plan(val root: Selection, transient: Transient? = null)
+class Plan(val root: Selection, transient: Transient? = null, val deletions: List<Deletion> = emptyList()) {
+    /**
+     * The keys of the records the deletions name under [variables], composed
+     * as a lookup composes a key from a variable's value; a deletion whose
+     * variable is unset or null names none.
+     */
+    internal fun deletionKeys(variables: Variables): List<String> = deletions.mapNotNull { deletion ->
+        val value = variables.values[deletion.variable]
+        if (value == null || value == Variable.Null) null else Record.entityKey(deletion.type.name, value.keyText)
+    }
+}
+
+/**
+ * `@deletes(type:id:)` on a mutation: a record the mutation deletes, named
+ * by its type and the variable its key is passed as. The commit deletes it
+ * as `@deleteRecord` deletes one the payload names
+ * (`docs/decisions/a-mutation-names-the-record-it-deletes.md`).
+ */
+@Generated
+class Deletion(val type: TypeID, val variable: String)
 
 /**
  * What never reaches the image: the types whose records are not written, and

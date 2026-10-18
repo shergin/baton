@@ -150,6 +150,10 @@ pub struct OperationPlan {
     /// it reads as stale; none takes the store's default.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cache_expiration: Option<f64>,
+    /// `@deletes(type:id:)`: the records a mutation deletes, each named by
+    /// its type and the variable its key is passed as.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub deletes: Vec<DeletePlan>,
     pub reader: Vec<SelectionPlan>,
     pub normalization: Vec<SelectionPlan>,
 }
@@ -407,6 +411,18 @@ impl EditKind {
             EditKind::DeleteRecord => "deleteRecord",
         }
     }
+}
+
+/// `@deletes(type:id:)` on a mutation: a record the mutation deletes, named
+/// by its type and the variable its key is passed as. The runtime renders
+/// the record's key from the variable's value each time the mutation runs,
+/// and the commit deletes the record as `@deleteRecord` deletes one the
+/// payload names (`docs/decisions/a-mutation-names-the-record-it-deletes.md`).
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+pub struct DeletePlan {
+    #[serde(rename = "type")]
+    pub type_name: String,
+    pub variable: String,
 }
 
 /// `@required(action:)`: the action and Relay's dotted path for messages.

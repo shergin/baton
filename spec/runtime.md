@@ -166,6 +166,14 @@ tests/conditions-included and tests/conditions-excluded (guards),
 tests/notes-page-2 (a connection's mode), tests/union-unknown-type (an
 unlisted type's variant).
 
+**A mutation's plan may name the records it deletes.** Each is a type and
+a variable, from `@deletes(type:id:)` on the mutation, which the compiler
+checks against the type's key and leaves out of the text a server
+receives. For each set of variables the deletion is rendered to the
+record's key, `Type:value`, from the variable's value, as a lookup's key
+is composed; a variable that is unset or null names no record, and no
+type is probed. *Held by* the goldens and plans.
+
 **A fragment's arguments bind over the parent's variables.** A spread
 with `@arguments` binds the fragment's scope over the parent's: for each
 argument the passed literal or variable, else the default, else null; the
@@ -241,9 +249,12 @@ the client record it merges into is written beside the page as a client
 link on the parent, and a merge edit is recorded with the mode. A field
 with an edge directive records the insertion of the linked record, or, for
 a scalar id under `@deleteRecord` or `@deleteEdge`, the deletion by that
-id. *Held by* every dump with links; the connection link and merge by
-tests/notes-page-1; the edits by tests/add-note-n9, tests/add-note-node-n7,
-tests/delete-note-n2 and tests/remove-note-n2.
+id. A mutation's change set, from its response, its optimistic response or
+a payload committed for it, ends with the deletion by key of each record
+its plan names. *Held by* every dump with links; the connection link and
+merge by tests/notes-page-1; the edits by tests/add-note-n9,
+tests/add-note-node-n7, tests/delete-note-n2, tests/remove-note-n2,
+tests/discard-note-n2 and tests/discard-asset-a1.
 
 **A complete response answers every field the plan expects.** A server's
 response to an operation is complete: an object that omits a field the
@@ -370,6 +381,22 @@ tests/add-note-n9 (append), tests/add-note-n0 (prepend),
 tests/add-note-node-n7 and tests/add-note-node-n0, tests/delete-note-n2,
 tests/delete-note-7, tests/remove-note-n2; an edit into a connection that
 already has edges by script `connections`.
+
+**A mutation deletes the record its document names.** A deletion by key
+names one record exactly: the record memory holds is deleted as
+`@deleteRecord` deletes one, a record already deleted is left as it is,
+and a key memory does not hold is forgotten in the image by a server
+batch. The edit comes with the mutation's optimistic response, so its
+layer deletes the record in the turn of the call and a revert brings it
+back; with the server's response, which replaces the layer in the same
+batch and deletes for good; and with a payload committed by hand for the
+mutation. The payload does not gate it: whatever its fields say, any
+response the commit takes makes the edit, and a request error writes
+nothing and reverts the layer. *Held by* tests/discard-note-n2 and
+tests/discard-asset-a1, each committed on an empty store; the notice to
+the slot that held the link, the layer, its revert and its resolution,
+and a payload deleting from a plain list by script `deletes`; the forget
+in the image by script `deletes-image`.
 
 **A deleted record reads as absent.** Its values are cleared through the
 batch, so the bodies that read them are told; its flag is set, so links to

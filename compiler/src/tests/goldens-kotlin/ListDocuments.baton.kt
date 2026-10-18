@@ -8,6 +8,7 @@ import androidx.compose.runtime.Stable
 import baton.Anchor
 import baton.ConnectionCursor
 import baton.ConnectionPlan
+import baton.Deletion
 import baton.Document
 import baton.Edit
 import baton.Generated
@@ -1316,6 +1317,142 @@ private object `TestDeleteNote-plan` {
 
 /** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
 suspend operator fun MutationAction<TestDeleteNote, TestDeleteNote.Data>.invoke(id: String, optimistic: TestDeleteNote.OptimisticResponse? = null): TestDeleteNote.Data = this.commit(TestDeleteNote(id), optimistic?.payload)
+
+/** Operation value for `mutation TestDiscardAsset`. */
+@Immutable
+class TestDiscardAsset(val uuid: String) : MutationOperation<TestDiscardAsset.Data> {
+    override val variables: Variables
+        get() = Variables.of("uuid" to Variable.of(uuid))
+    override val type: OperationType<Data> get() = Companion
+
+    override fun equals(other: Any?): Boolean = other is TestDiscardAsset && other.uuid == uuid
+    override fun hashCode(): Int = listOf(uuid).hashCode()
+
+    companion object : MutationType<TestDiscardAsset, TestDiscardAsset.Data> {
+        override val name = "TestDiscardAsset"
+        override val document: Document = Document.Text("mutation TestDiscardAsset(\$uuid:String!){discardAsset(uuid:\$uuid){deleted}}")
+        override val kind = OperationKind.MUTATION
+        override val plan: Plan by lazy { Plan(root = `TestDiscardAsset-plan`.selection0, transient = Types.transient, deletions = listOf(Deletion(Types.Asset, "uuid"))) }
+
+        override fun data(anchor: Anchor): Data = Data(anchor)
+    }
+
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val discardAsset: DiscardAsset? get() = anchor.linked(Slots.Mutation.discardAsset)?.let(::DiscardAsset)
+        override fun equals(other: Any?): Boolean = other is TestDiscardAsset.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class DiscardAsset(override val anchor: Anchor) : Lens {
+            val deleted: Boolean get() = anchor.requiredBool(Slots.Deleted.deleted)
+            override fun equals(other: Any?): Boolean = other is TestDiscardAsset.Data.DiscardAsset && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val discardAsset: DiscardAsset? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("discardAsset" to this.discardAsset?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class DiscardAsset(val deleted: Boolean? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("deleted" to this.deleted?.let { Variable.of(it) }).values)
+        }
+    }
+}
+
+private object `TestDiscardAsset-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("discardAsset", key = StorageKey.Fixed(Slots.Mutation.discardAsset), plural = false, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Deleted, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("deleted", key = StorageKey.Fixed(Slots.Deleted.deleted), kind = ScalarKind.BOOL, list = false),
+        ))
+    }
+}
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<TestDiscardAsset, TestDiscardAsset.Data>.invoke(uuid: String, optimistic: TestDiscardAsset.OptimisticResponse? = null): TestDiscardAsset.Data = this.commit(TestDiscardAsset(uuid), optimistic?.payload)
+
+/** Operation value for `mutation TestDiscardNote`. */
+@Immutable
+class TestDiscardNote(val id: String) : MutationOperation<TestDiscardNote.Data> {
+    override val variables: Variables
+        get() = Variables.of("id" to Variable.of(id))
+    override val type: OperationType<Data> get() = Companion
+
+    override fun equals(other: Any?): Boolean = other is TestDiscardNote && other.id == id
+    override fun hashCode(): Int = listOf(id).hashCode()
+
+    companion object : MutationType<TestDiscardNote, TestDiscardNote.Data> {
+        override val name = "TestDiscardNote"
+        override val document: Document = Document.Text("mutation TestDiscardNote(\$id:ID!){discardNote(id:\$id){deleted}}")
+        override val kind = OperationKind.MUTATION
+        override val plan: Plan by lazy { Plan(root = `TestDiscardNote-plan`.selection0, transient = Types.transient, deletions = listOf(Deletion(Types.Note, "id"))) }
+
+        override fun data(anchor: Anchor): Data = Data(anchor)
+    }
+
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val discardNote: DiscardNote? get() = anchor.linked(Slots.Mutation.discardNote)?.let(::DiscardNote)
+        override fun equals(other: Any?): Boolean = other is TestDiscardNote.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class DiscardNote(override val anchor: Anchor) : Lens {
+            val deleted: Boolean get() = anchor.requiredBool(Slots.Deleted.deleted)
+            override fun equals(other: Any?): Boolean = other is TestDiscardNote.Data.DiscardNote && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+
+    /** A partial response to show before the server answers; absent fields leave the store untouched. */
+    class OptimisticResponse(val discardNote: DiscardNote? = null) {
+        /** The response's data as a variable, an absent field left out. */
+        @Generated
+        val variable: Variable
+            get() = Variable.Object(Variables.of("discardNote" to this.discardNote?.variable).values)
+        /** The response this builder describes, as the bytes the door takes. */
+        val payload: Payload get() = Payload(data = variable)
+
+        /** A partial response to show before the server answers; absent fields leave the store untouched. */
+        class DiscardNote(val deleted: Boolean? = null) {
+            /** The response's data as a variable, an absent field left out. */
+            @Generated
+            val variable: Variable
+                get() = Variable.Object(Variables.of("deleted" to this.deleted?.let { Variable.of(it) }).values)
+        }
+    }
+}
+
+private object `TestDiscardNote-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Mutation, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("discardNote", key = StorageKey.Fixed(Slots.Mutation.discardNote), plural = false, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Deleted, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.scalar("deleted", key = StorageKey.Fixed(Slots.Deleted.deleted), kind = ScalarKind.BOOL, list = false),
+        ))
+    }
+}
+
+/** Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers. */
+suspend operator fun MutationAction<TestDiscardNote, TestDiscardNote.Data>.invoke(id: String, optimistic: TestDiscardNote.OptimisticResponse? = null): TestDiscardNote.Data = this.commit(TestDiscardNote(id), optimistic?.payload)
 
 /** Operation value for `query TestHiddenNotesPaginationQuery`. */
 @Immutable

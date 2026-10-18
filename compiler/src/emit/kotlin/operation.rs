@@ -8,7 +8,7 @@ use super::builder::builder;
 use super::lens::Lenses;
 use super::literal::{
     Base, Converters, ValueShape, jvm_getters, optional_value_expression, property_read,
-    string_literal, variable_literal,
+    string_literal, type_reference, variable_literal,
 };
 use super::plan::PlanSelections;
 use crate::config::OnError;
@@ -311,8 +311,29 @@ fn companion(writer: &mut Writer, operation: &OperationValue, shared: &Shared, p
         } else {
             ", transient = Types.transient"
         };
+        // A mutation's `@deletes`, each a type and the variable its key is
+        // passed as, which the runtime renders to a record key per call.
+        let deletions = if operation.deletes.is_empty() {
+            String::new()
+        } else {
+            format!(
+                ", deletions = listOf({})",
+                operation
+                    .deletes
+                    .iter()
+                    .map(|deletion| {
+                        format!(
+                            "Deletion({}, {})",
+                            type_reference(&deletion.type_name),
+                            string_literal(&deletion.variable)
+                        )
+                    })
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            )
+        };
         writer.line(format!(
-            "override val plan: Plan by lazy {{ Plan(root = {plan}.{}{transient}) }}",
+            "override val plan: Plan by lazy {{ Plan(root = {plan}.{}{transient}{deletions}) }}",
             PlanSelections::root()
         ));
         writer.blank();

@@ -81,18 +81,38 @@ public enum Format17 {}
 public enum Format18 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 19 and the runtime reads format 20: a mutation's deletions; rebuild with the compiler of this release")
 public enum Format19 {}
+
+@_spi(Generated)
+public enum Format20 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.
 @_spi(Generated)
 public struct Plan: Sendable {
     public let root: Selection
+    /// The records a mutation deletes, one per `@deletes(type:id:)`.
+    public let deletions: [Deletion]
 
     /// `transient` is the module's rule set for the image, named by every
     /// plan of a module that has one, so the registry learns the rules
     /// before any plan writes a row.
-    public init(root: Selection, transient: Transient? = nil) { self.root = root }
+    public init(root: Selection, transient: Transient? = nil, deletions: [Deletion] = []) {
+        self.root = root
+        self.deletions = deletions
+    }
+
+    /// The keys of the records the deletions name under `variables`,
+    /// composed as a lookup composes a key from a variable's value; a
+    /// deletion whose variable is unset or null names none.
+    package func deletionKeys(_ variables: Variables) -> [String] {
+        deletions.compactMap { deletion in
+            guard let value = variables.values[deletion.variable] else { return nil }
+            if case .null = value { return nil }
+            return Record.entityKey(deletion.type.name, parts: [value.keyText])
+        }
+    }
 
     /// Binds the variables: dynamic storage keys become slots, numbered by
     /// `keys`, the store's, lookup keys become record keys, connections learn
@@ -101,6 +121,21 @@ public struct Plan: Sendable {
     package func resolve(_ variables: Variables, in keys: Keys) -> ResolvedSelection {
         keys.reconcile()
         return root.resolve(variables, keys.hold())
+    }
+}
+
+/// `@deletes(type:id:)` on a mutation: a record the mutation deletes, named
+/// by its type and the variable its key is passed as. The commit deletes it
+/// as `@deleteRecord` deletes one the payload names
+/// (`docs/decisions/a-mutation-names-the-record-it-deletes.md`).
+@_spi(Generated)
+public struct Deletion: Sendable {
+    public let type: TypeID
+    public let variable: String
+
+    public init(type: TypeID, variable: String) {
+        self.type = type
+        self.variable = variable
     }
 }
 

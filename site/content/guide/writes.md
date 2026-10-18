@@ -26,7 +26,7 @@ A payload field that is an edge or a node carries an edge directive. The directi
 
 {{operation comments CommentComposerAddComment | The directive is the client's business, so it stays out of the text the server receives. So does the `$connections` variable, which only the directive used. The request's variables still carry `connections`, which the server ignores.}}
 
-Removing is `@deleteEdge(connections:)` on a field holding the removed node's id, or `@deleteRecord` on a field holding the id of a record to delete outright. [Lists](../lists/) shows the edit in the store.
+Removing is `@deleteEdge(connections:)` on a field holding the removed node's id, or `@deleteRecord` on a field holding the id of a record to delete outright. A payload with no id, such as `deleted: true`, takes `@deletes(type:, id:)` on the mutation instead, which names the record by its type and the variable its key is passed as. [Lists](../lists/) shows the edit in the store.
 
 ## A payload committed by hand
 

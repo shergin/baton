@@ -70,7 +70,7 @@ in Kotlin, and each "not this" below links its reason.
 | Suspense, the missed-update epoch | Reads are synchronous; the heal refetches | none |
 | Generator-based GC | A pass runs whole on the store's thread, once a turn after a root left or a commit dropped a link: 2.8 ms over 50,000 records ([why](../decisions/the-check-and-collection-run-on-the-main-actor.md)) | A pass that misses a frame |
 | `invalidateRecord` | Ages belong to the operation, not the record | A product that must mark one entity stale |
-| Imperative store updaters | Directives and payloads have expressed every write so far | A real write neither can express |
+| Imperative store updaters | Directives and payloads have expressed every write so far; an updater's `store.delete` for a payload that carries no id is `@deletes(type:id:)` on the mutation ([why](../decisions/a-mutation-names-the-record-it-deletes.md)) | A real write neither can express |
 | Automatic persisted queries | They need text and id at run time; the working group dropped them | none |
 
 Relay's docs stay the reference for what the directives mean, and Baton's

@@ -83,6 +83,8 @@ struct OracleOperation: Sendable {
         "TestStreamedNotes": { try OracleOperation(TestStreamedNotes(id: $0.string("id")), reads: streamedNotesReads) },
         "TestTwoSpreads": { try OracleOperation(TestTwoSpreads(id: $0.string("id"), again: $0.bool("again")), reads: twoSpreadsReads) },
         "TestDeleteNote": { try OracleOperation(TestDeleteNote(id: $0.string("id")), reads: deleteNoteReads) },
+        "TestDiscardNote": { try OracleOperation(TestDiscardNote(id: $0.string("id")), reads: discardNoteReads) },
+        "TestDiscardAsset": { try OracleOperation(TestDiscardAsset(uuid: $0.string("uuid")), reads: discardAssetReads) },
         "TestAddNote": {
             try OracleOperation(TestAddNote(characterId: $0.string("characterId"), text: $0.string("text"), connections: $0.strings("connections")), reads: addNoteReads)
         },
@@ -469,6 +471,14 @@ extension OracleOperation {
 
     static let deleteNoteReads: [String: @MainActor @Sendable (TestDeleteNote.Data) -> Manifest.Value] = [
         "removeNote.removedNoteId": { $0.removeNote?.removedNoteId.manifestValue ?? .null },
+    ]
+
+    static let discardNoteReads: [String: @MainActor @Sendable (TestDiscardNote.Data) -> Manifest.Value] = [
+        "discardNote.deleted": { $0.discardNote?.deleted.manifestValue ?? .null },
+    ]
+
+    static let discardAssetReads: [String: @MainActor @Sendable (TestDiscardAsset.Data) -> Manifest.Value] = [
+        "discardAsset.deleted": { $0.discardAsset?.deleted.manifestValue ?? .null },
     ]
 
     static let addNoteReads: [String: @MainActor @Sendable (TestAddNote.Data) -> Manifest.Value] = [

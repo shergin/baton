@@ -1399,6 +1399,170 @@ extension TestDeleteNote.Action {
     }
 }
 
+/// Operation value for `mutation TestDiscardAsset`.
+nonisolated public struct TestDiscardAsset: Baton.Mutation {
+    public var uuid: String
+
+    public init(uuid: String) {
+        self.uuid = uuid
+    }
+
+    public static let name = "TestDiscardAsset"
+    public static let document: Baton.Document = .text(#"mutation TestDiscardAsset($uuid:String!){discardAsset(uuid:$uuid){deleted}}"#)
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["uuid": Baton.Variable(self.uuid)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.uuid == rhs.uuid
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.uuid)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient, deletions: [Baton.Deletion(type: Types.Asset, variable: "uuid")])
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
+        .linked("discardAsset", key: .fixed(Slots.Mutation.discardAsset), plural: false, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Deleted, key: [], abstract: false, fields: [
+        .scalar("deleted", key: .fixed(Slots.Deleted.deleted), kind: .bool, list: false),
+    ])
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        @MainActor public var discardAsset: DiscardAsset? { anchor.linked(Slots.Mutation.discardAsset).map(DiscardAsset.init(anchor:)) }
+
+        nonisolated public struct DiscardAsset: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            @MainActor public var deleted: Bool { anchor.requiredBool(Slots.Deleted.deleted) }
+        }
+    }
+
+    public typealias Action = Baton.MutationAction<Self>
+
+    /// A partial response to show before the server answers; absent fields leave the store untouched.
+    nonisolated public struct OptimisticResponse: Sendable {
+        public var discardAsset: DiscardAsset?
+        public init(discardAsset: DiscardAsset? = nil) {
+            self.discardAsset = discardAsset
+        }
+        @_spi(Generated) public var variable: Baton.Variable {
+            var fields: [String: Baton.Variable] = [:]
+            if let discardAsset { fields["discardAsset"] = discardAsset.variable }
+            return .object(fields)
+        }
+        /// The response this builder describes, as the bytes the door takes.
+        public var payload: Baton.Payload { .init(data: variable) }
+
+        /// A partial response to show before the server answers; absent fields leave the store untouched.
+        nonisolated public struct DiscardAsset: Sendable {
+            public var deleted: Bool?
+            public init(deleted: Bool? = nil) {
+                self.deleted = deleted
+            }
+            @_spi(Generated) public var variable: Baton.Variable {
+                var fields: [String: Baton.Variable] = [:]
+                if let deleted { fields["deleted"] = .init(deleted) }
+                return .object(fields)
+            }
+        }
+    }
+}
+
+extension TestDiscardAsset.Action {
+    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
+    @MainActor @discardableResult
+    public func callAsFunction(uuid: String, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(uuid: uuid), optimistic: optimistic?.payload)
+    }
+}
+
+/// Operation value for `mutation TestDiscardNote`.
+nonisolated public struct TestDiscardNote: Baton.Mutation {
+    public var id: String
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestDiscardNote"
+    public static let document: Baton.Document = .text(#"mutation TestDiscardNote($id:ID!){discardNote(id:$id){deleted}}"#)
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(self.id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient, deletions: [Baton.Deletion(type: Types.Note, variable: "id")])
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Mutation, key: [], abstract: false, fields: [
+        .linked("discardNote", key: .fixed(Slots.Mutation.discardNote), plural: false, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Deleted, key: [], abstract: false, fields: [
+        .scalar("deleted", key: .fixed(Slots.Deleted.deleted), kind: .bool, list: false),
+    ])
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        @MainActor public var discardNote: DiscardNote? { anchor.linked(Slots.Mutation.discardNote).map(DiscardNote.init(anchor:)) }
+
+        nonisolated public struct DiscardNote: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            @MainActor public var deleted: Bool { anchor.requiredBool(Slots.Deleted.deleted) }
+        }
+    }
+
+    public typealias Action = Baton.MutationAction<Self>
+
+    /// A partial response to show before the server answers; absent fields leave the store untouched.
+    nonisolated public struct OptimisticResponse: Sendable {
+        public var discardNote: DiscardNote?
+        public init(discardNote: DiscardNote? = nil) {
+            self.discardNote = discardNote
+        }
+        @_spi(Generated) public var variable: Baton.Variable {
+            var fields: [String: Baton.Variable] = [:]
+            if let discardNote { fields["discardNote"] = discardNote.variable }
+            return .object(fields)
+        }
+        /// The response this builder describes, as the bytes the door takes.
+        public var payload: Baton.Payload { .init(data: variable) }
+
+        /// A partial response to show before the server answers; absent fields leave the store untouched.
+        nonisolated public struct DiscardNote: Sendable {
+            public var deleted: Bool?
+            public init(deleted: Bool? = nil) {
+                self.deleted = deleted
+            }
+            @_spi(Generated) public var variable: Baton.Variable {
+                var fields: [String: Baton.Variable] = [:]
+                if let deleted { fields["deleted"] = .init(deleted) }
+                return .object(fields)
+            }
+        }
+    }
+}
+
+extension TestDiscardNote.Action {
+    /// Commits the mutation; the optimistic response, if any, shows at once and rebases until the server answers.
+    @MainActor @discardableResult
+    public func callAsFunction(id: String, optimistic: Op.OptimisticResponse? = nil) async throws -> Op.Data {
+        try await self.commit(.init(id: id), optimistic: optimistic?.payload)
+    }
+}
+
 /// Operation value for `query TestHiddenNotesPaginationQuery`.
 nonisolated public struct TestHiddenNotesPaginationQuery: Baton.Query {
     public var count: Int?

@@ -65,6 +65,8 @@ internal class ChangeSet(val bytes: ByteArray) {
         class InsertNode(val node: Int, val edgeType: TypeID, val connections: List<String>, val prepend: Boolean) : Edit
         class DeleteEdge(val id: String, val connections: List<String>) : Edit
         class DeleteRecord(val id: String) : Edit
+        /** A record a mutation named by its type and a variable (`@deletes`), by its exact key. */
+        class DeleteByKey(val key: String) : Edit
     }
 
     /** A field error resolved to the record and slot its path names, and whether a `@catch` on the way handles it. */

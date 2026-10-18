@@ -52,13 +52,14 @@ pub const KEYWORDS: [&str; 28] = [
 /// unqualified. A fragment or an operation of one of these names would
 /// conflict with the import in its own file; one the generated code comes to
 /// spell joins the list in the same change.
-pub const RUNTIME_NAMES: [&str; 43] = [
+pub const RUNTIME_NAMES: [&str; 44] = [
     "AbstractSlot",
     "Anchor",
     "ArgumentSite",
     "ConnectionCursor",
     "ConnectionPlan",
     "ConnectionSlots",
+    "Deletion",
     "Document",
     "DynamicKey",
     "Edit",

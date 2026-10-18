@@ -1052,6 +1052,58 @@
       }
     },
     {
+      "name": "tests/discard-note-n2",
+      "operation": "TestDiscardNote",
+      "kind": "mutation",
+      "document": "documents/TestDiscardNote.graphql",
+      "variables": {
+        "id": "n2"
+      },
+      "responses": [
+        "tests/discard-note-n2.json"
+      ],
+      "records": "tests/discard-note-n2.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "discardNote.deleted",
+          "value": true
+        }
+      ],
+      "override": {
+        "paths": [
+          "discardNote.deleted"
+        ],
+        "value": false
+      }
+    },
+    {
+      "name": "tests/discard-asset-a1",
+      "operation": "TestDiscardAsset",
+      "kind": "mutation",
+      "document": "documents/TestDiscardAsset.graphql",
+      "variables": {
+        "uuid": "a1"
+      },
+      "responses": [
+        "tests/discard-asset-a1.json"
+      ],
+      "records": "tests/discard-asset-a1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "discardAsset.deleted",
+          "value": true
+        }
+      ],
+      "override": {
+        "paths": [
+          "discardAsset.deleted"
+        ],
+        "value": false
+      }
+    },
+    {
       "name": "tests/add-note-n2",
       "operation": "TestAddNote",
       "kind": "mutation",
@@ -2490,6 +2542,8 @@
     "scripts/events.json",
     "scripts/subscriptions.json",
     "scripts/transport.json",
-    "scripts/streams.json"
+    "scripts/streams.json",
+    "scripts/deletes.json",
+    "scripts/deletes-image.json"
   ]
 }

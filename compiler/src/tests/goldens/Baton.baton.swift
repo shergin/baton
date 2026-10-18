@@ -6,16 +6,17 @@ import Foundation
 nonisolated enum Types {
     /// The schema's digest: pass it as the image's `version`, so an image
     /// written under another schema starts again.
-    static let schemaDigest = "cc1a283536bd9b098bee6081d7ecb260"
+    static let schemaDigest = "5beaef3e41ff4dcf1169e9ba839e88cc"
     /// The format of this generated code, which the runtime that reads it
     /// declares; a runtime of another format fails to compile this line.
-    static let format = Baton.Format19.self
+    static let format = Baton.Format20.self
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
     static let Any_ = Baton.Registry.type("Any")
     static let Asset = Baton.Registry.type("Asset")
     static let Baton_ = Baton.Registry.type("Baton")
     static let Character = Baton.Registry.type("Character")
     static let Characters = Baton.Registry.type("Characters")
+    static let Deleted = Baton.Registry.type("Deleted")
     static let Draft = Baton.Registry.type("Draft")
     static let Episode = Baton.Registry.type("Episode")
     static let FavoritePayload = Baton.Registry.type("FavoritePayload")
@@ -121,6 +122,9 @@ nonisolated enum Slots {
         static let info = Baton.Registry.slot(Types.Characters, "info")
         static let results = Baton.Registry.slot(Types.Characters, "results")
     }
+    nonisolated enum Deleted {
+        static let deleted = Baton.Registry.slot(Types.Deleted, "deleted")
+    }
     nonisolated enum Draft {
         static let about = Baton.Registry.clientSlot(Types.Draft, "about")
         static let id = Baton.Registry.clientSlot(Types.Draft, "id")
@@ -163,6 +167,8 @@ nonisolated enum Slots {
     }
     nonisolated enum Mutation {
         static let addNote = Baton.Registry.slot(Types.Mutation, "addNote")
+        static let discardAsset = Baton.Registry.slot(Types.Mutation, "discardAsset")
+        static let discardNote = Baton.Registry.slot(Types.Mutation, "discardNote")
         static let removeNote = Baton.Registry.slot(Types.Mutation, "removeNote")
         static let rename = Baton.Registry.slot(Types.Mutation, "rename")
         static let setFavorite = Baton.Registry.slot(Types.Mutation, "setFavorite")

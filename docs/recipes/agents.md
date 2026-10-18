@@ -69,8 +69,11 @@ side.
   [edge directive](../terminology.md#lists): `@appendEdge`,
   `@prependEdge`, `@deleteEdge`, or `@deleteRecord`. The directive names
   the connection through a `connections` variable, which the view fills
-  from the connection's `connectionID`. The optimistic response is applied
-  at once, and reverted if the server fails.
+  from the connection's `connectionID`. When the payload carries no id of
+  the record the write deletes, the mutation carries `@deletes(type:id:)`,
+  naming the record by its type and the variable its key is passed as.
+  The optimistic response is applied at once, and reverted if the server
+  fails.
 - **The fields a view cannot do without** carry `@required(action: NONE |
   LOG | THROW)`. The fields whose errors the view shows carry `@catch`
   ([Required, Catch](../terminology.md#documents)). Otherwise nullability

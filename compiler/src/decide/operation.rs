@@ -9,7 +9,7 @@ use super::{NormalizationField, NormalizationKind, NormalizationSelection};
 use crate::config::OnError;
 use crate::naming::{Kind, NameError, Naming, Reserved, Scope, Spelled, Written, numbered};
 use crate::pipeline::{
-    ConstantPlan, FragmentPlan, OperationKind, OperationPlan, TypeKind, VariablePlan,
+    ConstantPlan, DeletePlan, FragmentPlan, OperationKind, OperationPlan, TypeKind, VariablePlan,
 };
 
 /// An operation's value type: its variables, its static data, its plan, its
@@ -28,6 +28,9 @@ pub struct OperationValue {
     pub error_behavior: Option<OnError>,
     /// `@cacheExpiration(seconds:)`, when the query states one.
     pub cache_expiration: Option<f64>,
+    /// `@deletes(type:id:)`, the records a mutation deletes, each by its
+    /// type and the variable its key is passed as.
+    pub deletes: Vec<DeletePlan>,
     pub throws_on_field_error: bool,
     pub bubbles: bool,
     pub has_incremental: bool,
@@ -151,6 +154,7 @@ pub(super) fn operation(
         text: operation.text.clone(),
         error_behavior: operation.error_behavior,
         cache_expiration: operation.cache_expiration,
+        deletes: operation.deletes.clone(),
         throws_on_field_error: operation.throws_on_field_error,
         bubbles: operation.bubbles,
         has_incremental: operation.has_incremental,

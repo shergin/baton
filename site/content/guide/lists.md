@@ -33,6 +33,8 @@ The `connections` variable carries the connection ids the view read from its len
 
 {{script connections steps=4 | What `@appendEdge` leaves in the store is the new note's record, the new edge, and the connection's edge list one longer, with no refetch.}}
 
+A payload with no id has no field for `@deleteRecord` to sit on, so `@deletes(type:, id:)` goes on the mutation and names the record by its type and the variable its key is passed as. The store deletes that record as `@deleteRecord` does, in the optimistic layer and in the server's commit.
+
 ## Page-based lists
 
 The Rick and Morty API pages by number, `characters(page: 2)`, which is not a connection. Baton does not pretend it is one. Each page is a query of its own, with the page as a variable, and the store keeps each page under its storage key. A screen that shows twenty rows per page holds the current page's query. A screen that wants an endless list over such an API composes it from the pages itself. The samples show one page at a time. Page-based pagination, as a concept of its own, is on the watch list, with the trigger that would promote it. [What earns a concept](../../principles/what-earns-a-concept/) is why it is not a thirteenth word.

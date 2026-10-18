@@ -25,12 +25,13 @@ use schema::{SDLSchema, Schema, Type, TypeReference};
 use super::identity::Keys;
 use super::plan::{
     ArgumentPlan, ArgumentValuePlan, CatchPlan, CatchTarget, ConditionClass, ConnectionPlan,
-    ConstantPlan, EditKind, EditPlan, FragmentPlan, InputFieldPlan, LookupArgumentPlan, LookupPlan,
-    OperationKind, OperationPlan, Origin, PaginationPlan, Plan, RefetchPlan, RequiredAction,
-    RequiredPlan, SelectionPlan, StorageKeyPlan, TypeKind, TypePlan, VariablePlan,
+    ConstantPlan, DeletePlan, EditKind, EditPlan, FragmentPlan, InputFieldPlan, LookupArgumentPlan,
+    LookupPlan, OperationKind, OperationPlan, Origin, PaginationPlan, Plan, RefetchPlan,
+    RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan, TypeKind, TypePlan, VariablePlan,
 };
 
 use crate::config::Config;
+use crate::directives::Deletes;
 
 /// Marks the fields of the input objects whose type reaches the input they
 /// belong to through other inputs' fields, outside lists: a Swift value type
@@ -95,6 +96,8 @@ struct Lowering<'a> {
     config: &'a Config,
     /// The key fields of each keyed object type.
     keys: &'a Keys,
+    /// `@deletes` by mutation name, as the syntax check took them.
+    deletes: &'a BTreeMap<String, Vec<Deletes>>,
     /// Errors found while lowering, reported together at the end.
     diagnostics: std::cell::RefCell<Vec<Diagnostic>>,
     /// The enums the documents' types name, with their values.
@@ -113,12 +116,14 @@ pub(super) fn lower(
     programs: &Programs,
     config: &Config,
     keys: &Keys,
+    deletes: &BTreeMap<String, Vec<Deletes>>,
 ) -> Result<Plan, Vec<Diagnostic>> {
     let lowering = Lowering {
         schema,
         programs,
         config,
         keys,
+        deletes,
         diagnostics: std::cell::RefCell::new(Vec::new()),
         enums: std::cell::RefCell::new(BTreeMap::new()),
         inputs: std::cell::RefCell::new(BTreeMap::new()),
@@ -431,6 +436,7 @@ impl Lowering<'_> {
             has_incremental: incremental(&normalization).is_some(),
             error_behavior: self.config.on_error,
             cache_expiration: self.cache_expiration(operation),
+            deletes: self.deletes(operation),
             reader,
             normalization,
         }
@@ -461,6 +467,116 @@ impl Lowering<'_> {
                 None
             }
         }
+    }
+
+    /// `@deletes(type:id:)`: the records a mutation deletes, each named by
+    /// its type and the variable its key is passed as. The syntax check took
+    /// the directive off the document; what it names is checked here, against
+    /// the schema, the identity configuration and the mutation's variables:
+    /// an object type keyed by one field, and a variable of that field's
+    /// type, which names one record.
+    fn deletes(&self, operation: &OperationDefinition) -> Vec<DeletePlan> {
+        let Some(directives) = self.deletes.get(operation.name.item.0.lookup()) else {
+            return Vec::new();
+        };
+        let fail = |message: String, location| {
+            self.diagnostics
+                .borrow_mut()
+                .push(Diagnostic::error(message, location));
+        };
+        let mut plans = Vec::new();
+        for directive in directives {
+            let type_name = directive.type_name.as_str();
+            let Some(type_) = self.schema.get_type(type_name.intern()) else {
+                fail(
+                    format!("`@deletes` names `{type_name}`, which the schema does not have"),
+                    directive.type_location,
+                );
+                continue;
+            };
+            if !matches!(type_, Type::Object(_)) {
+                fail(
+                    format!(
+                        "`@deletes` names `{type_name}`, which is not an object type: name the record's own type"
+                    ),
+                    directive.type_location,
+                );
+                continue;
+            }
+            let Some(key) = self.keys.of(type_name) else {
+                fail(
+                    format!(
+                        "`@deletes` names `{type_name}`, which has no key: a record of it is keyed by its path, and no value names it"
+                    ),
+                    directive.type_location,
+                );
+                continue;
+            };
+            let [key_field] = key else {
+                fail(
+                    format!(
+                        "`{type_name}` is keyed by {}; `@deletes` names a record by one value",
+                        key.iter()
+                            .map(|field| format!("`{field}`"))
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    ),
+                    directive.type_location,
+                );
+                continue;
+            };
+            let Some(variable) = operation
+                .variable_definitions
+                .iter()
+                .find(|variable| variable.name.item.0.lookup() == directive.variable)
+            else {
+                // Relay refuses an undeclared variable a field passes before
+                // the lowering runs; this guards the lowering on its own.
+                fail(
+                    format!(
+                        "`@deletes` names `${}`, which `{}` does not declare",
+                        directive.variable, operation.name.item
+                    ),
+                    directive.variable_location,
+                );
+                continue;
+            };
+            if variable.type_.is_list() {
+                fail(
+                    format!(
+                        "`@deletes` names `${}`, a list; it names one record",
+                        directive.variable
+                    ),
+                    directive.variable_location,
+                );
+                continue;
+            }
+            let Some(field) = self.schema.named_field(type_, key_field.intern()) else {
+                continue;
+            };
+            let key_type = self.schema.field(field).type_.inner();
+            if variable.type_.inner() != key_type {
+                fail(
+                    format!(
+                        "`@deletes` names `${}` of type `{}` for `{type_name}`, whose key `{key_field}` is of type `{}`",
+                        directive.variable,
+                        self.schema.get_type_name(variable.type_.inner()),
+                        self.schema.get_type_name(key_type)
+                    ),
+                    directive.variable_location,
+                );
+                continue;
+            }
+            let plan = DeletePlan {
+                type_name: type_name.to_string(),
+                variable: directive.variable.clone(),
+            };
+            // Two directives naming the same record make one edit.
+            if !plans.contains(&plan) {
+                plans.push(plan);
+            }
+        }
+        plans
     }
 
     /// What an `@inline` fragment may not say: `@refetchable` and

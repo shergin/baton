@@ -1,5 +1,5 @@
 {
-  "schemaDigest": "cc1a283536bd9b098bee6081d7ecb260",
+  "schemaDigest": "5beaef3e41ff4dcf1169e9ba839e88cc",
   "operations": [
     {
       "name": "Fixture",
@@ -1981,6 +1981,74 @@
                   "key": "removedNoteId",
                   "read": "scalar",
                   "optional": true
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestDiscardAsset",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "uuid",
+          "type": "String!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestDiscardAsset($uuid:String!){discardAsset(uuid:$uuid){deleted}}",
+      "lens": {
+        "type": "Mutation",
+        "accessors": [
+          {
+            "name": "discardAsset",
+            "key": "discardAsset",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "Deleted",
+              "accessors": [
+                {
+                  "name": "deleted",
+                  "key": "deleted",
+                  "read": "scalar"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestDiscardNote",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestDiscardNote($id:ID!){discardNote(id:$id){deleted}}",
+      "lens": {
+        "type": "Mutation",
+        "accessors": [
+          {
+            "name": "discardNote",
+            "key": "discardNote",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "Deleted",
+              "accessors": [
+                {
+                  "name": "deleted",
+                  "key": "deleted",
+                  "read": "scalar"
                 }
               ]
             }

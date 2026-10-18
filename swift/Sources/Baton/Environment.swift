@@ -217,9 +217,12 @@ public final class Environment {
     /// selects, as a server's response does; one committed by hand may not.
     /// `dating` is the root of the operation the payload answers, which the
     /// commit stamps with the time, so that every server write dates its
-    /// operation, whoever asked for it.
-    func commit(_ payload: Data, plan: ResolvedSelection, root: Store.Root, replacing layer: UUID? = nil, checkingCancellation: Bool = true, complete: Bool = true) async throws -> Committed {
-        let changes = try await Ingest.normalized(payload, plan: plan, rootKey: root.record.key, complete: complete)
+    /// operation, whoever asked for it. `deleting` is the keys of the
+    /// records a mutation's `@deletes` name, edits of the commit beside
+    /// the payload's own.
+    func commit(_ payload: Data, plan: ResolvedSelection, root: Store.Root, replacing layer: UUID? = nil, checkingCancellation: Bool = true, complete: Bool = true, deleting deletions: [String] = []) async throws -> Committed {
+        var changes = try await Ingest.normalized(payload, plan: plan, rootKey: root.record.key, complete: complete)
+        changes.edits.append(contentsOf: deletions.map { ChangeSet.Edit.deleteByKey(key: $0) })
         if checkingCancellation { try Task.checkCancellation() }
         return commit(changes, replacing: layer, dating: root, complete: complete)
     }
@@ -263,7 +266,7 @@ public final class Environment {
     public func commitPayload<Op: Operation>(_ operation: Op, _ payload: Payload) async throws {
         guard !ended else { throw EnvironmentError.gone }
         let root = store.root(Store.rootKey(Op.name, operation.variables), resolved: Op.plan.resolve(operation.variables, in: store.keys), record: rootRecord(of: Op.kind))
-        let committed = try await commit(payload.bytes, plan: root.resolved, root: root, checkingCancellation: false, complete: false)
+        let committed = try await commit(payload.bytes, plan: root.resolved, root: root, checkingCancellation: false, complete: false, deleting: Op.plan.deletionKeys(operation.variables))
         if Op.throwsOnFieldError, !committed.uncaught.isEmpty { throw FieldErrors(committed.uncaught) }
     }
 
@@ -393,10 +396,14 @@ public final class Environment {
     public func mutate<Op: Mutation>(_ operation: Op, optimistic: Payload? = nil) async throws -> Op.Data {
         guard !ended else { throw EnvironmentError.gone }
         let resolved = Op.plan.resolve(operation.variables, in: store.keys)
+        // The records `@deletes` names, rendered once for the optimistic
+        // layer and the server's commit alike, so both make the same edit.
+        let deletions = Op.plan.deletionKeys(operation.variables)
         let root = store.root(Store.rootKey(Op.name, operation.variables), resolved: resolved, record: store.mutationRoot)
         var layer: UUID?
         if let optimistic {
-            let changes = try Ingest.normalize(optimistic.bytes, plan: resolved, rootKey: Store.mutationRootKey)
+            var changes = try Ingest.normalize(optimistic.bytes, plan: resolved, rootKey: Store.mutationRootKey)
+            changes.edits.append(contentsOf: deletions.map { ChangeSet.Edit.deleteByKey(key: $0) })
             layer = store.applyOptimistic(changes)
         }
         let uncaught: [FieldError]
@@ -408,7 +415,7 @@ public final class Environment {
             let request = request(Op.self, variables: operation.variables)
             let transport = transport
             let data = try await Task { try await transport.payload(request) }.value
-            uncaught = try await commit(data, plan: resolved, root: root, replacing: layer, checkingCancellation: false).uncaught
+            uncaught = try await commit(data, plan: resolved, root: root, replacing: layer, checkingCancellation: false, deleting: deletions).uncaught
         } catch {
             if let layer { store.revertOptimistic(layer) }
             throw error

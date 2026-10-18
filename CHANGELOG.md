@@ -5,6 +5,37 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `@deletes(type:id:)`, the second directive that is not Relay's: a mutation
+  whose payload carries no id of the record it deletes names the record by
+  its type and the variable its key is passed as, as in
+  `mutation DeleteEntry($id: Int!) @deletes(type: "MediaList", id: $id)`
+  over `DeleteMediaListEntry(id: $id) { deleted }`. The plan carries the
+  type and the variable, and each call renders the exact key, so no type is
+  probed and nothing is ambiguous. The deletion is an edit of the commit, as
+  an edge directive's is: the optimistic response carries it, so the row is
+  gone in the turn of the call; a refusal reverts it with the layer; the
+  server's response, or a payload committed for the mutation through
+  `commitPayload`, makes it. The record is deleted as `@deleteRecord`
+  deletes one, and a record memory does not hold is forgotten in the image
+  by its key. The payload does not gate it: any response the commit takes
+  makes the edit, where Relay's `@deleteRecord` waits for a non-null field.
+  Both runtimes. The compiler takes the directive off the document before
+  Relay's front end and reports at the directive, its type or its variable
+  in the host file: on a query, a subscription, a field or a fragment; a
+  type the schema lacks, or one that is not an object type, has no key or is
+  keyed by several fields; a variable the mutation does not declare, that no
+  field passes, that is a list, or whose type is not the key field's. Swift
+  format 20, Kotlin format 4: generated code of the format before fails to
+  compile at its marker with the message; rebuild with this release's
+  compiler. Held by the cases `discard-note-n2` and `discard-asset-a1` and
+  the scripts `deletes` and `deletes-image`
+  ([the decision](docs/decisions/a-mutation-names-the-record-it-deletes.md),
+  [#50](https://github.com/shergin/baton/issues/50)). Declined: a client
+  field the optimistic payload fills, which the server's response never
+  carries, so the server's commit would not delete; and a directive that
+  sets a field, which is local state written by the compiler. A field on a
+  record the payload does not reach is written by `commitPayload` after the
+  mutation.
 - The site, the articles, the principles, the vision, and the recipes are
   written in plain sentences. The claims, the numbers, the code samples,
   and the decision records are unchanged.

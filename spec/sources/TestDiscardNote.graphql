@@ -1,0 +1,3 @@
+mutation TestDiscardNote($id: ID!) @deletes(type: "Note", id: $id) {
+  discardNote(id: $id) { deleted }
+}

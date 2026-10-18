@@ -343,15 +343,15 @@ A screen written by a language model has the same shape as one written by a
 person, and goes through the same checks. The fragment beside the view is
 complete, valid GraphQL; the schema decides what exists; the generated lens
 decides what the body may read; the directives decide how data moves
-(`@connection`, `@appendEdge`, `@required`, `@catch`). There is no cache
-policy to configure, no normalizer to teach and no updater function to write,
-so there is nothing a generator has to know that is not in the file in front
-of it. The vocabulary is closed and short
+(`@connection`, `@appendEdge`, `@deletes`, `@required`, `@catch`). There is
+no cache policy to configure, no normalizer to teach and no updater function
+to write, so there is nothing a generator has to know that is not in the
+file in front of it. The vocabulary is closed and short
 ([`docs/terminology.md`](docs/terminology.md)) and fits in a prompt; the
 compiler's diagnostics point at the character in the GraphQL text that is
 wrong, which is the feedback a model iterates on best. The result is code
-that is quick to generate, easy to review, and hard to get silently wrong. What an agent reads first, and checks before
-handing a change back, is
+that is quick to generate, easy to review, and hard to get silently wrong.
+What an agent reads first, and checks before handing a change back, is
 [`docs/recipes/agents.md`](docs/recipes/agents.md).
 
 ## Status

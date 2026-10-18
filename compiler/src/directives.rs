@@ -4,17 +4,25 @@
 //! `@relay(plural:)`, compiles and then does nothing; here it is an error
 //! at the directive.
 
+use std::collections::{BTreeMap, BTreeSet};
+
 use common::{Diagnostic, Location, SourceLocationKey};
-use graphql_syntax::{Directive, ExecutableDefinition, OperationKind, Selection};
+use graphql_syntax::{
+    Argument, ConstantValue, Directive, ExecutableDefinition, FragmentDefinition, FragmentSpread,
+    List, OperationDefinition, OperationKind, Selection, Value,
+};
 use intern::Lookup;
 
 use crate::documents::Marker;
 
 /// The directives each place takes. A query also states its cache
-/// expiration, the one directive that is not Relay's
-/// (`docs/decisions/an-operation-states-its-expiration.md`).
+/// expiration, the first directive that is not Relay's
+/// (`docs/decisions/an-operation-states-its-expiration.md`), and a mutation
+/// names the records it deletes, the second
+/// (`docs/decisions/a-mutation-names-the-record-it-deletes.md`).
 const QUERY: &[&str] = &["throwOnFieldError", "cacheExpiration"];
-const OPERATION: &[&str] = &["throwOnFieldError"];
+const MUTATION: &[&str] = &["throwOnFieldError", "deletes"];
+const SUBSCRIPTION: &[&str] = &["throwOnFieldError"];
 const FRAGMENT: &[&str] = &[
     "argumentDefinitions",
     "refetchable",
@@ -53,8 +61,8 @@ pub fn check(
             ExecutableDefinition::Operation(operation) => {
                 let (allowed, place) = match operation.operation_kind() {
                     OperationKind::Query => (QUERY, "a query"),
-                    OperationKind::Mutation => (OPERATION, "a mutation"),
-                    OperationKind::Subscription => (OPERATION, "a subscription"),
+                    OperationKind::Mutation => (MUTATION, "a mutation"),
+                    OperationKind::Subscription => (SUBSCRIPTION, "a subscription"),
                 };
                 directives(&operation.directives, allowed, place, key, &mut errors);
                 walk(&operation.selections.items, key, &mut errors);
@@ -182,3 +190,252 @@ fn kind_name(marker: Marker) -> &'static str {
 #[cfg(test)]
 #[path = "tests/directives_tests.rs"]
 mod tests;
+
+/// `@deletes(type:id:)` on a mutation, as the author wrote it: the type's
+/// name and the variable the record's key is passed as, each with where it
+/// was written, for the lowering to check against the schema.
+pub struct Deletes {
+    pub type_name: String,
+    pub type_location: Location,
+    pub variable: String,
+    pub variable_location: Location,
+}
+
+/// Takes every `@deletes` off the mutations in `definitions`, by operation
+/// name, after checking its shape: `type` a string and `id` a variable.
+/// Whether a field passes the variable is checked by `check_passes` once
+/// every document is parsed, since the field may be in a fragment of
+/// another document. The directive leaves the syntax here, before Relay's
+/// front end builds the operation, because the front end would check the
+/// variable against one declared argument type, and the key field's type is
+/// each record type's own; the lowering checks what the directive names
+/// (`docs/decisions/a-mutation-names-the-record-it-deletes.md`).
+pub fn take_deletes(
+    definitions: &mut [ExecutableDefinition],
+    key: SourceLocationKey,
+    errors: &mut Vec<Diagnostic>,
+) -> BTreeMap<String, Vec<Deletes>> {
+    let mut taken = BTreeMap::new();
+    for definition in definitions {
+        let ExecutableDefinition::Operation(operation) = definition else {
+            continue;
+        };
+        if !matches!(operation.operation_kind(), OperationKind::Mutation) {
+            continue;
+        }
+        let Some(name) = &operation.name else {
+            continue;
+        };
+        let (deletes, kept): (Vec<Directive>, Vec<Directive>) = operation
+            .directives
+            .drain(..)
+            .partition(|directive| directive.name.value.lookup() == "deletes");
+        operation.directives = kept;
+        if deletes.is_empty() {
+            continue;
+        }
+        let parsed: Vec<Deletes> = deletes
+            .iter()
+            .filter_map(|directive| deletes_directive(directive, key, errors))
+            .collect();
+        taken.insert(name.value.lookup().to_string(), parsed);
+    }
+    taken
+}
+
+/// Checks, once every document is parsed, that each `@deletes` names a
+/// variable a field of its mutation passes, through the fragments it
+/// spreads, which may live in another document: a server refuses a
+/// variable its operation does not use. A directive that fails leaves the
+/// map, so the lowering plans nothing for it.
+pub fn check_passes(
+    deletes: &mut BTreeMap<String, Vec<Deletes>>,
+    definitions: &[ExecutableDefinition],
+    errors: &mut Vec<Diagnostic>,
+) {
+    let mut operations: BTreeMap<&str, &OperationDefinition> = BTreeMap::new();
+    let mut fragments: BTreeMap<&str, &FragmentDefinition> = BTreeMap::new();
+    for definition in definitions {
+        match definition {
+            ExecutableDefinition::Operation(operation) => {
+                if let Some(name) = &operation.name {
+                    operations.insert(name.value.lookup(), operation);
+                }
+            }
+            ExecutableDefinition::Fragment(fragment) => {
+                fragments.insert(fragment.name.value.lookup(), fragment);
+            }
+        }
+    }
+    for (operation_name, directives) in deletes.iter_mut() {
+        let Some(operation) = operations.get(operation_name.as_str()) else {
+            continue;
+        };
+        directives.retain(|directive| {
+            let mut visited = BTreeSet::new();
+            if passes(
+                &operation.selections.items,
+                &directive.variable,
+                &fragments,
+                &mut visited,
+            ) {
+                return true;
+            }
+            errors.push(Diagnostic::error(
+                format!(
+                    "`@deletes` names `${}`, which no field of `{operation_name}` passes: a server refuses a variable its operation does not use",
+                    directive.variable
+                ),
+                directive.variable_location,
+            ));
+            false
+        });
+    }
+}
+
+/// One `@deletes`, checked for its shape.
+fn deletes_directive(
+    directive: &Directive,
+    key: SourceLocationKey,
+    errors: &mut Vec<Diagnostic>,
+) -> Option<Deletes> {
+    let arguments: &[Argument] = directive
+        .arguments
+        .as_ref()
+        .map(|list| list.items.as_slice())
+        .unwrap_or(&[]);
+    let mut type_name = None;
+    let mut variable = None;
+    let mut malformed = arguments.len() != 2;
+    for argument in arguments {
+        match (argument.name.value.lookup(), &argument.value) {
+            ("type", Value::Constant(ConstantValue::String(string))) => {
+                type_name = Some((
+                    string.value.lookup().to_string(),
+                    Location::new(key, string.token.span),
+                ));
+            }
+            ("id", Value::Variable(identifier)) => {
+                variable = Some((
+                    identifier.name.lookup().to_string(),
+                    Location::new(key, identifier.span),
+                ));
+            }
+            _ => malformed = true,
+        }
+    }
+    let ((type_name, type_location), (variable, variable_location)) = match (type_name, variable) {
+        (Some(type_name), Some(variable)) if !malformed => (type_name, variable),
+        _ => {
+            errors.push(Diagnostic::error(
+                "`@deletes` takes `type`, the name of the record's type, and `id`, the variable the record's key is passed as",
+                Location::new(key, directive.span),
+            ));
+            return None;
+        }
+    };
+    Some(Deletes {
+        type_name,
+        type_location,
+        variable,
+        variable_location,
+    })
+}
+
+/// Whether a field, a spread or an inline fragment under `selections`
+/// passes the variable in an argument, at any depth, following each spread
+/// into its fragment's body.
+fn passes(
+    selections: &[Selection],
+    variable: &str,
+    fragments: &BTreeMap<&str, &FragmentDefinition>,
+    visited: &mut BTreeSet<String>,
+) -> bool {
+    selections.iter().any(|selection| match selection {
+        Selection::ScalarField(field) => {
+            arguments_pass(&field.arguments, variable)
+                || directives_pass(&field.directives, variable)
+        }
+        Selection::LinkedField(field) => {
+            arguments_pass(&field.arguments, variable)
+                || directives_pass(&field.directives, variable)
+                || passes(&field.selections.items, variable, fragments, visited)
+        }
+        Selection::InlineFragment(fragment) => {
+            directives_pass(&fragment.directives, variable)
+                || passes(&fragment.selections.items, variable, fragments, visited)
+        }
+        Selection::FragmentSpread(spread) => {
+            arguments_pass(&spread.arguments, variable)
+                || directives_pass(&spread.directives, variable)
+                || spread_passes(spread, variable, fragments, visited)
+        }
+    })
+}
+
+/// Whether the spread fragment's body passes the operation's variable: not
+/// when the fragment declares an argument of that name, which shadows it
+/// inside the body, and each fragment is walked once.
+fn spread_passes(
+    spread: &FragmentSpread,
+    variable: &str,
+    fragments: &BTreeMap<&str, &FragmentDefinition>,
+    visited: &mut BTreeSet<String>,
+) -> bool {
+    let name = spread.name.value.lookup();
+    let Some(fragment) = fragments.get(name) else {
+        return false;
+    };
+    if declares_argument(fragment, variable) || !visited.insert(name.to_string()) {
+        return false;
+    }
+    passes(&fragment.selections.items, variable, fragments, visited)
+}
+
+/// Whether the fragment declares `variable` as an argument of its own, by
+/// `@argumentDefinitions` or by a variable definition on the fragment.
+fn declares_argument(fragment: &FragmentDefinition, variable: &str) -> bool {
+    let by_directive = fragment
+        .directives
+        .iter()
+        .filter(|directive| directive.name.value.lookup() == "argumentDefinitions")
+        .any(|directive| {
+            directive.arguments.as_ref().is_some_and(|list| {
+                list.items
+                    .iter()
+                    .any(|argument| argument.name.value.lookup() == variable)
+            })
+        });
+    let by_definition = fragment.variable_definitions.as_ref().is_some_and(|list| {
+        list.items
+            .iter()
+            .any(|definition| definition.name.name.lookup() == variable)
+    });
+    by_directive || by_definition
+}
+
+fn directives_pass(directives: &[Directive], variable: &str) -> bool {
+    directives
+        .iter()
+        .any(|directive| arguments_pass(&directive.arguments, variable))
+}
+
+fn arguments_pass(arguments: &Option<List<Argument>>, variable: &str) -> bool {
+    arguments.as_ref().is_some_and(|list| {
+        list.items
+            .iter()
+            .any(|argument| value_passes(&argument.value, variable))
+    })
+}
+
+fn value_passes(value: &Value, variable: &str) -> bool {
+    match value {
+        Value::Variable(identifier) => identifier.name.lookup() == variable,
+        Value::List(list) => list.items.iter().any(|item| value_passes(item, variable)),
+        Value::Object(fields) => fields
+            .items
+            .iter()
+            .any(|field| value_passes(&field.value, variable)),
+        Value::Constant(_) => false,
+    }
+}

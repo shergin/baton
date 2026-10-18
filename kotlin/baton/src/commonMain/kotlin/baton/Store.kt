@@ -940,6 +940,12 @@ class Store(
                         else -> log?.invoke(LogEvent.AmbiguousIdentity(edit.id, found.map { it.type.name }))
                     }
                 }
+                is ChangeSet.Edit.DeleteByKey -> {
+                    // The document names the record by its type and a variable, so the key is exact.
+                    // One memory does not hold may be in the image, which forgets it by that key.
+                    val record = records[edit.key]
+                    if (record == null) forgets?.keys?.add(edit.key) else if (!record.deleted) delete(record, batch)
+                }
             }
         }
 

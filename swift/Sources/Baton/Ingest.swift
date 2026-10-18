@@ -36,6 +36,9 @@ package struct ChangeSet: Sendable {
         case insertNode(node: Int32, edgeType: TypeID, connections: [String], prepend: Bool)
         case deleteEdge(id: String, connections: [String])
         case deleteRecord(id: String)
+        /// A record a mutation named by its type and a variable (`@deletes`),
+        /// by its exact key.
+        case deleteByKey(key: String)
     }
 
     /// A field error resolved to the record and slot its path names, and

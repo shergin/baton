@@ -465,9 +465,10 @@ public final class Store {
         persist(batch.steps(since: start))
     }
 
-    /// What a server batch could not edit in memory: connection keys, and
-    /// the bare ids of records `@deleteRecord` named that memory does not
-    /// hold. Recorded only while a server's payload applies.
+    /// What a server batch could not edit in memory: connection keys, the
+    /// keys of records `@deletes` named, and the bare ids of records
+    /// `@deleteRecord` named, that memory does not hold. Recorded only while
+    /// a server's payload applies.
     struct Forgets {
         var keys: [String] = []
         var ids: [String] = []
@@ -863,6 +864,15 @@ public final class Store {
                 case 0: forgets?.ids.append(id)
                 case 1: delete(found[0], &batch)
                 default: log?(.ambiguousIdentity(id: id, types: found.map(\.type.name)))
+                }
+            case .deleteByKey(let key):
+                // The document names the record by its type and a variable,
+                // so the key is exact. One memory does not hold may be in
+                // the image, which forgets it by that key.
+                if let record = records[key] {
+                    if !record.deleted { delete(record, &batch) }
+                } else {
+                    forgets?.keys.append(key)
                 }
             }
         }

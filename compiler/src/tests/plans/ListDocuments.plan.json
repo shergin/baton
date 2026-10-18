@@ -3,7 +3,7 @@
     {
       "name": "TestAuthorNotes_note",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
-      "document": 20,
+      "document": 22,
       "type_condition": "Note",
       "type_is_abstract": false,
       "possible_types": [
@@ -424,7 +424,7 @@
     {
       "name": "TestDeferredNotes_character",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
-      "document": 13,
+      "document": 15,
       "type_condition": "Character",
       "type_is_abstract": false,
       "possible_types": [
@@ -765,7 +765,7 @@
     {
       "name": "TestHiddenNotes_character",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
-      "document": 16,
+      "document": 18,
       "type_condition": "Character",
       "type_is_abstract": false,
       "possible_types": [
@@ -1193,7 +1193,7 @@
     {
       "name": "TestHiddenRecentNotes_character",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
-      "document": 18,
+      "document": 20,
       "type_condition": "Character",
       "type_is_abstract": false,
       "possible_types": [
@@ -1579,7 +1579,7 @@
     {
       "name": "TestNoteText_note",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
-      "document": 14,
+      "document": 16,
       "type_condition": "Note",
       "type_is_abstract": false,
       "possible_types": [
@@ -3931,7 +3931,7 @@
     {
       "name": "TestAliasQuery",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
-      "document": 12,
+      "document": 14,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -4179,7 +4179,7 @@
     {
       "name": "TestAuthorNotesPaginationQuery",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
-      "document": 20,
+      "document": 22,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -4817,7 +4817,7 @@
     {
       "name": "TestAuthorNotesQuery",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
-      "document": 21,
+      "document": 23,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -5436,7 +5436,7 @@
     {
       "name": "TestDeferredNotesPaginationQuery",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
-      "document": 13,
+      "document": 15,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -6143,9 +6143,285 @@
       ]
     },
     {
+      "name": "TestDiscardAsset",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "document": 13,
+      "kind": "mutation",
+      "root_type": "Mutation",
+      "variables": [
+        {
+          "name": "uuid",
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": true
+          },
+          "default_value": null
+        }
+      ],
+      "text": "mutation TestDiscardAsset($uuid:String!){discardAsset(uuid:$uuid){deleted}}",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_incremental": false,
+      "error_behavior": null,
+      "deletes": [
+        {
+          "type": "Asset",
+          "variable": "uuid"
+        }
+      ],
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "discardAsset",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Deleted",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {},
+          "is_abstract": false,
+          "possible_types": [
+            "Deleted"
+          ],
+          "storage_key": {
+            "name": "discardAsset",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "deleted",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Boolean",
+                "kind": "boolean",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "deleted",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "discardAsset",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Deleted",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {},
+          "is_abstract": false,
+          "possible_types": [
+            "Deleted"
+          ],
+          "storage_key": {
+            "name": "discardAsset",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "deleted",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Boolean",
+                "kind": "boolean",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "deleted",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TestDiscardNote",
+      "source": "swift/Tests/BatonTests/ListDocuments.swift",
+      "document": 12,
+      "kind": "mutation",
+      "root_type": "Mutation",
+      "variables": [
+        {
+          "name": "id",
+          "type": {
+            "shape": "named",
+            "name": "ID",
+            "kind": "id",
+            "non_null": true
+          },
+          "default_value": null
+        }
+      ],
+      "text": "mutation TestDiscardNote($id:ID!){discardNote(id:$id){deleted}}",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_incremental": false,
+      "error_behavior": null,
+      "deletes": [
+        {
+          "type": "Note",
+          "variable": "id"
+        }
+      ],
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "discardNote",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Deleted",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {},
+          "is_abstract": false,
+          "possible_types": [
+            "Deleted"
+          ],
+          "storage_key": {
+            "name": "discardNote",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "deleted",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Boolean",
+                "kind": "boolean",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "deleted",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "discardNote",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Deleted",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {},
+          "is_abstract": false,
+          "possible_types": [
+            "Deleted"
+          ],
+          "storage_key": {
+            "name": "discardNote",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "deleted",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Boolean",
+                "kind": "boolean",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "deleted",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "TestHiddenNotesPaginationQuery",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
-      "document": 16,
+      "document": 18,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -6790,7 +7066,7 @@
     {
       "name": "TestHiddenNotesQuery",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
-      "document": 17,
+      "document": 19,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -7331,7 +7607,7 @@
     {
       "name": "TestHiddenRecentNotesPaginationQuery",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
-      "document": 18,
+      "document": 20,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -7934,7 +8210,7 @@
     {
       "name": "TestHiddenRecentNotesQuery",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
-      "document": 19,
+      "document": 21,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -11266,7 +11542,7 @@
     {
       "name": "TestTwoPagesQuery",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",
-      "document": 15,
+      "document": 17,
       "kind": "query",
       "root_type": "Query",
       "variables": [

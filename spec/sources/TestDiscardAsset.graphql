@@ -1,0 +1,3 @@
+mutation TestDiscardAsset($uuid: String!) @deletes(type: "Asset", id: $uuid) {
+  discardAsset(uuid: $uuid) { deleted }
+}

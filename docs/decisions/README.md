@@ -69,3 +69,4 @@ principle, the proof belongs here.
 - [Relay's store tests are measured against, not obeyed](relays-tests-are-measured-not-obeyed.md)
 - [The report holds each lens](the-report-holds-each-lens.md)
 - [A streamed list grows in its slot](a-streamed-list-grows-in-its-slot.md)
+- [A mutation names the record it deletes when its payload does not](a-mutation-names-the-record-it-deletes.md)

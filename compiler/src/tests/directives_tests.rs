@@ -111,7 +111,7 @@ fn a_query_takes_a_cache_expiration_and_a_mutation_or_a_subscription_does_not() 
             Some(Marker::Mutation)
         ),
         vec![
-            "`@cacheExpiration` on a mutation has no meaning in Baton; a mutation takes `@throwOnFieldError`"
+            "`@cacheExpiration` on a mutation has no meaning in Baton; a mutation takes `@throwOnFieldError`, `@deletes`"
         ]
     );
     assert_eq!(
@@ -129,6 +129,222 @@ fn a_query_takes_a_cache_expiration_and_a_mutation_or_a_subscription_does_not() 
             "`@live` on a query has no meaning in Baton; a query takes `@throwOnFieldError`, `@cacheExpiration`"
         ]
     );
+}
+
+#[test]
+fn a_mutation_takes_deletes_and_a_query_or_a_subscription_does_not() {
+    assert!(
+        errors(
+            "mutation M($id: ID!) @deletes(type: \"Note\", id: $id) @throwOnFieldError { discardNote(id: $id) { deleted } }",
+            Some(Marker::Mutation)
+        )
+        .is_empty()
+    );
+    assert!(
+        errors(
+            "mutation M($id: ID!, $uuid: String!) @deletes(type: \"Note\", id: $id) @deletes(type: \"Asset\", id: $uuid) { discardNote(id: $id) { deleted } discardAsset(uuid: $uuid) { deleted } }",
+            Some(Marker::Mutation)
+        )
+        .is_empty(),
+        "the directive repeats, one record each"
+    );
+    assert_eq!(
+        errors(
+            "query Q($id: ID!) @deletes(type: \"Note\", id: $id) { node(id: $id) { id } }",
+            Some(Marker::Query)
+        ),
+        vec![
+            "`@deletes` on a query has no meaning in Baton; a query takes `@throwOnFieldError`, `@cacheExpiration`"
+        ]
+    );
+    assert_eq!(
+        errors(
+            "subscription S($id: ID!) @deletes(type: \"Note\", id: $id) { noteAdded(characterId: $id) { character { id } } }",
+            Some(Marker::Subscription)
+        ),
+        vec![
+            "`@deletes` on a subscription has no meaning in Baton; a subscription takes `@throwOnFieldError`"
+        ]
+    );
+}
+
+#[test]
+fn deletes_on_a_field_or_a_fragment_definition_is_an_error_at_it() {
+    assert_eq!(
+        errors(
+            "mutation M($id: ID!) { discardNote(id: $id) @deletes(type: \"Note\", id: $id) { deleted } }",
+            Some(Marker::Mutation)
+        ),
+        vec![
+            "`@deletes` on a field has no meaning in Baton; a field takes `@include`, `@skip`, `@required`, `@catch`, `@connection`, `@appendEdge`, `@prependEdge`, `@appendNode`, `@prependNode`, `@deleteEdge`, `@deleteRecord`, `@stream`, `@stream_connection`"
+        ]
+    );
+    assert_eq!(
+        errors(
+            "fragment F on Note @deletes(type: \"Note\", id: $id) { id }",
+            Some(Marker::Fragment)
+        )
+        .len(),
+        1
+    );
+}
+
+/// What taking `@deletes` off a document leaves.
+struct Taken {
+    /// Each `@deletes` taken, as its operation, its type and its variable.
+    deletes: Vec<(String, String, String)>,
+    /// The directives each definition keeps, by name.
+    kept: Vec<Vec<String>>,
+    /// The errors of the directives' shape and of the variables they name.
+    errors: Vec<String>,
+}
+
+/// The `@deletes` taken off `text`'s mutations, each kept when a field
+/// passes its variable, as the pipeline checks once every document is
+/// parsed.
+fn taken(text: &str) -> Taken {
+    let key = SourceLocationKey::embedded(&Path::new("Directives.swift").to_string_lossy(), 0);
+    let mut parsed = graphql_syntax::parse_executable(text, key).expect("the document parses");
+    let mut errors = Vec::new();
+    let mut deletes = take_deletes(&mut parsed.definitions, key, &mut errors);
+    check_passes(&mut deletes, &parsed.definitions, &mut errors);
+    let deletes = deletes
+        .into_iter()
+        .flat_map(|(operation, deletes)| {
+            deletes
+                .into_iter()
+                .map(move |deletes| (operation.clone(), deletes.type_name, deletes.variable))
+        })
+        .collect();
+    let kept = parsed
+        .definitions
+        .iter()
+        .map(|definition| match definition {
+            ExecutableDefinition::Operation(operation) => operation
+                .directives
+                .iter()
+                .map(|directive| directive.name.value.lookup().to_string())
+                .collect(),
+            ExecutableDefinition::Fragment(fragment) => fragment
+                .directives
+                .iter()
+                .map(|directive| directive.name.value.lookup().to_string())
+                .collect(),
+        })
+        .collect();
+    let errors = errors
+        .iter()
+        .map(|error| error.message().to_string())
+        .collect();
+    Taken {
+        deletes,
+        kept,
+        errors,
+    }
+}
+
+#[test]
+fn deletes_is_taken_off_a_mutation_before_relay_sees_it_and_its_other_directives_stay() {
+    let Taken {
+        deletes,
+        kept,
+        errors,
+    } = taken(
+        "mutation M($id: ID!, $uuid: String!) @throwOnFieldError @deletes(type: \"Note\", id: $id) @deletes(type: \"Asset\", id: $uuid) { discardNote(id: $id) { deleted } discardAsset(uuid: $uuid) { deleted } }",
+    );
+    assert!(errors.is_empty(), "{errors:?}");
+    assert_eq!(
+        deletes,
+        vec![
+            ("M".to_string(), "Note".to_string(), "id".to_string()),
+            ("M".to_string(), "Asset".to_string(), "uuid".to_string()),
+        ]
+    );
+    assert_eq!(kept, vec![vec!["throwOnFieldError".to_string()]]);
+}
+
+#[test]
+fn deletes_on_a_query_is_left_for_the_directive_check_to_refuse() {
+    let Taken {
+        deletes,
+        kept,
+        errors,
+    } = taken("query Q($id: ID!) @deletes(type: \"Note\", id: $id) { node(id: $id) { id } }");
+    assert!(deletes.is_empty());
+    assert_eq!(kept, vec![vec!["deletes".to_string()]]);
+    assert!(errors.is_empty(), "{errors:?}");
+}
+
+#[test]
+fn deletes_naming_a_variable_no_field_passes_is_dropped_with_an_error() {
+    let Taken {
+        deletes, errors, ..
+    } = taken(
+        "mutation M($id: ID!, $other: ID!) @deletes(type: \"Note\", id: $other) @deletes(type: \"Note\", id: $id) { discardNote(id: $id) { deleted } }",
+    );
+    assert_eq!(
+        deletes,
+        vec![("M".to_string(), "Note".to_string(), "id".to_string())]
+    );
+    assert_eq!(
+        errors,
+        vec![
+            "`@deletes` names `$other`, which no field of `M` passes: a server refuses a variable its operation does not use"
+        ]
+    );
+}
+
+#[test]
+fn a_variable_deletes_names_counts_as_passed_inside_the_fragments_a_mutation_spreads() {
+    for fragments in [
+        "fragment F on Mutation { discardNote(id: $id) { deleted } }",
+        "fragment F on Mutation { ...G } fragment G on Mutation { ... on Mutation { discardNote(id: $id) { deleted } } }",
+    ] {
+        let Taken {
+            deletes, errors, ..
+        } = taken(&format!(
+            "mutation M($id: ID!) @deletes(type: \"Note\", id: $id) {{ ...F }} {fragments}"
+        ));
+        assert!(errors.is_empty(), "{fragments}: {errors:?}");
+        assert_eq!(deletes.len(), 1, "{fragments}");
+    }
+}
+
+#[test]
+fn a_fragment_that_shadows_the_variable_a_cycle_of_spreads_or_a_missing_fragment_passes_nothing() {
+    for fragments in [
+        "fragment F on Mutation @argumentDefinitions(id: {type: \"ID!\"}) { discardNote(id: $id) { deleted } }",
+        "fragment F on Mutation { ...G } fragment G on Mutation { ...F }",
+        "fragment G on Mutation { discardNote(id: $id) { deleted } }",
+    ] {
+        let Taken {
+            deletes, errors, ..
+        } = taken(&format!(
+            "mutation M($id: ID!) @deletes(type: \"Note\", id: $id) {{ ...F }} {fragments}"
+        ));
+        assert!(deletes.is_empty(), "{fragments}");
+        assert_eq!(errors.len(), 1, "{fragments}: {errors:?}");
+    }
+}
+
+#[test]
+fn a_variable_deletes_names_counts_as_passed_wherever_a_field_or_a_spread_passes_it() {
+    for selection in [
+        "discardNote(id: $id) { deleted }",
+        "discardNote(id: \"n1\") { deleted @include(if: $id) }",
+        "charactersMatching(filters: [{name: $id}]) { id }",
+        "... on Mutation { discardNote(id: $id) { deleted } }",
+        "...F @arguments(id: $id)",
+        "rename(id: \"1\", name: \"a\") { character { notes(after: $id) { totalCount } } }",
+    ] {
+        let Taken {
+            deletes, errors, ..
+        } = taken(&format!(
+            "mutation M($id: ID!) @deletes(type: \"Note\", id: $id) {{ {selection} }}"
+        ));
+        assert!(errors.is_empty(), "{selection}: {errors:?}");
+        assert_eq!(deletes.len(), 1, "{selection}");
+    }
 }
 
 #[test]

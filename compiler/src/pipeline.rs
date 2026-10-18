@@ -12,9 +12,9 @@ mod plan;
 
 pub use plan::{
     ArgumentPlan, ArgumentValuePlan, CatchTarget, ConditionClass, ConnectionPlan, ConstantPlan,
-    EditKind, EditPlan, FragmentPlan, LookupPlan, OperationKind, OperationPlan, Origin, Plan,
-    RefetchPlan, RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan, TypeKind, TypePlan,
-    VariablePlan,
+    DeletePlan, EditKind, EditPlan, FragmentPlan, LookupPlan, OperationKind, OperationPlan, Origin,
+    Plan, RefetchPlan, RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan, TypeKind,
+    TypePlan, VariablePlan,
 };
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -126,17 +126,24 @@ pub fn compile(
     let started = Instant::now();
     let mut definitions = Vec::new();
     let mut diagnostics = Vec::new();
+    let mut deletes = BTreeMap::new();
     for document in documents {
         let key = SourceLocationKey::embedded(&document.path.to_string_lossy(), document.index);
         match graphql_syntax::parse_executable(&document.text, key) {
-            Ok(parsed) => {
+            Ok(mut parsed) => {
                 let marker = document.embedded.as_ref().map(|embedded| embedded.marker);
                 diagnostics.extend(crate::directives::check(&parsed.definitions, key, marker));
+                deletes.extend(crate::directives::take_deletes(
+                    &mut parsed.definitions,
+                    key,
+                    &mut diagnostics,
+                ));
                 definitions.extend(parsed.definitions);
             }
             Err(errors) => diagnostics.extend(errors),
         }
     }
+    crate::directives::check_passes(&mut deletes, &definitions, &mut diagnostics);
     timings.parse = started.elapsed();
     if !diagnostics.is_empty() {
         return Err(diagnostics);
@@ -176,7 +183,7 @@ pub fn compile(
     timings.transform = started.elapsed();
 
     let started = Instant::now();
-    let mut plan = lower(&schema, &programs, config, &keys)?;
+    let mut plan = lower(&schema, &programs, config, &keys, &deletes)?;
     plan.root_names = root_names;
     plan.transient_types = transient_types;
     plan.schema_digest = schema_digest(schema_sdl, extensions, &config.identity, &config.transient);
