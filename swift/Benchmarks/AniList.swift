@@ -79,6 +79,20 @@ func readList(_ readings: [ListQuery.Data]) -> Int {
     return sink
 }
 
+/// The reading the derived-state recipe's model takes of one chunk: five
+/// values an entry, seven slots, where `readList` reads forty-four.
+@MainActor
+func readNarrow(_ data: ListQuery.Data) -> Int {
+    var sink = 0
+    for entry in aniListEntries(data) {
+        sink &+= entry.id &+ (entry.status?.scalarText.utf8.count ?? 0) &+ (entry.progress ?? 0)
+        let card = entry.media?.mediaCard
+        sink &+= card?.title?.userPreferred?.utf8.count ?? 0
+        sink &+= card?.nextAiringEpisode?.airingAt ?? 0
+    }
+    return sink
+}
+
 /// The fields `readList` reads over `readings`.
 @MainActor
 func fieldsRead(_ readings: [ListQuery.Data]) -> Int {
@@ -150,6 +164,9 @@ func aniListBench() async throws {
     measure("one chunk's reading inside its own tracking scope, 500 entries", iterations: 20, setup: { (trackedStore, tracked) = try! aniListStore(); chunk = [tracked[1]] }) {
         withObservationTracking { if readList(chunk) == 42 { print("") } } onChange: {}
     }
+    measure("one chunk's reading of five values an entry, its own scope", iterations: 20, setup: { (trackedStore, tracked) = try! aniListStore(); chunk = [tracked[1]] }) {
+        withObservationTracking { if readNarrow(chunk[0]) == 42 { print("") } } onChange: {}
+    }
     await measureEach("the reading through Observations, made to its first value", iterations: 20) {
         let (_, observed) = try! aniListStore()
         let start = DispatchTime.now().uptimeNanoseconds
@@ -168,15 +185,28 @@ func aniListBench() async throws {
     let savePlan = SaveEntryMutation.plan.resolve(SaveEntryMutation(id: 991, progress: 249).variables, in: store.keys)
     let saved = try Ingest.normalize(save, plan: savePlan, rootKey: Store.mutationRootKey)
     let restored = try Ingest.normalize(back, plan: savePlan, rootKey: Store.mutationRootKey)
-    var chunkIterator = Observations<Int, Never> { readList([readings[1]]) }.makeAsyncIterator()
-    _ = await chunkIterator.next()
     var flip = false
-    await measureEach("a one-field save, the commit to its chunk's reading delivered", iterations: 20) {
-        flip.toggle()
-        let start = DispatchTime.now().uptimeNanoseconds
-        store.commit(flip ? saved : restored)
+    do {
+        var chunkIterator = Observations<Int, Never> { readList([readings[1]]) }.makeAsyncIterator()
         _ = await chunkIterator.next()
-        return DispatchTime.now().uptimeNanoseconds - start
+        await measureEach("a one-field save, the commit to its chunk's reading delivered", iterations: 20) {
+            flip.toggle()
+            let start = DispatchTime.now().uptimeNanoseconds
+            store.commit(flip ? saved : restored)
+            _ = await chunkIterator.next()
+            return DispatchTime.now().uptimeNanoseconds - start
+        }
+    }
+    do {
+        var narrowIterator = Observations<Int, Never> { readNarrow(readings[1]) }.makeAsyncIterator()
+        _ = await narrowIterator.next()
+        await measureEach("the same, the chunk read five values an entry", iterations: 20) {
+            flip.toggle()
+            let start = DispatchTime.now().uptimeNanoseconds
+            store.commit(flip ? saved : restored)
+            _ = await narrowIterator.next()
+            return DispatchTime.now().uptimeNanoseconds - start
+        }
     }
 
     // The save's commit with every row's body observing its entry whole and

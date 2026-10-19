@@ -110,6 +110,13 @@ private fun readEntry(entry: EntryRow_mediaList, fields: Fields): Int {
     return sink
 }
 
+/** The reading the derived-state recipe's model takes of one chunk: five values an entry, seven slots, where [readList] reads forty-four. */
+private fun readNarrow(data: ListQuery.Data): Int = entries(data).sumOf { entry ->
+    val card = entry.media?.mediaCard
+    entry.id + (entry.status?.scalarText?.length ?: 0) + (entry.progress ?: 0) +
+        (card?.title?.userPreferred?.length ?: 0) + (card?.nextAiringEpisode?.airingAt ?: 0)
+}
+
 /** The fields [readList] reads over [readings]. */
 private fun fieldsRead(readings: List<ListQuery.Data>): Int {
     val fields = Fields()
@@ -202,6 +209,9 @@ private class AniListBench {
         measure("one chunk's reading in its own snapshot, 500 entries", iterations = 20) {
             statesRead { sink += readList(listOf(readings[1])) }
         }
+        measure("one chunk's reading of five values an entry, its own snapshot", iterations = 20) {
+            statesRead { sink += readNarrow(readings[1]) }
+        }
         val thread = Thread.currentThread()
         measureEach("the reading through snapshotFlow, made to its first value", iterations = 20) {
             runBlocking {
@@ -222,20 +232,27 @@ private class AniListBench {
         val savePlan = store.resolve(SaveEntryMutation.plan, SaveEntryMutation(id = 991, progress = 249).variables)
         val saved = Ingest.normalize(save, savePlan, Store.MUTATION_ROOT_KEY)
         val restored = Ingest.normalize(back, savePlan, Store.MUTATION_ROOT_KEY)
-        runBlocking {
-            val delivered = Channel<Int>(Channel.UNLIMITED)
-            val collector = launch { snapshotFlow { readList(listOf(readings[1])) }.collect { delivered.send(it) } }
-            delivered.receive()
-            val samples = ArrayList<Long>()
-            repeat(40) { round ->
-                val start = System.nanoTime()
-                store.commit(if (round % 2 == 0) saved else restored)
-                Snapshot.sendApplyNotifications()
-                sink += delivered.receive()
-                if (round >= 20) samples.add(System.nanoTime() - start)
+        for ((label, reading) in listOf<Pair<String, () -> Int>>(
+            "a one-field save, the commit to its chunk's reading delivered" to { readList(listOf(readings[1])) },
+            "the same, the chunk read five values an entry" to { readNarrow(readings[1]) },
+        )) {
+            runBlocking {
+                val delivered = Channel<Int>(Channel.UNLIMITED)
+                val collector = launch { snapshotFlow { reading() }.collect { delivered.send(it) } }
+                delivered.receive()
+                val samples = ArrayList<Long>()
+                repeat(40) { round ->
+                    val start = System.nanoTime()
+                    store.commit(if (round % 2 == 0) saved else restored)
+                    Snapshot.sendApplyNotifications()
+                    sink += delivered.receive()
+                    if (round >= 20) samples.add(System.nanoTime() - start)
+                }
+                collector.cancel()
+                report(label, samples, 1)
             }
-            collector.cancel()
-            report("a one-field save, the commit to its chunk's reading delivered", samples, 1)
+            store.commit(restored)
+            Snapshot.sendApplyNotifications()
         }
 
         // The save's commit with every row's body observing its entry whole
