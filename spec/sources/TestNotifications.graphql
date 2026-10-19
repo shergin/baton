@@ -1,0 +1,25 @@
+query TestNotifications {
+  Notification {
+    __typename
+    ... on AiringNotification { id episode }
+    ... on FollowingNotification { id userId }
+    ... on ActivityMessageNotification { id activityId }
+    ... on ActivityMentionNotification { id activityId }
+    ... on ActivityReplyNotification { id activityId }
+    ... on ActivityReplySubscribedNotification { id activityId }
+    ... on ActivityLikeNotification { id activityId }
+    ... on ActivityReplyLikeNotification { id activityId }
+    ... on ThreadCommentMentionNotification { id commentId }
+    ... on ThreadCommentReplyNotification { id commentId }
+    ... on ThreadCommentSubscribedNotification { id commentId }
+    ... on ThreadCommentLikeNotification { id commentId }
+    ... on ThreadLikeNotification { id threadId }
+    ... on RelatedMediaAdditionNotification { id mediaId }
+    ... on MediaDataChangeNotification { id reason }
+    ... on MediaMergeNotification { id deletedMediaTitles }
+    ... on MediaDeletionNotification { id deletedMediaTitle }
+    ... on MediaSubmissionUpdateNotification { id status }
+    ... on StaffSubmissionUpdateNotification { id status }
+    ... on CharacterSubmissionUpdateNotification { id status }
+  }
+}

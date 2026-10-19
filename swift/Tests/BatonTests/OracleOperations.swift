@@ -77,6 +77,9 @@ struct OracleOperation: Sendable {
             try OracleOperation(TestConditions(id: $0.string("id"), withOrigin: $0.bool("withOrigin"), hideStatus: $0.bool("hideStatus")), reads: conditionsReads)
         },
         "TestUnion": { try OracleOperation(TestUnion(name: $0.string("name")), reads: unionReads) },
+        "TestNotifications": { _ in OracleOperation(TestNotifications(), reads: notificationsReads) },
+        "TestEpisodeStatus": { try OracleOperation(TestEpisodeStatus(id: $0.string("id")), reads: episodeStatusReads, spellings: episodeStatusSpellings) },
+        "TestCapitalizedRoots": { try OracleOperation(TestCapitalizedRoots(id: $0.string("id")), reads: capitalizedRootsReads) },
         "TestNodeFields": { try OracleOperation(TestNodeFields(id: $0.string("id")), reads: nodeFieldsReads) },
         "TestNodeDeferred": { try OracleOperation(TestNodeDeferred(id: $0.string("id")), reads: nodeDeferredReads) },
         "TestStreamedEpisodes": { try OracleOperation(TestStreamedEpisodes(id: $0.string("id")), reads: streamedEpisodesReads) },
@@ -429,6 +432,36 @@ extension OracleOperation {
         "search.2.air_date": { $0.search?.element(2)?.asEpisode?.air_date.manifestValue ?? .null },
     ]
 
+    /// A union of twenty members with no interface: each element reads
+    /// through its own type's condition.
+    static let notificationsReads: [String: @MainActor @Sendable (TestNotifications.Data) -> Manifest.Value] = [
+        "Notification.0.episode": { $0.Notification?.element(0)?.asAiringNotification?.episode.manifestValue ?? .null },
+        "Notification.1.userId": { $0.Notification?.element(1)?.asFollowingNotification?.userId.manifestValue ?? .null },
+        "Notification.12.threadId": { $0.Notification?.element(12)?.asThreadLikeNotification?.threadId.manifestValue ?? .null },
+        "Notification.15.deletedMediaTitles": { $0.Notification?.element(15)?.asMediaMergeNotification?.deletedMediaTitles.manifestValue ?? .null },
+        "Notification.19.id": { $0.Notification?.element(19)?.asCharacterSubmissionUpdateNotification?.id.manifestValue ?? .null },
+        "Notification.19.status": { $0.Notification?.element(19)?.asCharacterSubmissionUpdateNotification?.status.manifestValue ?? .null },
+    ]
+
+    /// One field read without its `version` argument and with it, two slots.
+    static let episodeStatusReads: [String: @MainActor @Sendable (TestEpisodeStatus.Data) -> Manifest.Value] = [
+        "episode.status": { $0.episode?.status.manifestValue ?? .null },
+        "episode.hiatus": { $0.episode?.hiatus.manifestValue ?? .null },
+    ]
+
+    static let episodeStatusSpellings: [String: Spelling] = [
+        "episode.status": spelled(as: EpisodeStatus.self),
+        "episode.hiatus": spelled(as: EpisodeStatus.self),
+    ]
+
+    /// Root fields capitalized as AniList's are, read through accessors that
+    /// keep their spelling.
+    static let capitalizedRootsReads: [String: @MainActor @Sendable (TestCapitalizedRoots.Data) -> Manifest.Value] = [
+        "Episode.name": { $0.Episode?.name.manifestValue ?? .null },
+        "Viewer.name": { $0.Viewer?.name.manifestValue ?? .null },
+        "GenreCollection": { $0.GenreCollection.manifestValue },
+    ]
+
     @MainActor private static func label(_ element: TestUnion.Data.Search?) -> Manifest.Value {
         if let character = element?.asCharacter { return character.label.manifestValue }
         if let location = element?.asLocation { return location.label.manifestValue }
@@ -588,6 +621,10 @@ extension URL: ManifestValueConvertible {
 /// A generated enum is read in the manifest's spelling as its text, so
 /// `unknown("GHOST")` is the response's `GHOST`.
 extension Status: ManifestValueConvertible {
+    var manifestValue: Manifest.Value { .string(scalarText) }
+}
+
+extension EpisodeStatus: ManifestValueConvertible {
     var manifestValue: Manifest.Value { .string(scalarText) }
 }
 

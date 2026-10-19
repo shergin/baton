@@ -1,0 +1,3 @@
+query TestEpisodeStatus($id: ID!) {
+  episode(id: $id) { id status hiatus: status(version: 2) }
+}

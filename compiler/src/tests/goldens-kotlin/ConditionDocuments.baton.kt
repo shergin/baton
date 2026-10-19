@@ -371,6 +371,284 @@ private object `TestNodeFields-plan` {
     }
 }
 
+/** Operation value for `query TestNotifications`. */
+@Immutable
+class TestNotifications : QueryOperation<TestNotifications.Data> {
+    override val variables: Variables
+        get() = Variables.none
+    override val type: OperationType<Data> get() = Companion
+
+    override fun equals(other: Any?): Boolean = other is TestNotifications
+    override fun hashCode(): Int = 0
+
+    companion object : QueryType<TestNotifications, TestNotifications.Data> {
+        override val name = "TestNotifications"
+        override val document: Document = Document.Text("query TestNotifications{Notification{__typename,...on AiringNotification{id,episode},...on FollowingNotification{id,userId},...on ActivityMessageNotification{id,activityId},...on ActivityMentionNotification{id,activityId},...on ActivityReplyNotification{id,activityId},...on ActivityReplySubscribedNotification{id,activityId},...on ActivityLikeNotification{id,activityId},...on ActivityReplyLikeNotification{id,activityId},...on ThreadCommentMentionNotification{id,commentId},...on ThreadCommentReplyNotification{id,commentId},...on ThreadCommentSubscribedNotification{id,commentId},...on ThreadCommentLikeNotification{id,commentId},...on ThreadLikeNotification{id,threadId},...on RelatedMediaAdditionNotification{id,mediaId},...on MediaDataChangeNotification{id,reason},...on MediaMergeNotification{id,deletedMediaTitles},...on MediaDeletionNotification{id,deletedMediaTitle},...on MediaSubmissionUpdateNotification{id,status},...on StaffSubmissionUpdateNotification{id,status},...on CharacterSubmissionUpdateNotification{id,status}}}")
+        override val kind = OperationKind.QUERY
+        override val plan: Plan by lazy { Plan(root = `TestNotifications-plan`.selection0, transient = Types.transient) }
+
+        override fun data(anchor: Anchor): Data = Data(anchor)
+    }
+
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val Notification: List<Notification2>? get() = anchor.list(Slots.Query.Notification, ::Notification2)
+        override fun equals(other: Any?): Boolean = other is TestNotifications.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Notification2(override val anchor: Anchor) : Lens {
+            val asAiringNotification: AsAiringNotification? get() = if (anchor.record.type == Types.AiringNotification) AsAiringNotification(anchor) else null
+            val asFollowingNotification: AsFollowingNotification? get() = if (anchor.record.type == Types.FollowingNotification) AsFollowingNotification(anchor) else null
+            val asActivityMessageNotification: AsActivityMessageNotification? get() = if (anchor.record.type == Types.ActivityMessageNotification) AsActivityMessageNotification(anchor) else null
+            val asActivityMentionNotification: AsActivityMentionNotification? get() = if (anchor.record.type == Types.ActivityMentionNotification) AsActivityMentionNotification(anchor) else null
+            val asActivityReplyNotification: AsActivityReplyNotification? get() = if (anchor.record.type == Types.ActivityReplyNotification) AsActivityReplyNotification(anchor) else null
+            val asActivityReplySubscribedNotification: AsActivityReplySubscribedNotification? get() = if (anchor.record.type == Types.ActivityReplySubscribedNotification) AsActivityReplySubscribedNotification(anchor) else null
+            val asActivityLikeNotification: AsActivityLikeNotification? get() = if (anchor.record.type == Types.ActivityLikeNotification) AsActivityLikeNotification(anchor) else null
+            val asActivityReplyLikeNotification: AsActivityReplyLikeNotification? get() = if (anchor.record.type == Types.ActivityReplyLikeNotification) AsActivityReplyLikeNotification(anchor) else null
+            val asThreadCommentMentionNotification: AsThreadCommentMentionNotification? get() = if (anchor.record.type == Types.ThreadCommentMentionNotification) AsThreadCommentMentionNotification(anchor) else null
+            val asThreadCommentReplyNotification: AsThreadCommentReplyNotification? get() = if (anchor.record.type == Types.ThreadCommentReplyNotification) AsThreadCommentReplyNotification(anchor) else null
+            val asThreadCommentSubscribedNotification: AsThreadCommentSubscribedNotification? get() = if (anchor.record.type == Types.ThreadCommentSubscribedNotification) AsThreadCommentSubscribedNotification(anchor) else null
+            val asThreadCommentLikeNotification: AsThreadCommentLikeNotification? get() = if (anchor.record.type == Types.ThreadCommentLikeNotification) AsThreadCommentLikeNotification(anchor) else null
+            val asThreadLikeNotification: AsThreadLikeNotification? get() = if (anchor.record.type == Types.ThreadLikeNotification) AsThreadLikeNotification(anchor) else null
+            val asRelatedMediaAdditionNotification: AsRelatedMediaAdditionNotification? get() = if (anchor.record.type == Types.RelatedMediaAdditionNotification) AsRelatedMediaAdditionNotification(anchor) else null
+            val asMediaDataChangeNotification: AsMediaDataChangeNotification? get() = if (anchor.record.type == Types.MediaDataChangeNotification) AsMediaDataChangeNotification(anchor) else null
+            val asMediaMergeNotification: AsMediaMergeNotification? get() = if (anchor.record.type == Types.MediaMergeNotification) AsMediaMergeNotification(anchor) else null
+            val asMediaDeletionNotification: AsMediaDeletionNotification? get() = if (anchor.record.type == Types.MediaDeletionNotification) AsMediaDeletionNotification(anchor) else null
+            val asMediaSubmissionUpdateNotification: AsMediaSubmissionUpdateNotification? get() = if (anchor.record.type == Types.MediaSubmissionUpdateNotification) AsMediaSubmissionUpdateNotification(anchor) else null
+            val asStaffSubmissionUpdateNotification: AsStaffSubmissionUpdateNotification? get() = if (anchor.record.type == Types.StaffSubmissionUpdateNotification) AsStaffSubmissionUpdateNotification(anchor) else null
+            val asCharacterSubmissionUpdateNotification: AsCharacterSubmissionUpdateNotification? get() = if (anchor.record.type == Types.CharacterSubmissionUpdateNotification) AsCharacterSubmissionUpdateNotification(anchor) else null
+            override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2 && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class AsAiringNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.AiringNotification.id)
+                val episode: Int get() = anchor.requiredInt(Slots.AiringNotification.episode)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsAiringNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsFollowingNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.FollowingNotification.id)
+                val userId: String get() = anchor.requiredString(Slots.FollowingNotification.userId)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsFollowingNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsActivityMessageNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.ActivityMessageNotification.id)
+                val activityId: String get() = anchor.requiredString(Slots.ActivityMessageNotification.activityId)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsActivityMessageNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsActivityMentionNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.ActivityMentionNotification.id)
+                val activityId: String get() = anchor.requiredString(Slots.ActivityMentionNotification.activityId)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsActivityMentionNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsActivityReplyNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.ActivityReplyNotification.id)
+                val activityId: String get() = anchor.requiredString(Slots.ActivityReplyNotification.activityId)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsActivityReplyNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsActivityReplySubscribedNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.ActivityReplySubscribedNotification.id)
+                val activityId: String get() = anchor.requiredString(Slots.ActivityReplySubscribedNotification.activityId)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsActivityReplySubscribedNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsActivityLikeNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.ActivityLikeNotification.id)
+                val activityId: String get() = anchor.requiredString(Slots.ActivityLikeNotification.activityId)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsActivityLikeNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsActivityReplyLikeNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.ActivityReplyLikeNotification.id)
+                val activityId: String get() = anchor.requiredString(Slots.ActivityReplyLikeNotification.activityId)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsActivityReplyLikeNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsThreadCommentMentionNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.ThreadCommentMentionNotification.id)
+                val commentId: String get() = anchor.requiredString(Slots.ThreadCommentMentionNotification.commentId)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsThreadCommentMentionNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsThreadCommentReplyNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.ThreadCommentReplyNotification.id)
+                val commentId: String get() = anchor.requiredString(Slots.ThreadCommentReplyNotification.commentId)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsThreadCommentReplyNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsThreadCommentSubscribedNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.ThreadCommentSubscribedNotification.id)
+                val commentId: String get() = anchor.requiredString(Slots.ThreadCommentSubscribedNotification.commentId)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsThreadCommentSubscribedNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsThreadCommentLikeNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.ThreadCommentLikeNotification.id)
+                val commentId: String get() = anchor.requiredString(Slots.ThreadCommentLikeNotification.commentId)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsThreadCommentLikeNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsThreadLikeNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.ThreadLikeNotification.id)
+                val threadId: String get() = anchor.requiredString(Slots.ThreadLikeNotification.threadId)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsThreadLikeNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsRelatedMediaAdditionNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.RelatedMediaAdditionNotification.id)
+                val mediaId: String get() = anchor.requiredString(Slots.RelatedMediaAdditionNotification.mediaId)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsRelatedMediaAdditionNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsMediaDataChangeNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.MediaDataChangeNotification.id)
+                val reason: String? get() = anchor.string(Slots.MediaDataChangeNotification.reason)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsMediaDataChangeNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsMediaMergeNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.MediaMergeNotification.id)
+                val deletedMediaTitles: List<String?>? get() = anchor.nullableStrings(Slots.MediaMergeNotification.deletedMediaTitles)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsMediaMergeNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsMediaDeletionNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.MediaDeletionNotification.id)
+                val deletedMediaTitle: String? get() = anchor.string(Slots.MediaDeletionNotification.deletedMediaTitle)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsMediaDeletionNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsMediaSubmissionUpdateNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.MediaSubmissionUpdateNotification.id)
+                val status: String? get() = anchor.string(Slots.MediaSubmissionUpdateNotification.status)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsMediaSubmissionUpdateNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsStaffSubmissionUpdateNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.StaffSubmissionUpdateNotification.id)
+                val status: String? get() = anchor.string(Slots.StaffSubmissionUpdateNotification.status)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsStaffSubmissionUpdateNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+
+            @Stable
+            class AsCharacterSubmissionUpdateNotification(override val anchor: Anchor) : Lens {
+                val id: String get() = anchor.requiredString(Slots.CharacterSubmissionUpdateNotification.id)
+                val status: String? get() = anchor.string(Slots.CharacterSubmissionUpdateNotification.status)
+                override fun equals(other: Any?): Boolean = other is TestNotifications.Data.Notification2.AsCharacterSubmissionUpdateNotification && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
+}
+
+private object `TestNotifications-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("Notification", key = StorageKey.Fixed(Slots.Query.Notification), plural = true, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.NotificationUnion, key = listOf("id"), isAbstract = true, variants = listOf(
+            Selection.Variant(types = listOf(Types.ActivityLikeNotification, Types.ActivityMentionNotification, Types.ActivityMessageNotification, Types.ActivityReplyLikeNotification, Types.ActivityReplyNotification, Types.ActivityReplySubscribedNotification), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.NotificationUnion.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.NotificationUnion.id), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("activityId", key = StorageKey.Fixed(Slots.NotificationUnion.activityId), kind = ScalarKind.STRING, list = false),
+            )),
+            Selection.Variant(types = listOf(Types.AiringNotification), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.AiringNotification.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.AiringNotification.id), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("episode", key = StorageKey.Fixed(Slots.AiringNotification.episode), kind = ScalarKind.INT, list = false),
+            )),
+            Selection.Variant(types = listOf(Types.CharacterSubmissionUpdateNotification, Types.MediaSubmissionUpdateNotification, Types.StaffSubmissionUpdateNotification), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.NotificationUnion.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.NotificationUnion.id), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("status", key = StorageKey.Fixed(Slots.NotificationUnion.status), kind = ScalarKind.STRING, list = false),
+            )),
+            Selection.Variant(types = listOf(Types.FollowingNotification), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.FollowingNotification.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.FollowingNotification.id), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("userId", key = StorageKey.Fixed(Slots.FollowingNotification.userId), kind = ScalarKind.STRING, list = false),
+            )),
+            Selection.Variant(types = listOf(Types.MediaDataChangeNotification), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.MediaDataChangeNotification.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.MediaDataChangeNotification.id), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("reason", key = StorageKey.Fixed(Slots.MediaDataChangeNotification.reason), kind = ScalarKind.STRING, list = false),
+            )),
+            Selection.Variant(types = listOf(Types.MediaDeletionNotification), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.MediaDeletionNotification.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.MediaDeletionNotification.id), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("deletedMediaTitle", key = StorageKey.Fixed(Slots.MediaDeletionNotification.deletedMediaTitle), kind = ScalarKind.STRING, list = false),
+            )),
+            Selection.Variant(types = listOf(Types.MediaMergeNotification), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.MediaMergeNotification.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.MediaMergeNotification.id), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("deletedMediaTitles", key = StorageKey.Fixed(Slots.MediaMergeNotification.deletedMediaTitles), kind = ScalarKind.STRING, list = true),
+            )),
+            Selection.Variant(types = listOf(Types.RelatedMediaAdditionNotification), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.RelatedMediaAdditionNotification.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.RelatedMediaAdditionNotification.id), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("mediaId", key = StorageKey.Fixed(Slots.RelatedMediaAdditionNotification.mediaId), kind = ScalarKind.STRING, list = false),
+            )),
+            Selection.Variant(types = listOf(Types.ThreadCommentLikeNotification, Types.ThreadCommentMentionNotification, Types.ThreadCommentReplyNotification, Types.ThreadCommentSubscribedNotification), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.NotificationUnion.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.NotificationUnion.id), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("commentId", key = StorageKey.Fixed(Slots.NotificationUnion.commentId), kind = ScalarKind.STRING, list = false),
+            )),
+            Selection.Variant(types = listOf(Types.ThreadLikeNotification), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.ThreadLikeNotification.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.ThreadLikeNotification.id), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("threadId", key = StorageKey.Fixed(Slots.ThreadLikeNotification.threadId), kind = ScalarKind.STRING, list = false),
+            )),
+            Selection.Variant(types = null, fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.NotificationUnion.__typename), kind = ScalarKind.STRING, list = false),
+            )),
+        ))
+    }
+}
+
 /** Operation value for `query TestStrictConditions`. */
 @Immutable
 class TestStrictConditions(val id: String, val withStatus: Boolean) : QueryOperation<TestStrictConditions.Data> {

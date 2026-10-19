@@ -338,6 +338,259 @@ nonisolated public struct TestNodeFields: Baton.Query {
     }
 }
 
+/// Operation value for `query TestNotifications`.
+nonisolated public struct TestNotifications: Baton.Query {
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
+
+    public init() {
+    }
+
+    public static let name = "TestNotifications"
+    public static let document: Baton.Document = .text(#"query TestNotifications{Notification{__typename,...on AiringNotification{id,episode},...on FollowingNotification{id,userId},...on ActivityMessageNotification{id,activityId},...on ActivityMentionNotification{id,activityId},...on ActivityReplyNotification{id,activityId},...on ActivityReplySubscribedNotification{id,activityId},...on ActivityLikeNotification{id,activityId},...on ActivityReplyLikeNotification{id,activityId},...on ThreadCommentMentionNotification{id,commentId},...on ThreadCommentReplyNotification{id,commentId},...on ThreadCommentSubscribedNotification{id,commentId},...on ThreadCommentLikeNotification{id,commentId},...on ThreadLikeNotification{id,threadId},...on RelatedMediaAdditionNotification{id,mediaId},...on MediaDataChangeNotification{id,reason},...on MediaMergeNotification{id,deletedMediaTitles},...on MediaDeletionNotification{id,deletedMediaTitle},...on MediaSubmissionUpdateNotification{id,status},...on StaffSubmissionUpdateNotification{id,status},...on CharacterSubmissionUpdateNotification{id,status}}}"#)
+
+    public var variables: Baton.Variables {
+        Baton.Variables([:])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        true
+    }
+
+    public func hash(into hasher: inout Hasher) {
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("Notification", key: .fixed(Slots.Query.Notification), plural: true, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.NotificationUnion, key: ["id"], abstract: true, variants: [
+        .init(types: [Types.ActivityLikeNotification, Types.ActivityMentionNotification, Types.ActivityMessageNotification, Types.ActivityReplyLikeNotification, Types.ActivityReplyNotification, Types.ActivityReplySubscribedNotification], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.NotificationUnion.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.NotificationUnion.id), kind: .string, list: false),
+            .scalar("activityId", key: .fixed(Slots.NotificationUnion.activityId), kind: .string, list: false),
+        ]),
+        .init(types: [Types.AiringNotification], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.AiringNotification.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.AiringNotification.id), kind: .string, list: false),
+            .scalar("episode", key: .fixed(Slots.AiringNotification.episode), kind: .int, list: false),
+        ]),
+        .init(types: [Types.CharacterSubmissionUpdateNotification, Types.MediaSubmissionUpdateNotification, Types.StaffSubmissionUpdateNotification], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.NotificationUnion.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.NotificationUnion.id), kind: .string, list: false),
+            .scalar("status", key: .fixed(Slots.NotificationUnion.status), kind: .string, list: false),
+        ]),
+        .init(types: [Types.FollowingNotification], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.FollowingNotification.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.FollowingNotification.id), kind: .string, list: false),
+            .scalar("userId", key: .fixed(Slots.FollowingNotification.userId), kind: .string, list: false),
+        ]),
+        .init(types: [Types.MediaDataChangeNotification], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.MediaDataChangeNotification.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.MediaDataChangeNotification.id), kind: .string, list: false),
+            .scalar("reason", key: .fixed(Slots.MediaDataChangeNotification.reason), kind: .string, list: false),
+        ]),
+        .init(types: [Types.MediaDeletionNotification], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.MediaDeletionNotification.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.MediaDeletionNotification.id), kind: .string, list: false),
+            .scalar("deletedMediaTitle", key: .fixed(Slots.MediaDeletionNotification.deletedMediaTitle), kind: .string, list: false),
+        ]),
+        .init(types: [Types.MediaMergeNotification], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.MediaMergeNotification.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.MediaMergeNotification.id), kind: .string, list: false),
+            .scalar("deletedMediaTitles", key: .fixed(Slots.MediaMergeNotification.deletedMediaTitles), kind: .string, list: true),
+        ]),
+        .init(types: [Types.RelatedMediaAdditionNotification], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.RelatedMediaAdditionNotification.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.RelatedMediaAdditionNotification.id), kind: .string, list: false),
+            .scalar("mediaId", key: .fixed(Slots.RelatedMediaAdditionNotification.mediaId), kind: .string, list: false),
+        ]),
+        .init(types: [Types.ThreadCommentLikeNotification, Types.ThreadCommentMentionNotification, Types.ThreadCommentReplyNotification, Types.ThreadCommentSubscribedNotification], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.NotificationUnion.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.NotificationUnion.id), kind: .string, list: false),
+            .scalar("commentId", key: .fixed(Slots.NotificationUnion.commentId), kind: .string, list: false),
+        ]),
+        .init(types: [Types.ThreadLikeNotification], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.ThreadLikeNotification.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.ThreadLikeNotification.id), kind: .string, list: false),
+            .scalar("threadId", key: .fixed(Slots.ThreadLikeNotification.threadId), kind: .string, list: false),
+        ]),
+        .init(types: nil, fields: [
+            .scalar("__typename", key: .fixed(Slots.NotificationUnion.__typename), kind: .string, list: false),
+        ]),
+    ])
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        @MainActor public var Notification: Baton.List<Notification2>? { anchor.list(Slots.Query.Notification) }
+
+        nonisolated public struct Notification2: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            @MainActor public var asAiringNotification: AsAiringNotification? { anchor.record.is(Types.AiringNotification) ? AsAiringNotification(anchor: anchor) : nil }
+            @MainActor public var asFollowingNotification: AsFollowingNotification? { anchor.record.is(Types.FollowingNotification) ? AsFollowingNotification(anchor: anchor) : nil }
+            @MainActor public var asActivityMessageNotification: AsActivityMessageNotification? { anchor.record.is(Types.ActivityMessageNotification) ? AsActivityMessageNotification(anchor: anchor) : nil }
+            @MainActor public var asActivityMentionNotification: AsActivityMentionNotification? { anchor.record.is(Types.ActivityMentionNotification) ? AsActivityMentionNotification(anchor: anchor) : nil }
+            @MainActor public var asActivityReplyNotification: AsActivityReplyNotification? { anchor.record.is(Types.ActivityReplyNotification) ? AsActivityReplyNotification(anchor: anchor) : nil }
+            @MainActor public var asActivityReplySubscribedNotification: AsActivityReplySubscribedNotification? { anchor.record.is(Types.ActivityReplySubscribedNotification) ? AsActivityReplySubscribedNotification(anchor: anchor) : nil }
+            @MainActor public var asActivityLikeNotification: AsActivityLikeNotification? { anchor.record.is(Types.ActivityLikeNotification) ? AsActivityLikeNotification(anchor: anchor) : nil }
+            @MainActor public var asActivityReplyLikeNotification: AsActivityReplyLikeNotification? { anchor.record.is(Types.ActivityReplyLikeNotification) ? AsActivityReplyLikeNotification(anchor: anchor) : nil }
+            @MainActor public var asThreadCommentMentionNotification: AsThreadCommentMentionNotification? { anchor.record.is(Types.ThreadCommentMentionNotification) ? AsThreadCommentMentionNotification(anchor: anchor) : nil }
+            @MainActor public var asThreadCommentReplyNotification: AsThreadCommentReplyNotification? { anchor.record.is(Types.ThreadCommentReplyNotification) ? AsThreadCommentReplyNotification(anchor: anchor) : nil }
+            @MainActor public var asThreadCommentSubscribedNotification: AsThreadCommentSubscribedNotification? { anchor.record.is(Types.ThreadCommentSubscribedNotification) ? AsThreadCommentSubscribedNotification(anchor: anchor) : nil }
+            @MainActor public var asThreadCommentLikeNotification: AsThreadCommentLikeNotification? { anchor.record.is(Types.ThreadCommentLikeNotification) ? AsThreadCommentLikeNotification(anchor: anchor) : nil }
+            @MainActor public var asThreadLikeNotification: AsThreadLikeNotification? { anchor.record.is(Types.ThreadLikeNotification) ? AsThreadLikeNotification(anchor: anchor) : nil }
+            @MainActor public var asRelatedMediaAdditionNotification: AsRelatedMediaAdditionNotification? { anchor.record.is(Types.RelatedMediaAdditionNotification) ? AsRelatedMediaAdditionNotification(anchor: anchor) : nil }
+            @MainActor public var asMediaDataChangeNotification: AsMediaDataChangeNotification? { anchor.record.is(Types.MediaDataChangeNotification) ? AsMediaDataChangeNotification(anchor: anchor) : nil }
+            @MainActor public var asMediaMergeNotification: AsMediaMergeNotification? { anchor.record.is(Types.MediaMergeNotification) ? AsMediaMergeNotification(anchor: anchor) : nil }
+            @MainActor public var asMediaDeletionNotification: AsMediaDeletionNotification? { anchor.record.is(Types.MediaDeletionNotification) ? AsMediaDeletionNotification(anchor: anchor) : nil }
+            @MainActor public var asMediaSubmissionUpdateNotification: AsMediaSubmissionUpdateNotification? { anchor.record.is(Types.MediaSubmissionUpdateNotification) ? AsMediaSubmissionUpdateNotification(anchor: anchor) : nil }
+            @MainActor public var asStaffSubmissionUpdateNotification: AsStaffSubmissionUpdateNotification? { anchor.record.is(Types.StaffSubmissionUpdateNotification) ? AsStaffSubmissionUpdateNotification(anchor: anchor) : nil }
+            @MainActor public var asCharacterSubmissionUpdateNotification: AsCharacterSubmissionUpdateNotification? { anchor.record.is(Types.CharacterSubmissionUpdateNotification) ? AsCharacterSubmissionUpdateNotification(anchor: anchor) : nil }
+
+            nonisolated public struct AsAiringNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.AiringNotification.id) }
+                @MainActor public var episode: Int { anchor.requiredInt(Slots.AiringNotification.episode) }
+            }
+
+            nonisolated public struct AsFollowingNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.FollowingNotification.id) }
+                @MainActor public var userId: String { anchor.requiredString(Slots.FollowingNotification.userId) }
+            }
+
+            nonisolated public struct AsActivityMessageNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.ActivityMessageNotification.id) }
+                @MainActor public var activityId: String { anchor.requiredString(Slots.ActivityMessageNotification.activityId) }
+            }
+
+            nonisolated public struct AsActivityMentionNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.ActivityMentionNotification.id) }
+                @MainActor public var activityId: String { anchor.requiredString(Slots.ActivityMentionNotification.activityId) }
+            }
+
+            nonisolated public struct AsActivityReplyNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.ActivityReplyNotification.id) }
+                @MainActor public var activityId: String { anchor.requiredString(Slots.ActivityReplyNotification.activityId) }
+            }
+
+            nonisolated public struct AsActivityReplySubscribedNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.ActivityReplySubscribedNotification.id) }
+                @MainActor public var activityId: String { anchor.requiredString(Slots.ActivityReplySubscribedNotification.activityId) }
+            }
+
+            nonisolated public struct AsActivityLikeNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.ActivityLikeNotification.id) }
+                @MainActor public var activityId: String { anchor.requiredString(Slots.ActivityLikeNotification.activityId) }
+            }
+
+            nonisolated public struct AsActivityReplyLikeNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.ActivityReplyLikeNotification.id) }
+                @MainActor public var activityId: String { anchor.requiredString(Slots.ActivityReplyLikeNotification.activityId) }
+            }
+
+            nonisolated public struct AsThreadCommentMentionNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.ThreadCommentMentionNotification.id) }
+                @MainActor public var commentId: String { anchor.requiredString(Slots.ThreadCommentMentionNotification.commentId) }
+            }
+
+            nonisolated public struct AsThreadCommentReplyNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.ThreadCommentReplyNotification.id) }
+                @MainActor public var commentId: String { anchor.requiredString(Slots.ThreadCommentReplyNotification.commentId) }
+            }
+
+            nonisolated public struct AsThreadCommentSubscribedNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.ThreadCommentSubscribedNotification.id) }
+                @MainActor public var commentId: String { anchor.requiredString(Slots.ThreadCommentSubscribedNotification.commentId) }
+            }
+
+            nonisolated public struct AsThreadCommentLikeNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.ThreadCommentLikeNotification.id) }
+                @MainActor public var commentId: String { anchor.requiredString(Slots.ThreadCommentLikeNotification.commentId) }
+            }
+
+            nonisolated public struct AsThreadLikeNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.ThreadLikeNotification.id) }
+                @MainActor public var threadId: String { anchor.requiredString(Slots.ThreadLikeNotification.threadId) }
+            }
+
+            nonisolated public struct AsRelatedMediaAdditionNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.RelatedMediaAdditionNotification.id) }
+                @MainActor public var mediaId: String { anchor.requiredString(Slots.RelatedMediaAdditionNotification.mediaId) }
+            }
+
+            nonisolated public struct AsMediaDataChangeNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.MediaDataChangeNotification.id) }
+                @MainActor public var reason: String? { anchor.string(Slots.MediaDataChangeNotification.reason) }
+            }
+
+            nonisolated public struct AsMediaMergeNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.MediaMergeNotification.id) }
+                @MainActor public var deletedMediaTitles: [String?]? { anchor.nullableStrings(Slots.MediaMergeNotification.deletedMediaTitles) }
+            }
+
+            nonisolated public struct AsMediaDeletionNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.MediaDeletionNotification.id) }
+                @MainActor public var deletedMediaTitle: String? { anchor.string(Slots.MediaDeletionNotification.deletedMediaTitle) }
+            }
+
+            nonisolated public struct AsMediaSubmissionUpdateNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.MediaSubmissionUpdateNotification.id) }
+                @MainActor public var status: String? { anchor.string(Slots.MediaSubmissionUpdateNotification.status) }
+            }
+
+            nonisolated public struct AsStaffSubmissionUpdateNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.StaffSubmissionUpdateNotification.id) }
+                @MainActor public var status: String? { anchor.string(Slots.StaffSubmissionUpdateNotification.status) }
+            }
+
+            nonisolated public struct AsCharacterSubmissionUpdateNotification: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String { anchor.requiredString(Slots.CharacterSubmissionUpdateNotification.id) }
+                @MainActor public var status: String? { anchor.string(Slots.CharacterSubmissionUpdateNotification.status) }
+            }
+        }
+    }
+}
+
 /// Operation value for `query TestStrictConditions`.
 nonisolated public struct TestStrictConditions: Baton.Query {
     public var id: String

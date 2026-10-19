@@ -9,6 +9,7 @@ import baton.Anchor
 import baton.Document
 import baton.Generated
 import baton.Lens
+import baton.Lookup
 import baton.MutationAction
 import baton.MutationOperation
 import baton.MutationType
@@ -69,6 +70,57 @@ private object `TestCharactersWithStatus-plan` {
         Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
             PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
             PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
+/** Operation value for `query TestEpisodeStatus`. */
+@Immutable
+class TestEpisodeStatus(val id: String) : QueryOperation<TestEpisodeStatus.Data> {
+    override val variables: Variables
+        get() = Variables.of("id" to Variable.of(id))
+    override val type: OperationType<Data> get() = Companion
+
+    override fun equals(other: Any?): Boolean = other is TestEpisodeStatus && other.id == id
+    override fun hashCode(): Int = listOf(id).hashCode()
+
+    companion object : QueryType<TestEpisodeStatus, TestEpisodeStatus.Data> {
+        override val name = "TestEpisodeStatus"
+        override val document: Document = Document.Text("query TestEpisodeStatus(\$id:ID!){episode(id:\$id){id,status,hiatus:status(version:2)}}")
+        override val kind = OperationKind.QUERY
+        override val plan: Plan by lazy { Plan(root = `TestEpisodeStatus-plan`.selection0, transient = Types.transient) }
+
+        override fun data(anchor: Anchor): Data = Data(anchor)
+    }
+
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val episode: Episode? get() = anchor.linked(anchor.owner.slot(Slots.Query.episode_7d0060))?.let(::Episode)
+        override fun equals(other: Any?): Boolean = other is TestEpisodeStatus.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Episode(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Episode.id)
+            val status: EpisodeStatus? get() = anchor.enumValue(Slots.Episode.status, EpisodeStatus::of)
+            val hiatus: EpisodeStatus? get() = anchor.enumValue(Slots.Episode.status_98c3c3, EpisodeStatus::of)
+            override fun equals(other: Any?): Boolean = other is TestEpisodeStatus.Data.Episode && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+}
+
+private object `TestEpisodeStatus-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("episode", key = StorageKey.Dynamic(Slots.Query.episode_7d0060), plural = false, lookup = Lookup(type = Types.Episode, key = listOf(Lookup.Key.Variable("id"))), selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Episode, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Episode.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("status", key = StorageKey.Fixed(Slots.Episode.status), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("hiatus", key = StorageKey.Fixed(Slots.Episode.status_98c3c3), kind = ScalarKind.STRING, list = false),
         ))
     }
 }
