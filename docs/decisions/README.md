@@ -70,3 +70,4 @@ principle, the proof belongs here.
 - [The report holds each lens](the-report-holds-each-lens.md)
 - [A streamed list grows in its slot](a-streamed-list-grows-in-its-slot.md)
 - [A mutation names the record it deletes when its payload does not](a-mutation-names-the-record-it-deletes.md)
+- [A list paged by number merges its pages under `@paged`](a-paged-list-merges-its-pages-by-number.md)

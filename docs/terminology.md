@@ -110,8 +110,9 @@ environment of the handle the lens was read from; a lens made by hand throws
 **Directive.** *Concept: directive.* GraphQL: an annotation on a selection
 or definition.
 Here: the only way behaviour is attached to data; the set is Relay's
-([Relay's words](principles/relays-words.md)), with two exceptions,
-[cache expiration](#documents) and [deletes](#lists).
+([Relay's words](principles/relays-words.md)), with three exceptions,
+[cache expiration](#documents), [deletes](#lists) and the
+[paged list](#lists).
 
 **Cache expiration.** *Concept: directive.* Baton's word. Relay has one
 expiration for a whole store, `queryCacheExpirationTime`, and no word for
@@ -1424,7 +1425,42 @@ Kotlin: the plan's `deletions`, a list of `Deletion(type, variable)`, as in
 listOf(Deletion(Types.MediaList, "id")))`; the change set's edit is the
 runtime's internal `ChangeSet.Edit.DeleteByKey(key)`.
 
+**Paged list.** *Concept: directive.* Baton's word. Relay's `@connection`
+is the cursor connections specification and the GraphQL specification has
+no pagination; a list paged by number is a schema convention older than
+both, AniList's `Page(page:, perPage:)` and the sample API's
+`characters(page:)`.
+Here: `@paged(key:, page:)` on a field whose value is a list of records,
+in the selection of the field that passes the page variable in an
+argument, its container, which also selects `pageInfo { hasNextPage }`
+beside the list. `key` ends in `_` and the list field's name, as a
+connection's does; `page` is an `Int!` variable of the operation, not a
+fragment argument. The pages merge into a client record of the container's
+type on the container's parent, keyed `__<key>_paged` with the container's
+arguments except the page and the list field's, so two lists under one
+wrapper, two seasons of one list and two page sizes never share it; its
+page info is its own record. The lens reads the container through that
+key. The first page replaces, the next appends, a page already merged
+rewrites its elements in place, any other is ignored; elements are
+referenced, each record once, nulls dropped; the record's other fields and
+its page info follow the page that replaces or is the last. The container's
+lens gains `hasNext`, which reads `hasNextPage` and nothing else,
+`isLoadingNext`, a client field, and `loadNext()`, which runs the
+operation that owns the lens with its variables and the next page number;
+a refetch of the owner replaces the list. The compiler declares the
+directive beside `@cacheExpiration`, so a server never sees it. A list
+whose page info is not `pageInfo { hasNextPage }`, as the Rick and Morty
+API's `info { next }`, reads one page per operation value, as before. See
+[the contract](../spec/runtime.md#4-the-commit) and
+[the decision](decisions/a-paged-list-merges-its-pages-by-number.md).
+Swift: `hasNext`, `isLoadingNext` and `loadNext()` on the container's lens;
+the plan's `Baton.PagedPlan(key:, list:, slots: Baton.PagedSlots(container:,
+pageInfo:), page:)` on the container field.
+Kotlin: the same properties, with `loadNext()` a `suspend` function; the
+plan's `PagedPlan(key, list, slots, page)`.
+
 **Page.** *Composition: lens, operation value.*
-Here: a list fetched by page number or offset, as the sample API does. Not a
-connection; composed in the UI from plain operations until the watch list
-promotes a directive for it.
+Here: one page of a list fetched by page number, read through the
+operation value that fetched it, `SeasonQuery(page: 2)`; a screen with a
+page bar holds one. An endless list over such pages is a
+[paged list](#lists).

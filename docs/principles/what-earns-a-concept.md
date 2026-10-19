@@ -50,8 +50,10 @@ gets a type in code, and a principle file if it constrains the others.
   watch list can own it. A half-built feature in the library is not.
 - Requests that fail the test become examples: here is how to do that with
   what exists.
-- Page-based pagination, imperative store updaters, a binary wire format and
-  offline sync are on a watch list with triggers, not in the plan.
+- Imperative store updaters, a binary wire format and offline sync are on
+  a watch list with triggers, not in the plan. Page-based pagination was
+  there until a second real schema without cursors met its trigger
+  ([the decision](../decisions/a-paged-list-merges-its-pages-by-number.md)).
 - The terminology is the gate, and nothing ships that is not named there.
 
 ## Not this
