@@ -201,6 +201,19 @@ val jvmAniListTest = harness("jvmAniListTest", "baton.anilist", "the list record
 
 tasks.named("check") { dependsOn(jvmRelayTest, jvmFateTest, jvmAniListTest) }
 
+// `gradle :baton:runAniListBench`: the bench of the list recorded under
+// `spec/anilist/` on the JVM the build runs on, the Kotlin twin of the
+// AniList section of the Swift bench suite, from the test compilation that
+// holds the documents' generated Kotlin.
+tasks.register<JavaExec>("runAniListBench") {
+    description = "Runs the bench of the list recorded under spec/anilist on the JVM."
+    group = "verification"
+    val test = kotlin.jvm().compilations.getByName("test")
+    classpath(test.output.allOutputs, test.runtimeDependencyFiles)
+    mainClass.set("baton.anilist.AniListBenchKt")
+    workingDir = repository
+}
+
 // The runtime has no Compose resources. The Compose plugin, applied for the
 // desktop renderer the JVM tests compose on, would copy the device tests'
 // none into assets through a task the Android library plugin leaves
