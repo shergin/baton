@@ -5,7 +5,8 @@ twice for a commit signal a model could observe, and the plan's D-N18.
 Serves [What earns a concept](../principles/what-earns-a-concept.md) and
 [The store is the UI's state](../principles/store-is-the-ui-state.md).
 Reopen if a model is shown that must know a commit happened and cannot say
-what it reads.
+what it reads, or a whole-operation derivation that the per-handle
+composition cannot keep within its budget at a measured size.
 
 ## Context
 
@@ -41,3 +42,13 @@ filter by hand.
   once for all of them.
 - Derived fields in the store, Relay's resolvers. Logic in the store is
   refused by [the client-data decision](client-data-is-described-and-committed.md).
+- A coarser channel for a reading of a whole operation, asked for in
+  [#53](https://github.com/shergin/baton/issues/53) on 2026-10-18: one a
+  reader registers on once per handle, Relay's subscription to a snapshot
+  and its seen records, or one per record rather than per slot. Either is a
+  second way to read and a branch on every tracked read. The tracked
+  read's cost is Observation's registrar, and Compose's read observer pays
+  a tenth of it; the composition in the recipe's *A derivation over a whole
+  operation*, one stream per handle, the first reading untracked, a reading
+  applied only when it differs, keeps the 1,000-entry list's change to one
+  chunk's re-read.

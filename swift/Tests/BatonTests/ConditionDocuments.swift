@@ -7,8 +7,9 @@ import Baton
 /// its own fields, one fragment spread twice and once more under a
 /// condition, caught fields and `__typename` under a condition in an
 /// operation that throws on field errors, a fragment on an interface
-/// spread under another, and an interface every member of a union
-/// implements.
+/// spread under another, an interface every member of a union
+/// implements, and a union of twenty members with no interface, each read
+/// under its own condition.
 @MainActor
 struct ConditionDocuments {
     @Query("""
@@ -93,4 +94,33 @@ struct ConditionDocuments {
         }
         """)
     var foldedNode: TestFoldedNode
+
+    @Query("""
+        query TestNotifications {
+          Notification {
+            __typename
+            ... on AiringNotification { id episode }
+            ... on FollowingNotification { id userId }
+            ... on ActivityMessageNotification { id activityId }
+            ... on ActivityMentionNotification { id activityId }
+            ... on ActivityReplyNotification { id activityId }
+            ... on ActivityReplySubscribedNotification { id activityId }
+            ... on ActivityLikeNotification { id activityId }
+            ... on ActivityReplyLikeNotification { id activityId }
+            ... on ThreadCommentMentionNotification { id commentId }
+            ... on ThreadCommentReplyNotification { id commentId }
+            ... on ThreadCommentSubscribedNotification { id commentId }
+            ... on ThreadCommentLikeNotification { id commentId }
+            ... on ThreadLikeNotification { id threadId }
+            ... on RelatedMediaAdditionNotification { id mediaId }
+            ... on MediaDataChangeNotification { id reason }
+            ... on MediaMergeNotification { id deletedMediaTitles }
+            ... on MediaDeletionNotification { id deletedMediaTitle }
+            ... on MediaSubmissionUpdateNotification { id status }
+            ... on StaffSubmissionUpdateNotification { id status }
+            ... on CharacterSubmissionUpdateNotification { id status }
+          }
+        }
+        """)
+    var notifications: TestNotifications
 }

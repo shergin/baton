@@ -21,6 +21,83 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the AniList list — 2026-10-18
+
+Revision: `c4b9078`. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2,
+Xcode 26.6, Swift 6.3.3, release build; the JVM is OpenJDK 21.0.12.1
+(Homebrew) on the same machine. `swift run -c release BatonBenchmarks`,
+the whole suite, three runs, then `gradle :baton:runAniListBench`, the
+Kotlin twin of the suite's AniList section, two runs; best of the runs,
+the median of the medians in parentheses. Each JVM measurement takes as
+many warm-up rounds as samples before it samples. Not a quiet machine:
+the load average stood between 8 and 14 and other sessions were building.
+
+The fixture is `spec/anilist/`: two chunks of AniList's
+`MediaListCollection`, 500 entries each, 457,499 and 458,874 bytes,
+recorded from a public list and anonymized (`spec/anilist/README.md`);
+6,014 records after both. *Every field* is the row's fragment and its
+media's card, 44 slots an entry, 44,006 over the list; *five values* is
+the reading of the derived-state recipe's model, seven slots an entry.
+The save is entry 991's `progress` changed by a payload of the mutation's
+shape, committed with a body observing every row and a detail's body
+observing entry 991, which the lookup `MediaList(id:)` answers from the
+list's records.
+
+### The list into the store, the image and a launch
+
+| Measurement | Swift | Kotlin, the JVM |
+|---|---|---|
+| Ingest of a chunk of 500 entries, bytes → change set, per chunk | 1.81 ms (1.95) | 1.66 ms (1.79) |
+| Commit of both chunks into an empty store, 6,014 records | 5.26 ms (5.45) | 1.58 ms (2.01) |
+| Write-behind of both chunks, off the main actor or the store's thread | 5.92 ms (10.0) | 12.5 ms (16.3) |
+| The image after both chunks, closed | 811,008 bytes | 811,008 bytes |
+| A launch in a new process: open and hydrate at once, both handles ready | 21.6 ms (23.0) | 297 ms (307) |
+| The same, once the image has opened off the main actor | 18.1 ms (19.4) | 97.5 ms (101) |
+| The save's commit, 1,000 row bodies and a detail observing | 27.4 µs (34.0) | 108 µs (114) |
+| Notifications of that commit | 2 | 2 |
+
+The ingest of a 500-entry chunk is 3.6 µs an entry in Swift and 3.3 µs on
+the JVM. The commit of the two chunks is 0.87 µs a record in Swift,
+against 0.51 µs a record for the 899-record fixture in the same runs
+(462 µs). A launch from the
+image reaches both handles ready, 6,014 records hydrated, in 21.6 ms in
+Swift, 18.1 ms of it the hydration once the file is open: 3.0 µs a
+record. The JVM's launch is a new JVM, interpreting and loading classes
+as it goes, and says little of a launch on Android, which a device would
+measure. The save notifies the two bodies that read `progress` of
+`MediaList:991`, the row's and the detail's, and none of the other 999
+rows; the count is in `benchmarks/counts.txt`.
+
+### A reading of the whole list, tracked and untracked
+
+| Measurement | Swift | Kotlin, the JVM |
+|---|---|---|
+| Every field, untracked, the whole list | 891 µs (923) | 646 µs (849) |
+| The same, per field | 20.2 ns (21.0) | 13.6 ns (15.0) |
+| The first reading of a fresh store, untracked, its channels made | | 1.13 ms (1.33) |
+| Every field inside one tracking scope or read-observing snapshot, the whole list | 28.5 ms (29.9) | 2.56 ms (3.13) |
+| The same, per field | 647 ns (682) | 57.3 ns (62.5) |
+| One chunk's every field in its own scope, 500 entries | 14.2 ms (14.9) | 1.20 ms (1.27) |
+| One chunk's five values in its own scope | 2.57 ms (2.68) | 264 µs (293) |
+| Every field through `Observations` or `snapshotFlow`, made to its first value | 28.3 ms (29.8) | 2.16 ms (2.56) |
+| A one-field save in a chunk, the commit to that chunk's reading delivered, every field | 15.6 ms (16.1) | 1.16 ms (1.40) |
+| The same, the chunk read for five values | 2.70 ms (2.80) | 305 µs (377) |
+
+In the same Swift runs, the suite's untracked lens read was 20.3 ns a
+field and its tracked read of a row body of eight fields 585 ns (608).
+A tracked field in one scope over the whole list costs 647 ns, and 643 ns
+over one chunk: linear in the scope's size, and what a row body's field
+costs, about thirty untracked reads. That is Observation's registrar,
+an access registered with each record and an observer installed on it
+when the scope ends; through `Observations` the first value costs the same
+as the scope. On the JVM a tracked field is 57.3 ns, four untracked reads:
+Compose's read observer adds the slot's state to a set, and the channel,
+made at a slot's first read, is made by the untracked reading too, which
+costs 1.13 ms on a fresh store where a later one costs 646 µs. The
+composition's re-read after a save is the chunk's tracked reading and the
+delivery: 15.6 ms in Swift for every field, 2.70 ms for the model's five
+values.
+
 ## Unreleased, a streamed list — 2026-10-13
 
 Revision: the working tree on top of `d027f18`; the runtime change was

@@ -1,0 +1,1 @@
+{"data":{"Episode":{"id":"1","name":"Pilot"},"Viewer":{"id":"1","name":"Rick Sanchez"},"GenreCollection":["Action","Comedy"],"Notification":[{"__typename":"AiringNotification","id":"n1"},{"__typename":"ThreadLikeNotification","id":"n13"}]}}

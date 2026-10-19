@@ -43,8 +43,11 @@ else; an integer in decimal; a boolean as `true` or `false`; `null`; a
 list in brackets with `,`; an object in braces with its keys sorted and
 quoted. *Held by* tests/keys-1 (`character(id:"a,b")`,
 `characters(filter:{"name":"Rick","status":"Alive"})`,
-`charactersByIds(ids:["7","2"])`, and a key with `after:null` left out);
-the escaping of a string inside a key and a boolean argument are *unheld*.
+`charactersByIds(ids:["7","2"])`, and a key with `after:null` left out),
+tests/episode-status-1 (`status` and `status(version:2)`, two slots of one
+field) and tests/capitalized-roots-1 (`Episode(id:"1")`, a root field
+spelled like its type); the escaping of a string inside a key and a
+boolean argument are *unheld*.
 
 **A float in a storage key is rendered one way.** A constant float in a
 document is rendered by the compiler, and a float variable by the runtime,
@@ -606,7 +609,8 @@ build compiled, or what a response said; the test is a table lookup and
 hashes nothing. A concrete type's lens sees the fields selected under the
 interfaces and unions its type satisfies, under their conditions. *Held by*
 tests/union-1, tests/union-unknown-type, tests/node-fields-character,
-tests/node-fields-episode.
+tests/node-fields-episode, and tests/notifications-1, a union of twenty
+members and no interface.
 
 **A deferred fragment is present once its fields are.** The spread's
 accessor is nil until a field the label marks holds a value. *Held by*

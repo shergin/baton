@@ -10,8 +10,11 @@
 # perPage:)` with `nodes` and a page info), the scalars the tokenizer fixture
 # (`spec/tokenizer/`) reads, types and fields named as Swift and the
 # generated code name their own, two entities keyed otherwise than by `id`
-# in the tests' `baton.json`, and three custom scalars it maps to Foundation
-# types. Documents.swift compiles against it
+# in the tests' `baton.json`, three custom scalars it maps to Foundation
+# types, and the shapes of AniList's schema the others lack: capitalized
+# root fields, one spelled like its type, an enum that grows behind a
+# `version` argument, and a union of twenty members with no interface.
+# Documents.swift compiles against it
 # unchanged; every document here would also be valid against the public
 # schema except those that use the additions.
 
@@ -53,6 +56,14 @@ type Query {
   quotes: [Quote]
   notes(first: Int, after: String, last: Int, before: String): NoteConnection!
   page(page: Int, perPage: Int): Page
+  """A root field spelled like its type, as AniList's `Media(id:)`."""
+  Episode(id: ID!): Episode
+  """A capitalized root field named otherwise than its type, as AniList's `Viewer`."""
+  Viewer: Character
+  """A capitalized root field of scalars, as AniList's `GenreCollection`."""
+  GenreCollection: [String]
+  """A capitalized root field over a union of twenty members, as AniList's `Notification`; Foundation has a type of the name."""
+  Notification: [NotificationUnion]
 }
 
 """
@@ -128,6 +139,147 @@ enum Status {
 }
 
 union SearchResult = Character | Location | Episode
+
+"""
+An episode's broadcast, an enum that grows behind an argument: the server
+answers `HIATUS` only to `status(version: 2)`, as AniList's `Media.status`
+does. The argument is part of the storage key, so the two are two slots.
+"""
+enum EpisodeStatus {
+  FINISHED
+  RELEASING
+  NOT_YET_RELEASED
+  CANCELLED
+  HIATUS
+}
+
+"""
+Twenty kinds of notification with no interface among them, as AniList's
+`NotificationUnion` has: a selection names each member it reads.
+"""
+union NotificationUnion = AiringNotification | FollowingNotification | ActivityMessageNotification | ActivityMentionNotification | ActivityReplyNotification | ActivityReplySubscribedNotification | ActivityLikeNotification | ActivityReplyLikeNotification | ThreadCommentMentionNotification | ThreadCommentReplyNotification | ThreadCommentSubscribedNotification | ThreadCommentLikeNotification | ThreadLikeNotification | RelatedMediaAdditionNotification | MediaDataChangeNotification | MediaMergeNotification | MediaDeletionNotification | MediaSubmissionUpdateNotification | StaffSubmissionUpdateNotification | CharacterSubmissionUpdateNotification
+
+type AiringNotification {
+  id: ID!
+  episode: Int!
+  createdAt: Int
+}
+
+type FollowingNotification {
+  id: ID!
+  userId: ID!
+  createdAt: Int
+}
+
+type ActivityMessageNotification {
+  id: ID!
+  activityId: ID!
+  createdAt: Int
+}
+
+type ActivityMentionNotification {
+  id: ID!
+  activityId: ID!
+  createdAt: Int
+}
+
+type ActivityReplyNotification {
+  id: ID!
+  activityId: ID!
+  createdAt: Int
+}
+
+type ActivityReplySubscribedNotification {
+  id: ID!
+  activityId: ID!
+  createdAt: Int
+}
+
+type ActivityLikeNotification {
+  id: ID!
+  activityId: ID!
+  createdAt: Int
+}
+
+type ActivityReplyLikeNotification {
+  id: ID!
+  activityId: ID!
+  createdAt: Int
+}
+
+type ThreadCommentMentionNotification {
+  id: ID!
+  commentId: ID!
+  createdAt: Int
+}
+
+type ThreadCommentReplyNotification {
+  id: ID!
+  commentId: ID!
+  createdAt: Int
+}
+
+type ThreadCommentSubscribedNotification {
+  id: ID!
+  commentId: ID!
+  createdAt: Int
+}
+
+type ThreadCommentLikeNotification {
+  id: ID!
+  commentId: ID!
+  createdAt: Int
+}
+
+type ThreadLikeNotification {
+  id: ID!
+  threadId: ID!
+  createdAt: Int
+}
+
+type RelatedMediaAdditionNotification {
+  id: ID!
+  mediaId: ID!
+  createdAt: Int
+}
+
+type MediaDataChangeNotification {
+  id: ID!
+  mediaId: ID!
+  reason: String
+  createdAt: Int
+}
+
+type MediaMergeNotification {
+  id: ID!
+  mediaId: ID!
+  deletedMediaTitles: [String]
+  createdAt: Int
+}
+
+type MediaDeletionNotification {
+  id: ID!
+  deletedMediaTitle: String
+  createdAt: Int
+}
+
+type MediaSubmissionUpdateNotification {
+  id: ID!
+  status: String
+  createdAt: Int
+}
+
+type StaffSubmissionUpdateNotification {
+  id: ID!
+  status: String
+  createdAt: Int
+}
+
+type CharacterSubmissionUpdateNotification {
+  id: ID!
+  status: String
+  createdAt: Int
+}
 
 """A value the server defines and the client keeps as the token's text."""
 scalar JSON
@@ -297,6 +449,7 @@ type Episode implements Node {
   episode: String
   characters: [Character]!
   created: String
+  status(version: Int): EpisodeStatus
 }
 
 type Characters {

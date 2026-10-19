@@ -215,6 +215,296 @@
       ]
     },
     {
+      "name": "TestEpisodeStatus",
+      "source": "swift/Tests/BatonTests/EnumDocuments.swift",
+      "document": 2,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [
+        {
+          "name": "id",
+          "type": {
+            "shape": "named",
+            "name": "ID",
+            "kind": "id",
+            "non_null": true
+          },
+          "default_value": null
+        }
+      ],
+      "text": "query TestEpisodeStatus($id:ID!){episode(id:$id){id,status,hiatus:status(version:2)}}",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_incremental": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "episode",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Episode",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "Episode": [
+              "id"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "Episode"
+          ],
+          "storage_key": {
+            "name": "episode",
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": "Episode",
+            "possible_types": [
+              "Episode"
+            ],
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "status",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "EpisodeStatus",
+                "kind": "enum",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "status",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "status",
+              "alias": "hiatus",
+              "type": {
+                "shape": "named",
+                "name": "EpisodeStatus",
+                "kind": "enum",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "status",
+                "arguments": [
+                  {
+                    "name": "version",
+                    "value": {
+                      "kind": "constant",
+                      "value": {
+                        "kind": "int",
+                        "value": 2
+                      }
+                    }
+                  }
+                ]
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "episode",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Episode",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "Episode": [
+              "id"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "Episode"
+          ],
+          "storage_key": {
+            "name": "episode",
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": "Episode",
+            "possible_types": [
+              "Episode"
+            ],
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "status",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "EpisodeStatus",
+                "kind": "enum",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "status",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "status",
+              "alias": "hiatus",
+              "type": {
+                "shape": "named",
+                "name": "EpisodeStatus",
+                "kind": "enum",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "status",
+                "arguments": [
+                  {
+                    "name": "version",
+                    "value": {
+                      "kind": "constant",
+                      "value": {
+                        "kind": "int",
+                        "value": 2
+                      }
+                    }
+                  }
+                ]
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "TestSetStatuses",
       "source": "swift/Tests/BatonTests/EnumDocuments.swift",
       "document": 0,
@@ -345,6 +635,13 @@
     }
   ],
   "enums": {
+    "EpisodeStatus": [
+      "FINISHED",
+      "RELEASING",
+      "NOT_YET_RELEASED",
+      "CANCELLED",
+      "HIATUS"
+    ],
     "Status": [
       "ALIVE",
       "DEAD",

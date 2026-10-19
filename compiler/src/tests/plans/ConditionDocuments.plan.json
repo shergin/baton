@@ -2030,6 +2030,2663 @@
       ]
     },
     {
+      "name": "TestNotifications",
+      "source": "swift/Tests/BatonTests/ConditionDocuments.swift",
+      "document": 9,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [],
+      "text": "query TestNotifications{Notification{__typename,...on AiringNotification{id,episode},...on FollowingNotification{id,userId},...on ActivityMessageNotification{id,activityId},...on ActivityMentionNotification{id,activityId},...on ActivityReplyNotification{id,activityId},...on ActivityReplySubscribedNotification{id,activityId},...on ActivityLikeNotification{id,activityId},...on ActivityReplyLikeNotification{id,activityId},...on ThreadCommentMentionNotification{id,commentId},...on ThreadCommentReplyNotification{id,commentId},...on ThreadCommentSubscribedNotification{id,commentId},...on ThreadCommentLikeNotification{id,commentId},...on ThreadLikeNotification{id,threadId},...on RelatedMediaAdditionNotification{id,mediaId},...on MediaDataChangeNotification{id,reason},...on MediaMergeNotification{id,deletedMediaTitles},...on MediaDeletionNotification{id,deletedMediaTitle},...on MediaSubmissionUpdateNotification{id,status},...on StaffSubmissionUpdateNotification{id,status},...on CharacterSubmissionUpdateNotification{id,status}}}",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_incremental": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "Notification",
+          "alias": null,
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "NotificationUnion",
+              "kind": "union",
+              "non_null": false
+            },
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "ActivityLikeNotification": [
+              "id"
+            ],
+            "ActivityMentionNotification": [
+              "id"
+            ],
+            "ActivityMessageNotification": [
+              "id"
+            ],
+            "ActivityReplyLikeNotification": [
+              "id"
+            ],
+            "ActivityReplyNotification": [
+              "id"
+            ],
+            "ActivityReplySubscribedNotification": [
+              "id"
+            ],
+            "AiringNotification": [
+              "id"
+            ],
+            "CharacterSubmissionUpdateNotification": [
+              "id"
+            ],
+            "FollowingNotification": [
+              "id"
+            ],
+            "MediaDataChangeNotification": [
+              "id"
+            ],
+            "MediaDeletionNotification": [
+              "id"
+            ],
+            "MediaMergeNotification": [
+              "id"
+            ],
+            "MediaSubmissionUpdateNotification": [
+              "id"
+            ],
+            "RelatedMediaAdditionNotification": [
+              "id"
+            ],
+            "StaffSubmissionUpdateNotification": [
+              "id"
+            ],
+            "ThreadCommentLikeNotification": [
+              "id"
+            ],
+            "ThreadCommentMentionNotification": [
+              "id"
+            ],
+            "ThreadCommentReplyNotification": [
+              "id"
+            ],
+            "ThreadCommentSubscribedNotification": [
+              "id"
+            ],
+            "ThreadLikeNotification": [
+              "id"
+            ]
+          },
+          "is_abstract": true,
+          "possible_types": [
+            "ActivityLikeNotification",
+            "ActivityMentionNotification",
+            "ActivityMessageNotification",
+            "ActivityReplyLikeNotification",
+            "ActivityReplyNotification",
+            "ActivityReplySubscribedNotification",
+            "AiringNotification",
+            "CharacterSubmissionUpdateNotification",
+            "FollowingNotification",
+            "MediaDataChangeNotification",
+            "MediaDeletionNotification",
+            "MediaMergeNotification",
+            "MediaSubmissionUpdateNotification",
+            "RelatedMediaAdditionNotification",
+            "StaffSubmissionUpdateNotification",
+            "ThreadCommentLikeNotification",
+            "ThreadCommentMentionNotification",
+            "ThreadCommentReplyNotification",
+            "ThreadCommentSubscribedNotification",
+            "ThreadLikeNotification"
+          ],
+          "storage_key": {
+            "name": "Notification",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "__typename",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "__typename",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "inline",
+              "type_condition": "AiringNotification",
+              "condition_types": [
+                "AiringNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "AiringNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "episode",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "episode",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "FollowingNotification",
+              "condition_types": [
+                "FollowingNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "FollowingNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "userId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "userId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ActivityMessageNotification",
+              "condition_types": [
+                "ActivityMessageNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ActivityMessageNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "activityId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "activityId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ActivityMentionNotification",
+              "condition_types": [
+                "ActivityMentionNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ActivityMentionNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "activityId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "activityId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ActivityReplyNotification",
+              "condition_types": [
+                "ActivityReplyNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ActivityReplyNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "activityId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "activityId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ActivityReplySubscribedNotification",
+              "condition_types": [
+                "ActivityReplySubscribedNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ActivityReplySubscribedNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "activityId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "activityId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ActivityLikeNotification",
+              "condition_types": [
+                "ActivityLikeNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ActivityLikeNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "activityId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "activityId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ActivityReplyLikeNotification",
+              "condition_types": [
+                "ActivityReplyLikeNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ActivityReplyLikeNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "activityId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "activityId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ThreadCommentMentionNotification",
+              "condition_types": [
+                "ThreadCommentMentionNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ThreadCommentMentionNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "commentId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "commentId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ThreadCommentReplyNotification",
+              "condition_types": [
+                "ThreadCommentReplyNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ThreadCommentReplyNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "commentId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "commentId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ThreadCommentSubscribedNotification",
+              "condition_types": [
+                "ThreadCommentSubscribedNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ThreadCommentSubscribedNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "commentId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "commentId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ThreadCommentLikeNotification",
+              "condition_types": [
+                "ThreadCommentLikeNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ThreadCommentLikeNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "commentId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "commentId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ThreadLikeNotification",
+              "condition_types": [
+                "ThreadLikeNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ThreadLikeNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "threadId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "threadId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "RelatedMediaAdditionNotification",
+              "condition_types": [
+                "RelatedMediaAdditionNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "RelatedMediaAdditionNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "mediaId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "mediaId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "MediaDataChangeNotification",
+              "condition_types": [
+                "MediaDataChangeNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "MediaDataChangeNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "reason",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "reason",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "MediaMergeNotification",
+              "condition_types": [
+                "MediaMergeNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "MediaMergeNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "deletedMediaTitles",
+                  "alias": null,
+                  "type": {
+                    "shape": "list",
+                    "element": {
+                      "shape": "named",
+                      "name": "String",
+                      "kind": "string",
+                      "non_null": false
+                    },
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "deletedMediaTitles",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "MediaDeletionNotification",
+              "condition_types": [
+                "MediaDeletionNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "MediaDeletionNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "deletedMediaTitle",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "deletedMediaTitle",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "MediaSubmissionUpdateNotification",
+              "condition_types": [
+                "MediaSubmissionUpdateNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "MediaSubmissionUpdateNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "status",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "status",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "StaffSubmissionUpdateNotification",
+              "condition_types": [
+                "StaffSubmissionUpdateNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "StaffSubmissionUpdateNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "status",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "status",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "CharacterSubmissionUpdateNotification",
+              "condition_types": [
+                "CharacterSubmissionUpdateNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "CharacterSubmissionUpdateNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "status",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "status",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "Notification",
+          "alias": null,
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "NotificationUnion",
+              "kind": "union",
+              "non_null": false
+            },
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "ActivityLikeNotification": [
+              "id"
+            ],
+            "ActivityMentionNotification": [
+              "id"
+            ],
+            "ActivityMessageNotification": [
+              "id"
+            ],
+            "ActivityReplyLikeNotification": [
+              "id"
+            ],
+            "ActivityReplyNotification": [
+              "id"
+            ],
+            "ActivityReplySubscribedNotification": [
+              "id"
+            ],
+            "AiringNotification": [
+              "id"
+            ],
+            "CharacterSubmissionUpdateNotification": [
+              "id"
+            ],
+            "FollowingNotification": [
+              "id"
+            ],
+            "MediaDataChangeNotification": [
+              "id"
+            ],
+            "MediaDeletionNotification": [
+              "id"
+            ],
+            "MediaMergeNotification": [
+              "id"
+            ],
+            "MediaSubmissionUpdateNotification": [
+              "id"
+            ],
+            "RelatedMediaAdditionNotification": [
+              "id"
+            ],
+            "StaffSubmissionUpdateNotification": [
+              "id"
+            ],
+            "ThreadCommentLikeNotification": [
+              "id"
+            ],
+            "ThreadCommentMentionNotification": [
+              "id"
+            ],
+            "ThreadCommentReplyNotification": [
+              "id"
+            ],
+            "ThreadCommentSubscribedNotification": [
+              "id"
+            ],
+            "ThreadLikeNotification": [
+              "id"
+            ]
+          },
+          "is_abstract": true,
+          "possible_types": [
+            "ActivityLikeNotification",
+            "ActivityMentionNotification",
+            "ActivityMessageNotification",
+            "ActivityReplyLikeNotification",
+            "ActivityReplyNotification",
+            "ActivityReplySubscribedNotification",
+            "AiringNotification",
+            "CharacterSubmissionUpdateNotification",
+            "FollowingNotification",
+            "MediaDataChangeNotification",
+            "MediaDeletionNotification",
+            "MediaMergeNotification",
+            "MediaSubmissionUpdateNotification",
+            "RelatedMediaAdditionNotification",
+            "StaffSubmissionUpdateNotification",
+            "ThreadCommentLikeNotification",
+            "ThreadCommentMentionNotification",
+            "ThreadCommentReplyNotification",
+            "ThreadCommentSubscribedNotification",
+            "ThreadLikeNotification"
+          ],
+          "storage_key": {
+            "name": "Notification",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "__typename",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "__typename",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "inline",
+              "type_condition": "AiringNotification",
+              "condition_types": [
+                "AiringNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "AiringNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "episode",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "episode",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "FollowingNotification",
+              "condition_types": [
+                "FollowingNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "FollowingNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "userId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "userId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ActivityMessageNotification",
+              "condition_types": [
+                "ActivityMessageNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ActivityMessageNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "activityId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "activityId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ActivityMentionNotification",
+              "condition_types": [
+                "ActivityMentionNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ActivityMentionNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "activityId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "activityId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ActivityReplyNotification",
+              "condition_types": [
+                "ActivityReplyNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ActivityReplyNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "activityId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "activityId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ActivityReplySubscribedNotification",
+              "condition_types": [
+                "ActivityReplySubscribedNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ActivityReplySubscribedNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "activityId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "activityId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ActivityLikeNotification",
+              "condition_types": [
+                "ActivityLikeNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ActivityLikeNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "activityId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "activityId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ActivityReplyLikeNotification",
+              "condition_types": [
+                "ActivityReplyLikeNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ActivityReplyLikeNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "activityId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "activityId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ThreadCommentMentionNotification",
+              "condition_types": [
+                "ThreadCommentMentionNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ThreadCommentMentionNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "commentId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "commentId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ThreadCommentReplyNotification",
+              "condition_types": [
+                "ThreadCommentReplyNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ThreadCommentReplyNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "commentId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "commentId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ThreadCommentSubscribedNotification",
+              "condition_types": [
+                "ThreadCommentSubscribedNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ThreadCommentSubscribedNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "commentId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "commentId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ThreadCommentLikeNotification",
+              "condition_types": [
+                "ThreadCommentLikeNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ThreadCommentLikeNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "commentId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "commentId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "ThreadLikeNotification",
+              "condition_types": [
+                "ThreadLikeNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "ThreadLikeNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "threadId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "threadId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "RelatedMediaAdditionNotification",
+              "condition_types": [
+                "RelatedMediaAdditionNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "RelatedMediaAdditionNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "mediaId",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "mediaId",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "MediaDataChangeNotification",
+              "condition_types": [
+                "MediaDataChangeNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "MediaDataChangeNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "reason",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "reason",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "MediaMergeNotification",
+              "condition_types": [
+                "MediaMergeNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "MediaMergeNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "deletedMediaTitles",
+                  "alias": null,
+                  "type": {
+                    "shape": "list",
+                    "element": {
+                      "shape": "named",
+                      "name": "String",
+                      "kind": "string",
+                      "non_null": false
+                    },
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "deletedMediaTitles",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "MediaDeletionNotification",
+              "condition_types": [
+                "MediaDeletionNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "MediaDeletionNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "deletedMediaTitle",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "deletedMediaTitle",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "MediaSubmissionUpdateNotification",
+              "condition_types": [
+                "MediaSubmissionUpdateNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "MediaSubmissionUpdateNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "status",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "status",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "StaffSubmissionUpdateNotification",
+              "condition_types": [
+                "StaffSubmissionUpdateNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "StaffSubmissionUpdateNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "status",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "status",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "inline",
+              "type_condition": "CharacterSubmissionUpdateNotification",
+              "condition_types": [
+                "CharacterSubmissionUpdateNotification"
+              ],
+              "condition_class": {
+                "kind": "concrete",
+                "type": "CharacterSubmissionUpdateNotification"
+              },
+              "alias": null,
+              "deferred": null,
+              "catch": null,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "ID",
+                    "kind": "id",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "status",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "status",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "TestStrictConditions",
       "source": "swift/Tests/BatonTests/ConditionDocuments.swift",
       "document": 5,

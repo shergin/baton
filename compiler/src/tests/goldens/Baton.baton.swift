@@ -6,24 +6,37 @@ import Foundation
 nonisolated enum Types {
     /// The schema's digest: pass it as the image's `version`, so an image
     /// written under another schema starts again.
-    static let schemaDigest = "c3495602d942b8a91d67ce309cbf9e31"
+    static let schemaDigest = "48225267547352f149f9ef93baefde85"
     /// The format of this generated code, which the runtime that reads it
     /// declares; a runtime of another format fails to compile this line.
     static let format = Baton.Format21.self
+    static let ActivityLikeNotification = Baton.Registry.type("ActivityLikeNotification")
+    static let ActivityMentionNotification = Baton.Registry.type("ActivityMentionNotification")
+    static let ActivityMessageNotification = Baton.Registry.type("ActivityMessageNotification")
+    static let ActivityReplyLikeNotification = Baton.Registry.type("ActivityReplyLikeNotification")
+    static let ActivityReplyNotification = Baton.Registry.type("ActivityReplyNotification")
+    static let ActivityReplySubscribedNotification = Baton.Registry.type("ActivityReplySubscribedNotification")
     static let AddNotePayload = Baton.Registry.type("AddNotePayload")
+    static let AiringNotification = Baton.Registry.type("AiringNotification")
     static let Any_ = Baton.Registry.type("Any")
     static let Asset = Baton.Registry.type("Asset")
     static let Baton_ = Baton.Registry.type("Baton")
     static let Character = Baton.Registry.type("Character")
     static let CharacterPage = Baton.Registry.type("CharacterPage")
+    static let CharacterSubmissionUpdateNotification = Baton.Registry.type("CharacterSubmissionUpdateNotification")
     static let Characters = Baton.Registry.type("Characters")
     static let Deleted = Baton.Registry.type("Deleted")
     static let Draft = Baton.Registry.type("Draft")
     static let Episode = Baton.Registry.type("Episode")
     static let FavoritePayload = Baton.Registry.type("FavoritePayload")
+    static let FollowingNotification = Baton.Registry.type("FollowingNotification")
     static let Info = Baton.Registry.type("Info")
     static let ListsPayload = Baton.Registry.type("ListsPayload")
     static let Location = Baton.Registry.type("Location")
+    static let MediaDataChangeNotification = Baton.Registry.type("MediaDataChangeNotification")
+    static let MediaDeletionNotification = Baton.Registry.type("MediaDeletionNotification")
+    static let MediaMergeNotification = Baton.Registry.type("MediaMergeNotification")
+    static let MediaSubmissionUpdateNotification = Baton.Registry.type("MediaSubmissionUpdateNotification")
     static let Mutation = Baton.Registry.type("Mutation")
     static let Named = Baton.Registry.type("Named")
     static let Node = Baton.Registry.type("Node")
@@ -31,18 +44,26 @@ nonisolated enum Types {
     static let NoteAddedPayload = Baton.Registry.type("NoteAddedPayload")
     static let NoteConnection = Baton.Registry.type("NoteConnection")
     static let NoteEdge = Baton.Registry.type("NoteEdge")
+    static let NotificationUnion = Baton.Registry.type("NotificationUnion")
     static let Page = Baton.Registry.type("Page")
     static let PageInfo = Baton.Registry.type("PageInfo")
     static let Protocol_ = Baton.Registry.type("Protocol")
     static let Query = Baton.Registry.type("Query")
     static let Quote = Baton.Registry.type("Quote")
+    static let RelatedMediaAdditionNotification = Baton.Registry.type("RelatedMediaAdditionNotification")
     static let RemoveNotePayload = Baton.Registry.type("RemoveNotePayload")
     static let SearchResult = Baton.Registry.type("SearchResult")
     static let Secret = Baton.Registry.type("Secret", transient: true)
     static let Set = Baton.Registry.type("Set")
     static let Spelled = Baton.Registry.type("Spelled")
     static let Spelling = Baton.Registry.type("Spelling")
+    static let StaffSubmissionUpdateNotification = Baton.Registry.type("StaffSubmissionUpdateNotification")
     static let Subscription = Baton.Registry.type("Subscription")
+    static let ThreadCommentLikeNotification = Baton.Registry.type("ThreadCommentLikeNotification")
+    static let ThreadCommentMentionNotification = Baton.Registry.type("ThreadCommentMentionNotification")
+    static let ThreadCommentReplyNotification = Baton.Registry.type("ThreadCommentReplyNotification")
+    static let ThreadCommentSubscribedNotification = Baton.Registry.type("ThreadCommentSubscribedNotification")
+    static let ThreadLikeNotification = Baton.Registry.type("ThreadLikeNotification")
     static let Tokenizer = Baton.Registry.type("Tokenizer")
     static let Type_ = Baton.Registry.type("Type")
     static let Types = Baton.Registry.type("Types")
@@ -58,9 +79,38 @@ nonisolated enum Types {
 
 /// Interned storage keys used by this module's documents.
 nonisolated enum Slots {
+    nonisolated enum ActivityLikeNotification {
+        static let activityId = Baton.Registry.slot(Types.ActivityLikeNotification, "activityId")
+        static let id = Baton.Registry.slot(Types.ActivityLikeNotification, "id")
+    }
+    nonisolated enum ActivityMentionNotification {
+        static let activityId = Baton.Registry.slot(Types.ActivityMentionNotification, "activityId")
+        static let id = Baton.Registry.slot(Types.ActivityMentionNotification, "id")
+    }
+    nonisolated enum ActivityMessageNotification {
+        static let activityId = Baton.Registry.slot(Types.ActivityMessageNotification, "activityId")
+        static let id = Baton.Registry.slot(Types.ActivityMessageNotification, "id")
+    }
+    nonisolated enum ActivityReplyLikeNotification {
+        static let activityId = Baton.Registry.slot(Types.ActivityReplyLikeNotification, "activityId")
+        static let id = Baton.Registry.slot(Types.ActivityReplyLikeNotification, "id")
+    }
+    nonisolated enum ActivityReplyNotification {
+        static let activityId = Baton.Registry.slot(Types.ActivityReplyNotification, "activityId")
+        static let id = Baton.Registry.slot(Types.ActivityReplyNotification, "id")
+    }
+    nonisolated enum ActivityReplySubscribedNotification {
+        static let activityId = Baton.Registry.slot(Types.ActivityReplySubscribedNotification, "activityId")
+        static let id = Baton.Registry.slot(Types.ActivityReplySubscribedNotification, "id")
+    }
     nonisolated enum AddNotePayload {
         static let note = Baton.Registry.slot(Types.AddNotePayload, "note")
         static let noteEdge = Baton.Registry.slot(Types.AddNotePayload, "noteEdge")
+    }
+    nonisolated enum AiringNotification {
+        static let __typename = Baton.Registry.slot(Types.AiringNotification, "__typename")
+        static let episode = Baton.Registry.slot(Types.AiringNotification, "episode")
+        static let id = Baton.Registry.slot(Types.AiringNotification, "id")
     }
     nonisolated enum Any_ {
         static let id = Baton.Registry.slot(Types.Any_, "id")
@@ -126,6 +176,10 @@ nonisolated enum Slots {
         static let nodes = Baton.Registry.slot(Types.CharacterPage, "nodes")
         static let pageInfo = Baton.Registry.slot(Types.CharacterPage, "pageInfo")
     }
+    nonisolated enum CharacterSubmissionUpdateNotification {
+        static let id = Baton.Registry.slot(Types.CharacterSubmissionUpdateNotification, "id")
+        static let status = Baton.Registry.slot(Types.CharacterSubmissionUpdateNotification, "status")
+    }
     nonisolated enum Characters {
         static let info = Baton.Registry.slot(Types.Characters, "info")
         static let results = Baton.Registry.slot(Types.Characters, "results")
@@ -146,9 +200,16 @@ nonisolated enum Slots {
         static let episode = Baton.Registry.slot(Types.Episode, "episode")
         static let id = Baton.Registry.slot(Types.Episode, "id")
         static let name = Baton.Registry.slot(Types.Episode, "name")
+        static let status = Baton.Registry.slot(Types.Episode, "status")
+        static let status_98c3c3 = Baton.Registry.slot(Types.Episode, "status(version:2)")
     }
     nonisolated enum FavoritePayload {
         static let character = Baton.Registry.slot(Types.FavoritePayload, "character")
+    }
+    nonisolated enum FollowingNotification {
+        static let __typename = Baton.Registry.slot(Types.FollowingNotification, "__typename")
+        static let id = Baton.Registry.slot(Types.FollowingNotification, "id")
+        static let userId = Baton.Registry.slot(Types.FollowingNotification, "userId")
     }
     nonisolated enum Info {
         static let count = Baton.Registry.slot(Types.Info, "count")
@@ -172,6 +233,25 @@ nonisolated enum Slots {
         static let id = Baton.Registry.slot(Types.Location, "id")
         static let name = Baton.Registry.slot(Types.Location, "name")
         static let type = Baton.Registry.slot(Types.Location, "type")
+    }
+    nonisolated enum MediaDataChangeNotification {
+        static let __typename = Baton.Registry.slot(Types.MediaDataChangeNotification, "__typename")
+        static let id = Baton.Registry.slot(Types.MediaDataChangeNotification, "id")
+        static let reason = Baton.Registry.slot(Types.MediaDataChangeNotification, "reason")
+    }
+    nonisolated enum MediaDeletionNotification {
+        static let __typename = Baton.Registry.slot(Types.MediaDeletionNotification, "__typename")
+        static let deletedMediaTitle = Baton.Registry.slot(Types.MediaDeletionNotification, "deletedMediaTitle")
+        static let id = Baton.Registry.slot(Types.MediaDeletionNotification, "id")
+    }
+    nonisolated enum MediaMergeNotification {
+        static let __typename = Baton.Registry.slot(Types.MediaMergeNotification, "__typename")
+        static let deletedMediaTitles = Baton.Registry.slot(Types.MediaMergeNotification, "deletedMediaTitles")
+        static let id = Baton.Registry.slot(Types.MediaMergeNotification, "id")
+    }
+    nonisolated enum MediaSubmissionUpdateNotification {
+        static let id = Baton.Registry.slot(Types.MediaSubmissionUpdateNotification, "id")
+        static let status = Baton.Registry.slot(Types.MediaSubmissionUpdateNotification, "status")
     }
     nonisolated enum Mutation {
         static let addNote = Baton.Registry.slot(Types.Mutation, "addNote")
@@ -214,6 +294,13 @@ nonisolated enum Slots {
         static let cursor = Baton.Registry.slot(Types.NoteEdge, "cursor")
         static let node = Baton.Registry.slot(Types.NoteEdge, "node")
     }
+    nonisolated enum NotificationUnion {
+        static let __typename = Baton.Registry.slot(Types.NotificationUnion, "__typename")
+        static let activityId = Baton.Registry.slot(Types.NotificationUnion, "activityId")
+        static let commentId = Baton.Registry.slot(Types.NotificationUnion, "commentId")
+        static let id = Baton.Registry.slot(Types.NotificationUnion, "id")
+        static let status = Baton.Registry.slot(Types.NotificationUnion, "status")
+    }
     nonisolated enum Page {
         static let characters = Baton.Registry.slot(Types.Page, "characters")
         static let notes_a81f9d = Baton.DynamicKey(Types.Page, "notes", [Baton.KeyArgument("authorId", [.variable("authorId")])])
@@ -231,6 +318,10 @@ nonisolated enum Slots {
         static let label = Baton.Registry.slot(Types.Protocol_, "label")
     }
     nonisolated enum Query {
+        static let Episode_9e33c8 = Baton.DynamicKey(Types.Query, "Episode", [Baton.KeyArgument("id", [.variable("id")])])
+        static let GenreCollection = Baton.Registry.slot(Types.Query, "GenreCollection")
+        static let Notification = Baton.Registry.slot(Types.Query, "Notification")
+        static let Viewer = Baton.Registry.slot(Types.Query, "Viewer")
         static let __TestPagedCharacters_characters_paged_a42b44 = Baton.Registry.slot(Types.Query, "__TestPagedCharacters_characters_paged(perPage:2)")
         static let __TestPagedNotes_notes_paged_13b716 = Baton.DynamicKey(Types.Query, "__TestPagedNotes_notes_paged", [Baton.KeyArgument("authorId", [.variable("authorId")]), Baton.KeyArgument("perPage", [.literal("2")])])
         static let __TestRootNotes_notes_connection = Baton.Registry.slot(Types.Query, "__TestRootNotes_notes_connection")
@@ -255,6 +346,7 @@ nonisolated enum Slots {
         static let charactersMatching_ca82bd = Baton.DynamicKey(Types.Query, "charactersMatching", [Baton.KeyArgument("filters", [.variable("filters")])])
         static let charactersWithStatus_deb51f = Baton.DynamicKey(Types.Query, "charactersWithStatus", [Baton.KeyArgument("any", [.variable("any")]), Baton.KeyArgument("status", [.variable("status")])])
         static let drafts = Baton.Registry.clientSlot(Types.Query, "drafts")
+        static let episode_7d0060 = Baton.DynamicKey(Types.Query, "episode", [Baton.KeyArgument("id", [.variable("id")])])
         static let namesake_9b6471 = Baton.DynamicKey(Types.Query, "namesake", [Baton.KeyArgument("name", [.variable("name")])])
         static let node_8f7d08 = Baton.DynamicKey(Types.Query, "node", [Baton.KeyArgument("id", [.variable("id")])])
         static let node_c27cc2 = Baton.Registry.slot(Types.Query, "node(id:1)")
@@ -277,6 +369,11 @@ nonisolated enum Slots {
         static let quote = Baton.Registry.slot(Types.Quote, "quote")
         static let rate = Baton.Registry.slot(Types.Quote, "rate")
     }
+    nonisolated enum RelatedMediaAdditionNotification {
+        static let __typename = Baton.Registry.slot(Types.RelatedMediaAdditionNotification, "__typename")
+        static let id = Baton.Registry.slot(Types.RelatedMediaAdditionNotification, "id")
+        static let mediaId = Baton.Registry.slot(Types.RelatedMediaAdditionNotification, "mediaId")
+    }
     nonisolated enum RemoveNotePayload {
         static let removedNoteId = Baton.Registry.slot(Types.RemoveNotePayload, "removedNoteId")
     }
@@ -298,9 +395,34 @@ nonisolated enum Slots {
         static let id = Baton.Registry.slot(Types.Spelling, "id")
         static let label = Baton.Registry.slot(Types.Spelling, "label")
     }
+    nonisolated enum StaffSubmissionUpdateNotification {
+        static let id = Baton.Registry.slot(Types.StaffSubmissionUpdateNotification, "id")
+        static let status = Baton.Registry.slot(Types.StaffSubmissionUpdateNotification, "status")
+    }
     nonisolated enum Subscription {
         static let noteAdded_cab094 = Baton.Registry.slot(Types.Subscription, "noteAdded(characterId:\"1\")")
         static let noteAdded_5f458b = Baton.DynamicKey(Types.Subscription, "noteAdded", [Baton.KeyArgument("characterId", [.variable("characterId")])])
+    }
+    nonisolated enum ThreadCommentLikeNotification {
+        static let commentId = Baton.Registry.slot(Types.ThreadCommentLikeNotification, "commentId")
+        static let id = Baton.Registry.slot(Types.ThreadCommentLikeNotification, "id")
+    }
+    nonisolated enum ThreadCommentMentionNotification {
+        static let commentId = Baton.Registry.slot(Types.ThreadCommentMentionNotification, "commentId")
+        static let id = Baton.Registry.slot(Types.ThreadCommentMentionNotification, "id")
+    }
+    nonisolated enum ThreadCommentReplyNotification {
+        static let commentId = Baton.Registry.slot(Types.ThreadCommentReplyNotification, "commentId")
+        static let id = Baton.Registry.slot(Types.ThreadCommentReplyNotification, "id")
+    }
+    nonisolated enum ThreadCommentSubscribedNotification {
+        static let commentId = Baton.Registry.slot(Types.ThreadCommentSubscribedNotification, "commentId")
+        static let id = Baton.Registry.slot(Types.ThreadCommentSubscribedNotification, "id")
+    }
+    nonisolated enum ThreadLikeNotification {
+        static let __typename = Baton.Registry.slot(Types.ThreadLikeNotification, "__typename")
+        static let id = Baton.Registry.slot(Types.ThreadLikeNotification, "id")
+        static let threadId = Baton.Registry.slot(Types.ThreadLikeNotification, "threadId")
     }
     nonisolated enum Tokenizer {
         static let count = Baton.Registry.slot(Types.Tokenizer, "count")
@@ -514,6 +636,38 @@ nonisolated enum Sites {
     static let TestSpreadKeys_testKeyArguments = Baton.ArgumentSite()
     static let TestTwoScopes_testNotes = Baton.ArgumentSite()
     static let TestTwoScopes_testNotes_2 = Baton.ArgumentSite()
+}
+
+/// The schema's enum `EpisodeStatus`. A value this build does not know reads as `unknown`, with its text.
+nonisolated public enum EpisodeStatus: Baton.GeneratedEnum {
+    case FINISHED
+    case RELEASING
+    case NOT_YET_RELEASED
+    case CANCELLED
+    case HIATUS
+    case unknown(String)
+
+    public init(enumText: String) {
+        self = switch enumText {
+            case "FINISHED": .FINISHED
+            case "RELEASING": .RELEASING
+            case "NOT_YET_RELEASED": .NOT_YET_RELEASED
+            case "CANCELLED": .CANCELLED
+            case "HIATUS": .HIATUS
+            default: .unknown(enumText)
+        }
+    }
+
+    public var scalarText: String {
+        switch self {
+            case .FINISHED: "FINISHED"
+            case .RELEASING: "RELEASING"
+            case .NOT_YET_RELEASED: "NOT_YET_RELEASED"
+            case .CANCELLED: "CANCELLED"
+            case .HIATUS: "HIATUS"
+            case .unknown(let text): text
+        }
+    }
 }
 
 /// The schema's enum `Status`. A value this build does not know reads as `unknown`, with its text.

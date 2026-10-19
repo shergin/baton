@@ -23,6 +23,11 @@ and the documents; `BATON_BLESS=1 cargo test` in `compiler/` writes
   with the schema it exports, proven by the Swift test target
   `BatonFateTests` and by the Kotlin harness's `jvmFateTest`;
   [`fate/README.md`](fate/README.md) says how they were made.
+- `anilist/`: a user's list recorded from AniList's public API, two chunks
+  of 500 entries, with the schema the API answered by introspection, proven
+  against one dump by the Swift test target `BatonAniListTests` and by the
+  Kotlin harness's `jvmAniListTest`; [`anilist/README.md`](anilist/README.md)
+  says how they were recorded and anonymized.
 - `tests/`: the responses the test documents read, recorded or shaped by
   hand to say one thing each, with the dump beside each one the oracle reads,
   the schema and its client extensions, and `baton.json`, the configuration

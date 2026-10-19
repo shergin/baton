@@ -92,7 +92,7 @@ let package = Package(
             exclude: ["README.md", "runtime.md"],
             sources: ["Spec.swift", "Manifest.swift"],
             resources: [
-                .copy("documents"), .copy("fate"), .copy("manifest.json"), .copy("relay"), .copy("rickandmorty"),
+                .copy("anilist"), .copy("documents"), .copy("fate"), .copy("manifest.json"), .copy("relay"), .copy("rickandmorty"),
                 .copy("scripts"), .copy("sources"), .copy("tests"), .copy("tokenizer"),
             ],
             swiftSettings: [.swiftLanguageMode(.v6)]
@@ -122,6 +122,24 @@ let package = Package(
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
         ),
+        // The documents of the list recorded from AniList under
+        // `spec/anilist/`, compiled against the schema recorded beside it,
+        // for the tests that freeze the recording and the bench that
+        // measures it.
+        .target(
+            name: "AniListDocuments",
+            dependencies: ["Baton"],
+            path: "swift/Tests/AniListDocuments",
+            exclude: ["baton.json"],
+            swiftSettings: [.swiftLanguageMode(.v6)],
+            plugins: ["BatonPlugin"]
+        ),
+        .testTarget(
+            name: "BatonAniListTests",
+            dependencies: ["AniListDocuments", "Baton", "BatonInspector", "BatonSpec", "BatonTesting"],
+            path: "swift/Tests/BatonAniListTests",
+            swiftSettings: [.swiftLanguageMode(.v6)]
+        ),
         // The emitter's goldens, compiled as an app compiles them with the
         // Xcode template's default of main-actor isolation: generated code
         // states its isolation, so it builds under either default.
@@ -129,6 +147,15 @@ let package = Package(
             name: "BatonGoldenTests",
             dependencies: ["Baton"],
             path: "compiler/src/tests/goldens",
+            swiftSettings: [.swiftLanguageMode(.v6), .defaultIsolation(MainActor.self)]
+        ),
+        // The goldens of the second schema, AniList's, compiled the same way
+        // in a module of their own, since each schema's shared file declares
+        // its own types and slots.
+        .testTarget(
+            name: "BatonAniListGoldenTests",
+            dependencies: ["Baton"],
+            path: "compiler/src/tests/goldens-anilist",
             swiftSettings: [.swiftLanguageMode(.v6), .defaultIsolation(MainActor.self)]
         ),
         .testTarget(
@@ -187,7 +214,7 @@ let package = Package(
         ),
         .executableTarget(
             name: "BatonBenchmarks",
-            dependencies: ["Baton", "BatonTesting", "BatonSpec"],
+            dependencies: ["AniListDocuments", "Baton", "BatonTesting", "BatonSpec"],
             path: "swift/Benchmarks",
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]

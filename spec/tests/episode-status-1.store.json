@@ -1,0 +1,6 @@
+{
+  "Episode:1": {"__typename": "Episode", "id": "1", "status": "RELEASING", "status(version:2)": "HIATUS"},
+  "client:root": {"__typename": "Query", "episode(id:\"1\")": {"__ref": "Episode:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

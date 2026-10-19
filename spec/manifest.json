@@ -1212,6 +1212,101 @@
       }
     },
     {
+      "name": "tests/notifications-1",
+      "operation": "TestNotifications",
+      "kind": "query",
+      "document": "documents/TestNotifications.graphql",
+      "variables": {},
+      "responses": [
+        "tests/notifications-1.json"
+      ],
+      "records": "tests/notifications-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "Notification.0.episode",
+          "value": 12
+        },
+        {
+          "path": "Notification.1.userId",
+          "value": "u2"
+        },
+        {
+          "path": "Notification.12.threadId",
+          "value": "t13"
+        },
+        {
+          "path": "Notification.15.deletedMediaTitles",
+          "value": [
+            "Cowboy Bebop (TV)"
+          ]
+        },
+        {
+          "path": "Notification.19.id",
+          "value": "n20"
+        },
+        {
+          "path": "Notification.19.status",
+          "value": "Partially accepted"
+        }
+      ]
+    },
+    {
+      "name": "tests/episode-status-1",
+      "operation": "TestEpisodeStatus",
+      "kind": "query",
+      "document": "documents/TestEpisodeStatus.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/episode-status-1.json"
+      ],
+      "records": "tests/episode-status-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "episode.status",
+          "value": "RELEASING"
+        },
+        {
+          "path": "episode.hiatus",
+          "value": "HIATUS"
+        }
+      ]
+    },
+    {
+      "name": "tests/capitalized-roots-1",
+      "operation": "TestCapitalizedRoots",
+      "kind": "query",
+      "document": "documents/TestCapitalizedRoots.graphql",
+      "variables": {
+        "id": "1"
+      },
+      "responses": [
+        "tests/capitalized-roots-1.json"
+      ],
+      "records": "tests/capitalized-roots-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "Episode.name",
+          "value": "Pilot"
+        },
+        {
+          "path": "Viewer.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "GenreCollection",
+          "value": [
+            "Action",
+            "Comedy"
+          ]
+        }
+      ]
+    },
+    {
       "name": "tests/node-fields-character",
       "operation": "TestNodeFields",
       "kind": "query",

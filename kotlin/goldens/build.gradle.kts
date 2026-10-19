@@ -7,12 +7,15 @@ plugins {
 // does not compile is a fault of the emitter. The sources are the compiler's
 // goldens themselves, beside the converters the goldens' configuration names
 // and `baton.application`, what an application writes against them with no
-// opt-in, through the Compose compiler as an application's build has it.
+// opt-in, through the Compose compiler as an application's build has it. The
+// second schema's goldens, AniList's, sit beside them in a package of their
+// own.
 kotlin {
     jvm()
     sourceSets {
         jvmMain {
             kotlin.srcDir("../../compiler/src/tests/goldens-kotlin")
+            kotlin.srcDir("../../compiler/src/tests/goldens-anilist-kotlin")
             dependencies {
                 implementation(project(":baton"))
             }
