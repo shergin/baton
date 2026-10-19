@@ -76,7 +76,8 @@ this page's Kotlin twin, with the model compiled and proven.
 
 A model that derives one value from every entry of a large operation, a
 panel over a user's whole list, reads thousands of entries and dozens of
-fields each. Every field it reads inside the closure registers on that
+fields each. Such a list is often [an unpaged collection](unpaged-collection.md),
+fetched in chunks of one operation value each. Every field it reads inside the closure registers on that
 slot's channel, as a view body's read does. At this size the
 registrations cost more than the reads. Budget the pass before you build
 it: a pass of N entries by M fields costs N × M field reads, at what one

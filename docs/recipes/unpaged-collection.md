@@ -163,7 +163,10 @@ decodes each time `shelves` runs. The body runs it when a field it read
 changes, and also when the view is rendered again for reasons of its own.
 A model that keeps the shelves, as
 [derived state outside views](derived-state.md) keeps a count, runs it
-only when a field it read changes, and the view reads the result.
+only when a field it read changes, and the view reads the result. For a
+list of several chunks, [a derivation over a whole operation](derived-state.md#a-derivation-over-a-whole-operation)
+keeps one stream a chunk, takes the first reading untracked at launch,
+and says what a tracked pass of the list costs.
 
 Two edits still change the server's arrays rather than an entry's fields:
 
