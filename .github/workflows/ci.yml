@@ -127,7 +127,7 @@ jobs:
       # The device tests and the ingest benchmark need a device and do not
       # run here; the benchmark's APKs build.
       - run: >
-          gradle --no-daemon :baton-gradle:build :baton:build :baton:jvmRelayTest :baton:jvmFateTest
+          gradle --no-daemon :baton-gradle:build :baton:build :baton:jvmRelayTest :baton:jvmFateTest :baton:jvmAniListTest
           :baton-testing:build :baton-inspector:build :baton-okhttp:build
           :goldens:compileKotlinJvm :samples:shared:build :samples:desktop:build
           :samples:exchange:build :samples:github:build :samples:android:assembleDebug

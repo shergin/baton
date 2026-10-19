@@ -1,0 +1,8 @@
+{
+  "schema": "../../../spec/anilist/schema.graphql",
+  "identity": { "default": ["id"] },
+  "lookups": [
+    { "field": "Query.MediaList", "type": "MediaList", "argument": "id" },
+    { "field": "Query.Media", "type": "Media", "argument": "id" }
+  ]
+}

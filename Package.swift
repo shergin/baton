@@ -92,7 +92,7 @@ let package = Package(
             exclude: ["README.md", "runtime.md"],
             sources: ["Spec.swift", "Manifest.swift"],
             resources: [
-                .copy("documents"), .copy("fate"), .copy("manifest.json"), .copy("relay"), .copy("rickandmorty"),
+                .copy("anilist"), .copy("documents"), .copy("fate"), .copy("manifest.json"), .copy("relay"), .copy("rickandmorty"),
                 .copy("scripts"), .copy("sources"), .copy("tests"), .copy("tokenizer"),
             ],
             swiftSettings: [.swiftLanguageMode(.v6)]
@@ -121,6 +121,24 @@ let package = Package(
             path: "swift/Tests/BatonFateTests",
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
+        ),
+        // The documents of the list recorded from AniList under
+        // `spec/anilist/`, compiled against the schema recorded beside it,
+        // for the tests that freeze the recording and the bench that
+        // measures it.
+        .target(
+            name: "AniListDocuments",
+            dependencies: ["Baton"],
+            path: "swift/Tests/AniListDocuments",
+            exclude: ["baton.json"],
+            swiftSettings: [.swiftLanguageMode(.v6)],
+            plugins: ["BatonPlugin"]
+        ),
+        .testTarget(
+            name: "BatonAniListTests",
+            dependencies: ["AniListDocuments", "Baton", "BatonInspector", "BatonSpec", "BatonTesting"],
+            path: "swift/Tests/BatonAniListTests",
+            swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         // The emitter's goldens, compiled as an app compiles them with the
         // Xcode template's default of main-actor isolation: generated code
@@ -187,7 +205,7 @@ let package = Package(
         ),
         .executableTarget(
             name: "BatonBenchmarks",
-            dependencies: ["Baton", "BatonTesting", "BatonSpec"],
+            dependencies: ["AniListDocuments", "Baton", "BatonTesting", "BatonSpec"],
             path: "swift/Benchmarks",
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
