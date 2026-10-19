@@ -148,6 +148,9 @@ impl Shared {
             self.types.insert(connection.edge_type.clone());
             self.types.insert(connection.page_info_type.clone());
         }
+        if let Some(paged) = &lens.paged {
+            self.types.insert(paged.page_info_type.clone());
+        }
         for entry in lens.satisfied.iter().flatten() {
             match &entry.item {
                 Some(
@@ -243,6 +246,7 @@ impl Shared {
                 let NormalizationKind::Linked {
                     lookup,
                     connection,
+                    paged,
                     selection: child,
                     ..
                 } = &field.kind
@@ -266,6 +270,15 @@ impl Shared {
                         .insert(SlotRef::new(slot_type, &connection.storage_key));
                     self.types.insert(connection.edge_type.clone());
                     self.types.insert(connection.page_info_type.clone());
+                }
+                if let Some(paged) = paged {
+                    // The client key on the parent, and the list's key on
+                    // the container, which the merge finds the list by.
+                    self.slots
+                        .insert(SlotRef::new(slot_type, &paged.storage_key));
+                    self.slots
+                        .insert(SlotRef::new(&child.type_name, &paged.list));
+                    self.types.insert(paged.page_info_type.clone());
                 }
                 self.selection(child);
             }

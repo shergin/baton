@@ -24,6 +24,10 @@ class Owner private constructor(
     internal val root: Store.Root?,
     /** Whether reads in the scope report missing and unexpected values and log required fields: not under a placeholder, whose link reported already. */
     internal val reports: Boolean,
+    /** The query that owns the scope's lenses, which a paged list's `loadNext()` runs again with the next page; none for a lens made by hand or read from a mutation's data. */
+    internal val query: OperationType<*>? = null,
+    /** The variables that query was run with: the scope's own at a handle, and the handle's under a spread that binds a fragment's arguments over them. */
+    internal val queryVariables: Variables = variables,
 ) {
     /** A scope over no store, for a lens made by hand. */
     internal constructor(variables: Variables) : this(variables, null, Keys(), null, null, reports = true)
@@ -35,11 +39,12 @@ class Owner private constructor(
 
     /**
      * The scope of a handle's lenses, or of a mutation's data, which fetch
-     * through [environment] and are healed through [root]. The root keeps
-     * the numbers the scope renders for as long as it is the store's.
+     * through [environment], are healed through [root] and page through
+     * [query] when they have one. The root keeps the numbers the scope
+     * renders for as long as it is the store's.
      */
-    internal constructor(variables: Variables, store: Store, environment: Environment, root: Store.Root) :
-        this(variables, store, store.keys, environment, root, reports = true) {
+    internal constructor(variables: Variables, store: Store, environment: Environment, root: Store.Root, query: OperationType<*>? = null) :
+        this(variables, store, store.keys, environment, root, reports = true, query = query) {
         root.scope = this
     }
 
@@ -123,7 +128,7 @@ class Owner private constructor(
         for ((cached, owner) in bound) if (cached === site) return owner
         val merged = HashMap(variables.values)
         for ((name, value) in values()) merged[name] = value ?: Variable.Null
-        val owner = Owner(Variables(merged), store, keys, environment, root, reports)
+        val owner = Owner(Variables(merged), store, keys, environment, root, reports, query, queryVariables)
         bound.add(site to owner)
         return owner
     }
@@ -144,7 +149,7 @@ class Owner private constructor(
     internal val inert: Owner
         get() {
             inertOwner?.let { return it }
-            val owner = if (reports) Owner(variables, store, keys, environment, root, reports = false) else this
+            val owner = if (reports) Owner(variables, store, keys, environment, root, reports = false, query = query, queryVariables = queryVariables) else this
             inertOwner = owner
             return owner
         }

@@ -29,17 +29,17 @@ pub use collect::{InputField, Shared};
 pub use keys::{KeyPart, SlotRef, constant_json};
 pub use lens::{
     Accessor, AliasGuard, AliasedRead, Binding, BoundArgument, ConditionRead, ConnectionMembers,
-    ErrorCheck, ErrorLine, Guarded, LinkedForm, LinkedRead, ListShape, LoadMore, Primitive, Read,
-    ReaderPlan, RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead, ScalarShape, SlotAccess,
-    SpreadForm, SpreadGuard, SpreadRead, TypeTest,
+    ErrorCheck, ErrorLine, Guarded, LinkedForm, LinkedRead, ListShape, LoadMore, PagedMembers,
+    Primitive, Read, ReaderPlan, RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead,
+    ScalarShape, SlotAccess, SpreadForm, SpreadGuard, SpreadRead, TypeTest,
 };
 pub use operation::{BuilderPlan, BuilderValue, OperationValue, VariableBase, VariableValue};
 pub use selections::SelectionTable;
 
 use crate::naming::{NameError, Naming, Position, Reserved, Written};
 use crate::pipeline::{
-    ConditionClass, ConnectionPlan, EditPlan, LookupPlan, Plan, SelectionPlan, StorageKeyPlan,
-    TypePlan,
+    ConditionClass, ConnectionPlan, EditPlan, LookupPlan, PagedPlan, Plan, SelectionPlan,
+    StorageKeyPlan, TypePlan,
 };
 
 /// Everything the emitters print, in the plan's order.
@@ -277,6 +277,8 @@ pub enum NormalizationKind {
         plural: bool,
         lookup: Option<LookupPlan>,
         connection: Option<ConnectionPlan>,
+        /// The paged list this field is the container of.
+        paged: Option<PagedPlan>,
         selection: NormalizationSelection,
     },
 }
@@ -656,6 +658,7 @@ fn field(
             possible_types,
             lookup,
             connection,
+            paged,
             streamed,
             ..
         } => {
@@ -693,6 +696,7 @@ fn field(
                     plural: type_.is_list(),
                     lookup: lookup.clone(),
                     connection: connection.clone(),
+                    paged: paged.clone(),
                     selection: decide(
                         type_.base_name(),
                         keys,

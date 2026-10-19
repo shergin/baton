@@ -1,0 +1,12 @@
+{
+  "Character:1": {"__TestFriends_nodes_paged(perPage:2)": {"__ref": "Character:1:__TestFriends_nodes_paged(perPage:2)"}, "__typename": "Character", "friends(page:2,perPage:2)": {"__ref": "Character:1:friends(page:2,perPage:2)"}, "id": "1"},
+  "Character:1:__TestFriends_nodes_paged(perPage:2)": {"__firstPage": 2, "__pageLengths": [2], "__typename": "CharacterPage", "nodes": {"__refs": ["Character:4", "Character:5"]}, "pageInfo": {"__ref": "Character:1:__TestFriends_nodes_paged(perPage:2):pageInfo"}},
+  "Character:1:__TestFriends_nodes_paged(perPage:2):pageInfo": {"__typename": "PageInfo", "hasNextPage": false},
+  "Character:1:friends(page:2,perPage:2)": {"__typename": "CharacterPage", "nodes": {"__refs": ["Character:4", "Character:5"]}, "pageInfo": {"__ref": "Character:1:friends(page:2,perPage:2):pageInfo"}},
+  "Character:1:friends(page:2,perPage:2):pageInfo": {"__typename": "PageInfo", "hasNextPage": false},
+  "Character:4": {"__typename": "Character", "id": "4", "name": "Beth Smith"},
+  "Character:5": {"__typename": "Character", "id": "5", "name": "Jerry Smith"},
+  "client:root": {"__typename": "Query", "character(id:\"1\")": {"__ref": "Character:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

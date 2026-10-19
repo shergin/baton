@@ -1368,7 +1368,8 @@ Here: loading the next or the previous page on the connection lens, running
 the fragment's refetch query with the lens's variables, the merged cursor
 and the owner's id; the fetch has no handle and no root, the connection owns
 the pages; the loading flags are client fields on the connection record
-(`__isLoadingNext`, `__isLoadingPrevious`). See
+(`__isLoadingNext`, `__isLoadingPrevious`). A [paged list](#lists) loads
+its next page the same way, through the operation that owns the lens. See
 [the contract](../spec/runtime.md#6-the-lens-reads).
 Swift: `loadNext(_:)` and `loadPrevious(_:)`.
 Kotlin: `loadNext(count)` and `loadPrevious(count)`, `suspend` functions, the
@@ -1442,8 +1443,10 @@ wrapper, two seasons of one list and two page sizes never share it; its
 page info is its own record. The lens reads the container through that
 key. The first page replaces, the next appends, a page already merged
 rewrites its elements in place, any other is ignored; elements are
-referenced, each record once, nulls dropped; the record's other fields and
-its page info follow the page that replaces or is the last. The container's
+referenced, each record once, nulls dropped; the container's fields the
+operation selected, and the page info's, follow the page that replaces or
+is the last, so a page record two lists share lends the other list
+nothing. The container's
 lens gains `hasNext`, which reads `hasNextPage` and nothing else,
 `isLoadingNext`, a client field, and `loadNext()`, which runs the
 operation that owns the lens with its variables and the next page number;

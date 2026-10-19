@@ -19,9 +19,9 @@ use super::swift::{
 use super::writer::Writer;
 use crate::decide::{
     Accessor, AliasGuard, AliasedRead, Binding, BoundArgument, ConditionRead, ConnectionMembers,
-    ErrorCheck, ErrorLine, FragmentLens, Guard, Guarded, LinkedForm, LinkedRead, LoadMore, Read,
-    ReaderPlan, RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead, SlotAccess, SpreadForm,
-    SpreadGuard, SpreadRead, TypeTest,
+    ErrorCheck, ErrorLine, FragmentLens, Guard, Guarded, LinkedForm, LinkedRead, LoadMore,
+    PagedMembers, Read, ReaderPlan, RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead,
+    SlotAccess, SpreadForm, SpreadGuard, SpreadRead, TypeTest,
 };
 use crate::names::guard_name;
 use crate::naming::capitalize;
@@ -58,6 +58,9 @@ pub(super) fn lens(writer: &mut Writer, lens: &ReaderPlan) {
         }
         if let Some(connection) = &lens.connection {
             connection_members(writer, connection);
+        }
+        if let Some(paged) = &lens.paged {
+            paged_members(writer, paged);
         }
         if let Some(entries) = &lens.satisfied {
             satisfied_function(writer, entries);
@@ -620,6 +623,37 @@ fn connection_members(writer: &mut Writer, connection: &ConnectionMembers) {
         ));
         load_more(writer, "loadPrevious", load);
     }
+}
+
+/// The paging surface of a lens over a paged list's container: the state
+/// read from the client record the pages merged into, and `loadNext()`
+/// through the operation that owns the lens.
+fn paged_members(writer: &mut Writer, paged: &PagedMembers) {
+    let boolean = || SwiftType::named("Bool");
+    writer.doc(
+        "The paged list's slots: the page info and the state the merge keeps on the record, for the store's merge and the state below.",
+    );
+    writer.line(format!(
+        "@_spi(Generated) public static let paged: {} = .init(container: {}, pageInfo: {})",
+        SwiftType::runtime("PagedSlots"),
+        type_reference(&paged.container_type),
+        type_reference(&paged.page_info_type)
+    ));
+    writer.doc(
+        "Whether the server has a page after the last one merged, from the merged `pageInfo`.",
+    );
+    for state in ["hasNext", "isLoadingNext"] {
+        Computed::new(state, boolean()).reads(writer, &format!("anchor.{state}(Self.paged)"), None);
+    }
+    writer.doc(
+        "Fetches the next page through the operation that owns the lens, with its variables, and appends it; a no-op while loading or at the end.",
+    );
+    writer.block("@MainActor public func loadNext() async throws", |writer| {
+        writer.line(format!(
+            "try await anchor.loadNext(Self.paged, page: {})",
+            swift_literal(&paged.page)
+        ));
+    });
 }
 
 /// `loadNext` or `loadPrevious`, named `function`: the fragment's refetch

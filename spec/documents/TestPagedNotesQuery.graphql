@@ -1,0 +1,1 @@
+query TestPagedNotesQuery($page:Int!,$authorId:ID!){page(page:$page,perPage:2){pageInfo{hasNextPage,currentPage},notes(authorId:$authorId){id,text}}}

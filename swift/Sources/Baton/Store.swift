@@ -834,6 +834,8 @@ public final class Store {
             switch edit {
             case .merge(let connection, let page, let slots, let mode):
                 merge(objects[Int(connection)], page: objects[Int(page)], slots: slots, mode: mode, &batch)
+            case .mergePage(let list, let page, let paged, let number):
+                merge(objects[Int(list)], page: objects[Int(page)], paged: paged, number: number, &batch)
             case .place(let parent, let slot, let index, let item):
                 // The delivery checked the list before this batch, on this
                 // actor; a parent that holds no list here was changed by
@@ -988,12 +990,13 @@ public final class Store {
 
     /// Where a response path leads through the store: the record and the
     /// selection that reads it, and, when the last link followed was a
-    /// connection field, the connection its page merges into, by the key
-    /// the ingest gives it.
-    func locate(_ path: [Ingest.PathSegment], _ selection: ResolvedSelection, from record: Record? = nil) -> (record: Record, selection: ResolvedSelection, connection: (key: String, resolved: ResolvedConnection)?)? {
+    /// connection field or a paged list's container, the record its page
+    /// merges into, by the key the ingest gives it.
+    func locate(_ path: [Ingest.PathSegment], _ selection: ResolvedSelection, from record: Record? = nil) -> (record: Record, selection: ResolvedSelection, connection: (key: String, resolved: ResolvedConnection)?, paged: (key: String, resolved: ResolvedPaged)?)? {
         var record = record ?? root
         var selection = selection
         var connection: (key: String, resolved: ResolvedConnection)?
+        var paged: (key: String, resolved: ResolvedPaged)?
         var segments = path[...]
         while let segment = segments.popFirst() {
             let variant = selection.variant(for: record.type)
@@ -1001,6 +1004,7 @@ public final class Store {
                   case .linked(let child, _, _, let through) = variant.fields[index].kind
             else { return nil }
             connection = through.map { (record.key + ":" + $0.storageKey, $0) }
+            paged = variant.fields[index].paged.map { (record.key + ":" + $0.storageKey, $0) }
             switch record.peek(variant.fields[index].slot) {
             case .ref(let target):
                 record = target
@@ -1012,7 +1016,7 @@ public final class Store {
             }
             selection = child
         }
-        return (record, selection, connection)
+        return (record, selection, connection, paged)
     }
 
     /// The live entities with this id among the named types.

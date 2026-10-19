@@ -69,7 +69,7 @@ struct Delivery {
                 continue
             }
             var object = Ingest.ObjectPart(data: item.data, plan: plan, key: place.record.key, type: place.record.type, entity: place.record.isEntity, path: path, errors: item.errors)
-            object.remerge = remerge(place.connection)
+            object.remerge = remerge(place.connection, place.paged)
             objects.append(object)
         }
         return objects
@@ -106,7 +106,7 @@ struct Delivery {
             return []
         }
         let first = start ?? left.count
-        let remerge = remerge(place.connection)
+        let remerge = remerge(place.connection, place.paged)
         return items.enumerated().map { offset, data in
             var object = Ingest.ObjectPart(data: data, plan: child, key: place.record.key, type: place.record.type, entity: place.record.isEntity, path: listPath + [.index(first + offset)], errors: errors)
             object.placement = .item(storageKey: field.storageKey, slot: field.slot, index: first + offset)
@@ -115,9 +115,16 @@ struct Delivery {
         }
     }
 
-    /// The merge an object landing on a connection's page asks for.
-    private func remerge(_ connection: (key: String, resolved: ResolvedConnection)?) -> Ingest.ObjectPart.Remerge? {
-        connection.map { Ingest.ObjectPart.Remerge(connectionKey: $0.key, slots: $0.resolved.slots, mode: $0.resolved.mode) }
+    /// The merge an object landing on a connection's page, or on a paged
+    /// list's, asks for.
+    private func remerge(_ connection: (key: String, resolved: ResolvedConnection)?, _ paged: (key: String, resolved: ResolvedPaged)?) -> Ingest.ObjectPart.Remerge? {
+        if let connection {
+            return .connection(key: connection.key, slots: connection.resolved.slots, mode: connection.resolved.mode)
+        }
+        if let paged, let number = paged.resolved.page {
+            return .paged(key: paged.key, paged: paged.resolved, number: number)
+        }
+        return nil
     }
 
     /// Whether a streamed item still fits: the list it is an item of is as

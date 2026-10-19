@@ -111,6 +111,9 @@ struct OracleOperation: Sendable {
         "TestRootNotesQuery": { _ in OracleOperation(TestRootNotesQuery(), reads: rootNotesReads) },
         "TestFreshCharacter": { try OracleOperation(TestFreshCharacter(id: $0.string("id")), reads: freshCharacterReads) },
         "TestRequiredOrigin": { try OracleOperation(TestRequiredOrigin(id: $0.string("id")), reads: requiredOriginReads) },
+        "TestPagedNotesQuery": { try OracleOperation(TestPagedNotesQuery(page: $0.int("page"), authorId: $0.string("authorId")), reads: pagedNotesReads) },
+        "TestPagedCharactersQuery": { try OracleOperation(TestPagedCharactersQuery(page: $0.int("page")), reads: pagedCharactersReads) },
+        "TestFriendsQuery": { try OracleOperation(TestFriendsQuery(id: $0.string("id"), page: $0.int("page")), reads: friendsReads) },
         // The operations a script sends for their requests alone: no lens of
         // theirs is read.
         "TestCharactersWithStatus": {
@@ -229,6 +232,54 @@ extension OracleOperation {
         "character.id": { $0.character.id.manifestValue },
         "character.origin.name": { $0.character.origin.name.manifestValue },
     ]
+
+    /// A list paged by number on the query root, read through the merged
+    /// record: the lens's own state beside the fields, and every note of
+    /// the five the pages hold, a row past the end reading as absent.
+    static let pagedNotesReads: [String: @MainActor @Sendable (TestPagedNotesQuery.Data) -> Manifest.Value] = {
+        var reads: [String: @MainActor @Sendable (TestPagedNotesQuery.Data) -> Manifest.Value] = [
+            "page.hasNext": { $0.page?.hasNext.manifestValue ?? .null },
+            "page.isLoadingNext": { $0.page?.isLoadingNext.manifestValue ?? .null },
+            "page.pageInfo.hasNextPage": { $0.page?.pageInfo.hasNextPage.manifestValue ?? .null },
+            "page.pageInfo.currentPage": { $0.page?.pageInfo.currentPage.manifestValue ?? .null },
+        ]
+        for index in 0..<6 {
+            reads["page.notes.\(index).id"] = { $0.page?.notes?.element(index)?.id.manifestValue ?? .null }
+            reads["page.notes.\(index).text"] = { $0.page?.notes?.element(index)?.text.manifestValue ?? .null }
+        }
+        return reads
+    }()
+
+    /// A second list paged under the same server page as the notes, with
+    /// its own merged record and page info.
+    static let pagedCharactersReads: [String: @MainActor @Sendable (TestPagedCharactersQuery.Data) -> Manifest.Value] = {
+        var reads: [String: @MainActor @Sendable (TestPagedCharactersQuery.Data) -> Manifest.Value] = [
+            "page.hasNext": { $0.page?.hasNext.manifestValue ?? .null },
+            "page.isLoadingNext": { $0.page?.isLoadingNext.manifestValue ?? .null },
+            "page.pageInfo.hasNextPage": { $0.page?.pageInfo.hasNextPage.manifestValue ?? .null },
+        ]
+        for index in 0..<3 {
+            reads["page.characters.\(index).id"] = { $0.page?.characters?.element(index)?.id.manifestValue ?? .null }
+            reads["page.characters.\(index).name"] = { $0.page?.characters?.element(index)?.name.manifestValue ?? .null }
+        }
+        return reads
+    }()
+
+    /// A list paged by number on an entity, read through the fragment's
+    /// lens over the character, whose container is the merged record.
+    static let friendsReads: [String: @MainActor @Sendable (TestFriendsQuery.Data) -> Manifest.Value] = {
+        var reads: [String: @MainActor @Sendable (TestFriendsQuery.Data) -> Manifest.Value] = [
+            "character.id": { $0.character?.testFriends.id.manifestValue ?? .null },
+            "character.friends.hasNext": { $0.character?.testFriends.friends?.hasNext.manifestValue ?? .null },
+            "character.friends.isLoadingNext": { $0.character?.testFriends.friends?.isLoadingNext.manifestValue ?? .null },
+            "character.friends.pageInfo.hasNextPage": { $0.character?.testFriends.friends?.pageInfo.hasNextPage.manifestValue ?? .null },
+        ]
+        for index in 0..<5 {
+            reads["character.friends.nodes.\(index).id"] = { $0.character?.testFriends.friends?.nodes?.element(index)?.id.manifestValue ?? .null }
+            reads["character.friends.nodes.\(index).name"] = { $0.character?.testFriends.friends?.nodes?.element(index)?.name.manifestValue ?? .null }
+        }
+        return reads
+    }()
 
     static let notesPaginationReads: [String: @MainActor @Sendable (TestNotesPaginationQuery.Data) -> Manifest.Value] = [
         "node.id": { $0.node?.testNotes?.id.manifestValue ?? .null },
@@ -643,6 +694,12 @@ extension OperationVariables {
     func optionalString(_ name: String) throws -> String? {
         guard try variable(name) != nil else { return nil }
         return try string(name)
+    }
+
+    func int(_ name: String) throws -> Int {
+        let value = try required(name)
+        guard case .int(let int) = value else { throw mismatch(name, value) }
+        return int
     }
 
     func optionalInt(_ name: String) throws -> Int? {

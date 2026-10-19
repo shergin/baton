@@ -15,9 +15,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use super::checks::{field_errors, is_present, report_missing, satisfied};
 use super::lens::{
     Accessor, AliasGuard, AliasedRead, Binding, BoundArgument, ConditionRead, ConnectionMembers,
-    ErrorCheck, ErrorLine, Guarded, LinkedForm, LinkedRead, LoadMore, Nodes, Read, ReaderPlan,
-    RefetchMembers, ScalarForm, ScalarRead, ScalarShape, SlotAccess, SpreadForm, SpreadGuard,
-    SpreadRead, TypeTest,
+    ErrorCheck, ErrorLine, Guarded, LinkedForm, LinkedRead, LoadMore, Nodes, PagedMembers, Read,
+    ReaderPlan, RefetchMembers, ScalarForm, ScalarRead, ScalarShape, SlotAccess, SpreadForm,
+    SpreadGuard, SpreadRead, TypeTest,
 };
 use super::members::{
     Member, collect_caught, collect_deferred, condition_lens, derived_spread, members,
@@ -26,8 +26,8 @@ use super::members::{
 use super::written_key;
 use crate::naming::{Kind, NameError, Naming, Position, Reserved, Scope, Spelled};
 use crate::pipeline::{
-    ArgumentPlan, CatchTarget, ConditionClass, ConnectionPlan, ConstantPlan, FragmentPlan, Plan,
-    RefetchPlan, RequiredAction, SelectionPlan, StorageKeyPlan, VariablePlan,
+    ArgumentPlan, CatchTarget, ConditionClass, ConnectionPlan, ConstantPlan, FragmentPlan,
+    PagedPlan, Plan, RefetchPlan, RequiredAction, SelectionPlan, StorageKeyPlan, VariablePlan,
 };
 
 /// What a spread accessor needs to know about the fragment it produces.
@@ -125,6 +125,8 @@ struct Nested {
     is_abstract: bool,
     selections: Vec<SelectionPlan>,
     connection: Option<ConnectionPlan>,
+    /// The paged list the field is the container of, when one is.
+    paged: Option<PagedPlan>,
     bubbles: bool,
     within_catch: bool,
     /// The response key the lens is read under, for a linked field; an
@@ -141,6 +143,8 @@ struct LensFacts {
     connection: bool,
     /// A connection's lens that selects `edges { node }`: `nodes`.
     nodes: bool,
+    /// A paged list's container: `paged` and the paging state.
+    paged: bool,
 }
 
 impl<'a> Readers<'a> {
@@ -238,6 +242,7 @@ impl<'a> Readers<'a> {
             &fragment.reader,
             context,
             None,
+            None,
             true,
             fragment.bubbles,
         )
@@ -265,6 +270,7 @@ impl<'a> Readers<'a> {
             &operation.reader,
             context,
             None,
+            None,
             false,
             operation.bubbles,
         );
@@ -290,6 +296,7 @@ impl<'a> Readers<'a> {
         selections: &[SelectionPlan],
         context: Context<'_>,
         connection: Option<&ConnectionPlan>,
+        paged: Option<&PagedPlan>,
         is_fragment_root: bool,
         bubbles: bool,
     ) -> ReaderPlan {
@@ -298,6 +305,7 @@ impl<'a> Readers<'a> {
             refetchable: is_fragment_root && context.refetch.is_some(),
             connection: connection.is_some(),
             nodes: connection.is_some() && selects_nodes(selections),
+            paged: paged.is_some(),
         };
         let duplicates = self.name_lens(context.path, facts, selections, type_name, &mut members);
         self.duplicates.extend(duplicates);
@@ -309,6 +317,11 @@ impl<'a> Readers<'a> {
             .map(|refetch| refetch_members(refetch, type_name));
         let connection = connection.map(|connection| {
             self.connection_members(connection, type_name, &members, facts.nodes, context)
+        });
+        let paged = paged.map(|paged| PagedMembers {
+            container_type: type_name.to_string(),
+            page_info_type: paged.page_info_type.clone(),
+            page: paged.page.clone(),
         });
         let satisfied =
             bubbles.then(|| satisfied(type_name, type_is_abstract, &members, self.naming));
@@ -367,6 +380,7 @@ impl<'a> Readers<'a> {
                     &child.selections,
                     child_context,
                     child.connection.as_ref(),
+                    child.paged.as_ref(),
                     false,
                     child.bubbles,
                 )
@@ -378,6 +392,7 @@ impl<'a> Readers<'a> {
             accessors,
             refetch,
             connection,
+            paged,
             satisfied,
             reports_missing: false,
             field_errors,
@@ -518,6 +533,12 @@ impl<'a> Readers<'a> {
                 "connectionID",
             ] {
                 scope.declare(name, Kind::Instance, format!("the connection's `{name}`"));
+            }
+        }
+        if facts.paged {
+            scope.declare("paged", Kind::Static, "the paged list's slots");
+            for name in ["hasNext", "isLoadingNext", "loadNext"] {
+                scope.declare(name, Kind::Instance, format!("the paged list's `{name}`"));
             }
         }
         for member in members.iter_mut() {
@@ -718,6 +739,7 @@ impl<'a> Readers<'a> {
                 is_abstract: lens_abstract,
                 selections: child.clone(),
                 connection: None,
+                paged: None,
                 bubbles: *bubbles,
                 within_catch: catch.is_some(),
                 response_key: None,
@@ -739,6 +761,7 @@ impl<'a> Readers<'a> {
             is_abstract: lens_abstract,
             selections: child.clone(),
             connection: None,
+            paged: None,
             bubbles: false,
             within_catch: false,
             response_key: None,
@@ -1008,6 +1031,7 @@ fn linked_read(
         is_abstract,
         storage_key,
         connection,
+        paged,
         required,
         catch,
         bubbles,
@@ -1051,6 +1075,7 @@ fn linked_read(
         is_abstract: *is_abstract,
         selections: child.clone(),
         connection: connection.clone(),
+        paged: paged.clone(),
         bubbles: *bubbles,
         within_catch: catch.is_some(),
         response_key: Some(alias.clone().unwrap_or_else(|| name.clone())),

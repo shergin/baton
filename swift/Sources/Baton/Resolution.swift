@@ -35,6 +35,39 @@ package final class ResolvedConnection: Sendable {
     }
 }
 
+/// A paged list with its variables bound: the client key on the container's
+/// parent and its slot there, the list's slot on the container type, the
+/// slots, and the page the container was fetched with.
+package final class ResolvedPaged: Sendable {
+    package let storageKey: String
+    /// Whether the client key was rendered from variables.
+    let rendered: Bool
+    /// The client slot on the variant's concrete type.
+    package let slot: Slot
+    /// The list field's slot on the container type, shared by the page and
+    /// the merged record.
+    package let listSlot: Slot
+    package let slots: PagedSlots
+    package let page: Int?
+    /// The container's slots the merge copies from the page: the fields the
+    /// operation selected of it, except the list and the page info link,
+    /// so a page record two lists share lends the other list nothing.
+    package let copied: [Slot]
+    /// The page info's slots the merge copies: the fields selected of it.
+    package let pageInfoCopied: [Slot]
+
+    init(storageKey: String, rendered: Bool, slot: Slot, listSlot: Slot, slots: PagedSlots, page: Int?, copied: [Slot], pageInfoCopied: [Slot]) {
+        self.storageKey = storageKey
+        self.rendered = rendered
+        self.slot = slot
+        self.listSlot = listSlot
+        self.slots = slots
+        self.page = page
+        self.copied = copied
+        self.pageInfoCopied = pageInfoCopied
+    }
+}
+
 /// An edit with its connection ids bound.
 package final class ResolvedEdit: Sendable {
     package let kind: Edit.Kind
@@ -258,6 +291,13 @@ package final class ResolvedVariant: Sendable {
                 clientLinks.append(link)
                 follows.append(link)
             }
+            // A paged list's merged record is read by the container's own
+            // selection, as a connection's is by the page's.
+            if let paged = field.paged {
+                let link = ResolvedField(responseKey: paged.storageKey, keyBytes: [], storageKey: paged.storageKey, rendered: paged.rendered, slot: paged.slot, kind: .linked(child, plural: false, lookupKey: nil, connection: nil), edit: nil, deferred: nil, caught: field.caught, client: true)
+                clientLinks.append(link)
+                follows.append(link)
+            }
         }
         self.clientLinks = clientLinks
         self.follows = follows
@@ -285,6 +325,8 @@ package struct ResolvedField: Sendable {
     package let slot: Slot
     package let kind: Kind
     package let edit: ResolvedEdit?
+    /// The paged list the field is the container of, when one is.
+    package let paged: ResolvedPaged?
     /// Where the field's value comes from: the server's response, the part
     /// of it under a `@defer` label, which the availability check does not
     /// wait for, or the client, which no response carries.
@@ -317,7 +359,7 @@ package struct ResolvedField: Sendable {
     /// the field is read in, since a field keys one type and not another.
     var keyIndex: Int32 = -1
 
-    init(responseKey: String, keyBytes: [UInt8], storageKey: String, rendered: Bool, slot: Slot, kind: Kind, edit: ResolvedEdit?, deferred: String?, streams: Bool = false, caught: Bool, client: Bool = false) {
+    init(responseKey: String, keyBytes: [UInt8], storageKey: String, rendered: Bool, slot: Slot, kind: Kind, edit: ResolvedEdit?, paged: ResolvedPaged? = nil, deferred: String?, streams: Bool = false, caught: Bool, client: Bool = false) {
         self.responseKey = responseKey
         self.keyBytes = keyBytes
         self.storageKey = storageKey
@@ -325,6 +367,7 @@ package struct ResolvedField: Sendable {
         self.slot = slot
         self.kind = kind
         self.edit = edit
+        self.paged = paged
         origin = client ? .client : deferred.map(Origin.deferred) ?? .server
         self.streams = streams
         self.caught = caught
@@ -333,7 +376,7 @@ package struct ResolvedField: Sendable {
 
     /// The same field as the incremental part delivers it: no longer deferred.
     func undeferred() -> ResolvedField {
-        ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, rendered: rendered, slot: slot, kind: kind, edit: edit, deferred: nil, streams: streams, caught: caught, client: origin == .client)
+        ResolvedField(responseKey: responseKey, keyBytes: keyBytes, storageKey: storageKey, rendered: rendered, slot: slot, kind: kind, edit: edit, paged: paged, deferred: nil, streams: streams, caught: caught, client: origin == .client)
     }
 
     /// The same field on another concrete type: its slot, and its
@@ -353,6 +396,18 @@ package struct ResolvedField: Sendable {
                 )
             })
         }
+        let paged = paged.map { paged in
+            ResolvedPaged(
+                storageKey: paged.storageKey,
+                rendered: paged.rendered,
+                slot: ResolvedField.slot(type, paged.storageKey, rendered: paged.rendered, hold),
+                listSlot: paged.listSlot,
+                slots: paged.slots,
+                page: paged.page,
+                copied: paged.copied,
+                pageInfoCopied: paged.pageInfoCopied
+            )
+        }
         return ResolvedField(
             responseKey: responseKey,
             keyBytes: keyBytes,
@@ -361,6 +416,7 @@ package struct ResolvedField: Sendable {
             slot: ResolvedField.slot(type, storageKey, rendered: rendered, hold),
             kind: kind,
             edit: edit,
+            paged: paged,
             deferred: deferred,
             streams: streams,
             caught: caught,

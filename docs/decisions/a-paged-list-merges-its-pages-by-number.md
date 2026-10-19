@@ -112,10 +112,11 @@ fragment MediaCharacters_media on Media {
   merged list references the pages' element records, as a connection
   references its pages' edges
   ([the decision](connections-own-their-edges.md)), in order, each record
-  once, null elements dropped. The record's other fields follow the page's,
-  and its page info follows the page's, field by field, when the page
-  replaces or is the last merged; a page rewritten in the middle leaves
-  them. The record keeps where it stands as client fields: `__firstPage`,
+  once, null elements dropped. The fields the operation selected of the
+  container follow the page's, except the list and the page info link, so
+  a page record two lists share lends the other list nothing; the page
+  info's selected fields follow the page's when the page replaces or is
+  the last merged; a page rewritten in the middle leaves them. The record keeps where it stands as client fields: `__firstPage`,
   `__pageLengths` with the span of each page in the merged list, and
   `__isLoadingNext`.
 - **What the lens reads.** The container's lens gains `hasNext`,

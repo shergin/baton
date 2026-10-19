@@ -1,0 +1,15 @@
+{
+  "Note:n1": {"__typename": "Note", "id": "n1", "text": "Wubba lubba dub dub"},
+  "Note:n2": {"__typename": "Note", "id": "n2", "text": "Portal gun needs charging"},
+  "Note:n3": {"__typename": "Note", "id": "n3", "text": "Get Schwifty"},
+  "Note:n4": {"__typename": "Note", "id": "n4", "text": "Avoid the Citadel"},
+  "client:root": {"__TestPagedNotes_notes_paged(authorId:\"1\",perPage:2)": {"__ref": "client:root:__TestPagedNotes_notes_paged(authorId:\"1\",perPage:2)"}, "__typename": "Query", "page(page:1,perPage:2)": {"__ref": "client:root:page(page:1,perPage:2)"}, "page(page:2,perPage:2)": {"__ref": "client:root:page(page:2,perPage:2)"}},
+  "client:root:__TestPagedNotes_notes_paged(authorId:\"1\",perPage:2)": {"__firstPage": 1, "__pageLengths": [2, 2], "__typename": "Page", "notes(authorId:\"1\")": {"__refs": ["Note:n1", "Note:n2", "Note:n3", "Note:n4"]}, "pageInfo": {"__ref": "client:root:__TestPagedNotes_notes_paged(authorId:\"1\",perPage:2):pageInfo"}},
+  "client:root:__TestPagedNotes_notes_paged(authorId:\"1\",perPage:2):pageInfo": {"__typename": "PageInfo", "currentPage": 2, "hasNextPage": true},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:page(page:1,perPage:2)": {"__typename": "Page", "notes(authorId:\"1\")": {"__refs": ["Note:n1", "Note:n2"]}, "pageInfo": {"__ref": "client:root:page(page:1,perPage:2):pageInfo"}},
+  "client:root:page(page:1,perPage:2):pageInfo": {"__typename": "PageInfo", "currentPage": 1, "hasNextPage": true},
+  "client:root:page(page:2,perPage:2)": {"__typename": "Page", "notes(authorId:\"1\")": {"__refs": ["Note:n3", "Note:n4"]}, "pageInfo": {"__ref": "client:root:page(page:2,perPage:2):pageInfo"}},
+  "client:root:page(page:2,perPage:2):pageInfo": {"__typename": "PageInfo", "currentPage": 2, "hasNextPage": true},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

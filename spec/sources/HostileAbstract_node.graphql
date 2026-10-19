@@ -14,7 +14,7 @@ fragment HostileAbstract_node on Node {
   # What every lens declares, and what a refetchable fragment and a connection add.
   satisfied: id missingRequiredField: id fieldErrors: id isPresent: id throwing: id
   caught: id refetchable: id refetch: id connection: id nodes: id hasNext: id hasPrevious: id
-  isLoadingNext: id isLoadingPrevious: id connectionID: id loadNext: id loadPrevious: id
+  isLoadingNext: id isLoadingPrevious: id connectionID: id paged: id loadNext: id loadPrevious: id
   # The locals, parameters and local aliases of generated bodies.
   bound: id errors: id child: id missing: id count: id fields: id lhs: id rhs: id hasher: id selection0: id selection: id
   optimistic: id selfValue: id values: id Fragment: id Spread: id Owner: id Query: id Operation: id

@@ -32,8 +32,8 @@ class OperationHandle<Data : Lens> internal constructor(
     /** The handle's root among the store's: what keeps its records alive. */
     internal val root: Store.Root = store.root(key, store.resolve(type.plan, operation.variables), store.root)
 
-    /** The scope every lens of the handle reads in. */
-    private val owner: Owner = environment.scope(root, operation.variables)
+    /** The scope every lens of the handle reads in, which pages through the handle's operation. */
+    private val owner: Owner = environment.scope(root, operation.variables, type)
 
     /**
      * The last fetch, as a value: idle, in flight, or failed with its

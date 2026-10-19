@@ -389,6 +389,7 @@ fn an_enum_value_spelled_like_the_undeclared_case_takes_an_underscore() {
     let text = shared::shared_text(
         &shared,
         &BTreeMap::new(),
+        &BTreeMap::new(),
         &literal::Converters { types: &types },
         Some("app.generated"),
     );

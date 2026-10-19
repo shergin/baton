@@ -1,0 +1,1 @@
+query TestFriendsQuery($id:ID!,$page:Int!){character(id:$id){...TestFriends_character,id}}fragment TestFriends_character on Character{id,friends(page:$page,perPage:2){pageInfo{hasNextPage},nodes{id,name}}}

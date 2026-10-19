@@ -678,7 +678,7 @@ extension Anchor {
         var values = refetchVariables(refetch, owner: origin ?? record)
         values[first] = .int(count)
         values[after] = .string(cursor)
-        try await environment().paginate(operation, variables: Variables(values), connection: record, loading: slots.isLoadingNext)
+        try await environment().paginate(operation, variables: Variables(values), record: record, loading: slots.isLoadingNext)
     }
 
     /// Fetches the previous `count` edges before the merged start cursor; the
@@ -689,7 +689,33 @@ extension Anchor {
         var values = refetchVariables(refetch, owner: origin ?? record)
         values[last] = .int(count)
         values[before] = .string(cursor)
-        try await environment().paginate(operation, variables: Variables(values), connection: record, loading: slots.isLoadingPrevious)
+        try await environment().paginate(operation, variables: Variables(values), record: record, loading: slots.isLoadingPrevious)
+    }
+
+    /// A paged list's state, read from the record its pages merged into,
+    /// which the lens over the container reads: whether the server has a
+    /// page after the last one merged, from the merged page info's
+    /// `hasNextPage` alone.
+    public func hasNext(_ slots: PagedSlots) -> Bool {
+        guard case .ref(let pageInfo) = record.read(slots.pageInfoLink) else { return false }
+        return flag(pageInfo, slots.hasNextPage)
+    }
+
+    public func isLoadingNext(_ slots: PagedSlots) -> Bool { flag(record, slots.isLoadingNext) }
+
+    /// Fetches the page after the last one merged, through the operation
+    /// that owns the lens, with its variables and the page variable set to
+    /// the next number; the commit appends it. A no-op while a page is
+    /// loading or when there is no next page; a lens made by hand, outside
+    /// any operation, throws.
+    public func loadNext(_ slots: PagedSlots, page variable: String) async throws {
+        guard hasNext(slots), !isLoadingNext(slots) else { return }
+        guard case .int(let first) = record.peek(slots.firstPage), case .list(let lengths) = record.peek(slots.pageLengths) else { return }
+        let environment = try environment()
+        guard let query = owner.query else { throw EnvironmentError.outsideEnvironment }
+        var values = owner.queryVariables.values
+        values[variable] = .int(first + lengths.count)
+        try await environment.paginate(query, variables: Variables(values), record: record, loading: slots.isLoadingNext)
     }
 
     /// Fetches the fragment again with the lens's variables; the records

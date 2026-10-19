@@ -152,6 +152,31 @@ class ConnectionSlots(val connection: TypeID, val edge: TypeID, val pageInfo: Ty
     }
 }
 
+/**
+ * The cells a paged list's merge and state use, on the container type the
+ * pages and the merged record share and on its page info type, plus the
+ * client fields the merge keeps on the merged record: where the list
+ * started, the span of each page in it, and whether a page is loading.
+ */
+@Generated
+class PagedSlots(val container: TypeID, val pageInfo: TypeID) {
+    val pageInfoLink: Slot = Registry.slot(container, "pageInfo")
+    val hasNextPage: Slot = Registry.slot(pageInfo, "hasNextPage")
+    val isLoadingNext: Slot = Registry.slot(container, "__isLoadingNext")
+    val firstPage: Slot = Registry.slot(container, "__firstPage")
+    val pageLengths: Slot = Registry.slot(container, "__pageLengths")
+}
+
+/**
+ * A paged list on the field that takes the page, its container: the client
+ * record of the container's type its pages merge into, keyed on the
+ * container's parent by the list and its arguments; the list field's own key
+ * on the container; and the variable that names the page each run. See
+ * `docs/decisions/a-paged-list-merges-its-pages-by-number.md`.
+ */
+@Generated
+class PagedPlan(val key: StorageKey, val list: StorageKey, val slots: PagedSlots, val page: String)
+
 /** Where a connection's page boundary comes from: a variable, or a constant in the document. */
 @Generated
 sealed interface ConnectionCursor {
@@ -207,6 +232,8 @@ class PlanField private constructor(
     val key: StorageKey,
     val kind: Kind,
     val edit: Edit?,
+    /** The paged list this field is the container of, when a field of its selection carries `@paged`. */
+    val paged: PagedPlan?,
     val deferred: String?,
     /** The `@stream` label the field's items carry, when the list streams. */
     val streamed: String?,
@@ -225,6 +252,8 @@ class PlanField private constructor(
     internal val readsVariables: Boolean = run {
         if (guards.isNotEmpty() || key is StorageKey.Dynamic) return@run true
         if (edit?.connections is Edit.Connections.Variable) return@run true
+        // A paged list's merge reads the page variable every run.
+        if (paged != null) return@run true
         val linked = kind as? Kind.Linked ?: return@run false
         linked.selection.readsVariables ||
             linked.lookup?.key?.any { it is Lookup.Key.Variable } == true ||
@@ -247,7 +276,7 @@ class PlanField private constructor(
             client: Boolean = false,
             transient: Boolean = false,
             guards: List<List<Guard>> = emptyList(),
-        ): PlanField = PlanField(responseKey, key, Kind.Scalar(kind, list), edit, deferred, null, caught, client, transient, guards)
+        ): PlanField = PlanField(responseKey, key, Kind.Scalar(kind, list), edit, null, deferred, null, caught, client, transient, guards)
 
         fun linked(
             responseKey: String,
@@ -255,6 +284,7 @@ class PlanField private constructor(
             plural: Boolean,
             lookup: Lookup? = null,
             connection: ConnectionPlan? = null,
+            paged: PagedPlan? = null,
             edit: Edit? = null,
             deferred: String? = null,
             streamed: String? = null,
@@ -264,7 +294,7 @@ class PlanField private constructor(
             guards: List<List<Guard>> = emptyList(),
             selection: Selection,
         ): PlanField = PlanField(
-            responseKey, key, Kind.Linked(selection, plural, lookup, connection), edit, deferred, streamed, caught, client, transient, guards,
+            responseKey, key, Kind.Linked(selection, plural, lookup, connection), edit, paged, deferred, streamed, caught, client, transient, guards,
         )
     }
 }

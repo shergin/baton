@@ -39,7 +39,7 @@ struct HostileNameDocuments {
           # What every lens declares, and what a refetchable fragment and a connection add.
           satisfied: name missingRequiredField: name fieldErrors: name isPresent: name
           throwing: name caught: name refetchable: name refetch: name connection: name nodes: name
-          hasNext: name hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name
+          hasNext: name hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name paged: name
           loadNext: name loadPrevious: name
           # The locals, parameters and local aliases of generated bodies.
           bound: name errors: name child: name missing: name count: name fields: name lhs: name
@@ -92,7 +92,7 @@ struct HostileNameDocuments {
           caught: origin { id } refetchable: origin { id } refetch: origin { id }
           connection: origin { id } nodes: origin { id } hasNext: origin { id }
           hasPrevious: origin { id } isLoadingNext: origin { id } isLoadingPrevious: origin { id }
-          connectionID: origin { id } loadNext: origin { id } loadPrevious: origin { id }
+          connectionID: origin { id } paged: origin { id } loadNext: origin { id } loadPrevious: origin { id }
           # The locals, parameters and local aliases of generated bodies.
           bound: origin { id } errors: origin { id } child: origin { id } missing: origin { id }
           count: origin { id } fields: origin { id } lhs: origin { id } rhs: origin { id }
@@ -167,7 +167,7 @@ struct HostileNameDocuments {
           ... @alias(as: "refetch") { name } ... @alias(as: "connection") { name }
           ... @alias(as: "nodes") { name } ... @alias(as: "hasNext") { name }
           ... @alias(as: "hasPrevious") { name } ... @alias(as: "isLoadingNext") { name }
-          ... @alias(as: "isLoadingPrevious") { name } ... @alias(as: "connectionID") { name }
+          ... @alias(as: "isLoadingPrevious") { name } ... @alias(as: "connectionID") { name } ... @alias(as: "paged") { name }
           ... @alias(as: "loadNext") { name } ... @alias(as: "loadPrevious") { name }
           # The locals, parameters and local aliases of generated bodies.
           ... @alias(as: "bound") { name } ... @alias(as: "errors") { name }
@@ -309,6 +309,7 @@ struct HostileNameDocuments {
           ... @alias(as: "isLoadingNext") { ...HostileSpreadTarget_character }
           ... @alias(as: "isLoadingPrevious") { ...HostileSpreadTarget_character }
           ... @alias(as: "connectionID") { ...HostileSpreadTarget_character }
+          ... @alias(as: "paged") { ...HostileSpreadTarget_character }
           ... @alias(as: "loadNext") { ...HostileSpreadTarget_character }
           ... @alias(as: "loadPrevious") { ...HostileSpreadTarget_character }
           # The locals, parameters and local aliases of generated bodies.
@@ -431,7 +432,7 @@ struct HostileNameDocuments {
           # What every lens declares, and what a refetchable fragment and a connection add.
           satisfied: name missingRequiredField: name fieldErrors: name isPresent: name
           throwing: name caught: name refetchable: name refetch: name connection: name nodes: name
-          hasNext: name hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name
+          hasNext: name hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name paged: name
           loadNext: name loadPrevious: name
           # The locals, parameters and local aliases of generated bodies.
           bound: name errors: name child: name missing: name count: name fields: name lhs: name
@@ -488,7 +489,7 @@ struct HostileNameDocuments {
             # What every lens declares, and what a refetchable fragment and a connection add.
             satisfied: totalCount missingRequiredField: totalCount
             fieldErrors: totalCount isPresent: totalCount throwing: totalCount caught: totalCount
-            refetchable: totalCount refetch: totalCount connection: totalCount loadNext: totalCount
+            refetchable: totalCount refetch: totalCount connection: totalCount paged: totalCount loadNext: totalCount
             loadPrevious: totalCount
             # The locals, parameters and local aliases of generated bodies.
             bound: totalCount errors: totalCount child: totalCount missing: totalCount count: totalCount
@@ -567,7 +568,7 @@ struct HostileNameDocuments {
             satisfied: name missingRequiredField: name fieldErrors: name isPresent: name
             throwing: name caught: name refetchable: name refetch: name connection: name nodes: name
             hasNext: name hasPrevious: name isLoadingNext: name isLoadingPrevious: name
-            connectionID: name loadNext: name loadPrevious: name
+            connectionID: name paged: name loadNext: name loadPrevious: name
             # The locals, parameters and local aliases of generated bodies.
             bound: name errors: name child: name missing: name count: name fields: name lhs: name
             rhs: name hasher: name selection0: name selection: name optimistic: name selfValue: name values: name Fragment: name Spread: name
@@ -609,7 +610,7 @@ struct HostileNameDocuments {
           # What every lens declares, and what a refetchable fragment and a connection add.
           satisfied: id missingRequiredField: id fieldErrors: id isPresent: id throwing: id
           caught: id refetchable: id refetch: id connection: id nodes: id hasNext: id hasPrevious: id
-          isLoadingNext: id isLoadingPrevious: id connectionID: id loadNext: id loadPrevious: id
+          isLoadingNext: id isLoadingPrevious: id connectionID: id paged: id loadNext: id loadPrevious: id
           # The locals, parameters and local aliases of generated bodies.
           bound: id errors: id child: id missing: id count: id fields: id lhs: id rhs: id hasher: id selection0: id selection: id
           optimistic: id selfValue: id values: id Fragment: id Spread: id Owner: id Query: id Operation: id
@@ -653,7 +654,7 @@ struct HostileNameDocuments {
           $anchor: ID!, $recordID: ID!, $satisfied: ID!, $missingRequiredField: ID!,
           $fieldErrors: ID!, $isPresent: ID!, $throwing: ID!, $caught: ID!, $refetchable: ID!,
           $refetch: ID!, $connection: ID!, $nodes: ID!, $hasNext: ID!, $hasPrevious: ID!,
-          $isLoadingNext: ID!, $isLoadingPrevious: ID!, $connectionID: ID!, $loadNext: ID!,
+          $isLoadingNext: ID!, $isLoadingPrevious: ID!, $connectionID: ID!, $paged: ID!, $loadNext: ID!,
           $loadPrevious: ID!,
           # The locals, parameters and local aliases of generated bodies.
           $bound: ID!, $errors: ID!, $child: ID!, $missing: ID!, $count: ID!, $fields: ID!, $lhs: ID!,
@@ -686,7 +687,7 @@ struct HostileNameDocuments {
             # What every lens declares, and what a refetchable fragment and a connection add.
             $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent,
             $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious,
-            $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious,
+            $isLoadingNext, $isLoadingPrevious, $connectionID, $paged, $loadNext, $loadPrevious,
             # The locals, parameters and local aliases of generated bodies.
             $bound, $errors, $child, $missing, $count, $fields, $lhs, $rhs, $hasher, $selection0, $selection, $optimistic,
             $selfValue, $values, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery,
@@ -733,7 +734,7 @@ struct HostileNameDocuments {
           $missingRequiredField: Boolean!, $fieldErrors: Boolean!, $isPresent: Boolean!,
           $throwing: Boolean!, $caught: Boolean!, $refetchable: Boolean!, $refetch: Boolean!,
           $connection: Boolean!, $nodes: Boolean!, $hasNext: Boolean!, $hasPrevious: Boolean!,
-          $isLoadingNext: Boolean!, $isLoadingPrevious: Boolean!, $connectionID: Boolean!,
+          $isLoadingNext: Boolean!, $isLoadingPrevious: Boolean!, $connectionID: Boolean!, $paged: Boolean!,
           $loadNext: Boolean!, $loadPrevious: Boolean!,
           # The locals, parameters and local aliases of generated bodies.
           $bound: Boolean!, $errors: Boolean!, $child: Boolean!, $missing: Boolean!, $count: Boolean!,
@@ -805,7 +806,7 @@ struct HostileNameDocuments {
               ... @include(if: $refetch) { name } ... @include(if: $connection) { name }
               ... @include(if: $nodes) { name } ... @include(if: $hasNext) { name }
               ... @include(if: $hasPrevious) { name } ... @include(if: $isLoadingNext) { name }
-              ... @include(if: $isLoadingPrevious) { name } ... @include(if: $connectionID) { name }
+              ... @include(if: $isLoadingPrevious) { name } ... @include(if: $connectionID) { name } ... @include(if: $paged) { name }
               ... @include(if: $loadNext) { name } ... @include(if: $loadPrevious) { name }
               # The locals, parameters and local aliases of generated bodies.
               ... @include(if: $bound) { name } ... @include(if: $errors) { name }
@@ -881,7 +882,7 @@ struct HostileNameDocuments {
           $missingRequiredField: Boolean!, $fieldErrors: Boolean!, $isPresent: Boolean!,
           $throwing: Boolean!, $caught: Boolean!, $refetchable: Boolean!, $refetch: Boolean!,
           $connection: Boolean!, $nodes: Boolean!, $hasNext: Boolean!, $hasPrevious: Boolean!,
-          $isLoadingNext: Boolean!, $isLoadingPrevious: Boolean!, $connectionID: Boolean!,
+          $isLoadingNext: Boolean!, $isLoadingPrevious: Boolean!, $connectionID: Boolean!, $paged: Boolean!,
           $loadNext: Boolean!, $loadPrevious: Boolean!,
           # The locals, parameters and local aliases of generated bodies.
           $bound: Boolean!, $errors: Boolean!, $child: Boolean!, $missing: Boolean!, $count: Boolean!,
@@ -953,7 +954,7 @@ struct HostileNameDocuments {
               ... @include(if: $connection) { cursor } ... @include(if: $nodes) { cursor }
               ... @include(if: $hasNext) { cursor } ... @include(if: $hasPrevious) { cursor }
               ... @include(if: $isLoadingNext) { cursor }
-              ... @include(if: $isLoadingPrevious) { cursor } ... @include(if: $connectionID) { cursor }
+              ... @include(if: $isLoadingPrevious) { cursor } ... @include(if: $connectionID) { cursor } ... @include(if: $paged) { cursor }
               ... @include(if: $loadNext) { cursor } ... @include(if: $loadPrevious) { cursor }
               # The locals, parameters and local aliases of generated bodies.
               ... @include(if: $bound) { cursor } ... @include(if: $errors) { cursor }
@@ -1088,7 +1089,7 @@ struct HostileNameDocuments {
           hasPrevious: {type: "Boolean", defaultValue: true},
           isLoadingNext: {type: "Boolean", defaultValue: true},
           isLoadingPrevious: {type: "Boolean", defaultValue: true},
-          connectionID: {type: "Boolean", defaultValue: true},
+          connectionID: {type: "Boolean", defaultValue: true}, paged: {type: "Boolean", defaultValue: true},
           loadNext: {type: "Boolean", defaultValue: true},
           loadPrevious: {type: "Boolean", defaultValue: true},
           # The locals, parameters and local aliases of generated bodies.
@@ -1199,7 +1200,7 @@ struct HostileNameDocuments {
           ... @include(if: $refetch) { name } ... @include(if: $connection) { name }
           ... @include(if: $nodes) { name } ... @include(if: $hasNext) { name }
           ... @include(if: $hasPrevious) { name } ... @include(if: $isLoadingNext) { name }
-          ... @include(if: $isLoadingPrevious) { name } ... @include(if: $connectionID) { name }
+          ... @include(if: $isLoadingPrevious) { name } ... @include(if: $connectionID) { name } ... @include(if: $paged) { name }
           ... @include(if: $loadNext) { name } ... @include(if: $loadPrevious) { name }
           # The locals, parameters and local aliases of generated bodies.
           ... @include(if: $bound) { name } ... @include(if: $errors) { name }
@@ -1261,7 +1262,7 @@ struct HostileNameDocuments {
               satisfied: name missingRequiredField: name fieldErrors: name
               isPresent: name throwing: name caught: name refetchable: name refetch: name
               connection: name nodes: name hasNext: name hasPrevious: name isLoadingNext: name
-              isLoadingPrevious: name connectionID: name loadNext: name loadPrevious: name
+              isLoadingPrevious: name connectionID: name paged: name loadNext: name loadPrevious: name
               # The locals, parameters and local aliases of generated bodies.
               bound: name errors: name child: name missing: name count: name lhs: name rhs: name
               hasher: name selection0: name selection: name optimistic: name selfValue: name values: name Fragment: name Spread: name Owner: name
@@ -1307,7 +1308,7 @@ struct HostileNameDocuments {
             fieldErrors: note { id } isPresent: note { id } throwing: note { id } caught: note { id }
             refetchable: note { id } refetch: note { id } connection: note { id } nodes: note { id }
             hasNext: note { id } hasPrevious: note { id } isLoadingNext: note { id }
-            isLoadingPrevious: note { id } connectionID: note { id } loadNext: note { id }
+            isLoadingPrevious: note { id } connectionID: note { id } paged: note { id } loadNext: note { id }
             loadPrevious: note { id }
             # The locals, parameters and local aliases of generated bodies.
             bound: note { id } errors: note { id } child: note { id } missing: note { id }
@@ -1358,7 +1359,7 @@ struct HostileNameDocuments {
           # What every lens declares, and what a refetchable fragment and a connection add.
           satisfied: name missingRequiredField: name fieldErrors: name isPresent: name
           throwing: name caught: name refetchable: name refetch: name connection: name nodes: name
-          hasNext: name hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name
+          hasNext: name hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name paged: name
           loadNext: name loadPrevious: name
           # The locals, parameters and local aliases of generated bodies.
           bound: name errors: name child: name missing: name count: name fields: name lhs: name
@@ -1411,7 +1412,7 @@ struct HostileNameDocuments {
           caught: origin { id } refetchable: origin { id } refetch: origin { id }
           connection: origin { id } nodes: origin { id } hasNext: origin { id }
           hasPrevious: origin { id } isLoadingNext: origin { id } isLoadingPrevious: origin { id }
-          connectionID: origin { id } loadNext: origin { id } loadPrevious: origin { id }
+          connectionID: origin { id } paged: origin { id } loadNext: origin { id } loadPrevious: origin { id }
           # The locals, parameters and local aliases of generated bodies.
           bound: origin { id } errors: origin { id } child: origin { id } missing: origin { id }
           count: origin { id } fields: origin { id } lhs: origin { id } rhs: origin { id }
@@ -1470,7 +1471,7 @@ struct HostileNameDocuments {
           caught: episode { id } refetchable: episode { id } refetch: episode { id }
           connection: episode { id } nodes: episode { id } hasNext: episode { id }
           hasPrevious: episode { id } isLoadingNext: episode { id } isLoadingPrevious: episode { id }
-          connectionID: episode { id } loadNext: episode { id } loadPrevious: episode { id }
+          connectionID: episode { id } paged: episode { id } loadNext: episode { id } loadPrevious: episode { id }
           # The locals, parameters and local aliases of generated bodies.
           bound: episode { id } errors: episode { id } child: episode { id } missing: episode { id }
           count: episode { id } fields: episode { id } lhs: episode { id } rhs: episode { id }
@@ -1599,6 +1600,7 @@ struct HostileNameDocuments {
           ... @alias(as: "isLoadingNext") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "isLoadingPrevious") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "connectionID") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "paged") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "loadNext") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "loadPrevious") { ...HostileInlineSpreadTarget_character }
           # The locals, parameters and local aliases of generated bodies.

@@ -16,9 +16,9 @@ use relay_transforms::CLIENT_EXTENSION_DIRECTIVE_NAME;
 use relay_transforms::{
     CATCH_DIRECTIVE_NAME, CHILDREN_CAN_BUBBLE_METADATA_KEY, CatchMetadataDirective, CatchTo,
     FragmentAliasMetadata, INLINE_DIRECTIVE_NAME, InlineDirectiveMetadata, Programs,
-    RefetchableMetadata, RequiredAction as RelayRequiredAction, RequiredMetadataDirective,
-    extract_connection_metadata_from_directive, extract_handle_field_directives,
-    extract_values_from_handle_field_directive,
+    RefetchableDerivedFromMetadata, RefetchableMetadata, RequiredAction as RelayRequiredAction,
+    RequiredMetadataDirective, extract_connection_metadata_from_directive,
+    extract_handle_field_directives, extract_values_from_handle_field_directive,
 };
 use schema::{SDLSchema, Schema, Type, TypeReference};
 
@@ -26,7 +26,7 @@ use super::identity::Keys;
 use super::plan::{
     ArgumentPlan, ArgumentValuePlan, CatchPlan, CatchTarget, ConditionClass, ConnectionPlan,
     ConstantPlan, DeletePlan, EditKind, EditPlan, FragmentPlan, InputFieldPlan, LookupArgumentPlan,
-    LookupPlan, OperationKind, OperationPlan, Origin, PaginationPlan, Plan, RefetchPlan,
+    LookupPlan, OperationKind, OperationPlan, Origin, PagedPlan, PaginationPlan, Plan, RefetchPlan,
     RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan, TypeKind, TypePlan, VariablePlan,
 };
 
@@ -104,6 +104,42 @@ struct Lowering<'a> {
     enums: std::cell::RefCell<BTreeMap<String, Vec<String>>>,
     /// The input objects the documents' variables name, with their fields.
     inputs: std::cell::RefCell<BTreeMap<String, Vec<InputFieldPlan>>>,
+    /// The definition being lowered, whose variables `@paged` checks its
+    /// page against.
+    scope: std::cell::RefCell<Scope>,
+    /// The linked fields whose selections are being lowered, the innermost
+    /// last: the one a `@paged` list's container is, and what the list
+    /// claimed of it.
+    containers: std::cell::RefCell<Vec<Container>>,
+}
+
+/// The definition a selection is lowered in.
+enum Scope {
+    None,
+    /// A fragment, with the names of its own arguments.
+    Fragment(Vec<String>),
+    /// An operation, with each variable's name and whether every run gives
+    /// it a value: declared non-null, or with a default that is not null.
+    /// A refetch query Relay derived from a `@refetchable` fragment declares
+    /// a global variable as the schema types the argument it reaches, so
+    /// its page is nullable by Relay's choice and not the author's; the
+    /// lens that runs it passes the page it read.
+    Operation {
+        variables: Vec<(String, bool)>,
+        derived: bool,
+    },
+}
+
+/// A linked field whose selection is being lowered, as a `@paged` field
+/// inside it reads it: its name, type and arguments, whether it selects
+/// `pageInfo { hasNextPage }`, and the paged list a field of its selection
+/// claimed it the container of.
+struct Container {
+    name: String,
+    type_: Type,
+    arguments: Vec<graphql_ir::Argument>,
+    selects_page_info: bool,
+    paged: Option<PagedPlan>,
 }
 
 fn directive_name(name: &str) -> DirectiveName {
@@ -127,6 +163,8 @@ pub(super) fn lower(
         diagnostics: std::cell::RefCell::new(Vec::new()),
         enums: std::cell::RefCell::new(BTreeMap::new()),
         inputs: std::cell::RefCell::new(BTreeMap::new()),
+        scope: std::cell::RefCell::new(Scope::None),
+        containers: std::cell::RefCell::new(Vec::new()),
     };
     let mut plan = Plan::default();
     for fragment in programs.reader.fragments() {
@@ -256,6 +294,13 @@ impl Origin {
 
 impl Lowering<'_> {
     fn fragment(&self, fragment: &FragmentDefinition) -> FragmentPlan {
+        *self.scope.borrow_mut() = Scope::Fragment(
+            fragment
+                .variable_definitions
+                .iter()
+                .map(|variable| variable.name.item.0.lookup().to_string())
+                .collect(),
+        );
         let inline = fragment.directives.named(*INLINE_DIRECTIVE_NAME).is_some();
         if inline {
             self.check_inline(fragment);
@@ -318,6 +363,19 @@ impl Lowering<'_> {
     /// id, and the policies the runtime reads from it.
     fn operation(&self, operation: &OperationDefinition) -> OperationPlan {
         let name = operation.name.item.0.lookup();
+        *self.scope.borrow_mut() = Scope::Operation {
+            variables: operation
+                .variable_definitions
+                .iter()
+                .map(|variable| {
+                    (
+                        variable.name.item.0.lookup().to_string(),
+                        variable.type_.is_non_null() || variable.has_non_null_default_value(),
+                    )
+                })
+                .collect(),
+            derived: RefetchableDerivedFromMetadata::find(&operation.directives).is_some(),
+        };
         let root_type = self
             .schema
             .get_type_name(operation.type_)
@@ -1006,6 +1064,15 @@ impl Lowering<'_> {
     ) -> SelectionPlan {
         let definition = self.schema.field(field.definition.item);
         self.refuse_nested_list(field, definition);
+        if let Some(directive) = field.directives.named(directive_name("paged")) {
+            self.diagnostics.borrow_mut().push(Diagnostic::error(
+                format!(
+                    "`@paged` sits on `{}`, a scalar: it names a list of records paged by number",
+                    definition.name.item.lookup()
+                ),
+                directive.location,
+            ));
+        }
         let field_caught = caught || self.is_caught(&field.directives);
         SelectionPlan::Scalar {
             client: client || definition.is_extension,
@@ -1043,12 +1110,31 @@ impl Lowering<'_> {
         let lookup = self.lookup(field, name, parent_type, target);
         let edit = self.edit(&field.directives);
         let connection = self.connection(field, target, side);
-        // The reader reads a connection through its handle's key.
-        let field_storage_key = match (&connection, side) {
-            (Some(connection), Side::Reader) => connection.storage_key.clone(),
+        // A `@paged` list claims the field above it as its container,
+        // before this field's own selection is lowered under a frame of
+        // its own.
+        self.claim_paged(field, definition);
+        let field_caught = caught || self.is_caught(&field.directives);
+        self.containers.borrow_mut().push(Container {
+            name: name.to_string(),
+            type_: target,
+            arguments: field.arguments.clone(),
+            selects_page_info: self.selects_page_info(&field.selections),
+            paged: None,
+        });
+        let selections = self.selections(&field.selections, target, side, field_caught, client);
+        let paged = self
+            .containers
+            .borrow_mut()
+            .pop()
+            .and_then(|container| container.paged);
+        // The reader reads a connection through its handle's key, and a
+        // paged list's container through the list's client key.
+        let field_storage_key = match (&connection, &paged, side) {
+            (Some(connection), _, Side::Reader) => connection.storage_key.clone(),
+            (None, Some(paged), Side::Reader) => paged.storage_key.clone(),
             _ => storage_key(name, &field.arguments),
         };
-        let field_caught = caught || self.is_caught(&field.directives);
         SelectionPlan::Linked {
             name: name.to_string(),
             alias: field.alias.map(|alias| alias.item.lookup().to_string()),
@@ -1062,6 +1148,7 @@ impl Lowering<'_> {
             storage_key: field_storage_key,
             lookup,
             connection,
+            paged,
             streamed: self.streamed(&field.directives),
             edit,
             required: self.required(&field.directives),
@@ -1071,8 +1158,219 @@ impl Lowering<'_> {
             extension: definition.is_extension,
             transient: self.transient_field(parent_type, definition),
             bubbles: self.bubbles(&field.directives),
-            selections: self.selections(&field.selections, target, side, field_caught, client),
+            selections,
         }
+    }
+
+    /// `@paged(key:page:)` on a list field: checks what it names and claims
+    /// the field above it, which passes the page variable, as the list's
+    /// container, with the client key the pages merge under
+    /// (`docs/decisions/a-paged-list-merges-its-pages-by-number.md`).
+    fn claim_paged(&self, field: &LinkedField, definition: &schema::definitions::Field) {
+        let Some(directive) = field.directives.named(directive_name("paged")) else {
+            return;
+        };
+        let location = directive.location;
+        let fail = |message: String| {
+            self.diagnostics
+                .borrow_mut()
+                .push(Diagnostic::error(message, location));
+        };
+        let name = definition.name.item.lookup();
+        let response_key = field
+            .alias
+            .map(|alias| alias.item.lookup().to_string())
+            .unwrap_or_else(|| name.to_string());
+        let key = directive
+            .arguments
+            .named(common::ArgumentName("key".intern()))
+            .and_then(|argument| match &argument.value.item {
+                graphql_ir::Value::Constant(graphql_ir::ConstantValue::String(key)) => {
+                    Some(key.lookup().to_string())
+                }
+                _ => None,
+            });
+        let page = directive
+            .arguments
+            .named(common::ArgumentName("page".intern()))
+            .map(|argument| match &argument.value.item {
+                graphql_ir::Value::Variable(variable) => {
+                    Some(variable.name.item.0.lookup().to_string())
+                }
+                _ => None,
+            });
+        let (Some(key), Some(page)) = (key, page) else {
+            fail("`@paged` takes `key`, a string that names the list in the store, and `page`, the variable that names the page".to_string());
+            return;
+        };
+        // A constant page, or a fragment argument Relay settled to one in
+        // the operation's normalization, advances nothing.
+        let Some(page) = page else {
+            fail("`@paged` names the page as a constant: the page is a variable of the operation, which `loadNext()` advances".to_string());
+            return;
+        };
+        if !definition.type_.is_list()
+            || !matches!(
+                definition.type_.inner(),
+                Type::Object(_) | Type::Interface(_) | Type::Union(_)
+            )
+        {
+            fail(format!(
+                "`@paged` sits on `{name}`, which is not a list of records: it names a list paged by number"
+            ));
+            return;
+        }
+        if !key.ends_with(&format!("_{response_key}")) {
+            fail(format!(
+                "`@paged` names the list `{key}`: the key ends in `_{response_key}`, as a connection's key ends in its field's name"
+            ));
+            return;
+        }
+        match &*self.scope.borrow() {
+            Scope::Fragment(arguments) if arguments.contains(&page) => {
+                fail(format!(
+                    "`@paged` names `${page}`, an argument of the fragment: the page is a variable of the operation, which `loadNext()` advances"
+                ));
+                return;
+            }
+            Scope::Operation { variables, derived } => {
+                match variables.iter().find(|(known, _)| *known == page) {
+                    Some((_, true)) => {}
+                    Some((_, false)) if *derived => {}
+                    Some((_, false)) => {
+                        fail(format!(
+                            "`@paged` names `${page}`, which may be null: declare it `Int!`, or give it a default, so that every run names its page"
+                        ));
+                        return;
+                    }
+                    None => {
+                        fail(format!(
+                            "`@paged` names `${page}`, which the operation does not declare"
+                        ));
+                        return;
+                    }
+                }
+            }
+            _ => {}
+        }
+        let mut containers = self.containers.borrow_mut();
+        let Some(container) = containers.last_mut() else {
+            fail(format!(
+                "`@paged` names `${page}`, which no field above `{response_key}` takes here: the directive sits in the selection of the field that takes the page"
+            ));
+            return;
+        };
+        if !container
+            .arguments
+            .iter()
+            .any(|argument| value_reads_variable(&argument.value.item, &page))
+        {
+            fail(format!(
+                "`@paged` names `${page}`, which `{}` does not take: the directive sits in the selection of the field that takes the page",
+                container.name
+            ));
+            return;
+        }
+        let container_type = self.schema.get_type_name(container.type_).lookup();
+        if !matches!(container.type_, Type::Object(_)) {
+            fail(format!(
+                "`{}` returns `{container_type}`, an interface or union: a paged list's container is an object type",
+                container.name
+            ));
+            return;
+        }
+        let page_info_type = self
+            .schema
+            .named_field(container.type_, "pageInfo".intern())
+            .map(|id| self.schema.field(id).type_.inner());
+        let has_next_page = page_info_type.and_then(|page_info| {
+            self.schema
+                .named_field(page_info, "hasNextPage".intern())
+                .map(|id| self.schema.field(id).type_.inner())
+                .filter(|inner| self.schema.get_type_name(*inner).lookup() == "Boolean")
+        });
+        let (Some(page_info_type), Some(_)) = (page_info_type, has_next_page) else {
+            fail(format!(
+                "`{container_type}` has no `pageInfo` with a `hasNextPage: Boolean`, which `@paged` reads the end of the list from"
+            ));
+            return;
+        };
+        if !container.selects_page_info {
+            fail(format!(
+                "`@paged` needs `pageInfo {{ hasNextPage }}` selected beside `{response_key}` on `{container_type}`, which `hasNext` reads"
+            ));
+            return;
+        }
+        if container.paged.is_some() {
+            fail(format!(
+                "`{}` has two `@paged` lists: a field pages one list",
+                container.name
+            ));
+            return;
+        }
+        // The client key: the container's arguments except the page, and
+        // the list field's, sorted by name as a storage key sorts them.
+        let mut arguments: Vec<ArgumentPlan> = container
+            .arguments
+            .iter()
+            .filter(|argument| !value_reads_variable(&argument.value.item, &page))
+            .map(|argument| ArgumentPlan {
+                name: argument.name.item.0.lookup().to_string(),
+                value: argument_value_plan(&argument.value.item),
+            })
+            .collect();
+        for argument in &field.arguments {
+            let argument_name = argument.name.item.0.lookup();
+            if arguments
+                .iter()
+                .any(|existing| existing.name == argument_name)
+            {
+                fail(format!(
+                    "`@paged` cannot key the list: `{}` and `{response_key}` both take `{argument_name}`",
+                    container.name
+                ));
+                return;
+            }
+            arguments.push(ArgumentPlan {
+                name: argument_name.to_string(),
+                value: argument_value_plan(&argument.value.item),
+            });
+        }
+        arguments.sort_by(|left, right| left.name.cmp(&right.name));
+        container.paged = Some(PagedPlan {
+            storage_key: StorageKeyPlan {
+                name: format!("__{key}_paged"),
+                arguments,
+            },
+            key,
+            list: storage_key(name, &field.arguments),
+            page_info_type: self
+                .schema
+                .get_type_name(page_info_type)
+                .lookup()
+                .to_string(),
+            page,
+        });
+    }
+
+    /// Whether the selections select `pageInfo { hasNextPage }`, directly
+    /// or under an inline fragment or a condition.
+    fn selects_page_info(&self, selections: &[Selection]) -> bool {
+        selections.iter().any(|selection| match selection {
+            Selection::LinkedField(field) => {
+                self.schema.field(field.definition.item).name.item.lookup() == "pageInfo"
+                    && field.selections.iter().any(|selection| match selection {
+                        Selection::ScalarField(scalar) => {
+                            self.schema.field(scalar.definition.item).name.item.lookup()
+                                == "hasNextPage"
+                        }
+                        _ => false,
+                    })
+            }
+            Selection::InlineFragment(inline) => self.selects_page_info(&inline.selections),
+            Selection::Condition(condition) => self.selects_page_info(&condition.selections),
+            Selection::ScalarField(_) | Selection::FragmentSpread(_) => false,
+        })
     }
 
     /// `@stream(label:)`: the label the streamed items carry, which Relay's
@@ -1504,6 +1802,18 @@ fn constant_plan(value: &graphql_ir::ConstantValue) -> ConstantPlan {
                 })
                 .collect(),
         ),
+    }
+}
+
+/// Whether an argument's value reads the variable, at any depth.
+fn value_reads_variable(value: &graphql_ir::Value, name: &str) -> bool {
+    match value {
+        graphql_ir::Value::Constant(_) => false,
+        graphql_ir::Value::Variable(variable) => variable.name.item.0.lookup() == name,
+        graphql_ir::Value::List(items) => items.iter().any(|item| value_reads_variable(item, name)),
+        graphql_ir::Value::Object(fields) => fields
+            .iter()
+            .any(|field| value_reads_variable(&field.value.item, name)),
     }
 }
 

@@ -35,9 +35,28 @@ The `connections` variable carries the connection ids the view read from its len
 
 A payload with no id has no field for `@deleteRecord` to sit on, so `@deletes(type:, id:)` goes on the mutation and names the record by its type and the variable its key is passed as. The store deletes that record as `@deleteRecord` does, in the optimistic layer and in the server's commit.
 
-## Page-based lists
+## Lists paged by number
 
-The Rick and Morty API pages by number, `characters(page: 2)`, which is not a connection. Baton does not pretend it is one. Each page is a query of its own, with the page as a variable, and the store keeps each page under its storage key. A screen that shows twenty rows per page holds the current page's query. A screen that wants an endless list over such an API composes it from the pages itself. The samples show one page at a time. Page-based pagination, as a concept of its own, is on the watch list, with the trigger that would promote it. [What earns a concept](../../principles/what-earns-a-concept/) is why it is not a thirteenth word.
+Some schemas have no cursors. AniList pages every list by number: `Page(page: 1, perPage: 50) { pageInfo { hasNextPage } media(...) }`, with one `pageInfo` for whichever list the page is asked for, and the lists on an entity, `Media.characters(page:, perPage:)`, page the same way. Baton does not pretend such a list is a connection. It says so with `@paged(key:, page:)`, on the list field, inside the field that takes the page:
+
+```graphql
+query SeasonQuery($page: Int!, $season: MediaSeason) {
+  Page(page: $page, perPage: 50) {
+    pageInfo { hasNextPage }
+    media(season: $season, type: ANIME, sort: [POPULARITY_DESC])
+      @paged(key: "SeasonQuery_media", page: $page) {
+      id
+      ...MediaCard_media
+    }
+  }
+}
+```
+
+The pages merge into a record of their own in the store, under the list and its arguments, apart from the server's `Page(page: 1, perPage: 50)` record, which two lists may share. The first page replaces the merged list, the next appends, a page fetched again rewrites its elements in place. The lens over `Page` reads the merged `media`, and gains `hasNext`, which reads the merged `pageInfo.hasNextPage` and nothing else (AniList's `total` and `lastPage` are not to be trusted, and are not read), `isLoadingNext`, and `loadNext()`, which runs the screen's own query again with the next page number. No `@refetchable` fragment is needed; a refetch of the query replaces the list. The page variable is the operation's, declared `Int!`, and `pageInfo { hasNextPage }` is selected beside the list, or the compiler says what is missing.
+
+{{script paged | The specification's paged script: the first page, the second merged, a second list under the same server page keeping its own flag, a page rewritten in place, a page past the end ignored, and a refetch that replaces.}}
+
+A schema whose page info is not `pageInfo { hasNextPage }`, as the Rick and Morty API's `info { next }`, keeps reading one page per operation value: a screen with a page bar holds the current page's query, and the samples show one page at a time. [The decision](../../decisions/a-paged-list-merges-its-pages-by-number/) says what was chosen, what was not, and what would reopen it.
 
 ## Keys in a lazy list
 

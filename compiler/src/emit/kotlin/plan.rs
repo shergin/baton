@@ -6,14 +6,14 @@
 use std::fmt::Write as _;
 
 use super::literal::{keyed_types_reference, slot_path, string_literal, type_reference};
-use super::shared::connection_member;
+use super::shared::{connection_member, paged_member};
 use crate::decide::{
     self, Guard, NormalizationField, NormalizationKind, NormalizationSelection, SelectionTable,
     Shared, SlotRef,
 };
 use crate::kotlin_names::slot_name;
 use crate::pipeline::{
-    ArgumentValuePlan, ConnectionPlan, ConstantPlan, EditKind, EditPlan, LookupPlan,
+    ArgumentValuePlan, ConnectionPlan, ConstantPlan, EditKind, EditPlan, LookupPlan, PagedPlan,
     StorageKeyPlan, TypeKind,
 };
 
@@ -189,6 +189,7 @@ impl<'a> PlanSelections<'a> {
                     plural,
                     lookup,
                     connection,
+                    paged,
                     selection,
                 } => {
                     let lookup_argument = lookup
@@ -213,9 +214,18 @@ impl<'a> PlanSelections<'a> {
                             )
                         })
                         .unwrap_or_default();
+                    let paged_argument = paged
+                        .as_ref()
+                        .map(|paged| {
+                            format!(
+                                ", paged = {}",
+                                self.paged_expression(type_name, &selection.type_name, paged)
+                            )
+                        })
+                        .unwrap_or_default();
                     let _ = write!(
                         output,
-                        "PlanField.linked({}, key = {slot}, plural = {plural}{lookup_argument}{connection_argument}{flags}, selection = {}),",
+                        "PlanField.linked({}, key = {slot}, plural = {plural}{lookup_argument}{connection_argument}{paged_argument}{flags}, selection = {}),",
                         string_literal(&field.response_key),
                         PlanSelections::name(self.table.number(selection))
                     );
@@ -225,6 +235,26 @@ impl<'a> PlanSelections<'a> {
         if !fields.is_empty() {
             let _ = write!(output, "\n{pad}");
         }
+    }
+
+    /// The plan's description of a paged list on its container field: the
+    /// client key on the parent type, the list's key on the container type,
+    /// the container type's `PagedSlots` the shared file declares, and the
+    /// page variable.
+    fn paged_expression(
+        &self,
+        parent_type: &str,
+        container_type: &str,
+        paged: &PagedPlan,
+    ) -> String {
+        format!(
+            "PagedPlan(key = {}, list = {}, slots = Slots.{}.{}, page = {})",
+            plan_key(parent_type, &paged.storage_key),
+            plan_key(container_type, &paged.list),
+            slot_name(container_type),
+            paged_member(container_type, self.shared),
+            string_literal(&paged.page)
+        )
     }
 
     /// The plan's description of a connection: the client key on the

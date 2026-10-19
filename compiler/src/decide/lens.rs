@@ -21,6 +21,8 @@ pub struct ReaderPlan {
     pub refetch: Option<RefetchMembers>,
     /// A `@connection` field's lens: the connection state and pagination.
     pub connection: Option<ConnectionMembers>,
+    /// A paged list's container: `hasNext`, `isLoadingNext` and `loadNext()`.
+    pub paged: Option<PagedMembers>,
     /// `satisfied`, when a required child can null the lens: one entry per
     /// own member, a check when it has one.
     pub satisfied: Option<Vec<Guarded<Option<SatisfiedCheck>>>>,
@@ -96,10 +98,10 @@ impl ReaderPlan {
                 }
             }
         }
-        if self.connection.is_some() {
+        if self.connection.is_some() || self.paged.is_some() {
             names.insert(Spelled::Types);
         }
-        if self.refetch.is_some() || self.connection.is_some() {
+        if self.refetch.is_some() || self.connection.is_some() || self.paged.is_some() {
             names.insert(Spelled::OwnType);
         }
         for entry in self.satisfied.iter().flatten() {
@@ -600,6 +602,16 @@ pub struct ConnectionMembers {
     pub nodes: Option<Nodes>,
     pub load_next: Option<LoadMore>,
     pub load_previous: Option<LoadMore>,
+}
+
+/// The paging surface of a lens over a paged list's container: the slots
+/// of the container and its page info, and the variable `loadNext()`
+/// advances on the operation that owns the lens.
+#[derive(Debug, Clone, PartialEq)]
+pub struct PagedMembers {
+    pub container_type: String,
+    pub page_info_type: String,
+    pub page: String,
 }
 
 /// `nodes`: the lenses it reads, as their accessors named them.

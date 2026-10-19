@@ -176,7 +176,7 @@ fn deletes_on_a_field_or_a_fragment_definition_is_an_error_at_it() {
             Some(Marker::Mutation)
         ),
         vec![
-            "`@deletes` on a field has no meaning in Baton; a field takes `@include`, `@skip`, `@required`, `@catch`, `@connection`, `@appendEdge`, `@prependEdge`, `@appendNode`, `@prependNode`, `@deleteEdge`, `@deleteRecord`, `@stream`, `@stream_connection`"
+            "`@deletes` on a field has no meaning in Baton; a field takes `@include`, `@skip`, `@required`, `@catch`, `@connection`, `@appendEdge`, `@prependEdge`, `@appendNode`, `@prependNode`, `@deleteEdge`, `@deleteRecord`, `@stream`, `@stream_connection`, `@paged`"
         ]
     );
     assert_eq!(
@@ -187,6 +187,70 @@ fn deletes_on_a_field_or_a_fragment_definition_is_an_error_at_it() {
         .len(),
         1
     );
+}
+
+/// The errors in `text`, each with the text it points at: the rest of the
+/// document from its position.
+fn errors_at(text: &str, marker: Option<Marker>) -> Vec<(String, String)> {
+    let key = SourceLocationKey::embedded(&Path::new("Directives.swift").to_string_lossy(), 0);
+    let parsed = graphql_syntax::parse_executable(text, key).expect("the document parses");
+    check(&parsed.definitions, key, marker)
+        .iter()
+        .map(|error| {
+            let start = error.location().span().start as usize;
+            (error.message().to_string(), text[start..].to_string())
+        })
+        .collect()
+}
+
+#[test]
+fn paged_on_a_field_passes_the_directive_check() {
+    assert!(
+        errors(
+            "query Q($page: Int!) { page(page: $page) { pageInfo { hasNextPage } notes @paged(key: \"Q_notes\", page: $page) { id } } }",
+            Some(Marker::Query)
+        )
+        .is_empty()
+    );
+    assert!(
+        errors(
+            "fragment F on Character { friends(page: $page) { pageInfo { hasNextPage } nodes @paged(key: \"F_nodes\", page: $page) { id } } }",
+            Some(Marker::Fragment)
+        )
+        .is_empty()
+    );
+}
+
+#[test]
+fn paged_on_a_query_a_fragment_definition_an_inline_fragment_or_a_spread_is_an_error_at_it() {
+    for (text, marker, message) in [
+        (
+            "query Q($page: Int!) @paged(key: \"Q_notes\", page: $page) { page(page: $page) { notes { id } } }",
+            Marker::Query,
+            "`@paged` on a query has no meaning in Baton; a query takes `@throwOnFieldError`, `@cacheExpiration`",
+        ),
+        (
+            "fragment F on Page @paged(key: \"F_notes\", page: $page) { notes { id } }",
+            Marker::Fragment,
+            "`@paged` on a fragment definition has no meaning in Baton; a fragment definition takes `@argumentDefinitions`, `@refetchable`, `@throwOnFieldError`, `@inline`",
+        ),
+        (
+            "query Q($page: Int!) { page(page: $page) { ... on Page @paged(key: \"Q_notes\", page: $page) { notes { id } } } }",
+            Marker::Query,
+            "`@paged` on an inline fragment has no meaning in Baton; an inline fragment takes `@include`, `@skip`, `@defer`, `@alias`, `@catch`",
+        ),
+        (
+            "query Q($page: Int!) { page(page: $page) { ...F @paged(key: \"Q_notes\", page: $page) } }",
+            Marker::Query,
+            "`@paged` on a fragment spread has no meaning in Baton; a fragment spread takes `@include`, `@skip`, `@defer`, `@arguments`, `@alias`, `@catch`",
+        ),
+    ] {
+        let errors = errors_at(text, Some(marker));
+        assert_eq!(errors.len(), 1, "{text}: {errors:?}");
+        let (error, at) = &errors[0];
+        assert_eq!(error, message, "{text}");
+        assert!(at.starts_with("@paged("), "{text}: at `{at}`");
+    }
 }
 
 /// What taking `@deletes` off a document leaves.

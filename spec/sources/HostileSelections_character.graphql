@@ -42,7 +42,7 @@ fragment HostileSelections_character on Character {
   ... @alias(as: "refetch") { name } ... @alias(as: "connection") { name }
   ... @alias(as: "nodes") { name } ... @alias(as: "hasNext") { name }
   ... @alias(as: "hasPrevious") { name } ... @alias(as: "isLoadingNext") { name }
-  ... @alias(as: "isLoadingPrevious") { name } ... @alias(as: "connectionID") { name }
+  ... @alias(as: "isLoadingPrevious") { name } ... @alias(as: "connectionID") { name } ... @alias(as: "paged") { name }
   ... @alias(as: "loadNext") { name } ... @alias(as: "loadPrevious") { name }
   # The locals, parameters and local aliases of generated bodies.
   ... @alias(as: "bound") { name } ... @alias(as: "errors") { name }

@@ -572,6 +572,29 @@ class Anchor @Generated constructor(val record: Record, val owner: Owner) {
         environment().paginate(operation, Variables(values), record, slots.isLoadingPrevious)
     }
 
+    /**
+     * A paged list's state, read from the record its pages merged into, which the lens over the container reads: whether
+     * the server has a page after the last one merged, from the merged page info's `hasNextPage` alone.
+     */
+    @Generated fun hasNext(slots: PagedSlots): Boolean = flag((load(slots.pageInfoLink) as? Value.Ref)?.record, slots.hasNextPage)
+    @Generated fun isLoadingNext(slots: PagedSlots): Boolean = flag(record.also { store?.checkThread() }, slots.isLoadingNext)
+
+    /**
+     * Fetches the page after the last one merged, through the operation that owns the lens, with its variables and the
+     * page variable set to the next number; the commit appends it. A no-op while a page is loading or when there is no
+     * next page; a lens made by hand, outside any operation, throws `EnvironmentError.OutsideEnvironment`.
+     */
+    @Generated suspend fun loadNext(slots: PagedSlots, page: String) {
+        if (!hasNext(slots) || isLoadingNext(slots)) return
+        val first = (record.peek(slots.firstPage) as? Value.Int)?.value ?: return
+        val lengths = (record.peek(slots.pageLengths) as? Value.List)?.values ?: return
+        val environment = environment()
+        val query = owner.query ?: throw EnvironmentError.OutsideEnvironment
+        val values = HashMap(owner.queryVariables.values)
+        values[page] = Variable.Int(first + lengths.size)
+        environment.paginate(query, Variables(values), record, slots.isLoadingNext)
+    }
+
     /** Fetches the fragment again with the lens's variables and its record's id; the records update in place. */
     @Generated suspend fun refetch(operation: OperationType<*>, refetch: Refetch) {
         environment().fetch(operation, Variables(refetchVariables(refetch, record)))

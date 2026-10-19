@@ -36,24 +36,34 @@ public final class Owner {
     /// The root the scope reads under, whose operation a heal refetches.
     /// None for a lens made by hand.
     let root: Store.Root?
+    /// The query that owns the scope's lenses, which a paged list's
+    /// `loadNext()` runs again with the next page; none for a lens made by
+    /// hand or read from a mutation's data.
+    nonisolated let query: (any Query.Type)?
+    /// The variables that query was run with: the scope's own at a handle,
+    /// and the handle's under a spread that binds a fragment's arguments
+    /// over them.
+    nonisolated let queryVariables: Variables
 
     nonisolated public convenience init(variables: Variables, store: Store? = nil) {
-        self.init(variables: variables, store: store, keys: store?.keys ?? Keys(), environment: nil, root: nil, reports: true)
+        self.init(variables: variables, store: store, keys: store?.keys ?? Keys(), environment: nil, root: nil, query: nil, queryVariables: variables, reports: true)
     }
 
     /// The scope of a handle's lenses, which fetch through its environment
-    /// and are healed through its root.
-    convenience init(variables: Variables, store: Store, environment: Environment, root: Store.Root? = nil) {
-        self.init(variables: variables, store: store, keys: store.keys, environment: environment, root: root, reports: true)
+    /// and are healed through its root, and page through its query.
+    convenience init(variables: Variables, store: Store, environment: Environment, root: Store.Root? = nil, query: (any Query.Type)? = nil) {
+        self.init(variables: variables, store: store, keys: store.keys, environment: environment, root: root, query: query, queryVariables: variables, reports: true)
     }
 
-    nonisolated private init(variables: Variables, store: Store?, keys: Keys, environment: Environment?, root: Store.Root?, reports: Bool) {
+    nonisolated private init(variables: Variables, store: Store?, keys: Keys, environment: Environment?, root: Store.Root?, query: (any Query.Type)?, queryVariables: Variables, reports: Bool) {
         self.variables = variables
         self.store = store
         self.keys = keys
         hold = keys.hold()
         self.environment = environment
         self.root = root
+        self.query = query
+        self.queryVariables = queryVariables
         self.reports = reports
     }
 
@@ -107,7 +117,7 @@ public final class Owner {
         for entry in bound where entry.site === site { return entry.owner }
         var merged = variables.values
         for (name, value) in values() { merged[name] = value ?? .null }
-        let owner = Owner(variables: Variables(merged), store: store, keys: keys, environment: environment, root: root, reports: reports)
+        let owner = Owner(variables: Variables(merged), store: store, keys: keys, environment: environment, root: root, query: query, queryVariables: queryVariables, reports: reports)
         bound.append((site, owner))
         return owner
     }
@@ -117,7 +127,7 @@ public final class Owner {
     /// non-null link below it reads the store's placeholder of its type.
     var inert: Owner {
         if let inertOwner { return inertOwner }
-        let owner = reports ? Owner(variables: variables, store: store, keys: keys, environment: environment, root: root, reports: false) : self
+        let owner = reports ? Owner(variables: variables, store: store, keys: keys, environment: environment, root: root, query: query, queryVariables: queryVariables, reports: false) : self
         inertOwner = owner
         return owner
     }

@@ -29,6 +29,9 @@ package struct ChangeSet: Sendable {
     /// into this change set; connections are named by their record keys.
     package enum Edit: Sendable {
         case merge(connection: Int32, page: Int32, slots: ConnectionSlots, mode: ConnectionMode)
+        /// A page of a paged list merged into the list's record, by the page
+        /// number the container was fetched with.
+        case mergePage(list: Int32, page: Int32, paged: ResolvedPaged, number: Int)
         /// A streamed item set at its index in the parent's list, which is
         /// extended with nulls to reach the index.
         case place(parent: Int32, slot: Slot, index: Int, item: Int32)
@@ -371,12 +374,11 @@ package enum Ingest {
             case item(storageKey: String, slot: Slot, index: Int)
         }
 
-        /// A connection whose page the object lands on: the page merges
-        /// into the connection again once the object is in.
-        struct Remerge: Sendable {
-            let connectionKey: String
-            let slots: ConnectionSlots
-            let mode: ConnectionMode
+        /// A connection, or a paged list, whose page the object lands on:
+        /// the page merges into it again once the object is in.
+        enum Remerge: Sendable {
+            case connection(key: String, slots: ConnectionSlots, mode: ConnectionMode)
+            case paged(key: String, paged: ResolvedPaged, number: Int)
         }
 
         let data: Data
@@ -478,9 +480,15 @@ package enum Ingest {
                 cursor.changes.edits.append(.place(parent: anchor, slot: slot, index: index, item: object))
                 cursor.changes.streams.append((anchor, slot))
             }
-            if let remerge = part.remerge {
-                let connection = cursor.changes.record(for: remerge.connectionKey, type: remerge.slots.connection, idOffset: -1)
-                cursor.changes.edits.append(.merge(connection: connection, page: anchor, slots: remerge.slots, mode: remerge.mode))
+            switch part.remerge {
+            case .connection(let key, let slots, let mode)?:
+                let connection = cursor.changes.record(for: key, type: slots.connection, idOffset: -1)
+                cursor.changes.edits.append(.merge(connection: connection, page: anchor, slots: slots, mode: mode))
+            case .paged(let key, let paged, let number)?:
+                let list = cursor.changes.record(for: key, type: paged.slots.container, idOffset: -1)
+                cursor.changes.edits.append(.mergePage(list: list, page: anchor, paged: paged, number: number))
+            case nil:
+                break
             }
             cursor.changes.group()
             if !part.errors.isEmpty {
@@ -963,6 +971,17 @@ package enum Ingest {
                             let connectionRecord = changes.record(for: changes.recordKeys[Int(record)] + ":" + connection.storageKey, type: child.type, idOffset: -1)
                             extra[depth].append((connection.storageKey, connection.slot, .ref(connectionRecord)))
                             changes.edits.append(.merge(connection: connectionRecord, page: childRecord, slots: connection.slots, mode: connection.mode))
+                        }
+                        if let paged = fields[matched].paged {
+                            // The container is the server's page; the record the
+                            // paged list merges into hangs off the parent by the
+                            // list's client key, and takes the page when the run
+                            // named one.
+                            let listRecord = changes.record(for: changes.recordKeys[Int(record)] + ":" + paged.storageKey, type: child.type, idOffset: -1)
+                            extra[depth].append((paged.storageKey, paged.slot, .ref(listRecord)))
+                            if let number = paged.page {
+                                changes.edits.append(.mergePage(list: listRecord, page: childRecord, paged: paged, number: number))
+                            }
                         }
                         if let edit = fields[matched].edit { insertion(edit, childRecord) }
                     }
