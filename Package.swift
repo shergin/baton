@@ -149,6 +149,15 @@ let package = Package(
             path: "compiler/src/tests/goldens",
             swiftSettings: [.swiftLanguageMode(.v6), .defaultIsolation(MainActor.self)]
         ),
+        // The goldens of the second schema, AniList's, compiled the same way
+        // in a module of their own, since each schema's shared file declares
+        // its own types and slots.
+        .testTarget(
+            name: "BatonAniListGoldenTests",
+            dependencies: ["Baton"],
+            path: "compiler/src/tests/goldens-anilist",
+            swiftSettings: [.swiftLanguageMode(.v6), .defaultIsolation(MainActor.self)]
+        ),
         .testTarget(
             name: "BatonMacrosTests",
             dependencies: [

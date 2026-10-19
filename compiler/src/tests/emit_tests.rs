@@ -6,7 +6,10 @@
 //! goldens. Those
 //! documents exist to exercise every directive the runtime's tests prove, so
 //! they cover every shape the lowering and the emitter write, and a change to
-//! either shows up here as a diff to review.
+//! either shows up here as a diff to review. A second schema, AniList's, and
+//! the documents of the list recorded from it have goldens of their own,
+//! `goldens-anilist/`, `goldens-anilist-kotlin/` and `plans-anilist/`: a
+//! production schema's shapes, compiled with a configuration of their own.
 //!
 //! After an intended change, `BATON_BLESS=1 cargo test` rewrites the goldens.
 
@@ -92,13 +95,19 @@ fn compile_kotlin_tests() -> (Plan, BTreeMap<String, Option<String>>) {
 /// named from the repository's root, with the package each Kotlin host
 /// declares, by its source.
 fn compile_sources(hosts: &[PathBuf]) -> (Plan, BTreeMap<String, Option<String>>) {
-    let target = repository().join("swift/Tests/BatonTests");
+    compile_target(&repository().join("swift/Tests/BatonTests"), hosts)
+}
+
+/// The plan of a Swift target's sources, compiled with the `baton.json`
+/// beside them, and of `hosts`, named from the repository's root, with the
+/// package each Kotlin host declares, by its source.
+fn compile_target(target: &Path, hosts: &[PathBuf]) -> (Plan, BTreeMap<String, Option<String>>) {
     let config_path = target.join("baton.json");
-    let config = swift_tests_config();
+    let config = Config::load(&config_path).expect("the target has a baton.json");
     let schema_path = config.schema_path(&config_path);
     let schema = std::fs::read_to_string(&schema_path).expect("the test schema is readable");
-    let mut sources: Vec<PathBuf> = std::fs::read_dir(&target)
-        .expect("the test target is readable")
+    let mut sources: Vec<PathBuf> = std::fs::read_dir(target)
+        .expect("the target is readable")
         .filter_map(|entry| entry.ok().map(|entry| entry.path()))
         .filter(|path| {
             path.extension()
@@ -199,6 +208,12 @@ fn plan_swift_tests() -> BTreeMap<String, String> {
         .retain(|fragment| fragment.source != hostile_names::CORPUS);
     plan.operations
         .retain(|operation| operation.source != hostile_names::CORPUS);
+    plan_by_source(&plan)
+}
+
+/// A plan as `batonc plan` prints it, one source's documents to a golden,
+/// each with the enums and inputs its own documents read or pass.
+fn plan_by_source(plan: &Plan) -> BTreeMap<String, String> {
     let mut by_source: BTreeMap<String, Plan> = BTreeMap::new();
     for fragment in &plan.fragments {
         by_source
@@ -458,6 +473,119 @@ fn the_plan_reproduces_its_goldens_byte_for_byte() {
 #[test]
 fn the_report_reproduces_its_golden_byte_for_byte() {
     check_goldens(reports(), &report_swift_tests(), ".report.json");
+}
+
+/// The Swift target of the documents of the list recorded from AniList under
+/// `spec/anilist/`, compiled against the schema AniList answered by
+/// introspection with the `baton.json` beside them.
+const ANILIST_TARGET: &str = "swift/Tests/AniListDocuments";
+
+/// The AniList documents' configuration.
+fn anilist_config() -> Config {
+    Config::load(&repository().join(ANILIST_TARGET).join("baton.json"))
+        .expect("the AniList target has a baton.json")
+}
+
+/// The plan of the AniList documents, named from the repository's root.
+fn compile_anilist() -> Plan {
+    compile_target(&repository().join(ANILIST_TARGET), &[]).0
+}
+
+/// The AniList documents' Swift goldens, which the Swift test target
+/// `BatonAniListGoldenTests` compiles.
+fn anilist_goldens() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("src/tests/goldens-anilist")
+}
+
+/// The AniList documents' Kotlin goldens, which the Gradle module
+/// `kotlin/goldens` compiles beside the first schema's, in a package of
+/// their own.
+fn anilist_kotlin_goldens() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("src/tests/goldens-anilist-kotlin")
+}
+
+/// The AniList documents' plan goldens.
+fn anilist_plans() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("src/tests/plans-anilist")
+}
+
+/// The Swift the AniList documents generate, by output name, the shared
+/// file among them.
+fn emit_anilist_swift() -> BTreeMap<String, String> {
+    let output = swift(&compile_anilist(), &anilist_config()).unwrap_or_else(|duplicates| {
+        let messages: Vec<String> = duplicates.iter().map(ToString::to_string).collect();
+        panic!(
+            "the AniList documents emit names twice:\n{}",
+            messages.join("\n")
+        )
+    });
+    let mut files: BTreeMap<String, String> = output
+        .files
+        .into_iter()
+        .map(|(source, text)| (golden_name(&source, ".baton.swift"), text))
+        .collect();
+    files.insert("Baton.baton.swift".to_string(), output.shared);
+    files
+}
+
+/// The Kotlin the AniList documents generate under the package
+/// `baton.goldens.anilist`, by output name, the shared file among them.
+fn emit_anilist_kotlin() -> BTreeMap<String, String> {
+    let mut config = anilist_config();
+    config.language = crate::config::Language::Kotlin;
+    config.kotlin = Some(crate::config::KotlinConfig {
+        package: Some("baton.goldens.anilist".to_string()),
+    });
+    let output = super::kotlin::kotlin(&compile_anilist(), &config, BTreeMap::new())
+        .unwrap_or_else(|duplicates| {
+            let messages: Vec<String> = duplicates.iter().map(ToString::to_string).collect();
+            panic!(
+                "the AniList documents emit names twice in Kotlin:\n{}",
+                messages.join("\n")
+            )
+        });
+    let mut files: BTreeMap<String, String> = output
+        .files
+        .into_iter()
+        .map(|(source, text)| (golden_name(&source, ".baton.kt"), text))
+        .collect();
+    files.insert("Baton.baton.kt".to_string(), output.shared);
+    files
+}
+
+#[test]
+fn the_swift_emitter_reproduces_the_anilist_goldens_byte_for_byte() {
+    check_goldens(anilist_goldens(), &emit_anilist_swift(), ".baton.swift");
+}
+
+#[test]
+fn the_kotlin_emitter_reproduces_the_anilist_goldens_byte_for_byte() {
+    check_goldens(
+        anilist_kotlin_goldens(),
+        &emit_anilist_kotlin(),
+        ".baton.kt",
+    );
+}
+
+#[test]
+fn the_plan_reproduces_the_anilist_goldens_byte_for_byte() {
+    check_goldens(
+        anilist_plans(),
+        &plan_by_source(&compile_anilist()),
+        ".plan.json",
+    );
+}
+
+#[test]
+fn compiling_the_anilist_documents_twice_emits_the_same_bytes() {
+    assert!(
+        emit_anilist_swift() == emit_anilist_swift(),
+        "two compilations of the AniList documents emitted different Swift"
+    );
+    assert!(
+        emit_anilist_kotlin() == emit_anilist_kotlin(),
+        "two compilations of the AniList documents emitted different Kotlin"
+    );
 }
 
 #[test]

@@ -1,0 +1,5253 @@
+{
+  "fragments": [
+    {
+      "name": "EntryRow_mediaList",
+      "source": "swift/Tests/AniListDocuments/AniListDocuments.swift",
+      "document": 0,
+      "type_condition": "MediaList",
+      "type_is_abstract": false,
+      "possible_types": [
+        "MediaList"
+      ],
+      "arguments": [],
+      "refetch": null,
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "reader": [
+        {
+          "kind": "scalar",
+          "name": "id",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": true
+          },
+          "non_null": true,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "id",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "status",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "MediaListStatus",
+            "kind": "enum",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "status",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "progress",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "progress",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "progressVolumes",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "progressVolumes",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "score",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Float",
+            "kind": "float",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "score",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "repeat",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "repeat",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "priority",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "priority",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "notes",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "notes",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "private",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Boolean",
+            "kind": "boolean",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "private",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "hiddenFromStatusLists",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Boolean",
+            "kind": "boolean",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "hiddenFromStatusLists",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "customLists",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Json",
+            "kind": "custom_scalar",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "customLists",
+            "arguments": [
+              {
+                "name": "asArray",
+                "value": {
+                  "kind": "constant",
+                  "value": {
+                    "kind": "bool",
+                    "value": true
+                  }
+                }
+              }
+            ]
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "linked",
+          "name": "startedAt",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "FuzzyDate",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {},
+          "is_abstract": false,
+          "possible_types": [
+            "FuzzyDate"
+          ],
+          "storage_key": {
+            "name": "startedAt",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "year",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "year",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "month",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "month",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "day",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "day",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        },
+        {
+          "kind": "linked",
+          "name": "completedAt",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "FuzzyDate",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {},
+          "is_abstract": false,
+          "possible_types": [
+            "FuzzyDate"
+          ],
+          "storage_key": {
+            "name": "completedAt",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "year",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "year",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "month",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "month",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "day",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "day",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        },
+        {
+          "kind": "scalar",
+          "name": "updatedAt",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "updatedAt",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "linked",
+          "name": "media",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Media",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "Media": [
+              "id"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "Media"
+          ],
+          "storage_key": {
+            "name": "media",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "spread",
+              "fragment": "MediaCard_media",
+              "type_condition": "Media",
+              "arguments": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "MediaCard_media",
+      "source": "swift/Tests/AniListDocuments/AniListDocuments.swift",
+      "document": 1,
+      "type_condition": "Media",
+      "type_is_abstract": false,
+      "possible_types": [
+        "Media"
+      ],
+      "arguments": [],
+      "refetch": null,
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "reader": [
+        {
+          "kind": "scalar",
+          "name": "id",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": true
+          },
+          "non_null": true,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "id",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "idMal",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "idMal",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "type",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "MediaType",
+            "kind": "enum",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "type",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "format",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "MediaFormat",
+            "kind": "enum",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "format",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "status",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "MediaStatus",
+            "kind": "enum",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "status",
+            "arguments": [
+              {
+                "name": "version",
+                "value": {
+                  "kind": "constant",
+                  "value": {
+                    "kind": "int",
+                    "value": 2
+                  }
+                }
+              }
+            ]
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "episodes",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "episodes",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "chapters",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "chapters",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "volumes",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "volumes",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "duration",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "duration",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "season",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "MediaSeason",
+            "kind": "enum",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "season",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "seasonYear",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "seasonYear",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "countryOfOrigin",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "CountryCode",
+            "kind": "custom_scalar",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "countryOfOrigin",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "isAdult",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Boolean",
+            "kind": "boolean",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "isAdult",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "scalar",
+          "name": "siteUrl",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "storage_key": {
+            "name": "siteUrl",
+            "arguments": []
+          },
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false
+        },
+        {
+          "kind": "linked",
+          "name": "title",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "MediaTitle",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {},
+          "is_abstract": false,
+          "possible_types": [
+            "MediaTitle"
+          ],
+          "storage_key": {
+            "name": "title",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "romaji",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "romaji",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "english",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "english",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "native",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "native",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "userPreferred",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "userPreferred",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        },
+        {
+          "kind": "linked",
+          "name": "coverImage",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "MediaCoverImage",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {},
+          "is_abstract": false,
+          "possible_types": [
+            "MediaCoverImage"
+          ],
+          "storage_key": {
+            "name": "coverImage",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "large",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "large",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "color",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "color",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        },
+        {
+          "kind": "linked",
+          "name": "nextAiringEpisode",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "AiringSchedule",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "AiringSchedule": [
+              "id"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "AiringSchedule"
+          ],
+          "storage_key": {
+            "name": "nextAiringEpisode",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "episode",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "episode",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "airingAt",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "airingAt",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "name": "EntryQuery",
+      "source": "swift/Tests/AniListDocuments/AniListDocuments.swift",
+      "document": 3,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [
+        {
+          "name": "id",
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": true
+          },
+          "default_value": null
+        }
+      ],
+      "text": "query EntryQuery($id:Int!){MediaList(id:$id){id,...EntryRow_mediaList}}fragment EntryRow_mediaList on MediaList{id,status,progress,progressVolumes,score,repeat,priority,notes,private,hiddenFromStatusLists,customLists(asArray:true),startedAt{year,month,day},completedAt{year,month,day},updatedAt,media{id,...MediaCard_media}}fragment MediaCard_media on Media{id,idMal,type,format,status(version:2),episodes,chapters,volumes,duration,season,seasonYear,countryOfOrigin,isAdult,siteUrl,title{romaji,english,native,userPreferred},coverImage{large,color},nextAiringEpisode{id,episode,airingAt}}",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_incremental": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "MediaList",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "MediaList",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "MediaList": [
+              "id"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "MediaList"
+          ],
+          "storage_key": {
+            "name": "MediaList",
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": "MediaList",
+            "possible_types": [
+              "MediaList"
+            ],
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "spread",
+              "fragment": "EntryRow_mediaList",
+              "type_condition": "MediaList",
+              "arguments": []
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "MediaList",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "MediaList",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "MediaList": [
+              "id"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "MediaList"
+          ],
+          "storage_key": {
+            "name": "MediaList",
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "lookup": {
+            "type_name": "MediaList",
+            "possible_types": [
+              "MediaList"
+            ],
+            "arguments": [
+              {
+                "name": "id",
+                "value": {
+                  "kind": "variable",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "status",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "MediaListStatus",
+                "kind": "enum",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "status",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "progress",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "progress",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "progressVolumes",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "progressVolumes",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "score",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Float",
+                "kind": "float",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "score",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "repeat",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "repeat",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "priority",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "priority",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "notes",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "notes",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "private",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Boolean",
+                "kind": "boolean",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "private",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "hiddenFromStatusLists",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Boolean",
+                "kind": "boolean",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "hiddenFromStatusLists",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "customLists",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Json",
+                "kind": "custom_scalar",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "customLists",
+                "arguments": [
+                  {
+                    "name": "asArray",
+                    "value": {
+                      "kind": "constant",
+                      "value": {
+                        "kind": "bool",
+                        "value": true
+                      }
+                    }
+                  }
+                ]
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "linked",
+              "name": "startedAt",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "FuzzyDate",
+                "kind": "object",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "keys": {},
+              "is_abstract": false,
+              "possible_types": [
+                "FuzzyDate"
+              ],
+              "storage_key": {
+                "name": "startedAt",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "year",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "year",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "month",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "month",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "day",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "day",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "linked",
+              "name": "completedAt",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "FuzzyDate",
+                "kind": "object",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "keys": {},
+              "is_abstract": false,
+              "possible_types": [
+                "FuzzyDate"
+              ],
+              "storage_key": {
+                "name": "completedAt",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "year",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "year",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "month",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "month",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "day",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "day",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "scalar",
+              "name": "updatedAt",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "updatedAt",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "linked",
+              "name": "media",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Media",
+                "kind": "object",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "keys": {
+                "Media": [
+                  "id"
+                ]
+              },
+              "is_abstract": false,
+              "possible_types": [
+                "Media"
+              ],
+              "storage_key": {
+                "name": "media",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "idMal",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "idMal",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "type",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "MediaType",
+                    "kind": "enum",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "type",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "format",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "MediaFormat",
+                    "kind": "enum",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "format",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "status",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "MediaStatus",
+                    "kind": "enum",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "status",
+                    "arguments": [
+                      {
+                        "name": "version",
+                        "value": {
+                          "kind": "constant",
+                          "value": {
+                            "kind": "int",
+                            "value": 2
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "episodes",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "episodes",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "chapters",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "chapters",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "volumes",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "volumes",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "duration",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "duration",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "season",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "MediaSeason",
+                    "kind": "enum",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "season",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "seasonYear",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "seasonYear",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "countryOfOrigin",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "CountryCode",
+                    "kind": "custom_scalar",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "countryOfOrigin",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "isAdult",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Boolean",
+                    "kind": "boolean",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "isAdult",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "siteUrl",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "siteUrl",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "linked",
+                  "name": "title",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "MediaTitle",
+                    "kind": "object",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "keys": {},
+                  "is_abstract": false,
+                  "possible_types": [
+                    "MediaTitle"
+                  ],
+                  "storage_key": {
+                    "name": "title",
+                    "arguments": []
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "romaji",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "romaji",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "english",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "english",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "native",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "native",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "userPreferred",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "userPreferred",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "linked",
+                  "name": "coverImage",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "MediaCoverImage",
+                    "kind": "object",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "keys": {},
+                  "is_abstract": false,
+                  "possible_types": [
+                    "MediaCoverImage"
+                  ],
+                  "storage_key": {
+                    "name": "coverImage",
+                    "arguments": []
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "large",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "large",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "color",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "color",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "linked",
+                  "name": "nextAiringEpisode",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "AiringSchedule",
+                    "kind": "object",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "keys": {
+                    "AiringSchedule": [
+                      "id"
+                    ]
+                  },
+                  "is_abstract": false,
+                  "possible_types": [
+                    "AiringSchedule"
+                  ],
+                  "storage_key": {
+                    "name": "nextAiringEpisode",
+                    "arguments": []
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "id",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Int",
+                        "kind": "int",
+                        "non_null": true
+                      },
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "id",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "episode",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Int",
+                        "kind": "int",
+                        "non_null": true
+                      },
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "episode",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "airingAt",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Int",
+                        "kind": "int",
+                        "non_null": true
+                      },
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "airingAt",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ListQuery",
+      "source": "swift/Tests/AniListDocuments/AniListDocuments.swift",
+      "document": 2,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [
+        {
+          "name": "userId",
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": true
+          },
+          "default_value": null
+        },
+        {
+          "name": "mediaType",
+          "type": {
+            "shape": "named",
+            "name": "MediaType",
+            "kind": "enum",
+            "non_null": true
+          },
+          "default_value": null
+        },
+        {
+          "name": "chunk",
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": true
+          },
+          "default_value": null
+        }
+      ],
+      "text": "query ListQuery($userId:Int!,$mediaType:MediaType!,$chunk:Int!){MediaListCollection(userId:$userId,type:$mediaType,chunk:$chunk,perChunk:500,forceSingleCompletedList:true){hasNextChunk,lists{name,isCustomList,status,entries{id,...EntryRow_mediaList}}}}fragment EntryRow_mediaList on MediaList{id,status,progress,progressVolumes,score,repeat,priority,notes,private,hiddenFromStatusLists,customLists(asArray:true),startedAt{year,month,day},completedAt{year,month,day},updatedAt,media{id,...MediaCard_media}}fragment MediaCard_media on Media{id,idMal,type,format,status(version:2),episodes,chapters,volumes,duration,season,seasonYear,countryOfOrigin,isAdult,siteUrl,title{romaji,english,native,userPreferred},coverImage{large,color},nextAiringEpisode{id,episode,airingAt}}",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_incremental": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "MediaListCollection",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "MediaListCollection",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {},
+          "is_abstract": false,
+          "possible_types": [
+            "MediaListCollection"
+          ],
+          "storage_key": {
+            "name": "MediaListCollection",
+            "arguments": [
+              {
+                "name": "chunk",
+                "value": {
+                  "kind": "variable",
+                  "value": "chunk"
+                }
+              },
+              {
+                "name": "forceSingleCompletedList",
+                "value": {
+                  "kind": "constant",
+                  "value": {
+                    "kind": "bool",
+                    "value": true
+                  }
+                }
+              },
+              {
+                "name": "perChunk",
+                "value": {
+                  "kind": "constant",
+                  "value": {
+                    "kind": "int",
+                    "value": 500
+                  }
+                }
+              },
+              {
+                "name": "type",
+                "value": {
+                  "kind": "variable",
+                  "value": "mediaType"
+                }
+              },
+              {
+                "name": "userId",
+                "value": {
+                  "kind": "variable",
+                  "value": "userId"
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "hasNextChunk",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Boolean",
+                "kind": "boolean",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "hasNextChunk",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "linked",
+              "name": "lists",
+              "alias": null,
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "MediaListGroup",
+                  "kind": "object",
+                  "non_null": false
+                },
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "keys": {},
+              "is_abstract": false,
+              "possible_types": [
+                "MediaListGroup"
+              ],
+              "storage_key": {
+                "name": "lists",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "name",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "name",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "isCustomList",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Boolean",
+                    "kind": "boolean",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "isCustomList",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "status",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "MediaListStatus",
+                    "kind": "enum",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "status",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "linked",
+                  "name": "entries",
+                  "alias": null,
+                  "type": {
+                    "shape": "list",
+                    "element": {
+                      "shape": "named",
+                      "name": "MediaList",
+                      "kind": "object",
+                      "non_null": false
+                    },
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "keys": {
+                    "MediaList": [
+                      "id"
+                    ]
+                  },
+                  "is_abstract": false,
+                  "possible_types": [
+                    "MediaList"
+                  ],
+                  "storage_key": {
+                    "name": "entries",
+                    "arguments": []
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "id",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Int",
+                        "kind": "int",
+                        "non_null": true
+                      },
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "id",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "spread",
+                      "fragment": "EntryRow_mediaList",
+                      "type_condition": "MediaList",
+                      "arguments": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "MediaListCollection",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "MediaListCollection",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {},
+          "is_abstract": false,
+          "possible_types": [
+            "MediaListCollection"
+          ],
+          "storage_key": {
+            "name": "MediaListCollection",
+            "arguments": [
+              {
+                "name": "chunk",
+                "value": {
+                  "kind": "variable",
+                  "value": "chunk"
+                }
+              },
+              {
+                "name": "forceSingleCompletedList",
+                "value": {
+                  "kind": "constant",
+                  "value": {
+                    "kind": "bool",
+                    "value": true
+                  }
+                }
+              },
+              {
+                "name": "perChunk",
+                "value": {
+                  "kind": "constant",
+                  "value": {
+                    "kind": "int",
+                    "value": 500
+                  }
+                }
+              },
+              {
+                "name": "type",
+                "value": {
+                  "kind": "variable",
+                  "value": "mediaType"
+                }
+              },
+              {
+                "name": "userId",
+                "value": {
+                  "kind": "variable",
+                  "value": "userId"
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "hasNextChunk",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Boolean",
+                "kind": "boolean",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "hasNextChunk",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "linked",
+              "name": "lists",
+              "alias": null,
+              "type": {
+                "shape": "list",
+                "element": {
+                  "shape": "named",
+                  "name": "MediaListGroup",
+                  "kind": "object",
+                  "non_null": false
+                },
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "keys": {},
+              "is_abstract": false,
+              "possible_types": [
+                "MediaListGroup"
+              ],
+              "storage_key": {
+                "name": "lists",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "name",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "name",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "isCustomList",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Boolean",
+                    "kind": "boolean",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "isCustomList",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "status",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "MediaListStatus",
+                    "kind": "enum",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "status",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "linked",
+                  "name": "entries",
+                  "alias": null,
+                  "type": {
+                    "shape": "list",
+                    "element": {
+                      "shape": "named",
+                      "name": "MediaList",
+                      "kind": "object",
+                      "non_null": false
+                    },
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "keys": {
+                    "MediaList": [
+                      "id"
+                    ]
+                  },
+                  "is_abstract": false,
+                  "possible_types": [
+                    "MediaList"
+                  ],
+                  "storage_key": {
+                    "name": "entries",
+                    "arguments": []
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "id",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Int",
+                        "kind": "int",
+                        "non_null": true
+                      },
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "id",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "status",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "MediaListStatus",
+                        "kind": "enum",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "status",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "progress",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Int",
+                        "kind": "int",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "progress",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "progressVolumes",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Int",
+                        "kind": "int",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "progressVolumes",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "score",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Float",
+                        "kind": "float",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "score",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "repeat",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Int",
+                        "kind": "int",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "repeat",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "priority",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Int",
+                        "kind": "int",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "priority",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "notes",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "notes",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "private",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Boolean",
+                        "kind": "boolean",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "private",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "hiddenFromStatusLists",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Boolean",
+                        "kind": "boolean",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "hiddenFromStatusLists",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "customLists",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Json",
+                        "kind": "custom_scalar",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "customLists",
+                        "arguments": [
+                          {
+                            "name": "asArray",
+                            "value": {
+                              "kind": "constant",
+                              "value": {
+                                "kind": "bool",
+                                "value": true
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "linked",
+                      "name": "startedAt",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "FuzzyDate",
+                        "kind": "object",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "keys": {},
+                      "is_abstract": false,
+                      "possible_types": [
+                        "FuzzyDate"
+                      ],
+                      "storage_key": {
+                        "name": "startedAt",
+                        "arguments": []
+                      },
+                      "lookup": null,
+                      "connection": null,
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false,
+                      "bubbles": false,
+                      "selections": [
+                        {
+                          "kind": "scalar",
+                          "name": "year",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "Int",
+                            "kind": "int",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "year",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "month",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "Int",
+                            "kind": "int",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "month",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "day",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "Int",
+                            "kind": "int",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "day",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "linked",
+                      "name": "completedAt",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "FuzzyDate",
+                        "kind": "object",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "keys": {},
+                      "is_abstract": false,
+                      "possible_types": [
+                        "FuzzyDate"
+                      ],
+                      "storage_key": {
+                        "name": "completedAt",
+                        "arguments": []
+                      },
+                      "lookup": null,
+                      "connection": null,
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false,
+                      "bubbles": false,
+                      "selections": [
+                        {
+                          "kind": "scalar",
+                          "name": "year",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "Int",
+                            "kind": "int",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "year",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "month",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "Int",
+                            "kind": "int",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "month",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "day",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "Int",
+                            "kind": "int",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "day",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "updatedAt",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Int",
+                        "kind": "int",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "updatedAt",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "linked",
+                      "name": "media",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Media",
+                        "kind": "object",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "keys": {
+                        "Media": [
+                          "id"
+                        ]
+                      },
+                      "is_abstract": false,
+                      "possible_types": [
+                        "Media"
+                      ],
+                      "storage_key": {
+                        "name": "media",
+                        "arguments": []
+                      },
+                      "lookup": null,
+                      "connection": null,
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false,
+                      "bubbles": false,
+                      "selections": [
+                        {
+                          "kind": "scalar",
+                          "name": "id",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "Int",
+                            "kind": "int",
+                            "non_null": true
+                          },
+                          "non_null": true,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "id",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "idMal",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "Int",
+                            "kind": "int",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "idMal",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "type",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "MediaType",
+                            "kind": "enum",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "type",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "format",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "MediaFormat",
+                            "kind": "enum",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "format",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "status",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "MediaStatus",
+                            "kind": "enum",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "status",
+                            "arguments": [
+                              {
+                                "name": "version",
+                                "value": {
+                                  "kind": "constant",
+                                  "value": {
+                                    "kind": "int",
+                                    "value": 2
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "episodes",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "Int",
+                            "kind": "int",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "episodes",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "chapters",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "Int",
+                            "kind": "int",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "chapters",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "volumes",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "Int",
+                            "kind": "int",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "volumes",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "duration",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "Int",
+                            "kind": "int",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "duration",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "season",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "MediaSeason",
+                            "kind": "enum",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "season",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "seasonYear",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "Int",
+                            "kind": "int",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "seasonYear",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "countryOfOrigin",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "CountryCode",
+                            "kind": "custom_scalar",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "countryOfOrigin",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "isAdult",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "Boolean",
+                            "kind": "boolean",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "isAdult",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "scalar",
+                          "name": "siteUrl",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "String",
+                            "kind": "string",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "storage_key": {
+                            "name": "siteUrl",
+                            "arguments": []
+                          },
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false
+                        },
+                        {
+                          "kind": "linked",
+                          "name": "title",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "MediaTitle",
+                            "kind": "object",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "keys": {},
+                          "is_abstract": false,
+                          "possible_types": [
+                            "MediaTitle"
+                          ],
+                          "storage_key": {
+                            "name": "title",
+                            "arguments": []
+                          },
+                          "lookup": null,
+                          "connection": null,
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false,
+                          "bubbles": false,
+                          "selections": [
+                            {
+                              "kind": "scalar",
+                              "name": "romaji",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "String",
+                                "kind": "string",
+                                "non_null": false
+                              },
+                              "non_null": false,
+                              "semantic_non_null": false,
+                              "storage_key": {
+                                "name": "romaji",
+                                "arguments": []
+                              },
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false
+                            },
+                            {
+                              "kind": "scalar",
+                              "name": "english",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "String",
+                                "kind": "string",
+                                "non_null": false
+                              },
+                              "non_null": false,
+                              "semantic_non_null": false,
+                              "storage_key": {
+                                "name": "english",
+                                "arguments": []
+                              },
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false
+                            },
+                            {
+                              "kind": "scalar",
+                              "name": "native",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "String",
+                                "kind": "string",
+                                "non_null": false
+                              },
+                              "non_null": false,
+                              "semantic_non_null": false,
+                              "storage_key": {
+                                "name": "native",
+                                "arguments": []
+                              },
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false
+                            },
+                            {
+                              "kind": "scalar",
+                              "name": "userPreferred",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "String",
+                                "kind": "string",
+                                "non_null": false
+                              },
+                              "non_null": false,
+                              "semantic_non_null": false,
+                              "storage_key": {
+                                "name": "userPreferred",
+                                "arguments": []
+                              },
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "linked",
+                          "name": "coverImage",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "MediaCoverImage",
+                            "kind": "object",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "keys": {},
+                          "is_abstract": false,
+                          "possible_types": [
+                            "MediaCoverImage"
+                          ],
+                          "storage_key": {
+                            "name": "coverImage",
+                            "arguments": []
+                          },
+                          "lookup": null,
+                          "connection": null,
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false,
+                          "bubbles": false,
+                          "selections": [
+                            {
+                              "kind": "scalar",
+                              "name": "large",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "String",
+                                "kind": "string",
+                                "non_null": false
+                              },
+                              "non_null": false,
+                              "semantic_non_null": false,
+                              "storage_key": {
+                                "name": "large",
+                                "arguments": []
+                              },
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false
+                            },
+                            {
+                              "kind": "scalar",
+                              "name": "color",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "String",
+                                "kind": "string",
+                                "non_null": false
+                              },
+                              "non_null": false,
+                              "semantic_non_null": false,
+                              "storage_key": {
+                                "name": "color",
+                                "arguments": []
+                              },
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "linked",
+                          "name": "nextAiringEpisode",
+                          "alias": null,
+                          "type": {
+                            "shape": "named",
+                            "name": "AiringSchedule",
+                            "kind": "object",
+                            "non_null": false
+                          },
+                          "non_null": false,
+                          "semantic_non_null": false,
+                          "keys": {
+                            "AiringSchedule": [
+                              "id"
+                            ]
+                          },
+                          "is_abstract": false,
+                          "possible_types": [
+                            "AiringSchedule"
+                          ],
+                          "storage_key": {
+                            "name": "nextAiringEpisode",
+                            "arguments": []
+                          },
+                          "lookup": null,
+                          "connection": null,
+                          "edit": null,
+                          "required": null,
+                          "catch": null,
+                          "caught": false,
+                          "bubbles": false,
+                          "selections": [
+                            {
+                              "kind": "scalar",
+                              "name": "id",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "Int",
+                                "kind": "int",
+                                "non_null": true
+                              },
+                              "non_null": true,
+                              "semantic_non_null": false,
+                              "storage_key": {
+                                "name": "id",
+                                "arguments": []
+                              },
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false
+                            },
+                            {
+                              "kind": "scalar",
+                              "name": "episode",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "Int",
+                                "kind": "int",
+                                "non_null": true
+                              },
+                              "non_null": true,
+                              "semantic_non_null": false,
+                              "storage_key": {
+                                "name": "episode",
+                                "arguments": []
+                              },
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false
+                            },
+                            {
+                              "kind": "scalar",
+                              "name": "airingAt",
+                              "alias": null,
+                              "type": {
+                                "shape": "named",
+                                "name": "Int",
+                                "kind": "int",
+                                "non_null": true
+                              },
+                              "non_null": true,
+                              "semantic_non_null": false,
+                              "storage_key": {
+                                "name": "airingAt",
+                                "arguments": []
+                              },
+                              "edit": null,
+                              "required": null,
+                              "catch": null,
+                              "caught": false
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SaveEntryMutation",
+      "source": "swift/Tests/AniListDocuments/AniListDocuments.swift",
+      "document": 4,
+      "kind": "mutation",
+      "root_type": "Mutation",
+      "variables": [
+        {
+          "name": "id",
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": false
+          },
+          "default_value": null
+        },
+        {
+          "name": "progress",
+          "type": {
+            "shape": "named",
+            "name": "Int",
+            "kind": "int",
+            "non_null": false
+          },
+          "default_value": null
+        }
+      ],
+      "text": "mutation SaveEntryMutation($id:Int,$progress:Int){SaveMediaListEntry(id:$id,progress:$progress){id,...EntryRow_mediaList}}fragment EntryRow_mediaList on MediaList{id,status,progress,progressVolumes,score,repeat,priority,notes,private,hiddenFromStatusLists,customLists(asArray:true),startedAt{year,month,day},completedAt{year,month,day},updatedAt,media{id,...MediaCard_media}}fragment MediaCard_media on Media{id,idMal,type,format,status(version:2),episodes,chapters,volumes,duration,season,seasonYear,countryOfOrigin,isAdult,siteUrl,title{romaji,english,native,userPreferred},coverImage{large,color},nextAiringEpisode{id,episode,airingAt}}",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_incremental": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "SaveMediaListEntry",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "MediaList",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "MediaList": [
+              "id"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "MediaList"
+          ],
+          "storage_key": {
+            "name": "SaveMediaListEntry",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "spread",
+              "fragment": "EntryRow_mediaList",
+              "type_condition": "MediaList",
+              "arguments": []
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "SaveMediaListEntry",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "MediaList",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "MediaList": [
+              "id"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "MediaList"
+          ],
+          "storage_key": {
+            "name": "SaveMediaListEntry",
+            "arguments": []
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": true
+              },
+              "non_null": true,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "status",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "MediaListStatus",
+                "kind": "enum",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "status",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "progress",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "progress",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "progressVolumes",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "progressVolumes",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "score",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Float",
+                "kind": "float",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "score",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "repeat",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "repeat",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "priority",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "priority",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "notes",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "notes",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "private",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Boolean",
+                "kind": "boolean",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "private",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "hiddenFromStatusLists",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Boolean",
+                "kind": "boolean",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "hiddenFromStatusLists",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "customLists",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Json",
+                "kind": "custom_scalar",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "customLists",
+                "arguments": [
+                  {
+                    "name": "asArray",
+                    "value": {
+                      "kind": "constant",
+                      "value": {
+                        "kind": "bool",
+                        "value": true
+                      }
+                    }
+                  }
+                ]
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "linked",
+              "name": "startedAt",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "FuzzyDate",
+                "kind": "object",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "keys": {},
+              "is_abstract": false,
+              "possible_types": [
+                "FuzzyDate"
+              ],
+              "storage_key": {
+                "name": "startedAt",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "year",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "year",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "month",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "month",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "day",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "day",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "linked",
+              "name": "completedAt",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "FuzzyDate",
+                "kind": "object",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "keys": {},
+              "is_abstract": false,
+              "possible_types": [
+                "FuzzyDate"
+              ],
+              "storage_key": {
+                "name": "completedAt",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "year",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "year",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "month",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "month",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "day",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "day",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                }
+              ]
+            },
+            {
+              "kind": "scalar",
+              "name": "updatedAt",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Int",
+                "kind": "int",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "updatedAt",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "linked",
+              "name": "media",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "Media",
+                "kind": "object",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "keys": {
+                "Media": [
+                  "id"
+                ]
+              },
+              "is_abstract": false,
+              "possible_types": [
+                "Media"
+              ],
+              "storage_key": {
+                "name": "media",
+                "arguments": []
+              },
+              "lookup": null,
+              "connection": null,
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false,
+              "bubbles": false,
+              "selections": [
+                {
+                  "kind": "scalar",
+                  "name": "id",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": true
+                  },
+                  "non_null": true,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "id",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "idMal",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "idMal",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "type",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "MediaType",
+                    "kind": "enum",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "type",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "format",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "MediaFormat",
+                    "kind": "enum",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "format",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "status",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "MediaStatus",
+                    "kind": "enum",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "status",
+                    "arguments": [
+                      {
+                        "name": "version",
+                        "value": {
+                          "kind": "constant",
+                          "value": {
+                            "kind": "int",
+                            "value": 2
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "episodes",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "episodes",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "chapters",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "chapters",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "volumes",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "volumes",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "duration",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "duration",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "season",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "MediaSeason",
+                    "kind": "enum",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "season",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "seasonYear",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Int",
+                    "kind": "int",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "seasonYear",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "countryOfOrigin",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "CountryCode",
+                    "kind": "custom_scalar",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "countryOfOrigin",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "isAdult",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "Boolean",
+                    "kind": "boolean",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "isAdult",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "scalar",
+                  "name": "siteUrl",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "String",
+                    "kind": "string",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "storage_key": {
+                    "name": "siteUrl",
+                    "arguments": []
+                  },
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false
+                },
+                {
+                  "kind": "linked",
+                  "name": "title",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "MediaTitle",
+                    "kind": "object",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "keys": {},
+                  "is_abstract": false,
+                  "possible_types": [
+                    "MediaTitle"
+                  ],
+                  "storage_key": {
+                    "name": "title",
+                    "arguments": []
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "romaji",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "romaji",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "english",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "english",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "native",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "native",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "userPreferred",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "userPreferred",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "linked",
+                  "name": "coverImage",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "MediaCoverImage",
+                    "kind": "object",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "keys": {},
+                  "is_abstract": false,
+                  "possible_types": [
+                    "MediaCoverImage"
+                  ],
+                  "storage_key": {
+                    "name": "coverImage",
+                    "arguments": []
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "large",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "large",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "color",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "String",
+                        "kind": "string",
+                        "non_null": false
+                      },
+                      "non_null": false,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "color",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "linked",
+                  "name": "nextAiringEpisode",
+                  "alias": null,
+                  "type": {
+                    "shape": "named",
+                    "name": "AiringSchedule",
+                    "kind": "object",
+                    "non_null": false
+                  },
+                  "non_null": false,
+                  "semantic_non_null": false,
+                  "keys": {
+                    "AiringSchedule": [
+                      "id"
+                    ]
+                  },
+                  "is_abstract": false,
+                  "possible_types": [
+                    "AiringSchedule"
+                  ],
+                  "storage_key": {
+                    "name": "nextAiringEpisode",
+                    "arguments": []
+                  },
+                  "lookup": null,
+                  "connection": null,
+                  "edit": null,
+                  "required": null,
+                  "catch": null,
+                  "caught": false,
+                  "bubbles": false,
+                  "selections": [
+                    {
+                      "kind": "scalar",
+                      "name": "id",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Int",
+                        "kind": "int",
+                        "non_null": true
+                      },
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "id",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "episode",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Int",
+                        "kind": "int",
+                        "non_null": true
+                      },
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "episode",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    },
+                    {
+                      "kind": "scalar",
+                      "name": "airingAt",
+                      "alias": null,
+                      "type": {
+                        "shape": "named",
+                        "name": "Int",
+                        "kind": "int",
+                        "non_null": true
+                      },
+                      "non_null": true,
+                      "semantic_non_null": false,
+                      "storage_key": {
+                        "name": "airingAt",
+                        "arguments": []
+                      },
+                      "edit": null,
+                      "required": null,
+                      "catch": null,
+                      "caught": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "enums": {
+    "MediaFormat": [
+      "TV",
+      "TV_SHORT",
+      "MOVIE",
+      "SPECIAL",
+      "OVA",
+      "ONA",
+      "MUSIC",
+      "MANGA",
+      "NOVEL",
+      "ONE_SHOT"
+    ],
+    "MediaListStatus": [
+      "CURRENT",
+      "PLANNING",
+      "COMPLETED",
+      "DROPPED",
+      "PAUSED",
+      "REPEATING"
+    ],
+    "MediaSeason": [
+      "WINTER",
+      "SPRING",
+      "SUMMER",
+      "FALL"
+    ],
+    "MediaStatus": [
+      "FINISHED",
+      "RELEASING",
+      "NOT_YET_RELEASED",
+      "CANCELLED",
+      "HIATUS"
+    ],
+    "MediaType": [
+      "ANIME",
+      "MANGA"
+    ]
+  }
+}
