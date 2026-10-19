@@ -388,6 +388,16 @@ graphql-sse but carry a `JSON` scalar, so they update no record. A process
 holds one schema family: two environments may share it, and two schemas
 in one process must not give two types one name.
 
+A public API's own habits are compositions too, each with a recipe in
+both languages: a rate limit and an outage
+([a budgeted transport](docs/recipes/budgeted-transport.md)), a JSON
+scalar read as a type of the app's
+([a `Json` scalar](docs/recipes/json-scalar.md)), a field answered
+differently by the path that reached it
+([fields a server nulls by path](docs/recipes/fields-by-path.md)), and a
+whole list in one request
+([an unpaged collection](docs/recipes/unpaged-collection.md)).
+
 Baton strives to support each backend's own features wherever they fit the
 design and make sense for a client. If yours does something Baton does not
 speak yet, open an issue.

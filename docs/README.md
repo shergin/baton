@@ -34,6 +34,8 @@ What to read when.
   ships. [integrating Baton with a coding agent](recipes/agents.md) is the
   page an agent reads first. [the exchange](recipes/exchange.md) is a
   challenge, a retry and a deadline over the transport's one verb.
+  [a budgeted transport](recipes/budgeted-transport.md) is a queue, a
+  meter and an outage over the same verb.
   [`batonc`](recipes/batonc.md) is the compiler's command line for a build
   outside SwiftPM. [Bazel](recipes/bazel.md) is the compiler as a toolchain
   and one rule over its command. [Gradle](recipes/gradle.md) is the Kotlin
@@ -49,7 +51,12 @@ What to read when.
   [derived state outside views](recipes/derived-state.md) is a model over
   `Observations` or `snapshotFlow`.
   [discover once, refresh through `nodes(ids:)`](recipes/discover-once.md)
-  is the pattern for external keys. The rest arrive with the releases that
-  make them true.
+  is the pattern for external keys.
+  [an unpaged collection](recipes/unpaged-collection.md) is a whole list in
+  one request, grouped on the client and carried by the image.
+  [fields a server nulls by path](recipes/fields-by-path.md) is what a list
+  fragment selects. [a `Json` scalar](recipes/json-scalar.md) is a value
+  with no type of its own, read as a type of the app's. The rest arrive
+  with the releases that make them true.
 - **What did a decision open up?** [openings/](openings/) is written as the
   project ships. There are none yet.

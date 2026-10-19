@@ -3,6 +3,31 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
+## Unreleased
+
+- Four recipes for a public API with habits of its own, asked for on
+  [#52](https://github.com/shergin/baton/issues/52), each in Swift and
+  Kotlin and compiled against AniList's schema. None is a new concept.
+  `docs/recipes/budgeted-transport.md` is a wrapper around the one verb
+  that holds one request in flight, sends a write before a refresh before
+  a browse page, meters the sends under the server's limit, pauses every
+  request for the whole minute after a 429, and turns AniList's outage 403
+  into an error of the app's, which a handle's fetch carries beside the
+  data while the view shows a calm line. The built-in transports do not
+  keep a refused response's headers, so `Retry-After` is not read.
+  `docs/recipes/json-scalar.md` reads `customLists(asArray: true)`, an
+  array of objects, as a mapped type, notes that `customScalarTypes` maps
+  a scalar and not a field, and keeps a map a type of the app's, never a
+  dictionary on the read path. `docs/recipes/fields-by-path.md` is what a
+  list fragment selects when a server answers a field differently by the
+  path that reached it, where path-dependent and viewer-dependent fields
+  go, and a probe that tells the two apart. `docs/recipes/unpaged-collection.md`
+  is `MediaListCollection` as one operation with a long
+  `@cacheExpiration`, grouped on the client from each entry's own fields so
+  a mutation's response moves the row with no updater, and carried by the
+  image to the next launch. The README, the docs index and the site link
+  them.
+
 ## 0.17.0 (Kulich) — 2026-10-18
 
 - `@deletes(type:id:)`, the second directive that is not Relay's: a mutation
