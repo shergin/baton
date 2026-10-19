@@ -1,0 +1,6 @@
+query TestCapitalizedRoots($id: ID!) {
+  Episode(id: $id) { id name }
+  Viewer { id name }
+  GenreCollection
+  Notification { __typename }
+}

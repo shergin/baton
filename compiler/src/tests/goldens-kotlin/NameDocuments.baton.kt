@@ -19,7 +19,94 @@ import baton.QueryType
 import baton.ScalarKind
 import baton.Selection
 import baton.StorageKey
+import baton.Variable
 import baton.Variables
+
+/** Operation value for `query TestCapitalizedRoots`. */
+@Immutable
+class TestCapitalizedRoots(val id: String) : QueryOperation<TestCapitalizedRoots.Data> {
+    override val variables: Variables
+        get() = Variables.of("id" to Variable.of(id))
+    override val type: OperationType<Data> get() = Companion
+
+    override fun equals(other: Any?): Boolean = other is TestCapitalizedRoots && other.id == id
+    override fun hashCode(): Int = listOf(id).hashCode()
+
+    companion object : QueryType<TestCapitalizedRoots, TestCapitalizedRoots.Data> {
+        override val name = "TestCapitalizedRoots"
+        override val document: Document = Document.Text("query TestCapitalizedRoots(\$id:ID!){Episode(id:\$id){id,name},Viewer{id,name},GenreCollection,Notification{__typename,...on ActivityLikeNotification{id},...on ActivityMentionNotification{id},...on ActivityMessageNotification{id},...on ActivityReplyLikeNotification{id},...on ActivityReplyNotification{id},...on ActivityReplySubscribedNotification{id},...on AiringNotification{id},...on CharacterSubmissionUpdateNotification{id},...on FollowingNotification{id},...on MediaDataChangeNotification{id},...on MediaDeletionNotification{id},...on MediaMergeNotification{id},...on MediaSubmissionUpdateNotification{id},...on RelatedMediaAdditionNotification{id},...on StaffSubmissionUpdateNotification{id},...on ThreadCommentLikeNotification{id},...on ThreadCommentMentionNotification{id},...on ThreadCommentReplyNotification{id},...on ThreadCommentSubscribedNotification{id},...on ThreadLikeNotification{id}}}")
+        override val kind = OperationKind.QUERY
+        override val plan: Plan by lazy { Plan(root = `TestCapitalizedRoots-plan`.selection0, transient = Types.transient) }
+
+        override fun data(anchor: Anchor): Data = Data(anchor)
+    }
+
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val Episode: Episode2? get() = anchor.linked(anchor.owner.slot(Slots.Query.Episode_9e33c8))?.let(::Episode2)
+        val Viewer: Viewer2? get() = anchor.linked(Slots.Query.Viewer)?.let(::Viewer2)
+        val GenreCollection: List<String?>? get() = anchor.nullableStrings(Slots.Query.GenreCollection)
+        val Notification: List<Notification2>? get() = anchor.list(Slots.Query.Notification, ::Notification2)
+        override fun equals(other: Any?): Boolean = other is TestCapitalizedRoots.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Episode2(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Episode.id)
+            val name: String? get() = anchor.string(Slots.Episode.name)
+            override fun equals(other: Any?): Boolean = other is TestCapitalizedRoots.Data.Episode2 && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Viewer2(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            override fun equals(other: Any?): Boolean = other is TestCapitalizedRoots.Data.Viewer2 && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+
+        @Stable
+        class Notification2(override val anchor: Anchor) : Lens {
+            override fun equals(other: Any?): Boolean = other is TestCapitalizedRoots.Data.Notification2 && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+}
+
+private object `TestCapitalizedRoots-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("Episode", key = StorageKey.Dynamic(Slots.Query.Episode_9e33c8), plural = false, selection = selection3),
+            PlanField.linked("Viewer", key = StorageKey.Fixed(Slots.Query.Viewer), plural = false, selection = selection2),
+            PlanField.scalar("GenreCollection", key = StorageKey.Fixed(Slots.Query.GenreCollection), kind = ScalarKind.STRING, list = true),
+            PlanField.linked("Notification", key = StorageKey.Fixed(Slots.Query.Notification), plural = true, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.NotificationUnion, key = listOf("id"), isAbstract = true, variants = listOf(
+            Selection.Variant(types = listOf(Types.ActivityLikeNotification, Types.ActivityMentionNotification, Types.ActivityMessageNotification, Types.ActivityReplyLikeNotification, Types.ActivityReplyNotification, Types.ActivityReplySubscribedNotification, Types.AiringNotification, Types.CharacterSubmissionUpdateNotification, Types.FollowingNotification, Types.MediaDataChangeNotification, Types.MediaDeletionNotification, Types.MediaMergeNotification, Types.MediaSubmissionUpdateNotification, Types.RelatedMediaAdditionNotification, Types.StaffSubmissionUpdateNotification, Types.ThreadCommentLikeNotification, Types.ThreadCommentMentionNotification, Types.ThreadCommentReplyNotification, Types.ThreadCommentSubscribedNotification, Types.ThreadLikeNotification), key = listOf("id"), fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.NotificationUnion.__typename), kind = ScalarKind.STRING, list = false),
+                PlanField.scalar("id", key = StorageKey.Fixed(Slots.NotificationUnion.id), kind = ScalarKind.STRING, list = false),
+            )),
+            Selection.Variant(types = null, fields = listOf(
+                PlanField.scalar("__typename", key = StorageKey.Fixed(Slots.NotificationUnion.__typename), kind = ScalarKind.STRING, list = false),
+            )),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+    val selection3: Selection by lazy {
+        Selection(type = Types.Episode, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Episode.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Episode.name), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
 
 /** Operation value for `query TestCaughtNames`. */
 @Immutable

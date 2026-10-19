@@ -588,6 +588,9 @@ func run() async throws {
 
     print("long session: 50,000 root lookups by id and 500 pages after cursors")
     try longSessionBench()
+
+    print("anilist: two chunks of a MediaListCollection recorded from AniList, 1,000 entries")
+    try await aniListBench()
 }
 
 /// A server that answers every request with one `multipart/mixed` body,
@@ -1554,6 +1557,8 @@ func longSessionBench() throws {
 
 if CommandLine.arguments.count == 3, CommandLine.arguments[1].hasPrefix("--launch") {
     await launch(CommandLine.arguments[2], opened: CommandLine.arguments[1] == "--launch-opened")
+} else if CommandLine.arguments.count == 3, CommandLine.arguments[1].hasPrefix("--anilist-launch") {
+    await aniListLaunch(CommandLine.arguments[2], opened: CommandLine.arguments[1] == "--anilist-launch-opened")
 } else {
     try await run()
 }

@@ -2,6 +2,84 @@
 import Foundation
 @_spi(Generated) import Baton
 
+/// Operation value for `query TestCapitalizedRoots`.
+nonisolated public struct TestCapitalizedRoots: Baton.Query {
+    public var id: String
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestCapitalizedRoots"
+    public static let document: Baton.Document = .text(#"query TestCapitalizedRoots($id:ID!){Episode(id:$id){id,name},Viewer{id,name},GenreCollection,Notification{__typename,...on ActivityLikeNotification{id},...on ActivityMentionNotification{id},...on ActivityMessageNotification{id},...on ActivityReplyLikeNotification{id},...on ActivityReplyNotification{id},...on ActivityReplySubscribedNotification{id},...on AiringNotification{id},...on CharacterSubmissionUpdateNotification{id},...on FollowingNotification{id},...on MediaDataChangeNotification{id},...on MediaDeletionNotification{id},...on MediaMergeNotification{id},...on MediaSubmissionUpdateNotification{id},...on RelatedMediaAdditionNotification{id},...on StaffSubmissionUpdateNotification{id},...on ThreadCommentLikeNotification{id},...on ThreadCommentMentionNotification{id},...on ThreadCommentReplyNotification{id},...on ThreadCommentSubscribedNotification{id},...on ThreadLikeNotification{id}}}"#)
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(self.id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("Episode", key: .dynamic(Slots.Query.Episode_9e33c8), plural: false, selection: selection3),
+        .linked("Viewer", key: .fixed(Slots.Query.Viewer), plural: false, selection: selection2),
+        .scalar("GenreCollection", key: .fixed(Slots.Query.GenreCollection), kind: .string, list: true),
+        .linked("Notification", key: .fixed(Slots.Query.Notification), plural: true, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.NotificationUnion, key: ["id"], abstract: true, variants: [
+        .init(types: [Types.ActivityLikeNotification, Types.ActivityMentionNotification, Types.ActivityMessageNotification, Types.ActivityReplyLikeNotification, Types.ActivityReplyNotification, Types.ActivityReplySubscribedNotification, Types.AiringNotification, Types.CharacterSubmissionUpdateNotification, Types.FollowingNotification, Types.MediaDataChangeNotification, Types.MediaDeletionNotification, Types.MediaMergeNotification, Types.MediaSubmissionUpdateNotification, Types.RelatedMediaAdditionNotification, Types.StaffSubmissionUpdateNotification, Types.ThreadCommentLikeNotification, Types.ThreadCommentMentionNotification, Types.ThreadCommentReplyNotification, Types.ThreadCommentSubscribedNotification, Types.ThreadLikeNotification], key: ["id"], fields: [
+            .scalar("__typename", key: .fixed(Slots.NotificationUnion.__typename), kind: .string, list: false),
+            .scalar("id", key: .fixed(Slots.NotificationUnion.id), kind: .string, list: false),
+        ]),
+        .init(types: nil, fields: [
+            .scalar("__typename", key: .fixed(Slots.NotificationUnion.__typename), kind: .string, list: false),
+        ]),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+    ])
+    private static let selection3: Baton.Selection = Baton.Selection(type: Types.Episode, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
+        .scalar("name", key: .fixed(Slots.Episode.name), kind: .string, list: false),
+    ])
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        @MainActor public var Episode: Episode2? { anchor.linked(anchor.owner.slot(Slots.Query.Episode_9e33c8)).map(Episode2.init(anchor:)) }
+        @MainActor public var Viewer: Viewer2? { anchor.linked(Slots.Query.Viewer).map(Viewer2.init(anchor:)) }
+        @MainActor public var GenreCollection: [String?]? { anchor.nullableStrings(Slots.Query.GenreCollection) }
+        @MainActor public var Notification: Baton.List<Notification2>? { anchor.list(Slots.Query.Notification) }
+
+        nonisolated public struct Episode2: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            @MainActor public var id: String? { anchor.string(Slots.Episode.id) }
+            @MainActor public var name: String? { anchor.string(Slots.Episode.name) }
+        }
+
+        nonisolated public struct Viewer2: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+        }
+
+        nonisolated public struct Notification2: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        }
+    }
+}
+
 /// Operation value for `query TestCaughtNames`.
 nonisolated public struct TestCaughtNames: Baton.Query {
     @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved

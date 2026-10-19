@@ -23,22 +23,35 @@ import baton.Variables
 /** Interned schema types used by this module's documents. */
 object Types {
     /** The schema's digest: pass it as the image's `version`, so an image written under another schema starts again. */
-    val schemaDigest = "5beaef3e41ff4dcf1169e9ba839e88cc"
+    val schemaDigest = "05a112649a1212d03abe827e91364544"
     /** The format of this generated code, which the runtime that reads it declares; a runtime of another format fails to compile this line. */
     val format = baton.Format4
+    val ActivityLikeNotification: TypeID = Registry.type("ActivityLikeNotification")
+    val ActivityMentionNotification: TypeID = Registry.type("ActivityMentionNotification")
+    val ActivityMessageNotification: TypeID = Registry.type("ActivityMessageNotification")
+    val ActivityReplyLikeNotification: TypeID = Registry.type("ActivityReplyLikeNotification")
+    val ActivityReplyNotification: TypeID = Registry.type("ActivityReplyNotification")
+    val ActivityReplySubscribedNotification: TypeID = Registry.type("ActivityReplySubscribedNotification")
     val AddNotePayload: TypeID = Registry.type("AddNotePayload")
+    val AiringNotification: TypeID = Registry.type("AiringNotification")
     val Any: TypeID = Registry.type("Any")
     val Asset: TypeID = Registry.type("Asset")
     val Baton: TypeID = Registry.type("Baton")
     val Character: TypeID = Registry.type("Character")
+    val CharacterSubmissionUpdateNotification: TypeID = Registry.type("CharacterSubmissionUpdateNotification")
     val Characters: TypeID = Registry.type("Characters")
     val Deleted: TypeID = Registry.type("Deleted")
     val Draft: TypeID = Registry.type("Draft")
     val Episode: TypeID = Registry.type("Episode")
     val FavoritePayload: TypeID = Registry.type("FavoritePayload")
+    val FollowingNotification: TypeID = Registry.type("FollowingNotification")
     val Info: TypeID = Registry.type("Info")
     val ListsPayload: TypeID = Registry.type("ListsPayload")
     val Location: TypeID = Registry.type("Location")
+    val MediaDataChangeNotification: TypeID = Registry.type("MediaDataChangeNotification")
+    val MediaDeletionNotification: TypeID = Registry.type("MediaDeletionNotification")
+    val MediaMergeNotification: TypeID = Registry.type("MediaMergeNotification")
+    val MediaSubmissionUpdateNotification: TypeID = Registry.type("MediaSubmissionUpdateNotification")
     val Mutation: TypeID = Registry.type("Mutation")
     val Named: TypeID = Registry.type("Named")
     val Node: TypeID = Registry.type("Node")
@@ -46,17 +59,25 @@ object Types {
     val NoteAddedPayload: TypeID = Registry.type("NoteAddedPayload")
     val NoteConnection: TypeID = Registry.type("NoteConnection")
     val NoteEdge: TypeID = Registry.type("NoteEdge")
+    val NotificationUnion: TypeID = Registry.type("NotificationUnion")
     val PageInfo: TypeID = Registry.type("PageInfo")
     val Protocol: TypeID = Registry.type("Protocol")
     val Query: TypeID = Registry.type("Query")
     val Quote: TypeID = Registry.type("Quote")
+    val RelatedMediaAdditionNotification: TypeID = Registry.type("RelatedMediaAdditionNotification")
     val RemoveNotePayload: TypeID = Registry.type("RemoveNotePayload")
     val SearchResult: TypeID = Registry.type("SearchResult")
     val Secret: TypeID = Registry.type("Secret", transient = true)
     val Set: TypeID = Registry.type("Set")
     val Spelled: TypeID = Registry.type("Spelled")
     val Spelling: TypeID = Registry.type("Spelling")
+    val StaffSubmissionUpdateNotification: TypeID = Registry.type("StaffSubmissionUpdateNotification")
     val Subscription: TypeID = Registry.type("Subscription")
+    val ThreadCommentLikeNotification: TypeID = Registry.type("ThreadCommentLikeNotification")
+    val ThreadCommentMentionNotification: TypeID = Registry.type("ThreadCommentMentionNotification")
+    val ThreadCommentReplyNotification: TypeID = Registry.type("ThreadCommentReplyNotification")
+    val ThreadCommentSubscribedNotification: TypeID = Registry.type("ThreadCommentSubscribedNotification")
+    val ThreadLikeNotification: TypeID = Registry.type("ThreadLikeNotification")
     val Tokenizer: TypeID = Registry.type("Tokenizer")
     val Type: TypeID = Registry.type("Type")
     val Types: TypeID = Registry.type("Types")
@@ -72,9 +93,38 @@ object Types {
 
 /** Interned storage keys used by this module's documents. */
 object Slots {
+    object ActivityLikeNotification {
+        val activityId: Slot = Registry.slot(Types.ActivityLikeNotification, "activityId")
+        val id: Slot = Registry.slot(Types.ActivityLikeNotification, "id")
+    }
+    object ActivityMentionNotification {
+        val activityId: Slot = Registry.slot(Types.ActivityMentionNotification, "activityId")
+        val id: Slot = Registry.slot(Types.ActivityMentionNotification, "id")
+    }
+    object ActivityMessageNotification {
+        val activityId: Slot = Registry.slot(Types.ActivityMessageNotification, "activityId")
+        val id: Slot = Registry.slot(Types.ActivityMessageNotification, "id")
+    }
+    object ActivityReplyLikeNotification {
+        val activityId: Slot = Registry.slot(Types.ActivityReplyLikeNotification, "activityId")
+        val id: Slot = Registry.slot(Types.ActivityReplyLikeNotification, "id")
+    }
+    object ActivityReplyNotification {
+        val activityId: Slot = Registry.slot(Types.ActivityReplyNotification, "activityId")
+        val id: Slot = Registry.slot(Types.ActivityReplyNotification, "id")
+    }
+    object ActivityReplySubscribedNotification {
+        val activityId: Slot = Registry.slot(Types.ActivityReplySubscribedNotification, "activityId")
+        val id: Slot = Registry.slot(Types.ActivityReplySubscribedNotification, "id")
+    }
     object AddNotePayload {
         val note: Slot = Registry.slot(Types.AddNotePayload, "note")
         val noteEdge: Slot = Registry.slot(Types.AddNotePayload, "noteEdge")
+    }
+    object AiringNotification {
+        val __typename: Slot = Registry.slot(Types.AiringNotification, "__typename")
+        val episode: Slot = Registry.slot(Types.AiringNotification, "episode")
+        val id: Slot = Registry.slot(Types.AiringNotification, "id")
     }
     object Any {
         val id: Slot = Registry.slot(Types.Any, "id")
@@ -135,6 +185,10 @@ object Slots {
         val status: Slot = Registry.slot(Types.Character, "status")
         val type: Slot = Registry.slot(Types.Character, "type")
     }
+    object CharacterSubmissionUpdateNotification {
+        val id: Slot = Registry.slot(Types.CharacterSubmissionUpdateNotification, "id")
+        val status: Slot = Registry.slot(Types.CharacterSubmissionUpdateNotification, "status")
+    }
     object Characters {
         val info: Slot = Registry.slot(Types.Characters, "info")
         val results: Slot = Registry.slot(Types.Characters, "results")
@@ -155,9 +209,16 @@ object Slots {
         val episode: Slot = Registry.slot(Types.Episode, "episode")
         val id: Slot = Registry.slot(Types.Episode, "id")
         val name: Slot = Registry.slot(Types.Episode, "name")
+        val status: Slot = Registry.slot(Types.Episode, "status")
+        val status_98c3c3: Slot = Registry.slot(Types.Episode, "status(version:2)")
     }
     object FavoritePayload {
         val character: Slot = Registry.slot(Types.FavoritePayload, "character")
+    }
+    object FollowingNotification {
+        val __typename: Slot = Registry.slot(Types.FollowingNotification, "__typename")
+        val id: Slot = Registry.slot(Types.FollowingNotification, "id")
+        val userId: Slot = Registry.slot(Types.FollowingNotification, "userId")
     }
     object Info {
         val count: Slot = Registry.slot(Types.Info, "count")
@@ -181,6 +242,25 @@ object Slots {
         val id: Slot = Registry.slot(Types.Location, "id")
         val name: Slot = Registry.slot(Types.Location, "name")
         val type: Slot = Registry.slot(Types.Location, "type")
+    }
+    object MediaDataChangeNotification {
+        val __typename: Slot = Registry.slot(Types.MediaDataChangeNotification, "__typename")
+        val id: Slot = Registry.slot(Types.MediaDataChangeNotification, "id")
+        val reason: Slot = Registry.slot(Types.MediaDataChangeNotification, "reason")
+    }
+    object MediaDeletionNotification {
+        val __typename: Slot = Registry.slot(Types.MediaDeletionNotification, "__typename")
+        val deletedMediaTitle: Slot = Registry.slot(Types.MediaDeletionNotification, "deletedMediaTitle")
+        val id: Slot = Registry.slot(Types.MediaDeletionNotification, "id")
+    }
+    object MediaMergeNotification {
+        val __typename: Slot = Registry.slot(Types.MediaMergeNotification, "__typename")
+        val deletedMediaTitles: Slot = Registry.slot(Types.MediaMergeNotification, "deletedMediaTitles")
+        val id: Slot = Registry.slot(Types.MediaMergeNotification, "id")
+    }
+    object MediaSubmissionUpdateNotification {
+        val id: Slot = Registry.slot(Types.MediaSubmissionUpdateNotification, "id")
+        val status: Slot = Registry.slot(Types.MediaSubmissionUpdateNotification, "status")
     }
     object Mutation {
         val addNote: Slot = Registry.slot(Types.Mutation, "addNote")
@@ -224,6 +304,13 @@ object Slots {
         val cursor: Slot = Registry.slot(Types.NoteEdge, "cursor")
         val node: Slot = Registry.slot(Types.NoteEdge, "node")
     }
+    object NotificationUnion {
+        val __typename: Slot = Registry.slot(Types.NotificationUnion, "__typename")
+        val activityId: Slot = Registry.slot(Types.NotificationUnion, "activityId")
+        val commentId: Slot = Registry.slot(Types.NotificationUnion, "commentId")
+        val id: Slot = Registry.slot(Types.NotificationUnion, "id")
+        val status: Slot = Registry.slot(Types.NotificationUnion, "status")
+    }
     object PageInfo {
         val endCursor: Slot = Registry.slot(Types.PageInfo, "endCursor")
         val hasNextPage: Slot = Registry.slot(Types.PageInfo, "hasNextPage")
@@ -235,6 +322,10 @@ object Slots {
         val label: Slot = Registry.slot(Types.Protocol, "label")
     }
     object Query {
+        val Episode_9e33c8 = DynamicKey(Types.Query, "Episode", listOf(KeyArgument("id", listOf(KeyPart.Variable("id")))))
+        val GenreCollection: Slot = Registry.slot(Types.Query, "GenreCollection")
+        val Notification: Slot = Registry.slot(Types.Query, "Notification")
+        val Viewer: Slot = Registry.slot(Types.Query, "Viewer")
         val __TestRootNotes_notes_connection: Slot = Registry.slot(Types.Query, "__TestRootNotes_notes_connection")
         val asset_9e39ed = DynamicKey(Types.Query, "asset", listOf(KeyArgument("uuid", listOf(KeyPart.Variable("uuid")))))
         val assets: Slot = Registry.slot(Types.Query, "assets")
@@ -258,6 +349,7 @@ object Slots {
         val charactersMatching_ca82bd = DynamicKey(Types.Query, "charactersMatching", listOf(KeyArgument("filters", listOf(KeyPart.Variable("filters")))))
         val charactersWithStatus_deb51f = DynamicKey(Types.Query, "charactersWithStatus", listOf(KeyArgument("any", listOf(KeyPart.Variable("any"))), KeyArgument("status", listOf(KeyPart.Variable("status")))))
         val drafts: Slot = Registry.clientSlot(Types.Query, "drafts")
+        val episode_7d0060 = DynamicKey(Types.Query, "episode", listOf(KeyArgument("id", listOf(KeyPart.Variable("id")))))
         val namesake_9b6471 = DynamicKey(Types.Query, "namesake", listOf(KeyArgument("name", listOf(KeyPart.Variable("name")))))
         val node_8f7d08 = DynamicKey(Types.Query, "node", listOf(KeyArgument("id", listOf(KeyPart.Variable("id")))))
         val node_c27cc2: Slot = Registry.slot(Types.Query, "node(id:1)")
@@ -278,6 +370,11 @@ object Slots {
         val base: Slot = Registry.slot(Types.Quote, "base")
         val quote: Slot = Registry.slot(Types.Quote, "quote")
         val rate: Slot = Registry.slot(Types.Quote, "rate")
+    }
+    object RelatedMediaAdditionNotification {
+        val __typename: Slot = Registry.slot(Types.RelatedMediaAdditionNotification, "__typename")
+        val id: Slot = Registry.slot(Types.RelatedMediaAdditionNotification, "id")
+        val mediaId: Slot = Registry.slot(Types.RelatedMediaAdditionNotification, "mediaId")
     }
     object RemoveNotePayload {
         val removedNoteId: Slot = Registry.slot(Types.RemoveNotePayload, "removedNoteId")
@@ -300,9 +397,34 @@ object Slots {
         val id: Slot = Registry.slot(Types.Spelling, "id")
         val label: Slot = Registry.slot(Types.Spelling, "label")
     }
+    object StaffSubmissionUpdateNotification {
+        val id: Slot = Registry.slot(Types.StaffSubmissionUpdateNotification, "id")
+        val status: Slot = Registry.slot(Types.StaffSubmissionUpdateNotification, "status")
+    }
     object Subscription {
         val noteAdded_cab094: Slot = Registry.slot(Types.Subscription, "noteAdded(characterId:\"1\")")
         val noteAdded_5f458b = DynamicKey(Types.Subscription, "noteAdded", listOf(KeyArgument("characterId", listOf(KeyPart.Variable("characterId")))))
+    }
+    object ThreadCommentLikeNotification {
+        val commentId: Slot = Registry.slot(Types.ThreadCommentLikeNotification, "commentId")
+        val id: Slot = Registry.slot(Types.ThreadCommentLikeNotification, "id")
+    }
+    object ThreadCommentMentionNotification {
+        val commentId: Slot = Registry.slot(Types.ThreadCommentMentionNotification, "commentId")
+        val id: Slot = Registry.slot(Types.ThreadCommentMentionNotification, "id")
+    }
+    object ThreadCommentReplyNotification {
+        val commentId: Slot = Registry.slot(Types.ThreadCommentReplyNotification, "commentId")
+        val id: Slot = Registry.slot(Types.ThreadCommentReplyNotification, "id")
+    }
+    object ThreadCommentSubscribedNotification {
+        val commentId: Slot = Registry.slot(Types.ThreadCommentSubscribedNotification, "commentId")
+        val id: Slot = Registry.slot(Types.ThreadCommentSubscribedNotification, "id")
+    }
+    object ThreadLikeNotification {
+        val __typename: Slot = Registry.slot(Types.ThreadLikeNotification, "__typename")
+        val id: Slot = Registry.slot(Types.ThreadLikeNotification, "id")
+        val threadId: Slot = Registry.slot(Types.ThreadLikeNotification, "threadId")
     }
     object Tokenizer {
         val count: Slot = Registry.slot(Types.Tokenizer, "count")
@@ -326,6 +448,28 @@ object Slots {
         val Baton: Slot = Registry.slot(Types.Types, "Baton")
         val Protocol: Slot = Registry.slot(Types.Types, "Protocol")
         val Type: Slot = Registry.slot(Types.Types, "Type")
+    }
+}
+
+/** The schema's enum `EpisodeStatus`. A value this build does not know reads as `Undeclared`, with its text. */
+sealed interface EpisodeStatus : GeneratedEnum {
+    data object FINISHED : EpisodeStatus { override val scalarText: String get() = "FINISHED" }
+    data object RELEASING : EpisodeStatus { override val scalarText: String get() = "RELEASING" }
+    data object NOT_YET_RELEASED : EpisodeStatus { override val scalarText: String get() = "NOT_YET_RELEASED" }
+    data object CANCELLED : EpisodeStatus { override val scalarText: String get() = "CANCELLED" }
+    data object HIATUS : EpisodeStatus { override val scalarText: String get() = "HIATUS" }
+    data class Undeclared(override val scalarText: String) : EpisodeStatus
+
+    companion object {
+        /** The value `text` names, or `Undeclared` with it. */
+        fun of(text: String): EpisodeStatus = when (text) {
+            "FINISHED" -> FINISHED
+            "RELEASING" -> RELEASING
+            "NOT_YET_RELEASED" -> NOT_YET_RELEASED
+            "CANCELLED" -> CANCELLED
+            "HIATUS" -> HIATUS
+            else -> Undeclared(text)
+        }
     }
 }
 

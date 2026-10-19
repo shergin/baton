@@ -53,6 +53,55 @@ nonisolated public struct TestCharactersWithStatus: Baton.Query {
     }
 }
 
+/// Operation value for `query TestEpisodeStatus`.
+nonisolated public struct TestEpisodeStatus: Baton.Query {
+    public var id: String
+    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
+
+    public init(id: String) {
+        self.id = id
+    }
+
+    public static let name = "TestEpisodeStatus"
+    public static let document: Baton.Document = .text(#"query TestEpisodeStatus($id:ID!){episode(id:$id){id,status,hiatus:status(version:2)}}"#)
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["id": Baton.Variable(self.id)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("episode", key: .dynamic(Slots.Query.episode_7d0060), plural: false, lookup: Baton.Lookup(type: Types.Episode, key: [.variable("id")]), selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Episode, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Episode.id), kind: .string, list: false),
+        .scalar("status", key: .fixed(Slots.Episode.status), kind: .string, list: false),
+        .scalar("hiatus", key: .fixed(Slots.Episode.status_98c3c3), kind: .string, list: false),
+    ])
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        @MainActor public var episode: Episode? { anchor.linked(anchor.owner.slot(Slots.Query.episode_7d0060)).map(Episode.init(anchor:)) }
+
+        nonisolated public struct Episode: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            @MainActor public var id: String? { anchor.string(Slots.Episode.id) }
+            @MainActor public var status: EpisodeStatus? { anchor.enumValue(Slots.Episode.status) }
+            @MainActor public var hiatus: EpisodeStatus? { anchor.enumValue(Slots.Episode.status_98c3c3) }
+        }
+    }
+}
+
 /// Operation value for `mutation TestSetStatuses`.
 nonisolated public struct TestSetStatuses: Baton.Mutation {
 

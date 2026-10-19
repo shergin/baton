@@ -1,5 +1,5 @@
 {
-  "schemaDigest": "5beaef3e41ff4dcf1169e9ba839e88cc",
+  "schemaDigest": "05a112649a1212d03abe827e91364544",
   "operations": [
     {
       "name": "Fixture",
@@ -1121,6 +1121,92 @@
       }
     },
     {
+      "name": "TestCapitalizedRoots",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/NameDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestCapitalizedRoots($id:ID!){Episode(id:$id){id,name},Viewer{id,name},GenreCollection,Notification{__typename,...on ActivityLikeNotification{id},...on ActivityMentionNotification{id},...on ActivityMessageNotification{id},...on ActivityReplyLikeNotification{id},...on ActivityReplyNotification{id},...on ActivityReplySubscribedNotification{id},...on AiringNotification{id},...on CharacterSubmissionUpdateNotification{id},...on FollowingNotification{id},...on MediaDataChangeNotification{id},...on MediaDeletionNotification{id},...on MediaMergeNotification{id},...on MediaSubmissionUpdateNotification{id},...on RelatedMediaAdditionNotification{id},...on StaffSubmissionUpdateNotification{id},...on ThreadCommentLikeNotification{id},...on ThreadCommentMentionNotification{id},...on ThreadCommentReplyNotification{id},...on ThreadCommentSubscribedNotification{id},...on ThreadLikeNotification{id}}}",
+      "lens": {
+        "type": "Query",
+        "accessors": [
+          {
+            "name": "Episode",
+            "key": "Episode",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "Episode",
+              "accessors": [
+                {
+                  "name": "id",
+                  "key": "id",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "name",
+                  "key": "name",
+                  "read": "scalar",
+                  "optional": true
+                }
+              ]
+            }
+          },
+          {
+            "name": "Viewer",
+            "key": "Viewer",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "Character",
+              "accessors": [
+                {
+                  "name": "id",
+                  "key": "id",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "name",
+                  "key": "name",
+                  "read": "scalar",
+                  "optional": true
+                }
+              ]
+            }
+          },
+          {
+            "name": "GenreCollection",
+            "key": "GenreCollection",
+            "read": "scalar",
+            "optional": true,
+            "list": {
+              "optionalElements": true
+            }
+          },
+          {
+            "name": "Notification",
+            "key": "Notification",
+            "read": "linked",
+            "optional": true,
+            "list": {
+              "optionalElements": false
+            },
+            "lens": {
+              "type": "NotificationUnion",
+              "accessors": []
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "TestCaughtEpisodes",
       "kind": "query",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
@@ -2170,6 +2256,53 @@
                   "name": "testEdgesNames",
                   "read": "spread",
                   "fragment": "TestEdgesNames_character"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestEpisodeStatus",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/EnumDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestEpisodeStatus($id:ID!){episode(id:$id){id,status,hiatus:status(version:2)}}",
+      "lens": {
+        "type": "Query",
+        "accessors": [
+          {
+            "name": "episode",
+            "key": "episode",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "Episode",
+              "accessors": [
+                {
+                  "name": "id",
+                  "key": "id",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "status",
+                  "key": "status",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "hiatus",
+                  "key": "hiatus",
+                  "read": "scalar",
+                  "optional": true
                 }
               ]
             }
@@ -3809,6 +3942,502 @@
                   "name": "testNotes",
                   "read": "spread",
                   "fragment": "TestNotes_character"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestNotifications",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ConditionDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "query TestNotifications{Notification{__typename,...on AiringNotification{id,episode},...on FollowingNotification{id,userId},...on ActivityMessageNotification{id,activityId},...on ActivityMentionNotification{id,activityId},...on ActivityReplyNotification{id,activityId},...on ActivityReplySubscribedNotification{id,activityId},...on ActivityLikeNotification{id,activityId},...on ActivityReplyLikeNotification{id,activityId},...on ThreadCommentMentionNotification{id,commentId},...on ThreadCommentReplyNotification{id,commentId},...on ThreadCommentSubscribedNotification{id,commentId},...on ThreadCommentLikeNotification{id,commentId},...on ThreadLikeNotification{id,threadId},...on RelatedMediaAdditionNotification{id,mediaId},...on MediaDataChangeNotification{id,reason},...on MediaMergeNotification{id,deletedMediaTitles},...on MediaDeletionNotification{id,deletedMediaTitle},...on MediaSubmissionUpdateNotification{id,status},...on StaffSubmissionUpdateNotification{id,status},...on CharacterSubmissionUpdateNotification{id,status}}}",
+      "lens": {
+        "type": "Query",
+        "accessors": [
+          {
+            "name": "Notification",
+            "key": "Notification",
+            "read": "linked",
+            "optional": true,
+            "list": {
+              "optionalElements": false
+            },
+            "lens": {
+              "type": "NotificationUnion",
+              "accessors": [
+                {
+                  "name": "asAiringNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "AiringNotification"
+                  ],
+                  "lens": {
+                    "type": "AiringNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "episode",
+                        "key": "episode",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asFollowingNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "FollowingNotification"
+                  ],
+                  "lens": {
+                    "type": "FollowingNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "userId",
+                        "key": "userId",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asActivityMessageNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "ActivityMessageNotification"
+                  ],
+                  "lens": {
+                    "type": "ActivityMessageNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "activityId",
+                        "key": "activityId",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asActivityMentionNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "ActivityMentionNotification"
+                  ],
+                  "lens": {
+                    "type": "ActivityMentionNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "activityId",
+                        "key": "activityId",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asActivityReplyNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "ActivityReplyNotification"
+                  ],
+                  "lens": {
+                    "type": "ActivityReplyNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "activityId",
+                        "key": "activityId",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asActivityReplySubscribedNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "ActivityReplySubscribedNotification"
+                  ],
+                  "lens": {
+                    "type": "ActivityReplySubscribedNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "activityId",
+                        "key": "activityId",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asActivityLikeNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "ActivityLikeNotification"
+                  ],
+                  "lens": {
+                    "type": "ActivityLikeNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "activityId",
+                        "key": "activityId",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asActivityReplyLikeNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "ActivityReplyLikeNotification"
+                  ],
+                  "lens": {
+                    "type": "ActivityReplyLikeNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "activityId",
+                        "key": "activityId",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asThreadCommentMentionNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "ThreadCommentMentionNotification"
+                  ],
+                  "lens": {
+                    "type": "ThreadCommentMentionNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "commentId",
+                        "key": "commentId",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asThreadCommentReplyNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "ThreadCommentReplyNotification"
+                  ],
+                  "lens": {
+                    "type": "ThreadCommentReplyNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "commentId",
+                        "key": "commentId",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asThreadCommentSubscribedNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "ThreadCommentSubscribedNotification"
+                  ],
+                  "lens": {
+                    "type": "ThreadCommentSubscribedNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "commentId",
+                        "key": "commentId",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asThreadCommentLikeNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "ThreadCommentLikeNotification"
+                  ],
+                  "lens": {
+                    "type": "ThreadCommentLikeNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "commentId",
+                        "key": "commentId",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asThreadLikeNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "ThreadLikeNotification"
+                  ],
+                  "lens": {
+                    "type": "ThreadLikeNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "threadId",
+                        "key": "threadId",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asRelatedMediaAdditionNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "RelatedMediaAdditionNotification"
+                  ],
+                  "lens": {
+                    "type": "RelatedMediaAdditionNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "mediaId",
+                        "key": "mediaId",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asMediaDataChangeNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "MediaDataChangeNotification"
+                  ],
+                  "lens": {
+                    "type": "MediaDataChangeNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "reason",
+                        "key": "reason",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asMediaMergeNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "MediaMergeNotification"
+                  ],
+                  "lens": {
+                    "type": "MediaMergeNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "deletedMediaTitles",
+                        "key": "deletedMediaTitles",
+                        "read": "scalar",
+                        "optional": true,
+                        "list": {
+                          "optionalElements": true
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asMediaDeletionNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "MediaDeletionNotification"
+                  ],
+                  "lens": {
+                    "type": "MediaDeletionNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "deletedMediaTitle",
+                        "key": "deletedMediaTitle",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asMediaSubmissionUpdateNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "MediaSubmissionUpdateNotification"
+                  ],
+                  "lens": {
+                    "type": "MediaSubmissionUpdateNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "status",
+                        "key": "status",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asStaffSubmissionUpdateNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "StaffSubmissionUpdateNotification"
+                  ],
+                  "lens": {
+                    "type": "StaffSubmissionUpdateNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "status",
+                        "key": "status",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asCharacterSubmissionUpdateNotification",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "CharacterSubmissionUpdateNotification"
+                  ],
+                  "lens": {
+                    "type": "CharacterSubmissionUpdateNotification",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "status",
+                        "key": "status",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
                 }
               ]
             }

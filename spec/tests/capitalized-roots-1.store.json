@@ -1,0 +1,9 @@
+{
+  "AiringNotification:n1": {"__typename": "AiringNotification", "id": "n1"},
+  "Character:1": {"__typename": "Character", "id": "1", "name": "Rick Sanchez"},
+  "Episode:1": {"__typename": "Episode", "id": "1", "name": "Pilot"},
+  "ThreadLikeNotification:n13": {"__typename": "ThreadLikeNotification", "id": "n13"},
+  "client:root": {"Episode(id:\"1\")": {"__ref": "Episode:1"}, "GenreCollection": ["Action", "Comedy"], "Notification": {"__refs": ["AiringNotification:n1", "ThreadLikeNotification:n13"]}, "Viewer": {"__ref": "Character:1"}, "__typename": "Query"},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

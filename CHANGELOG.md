@@ -27,6 +27,51 @@ are expected and listed without apology.
   a mutation's response moves the row with no updater, and carried by the
   image to the next launch. The README, the docs index and the site link
   them.
+- `docs/recipes/derived-state.md`, *A derivation over a whole operation*:
+  how a model that derives one value from every entry of a large
+  operation keeps the tracked reads off the launch and each change to one
+  chunk. One `Observations` or `snapshotFlow` per operation handle, the
+  first reading untracked and synchronous before the streams start, a
+  reading applied only when it differs from the last, and a closure that
+  reads only what the value needs. With the arithmetic to budget a pass of
+  N entries by M fields: a field read costs 20 ns untracked and 647 ns
+  tracked in Swift, and 14 and 57 ns on the JVM. The model is compiled on
+  both runtimes beside the AniList tests and proven by `ListModelTests`. No
+  coarser observation channel is added: per-slot registration is what the
+  store's principle rests on, and the record
+  [derived state is observed, not signaled](docs/decisions/derived-state-is-observed-not-signaled.md)
+  now names the operation-level and per-record channels as not chosen and
+  reopens on a whole-operation derivation the composition cannot keep in
+  budget at a measured size ([#53](https://github.com/shergin/baton/issues/53)).
+- `spec/anilist/`: a user's list recorded from AniList's public API, two
+  chunks of `MediaListCollection` of 500 entries each, with the SDL the API
+  answers to the standard introspection query. The user's id, the entries'
+  ids and the notes are anonymized; the rest is the server's bytes. Frozen
+  by one dump of 6,014 records on both runtimes, by the Swift target
+  `BatonAniListTests` and the Kotlin harness's `jvmAniListTest`, with an
+  entry answered by the lookup `MediaList(id:)` from the list's records and
+  a save that notifies the two bodies that read the field it changed
+  ([#51](https://github.com/shergin/baton/issues/51)).
+- Bench rows for that list on both runtimes, the AniList section of
+  `swift run -c release BatonBenchmarks` and its Kotlin twin
+  `gradle :baton:runAniListBench`: the ingest of a 500-entry chunk, 1.81 ms
+  in Swift; the image after both chunks, 811,008 bytes; a launch from it
+  to both handles ready, 21.6 ms; a one-field save's notifications, 2; and
+  a tracked reading of the whole list, 28.5 ms in Swift and 2.6 ms on the
+  JVM, against 0.89 and 0.65 ms untracked. Recorded in `BENCHMARKS.md`,
+  18 October.
+- The test schema learns AniList's shapes: capitalized root fields, one
+  spelled like its type, an enum that grows behind a `version` argument,
+  and a union of twenty members with no interface. The goldens of both
+  emitters hold documents over them, and three cases,
+  `capitalized-roots-1`, `episode-status-1` and `notifications-1`, freeze
+  them at run time on both runtimes. A root field's accessor keeps its
+  spelling, `MediaListCollection`, and its lens takes a number,
+  `MediaListCollection2`.
+- AniList's schema is a second set of the compiler's goldens, Swift,
+  Kotlin and plans, compiled with its own configuration from the AniList
+  documents and built by a Swift target and the Kotlin goldens module of
+  their own.
 
 ## 0.17.0 (Kulich) — 2026-10-18
 
