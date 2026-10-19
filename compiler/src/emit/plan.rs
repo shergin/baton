@@ -11,7 +11,8 @@ use crate::decide::{
 };
 use crate::names::guard_name;
 use crate::pipeline::{
-    ArgumentValuePlan, ConnectionPlan, ConstantPlan, EditPlan, LookupPlan, StorageKeyPlan, TypeKind,
+    ArgumentValuePlan, ConnectionPlan, ConstantPlan, EditPlan, LookupPlan, PagedPlan,
+    StorageKeyPlan, TypeKind,
 };
 
 /// The selections of a normalization plan, each written once, as
@@ -186,6 +187,7 @@ impl<'a> PlanSelections<'a> {
                     plural,
                     lookup,
                     connection,
+                    paged,
                     selection,
                 } => {
                     let lookup_argument = match lookup {
@@ -204,9 +206,18 @@ impl<'a> PlanSelections<'a> {
                             )
                         })
                         .unwrap_or_default();
+                    let paged_argument = paged
+                        .as_ref()
+                        .map(|paged| {
+                            format!(
+                                ", paged: {}",
+                                paged_expression(type_name, &selection.type_name, paged)
+                            )
+                        })
+                        .unwrap_or_default();
                     let _ = write!(
                         output,
-                        ".linked({}, key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{edit_argument}{deferred_argument}{streamed_argument}{caught_argument}{client_argument}{transient_argument}{guards_argument}, selection: {}),",
+                        ".linked({}, key: {slot}, plural: {plural}{lookup_argument}{connection_argument}{paged_argument}{edit_argument}{deferred_argument}{streamed_argument}{caught_argument}{client_argument}{transient_argument}{guards_argument}, selection: {}),",
                         swift_literal(&field.response_key),
                         PlanSelections::name(self.table.number(selection))
                     );
@@ -268,6 +279,20 @@ fn lookup_expression(lookup: &LookupPlan, base_type: &str) -> String {
         })
         .collect();
     format!("Baton.Lookup({types}, key: [{}])", parts.join(", "))
+}
+
+/// The plan's description of a paged list on its container field: the
+/// client key on the parent type, the list's key on the container type,
+/// the slots of the container and page info types, and the page variable.
+fn paged_expression(parent_type: &str, container_type: &str, paged: &PagedPlan) -> String {
+    format!(
+        "Baton.PagedPlan(key: {}, list: {}, slots: Baton.PagedSlots(container: {}, pageInfo: {}), page: {})",
+        plan_key(parent_type, &paged.storage_key),
+        plan_key(container_type, &paged.list),
+        type_reference(container_type),
+        type_reference(&paged.page_info_type),
+        swift_literal(&paged.page)
+    )
 }
 
 /// The plan's description of a connection: the client key on the parent

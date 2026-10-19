@@ -86,7 +86,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle, Store.Judge {
         self.environment = environment
         store = environment.store
         root = environment.store.root(key, resolved: Op.plan.resolve(operation.variables, in: environment.store.keys), record: environment.store.root)
-        owner = Owner(variables: operation.variables, store: environment.store, environment: environment, root: root)
+        owner = Owner(variables: operation.variables, store: environment.store, environment: environment, root: root, query: Op.self)
         // An operation with a policy judges its root's data.
         if Op.throwsOnFieldError || Op.bubbles { root.judge = self }
     }

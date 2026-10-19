@@ -1,7 +1,7 @@
 //! The shared file in Kotlin: `object Types`, `object Slots` with each
-//! connection type's `ConnectionSlots`, the schema's enums as sealed
-//! interfaces and its input objects as data classes, as the decide pass
-//! collected them.
+//! connection type's `ConnectionSlots` and each paged list's container
+//! type's `PagedSlots`, the schema's enums as sealed interfaces and its
+//! input objects as data classes, as the decide pass collected them.
 
 use std::collections::BTreeMap;
 
@@ -28,13 +28,23 @@ pub(super) struct ConnectionTypes {
 /// The name of a connection type's `ConnectionSlots` in its slots' object:
 /// `connection`, past a slot of the type's of that name.
 pub(super) fn connection_member(type_name: &str, shared: &Shared) -> String {
+    slots_member("connection", type_name, shared)
+}
+
+/// The name of a paged list's container type's `PagedSlots` in its slots'
+/// object: `paged`, past a slot of the type's of that name.
+pub(super) fn paged_member(type_name: &str, shared: &Shared) -> String {
+    slots_member("paged", type_name, shared)
+}
+
+fn slots_member(wanted: &str, type_name: &str, shared: &Shared) -> String {
     let taken: Vec<String> = shared
         .slots
         .iter()
         .filter(|slot| slot.type_name == type_name)
         .map(slot_member)
         .collect();
-    let mut name = "connection".to_string();
+    let mut name = wanted.to_string();
     while taken.contains(&name) {
         name.push('_');
     }
@@ -46,6 +56,7 @@ pub(super) fn connection_member(type_name: &str, shared: &Shared) -> String {
 pub(super) fn shared_text(
     shared: &Shared,
     connections: &BTreeMap<String, ConnectionTypes>,
+    paged: &BTreeMap<String, String>,
     converters: &Converters,
     package: Option<&str>,
 ) -> String {
@@ -123,7 +134,7 @@ pub(super) fn shared_text(
     writer.line("/** Interned storage keys used by this module's documents. */");
     writer.block("object Slots", |writer| {
         let mut runs = by_type(&shared.slots);
-        for type_name in connections.keys() {
+        for type_name in connections.keys().chain(paged.keys()) {
             if !runs.iter().any(|(name, _)| name == type_name) {
                 runs.push((type_name.as_str(), Vec::new()));
             }
@@ -141,6 +152,14 @@ pub(super) fn shared_text(
                         type_reference(type_name),
                         type_reference(&connection.edge),
                         type_reference(&connection.page_info)
+                    ));
+                }
+                if let Some(page_info) = paged.get(type_name) {
+                    writer.line(format!(
+                        "val {} = PagedSlots({}, {})",
+                        paged_member(type_name, shared),
+                        type_reference(type_name),
+                        type_reference(page_info)
                     ));
                 }
             });

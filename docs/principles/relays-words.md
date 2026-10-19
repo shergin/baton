@@ -25,11 +25,13 @@ conventions exist for Meta's module system. Those are not GraphQL's words.
 
 Baton consumes the Relay compiler's front end, so Relay's directives are
 parsed and validated by the code that defines them. The directive set is
-Relay's, with two exceptions, for what neither Relay nor the specification
-has a word: `@cacheExpiration(seconds:)`
-([the decision](../decisions/an-operation-states-its-expiration.md)) and
+Relay's, with three exceptions, for what neither Relay nor the
+specification has a word: `@cacheExpiration(seconds:)`
+([the decision](../decisions/an-operation-states-its-expiration.md)),
 `@deletes(type:id:)`
-([the decision](../decisions/a-mutation-names-the-record-it-deletes.md)).
+([the decision](../decisions/a-mutation-names-the-record-it-deletes.md))
+and `@paged(key:page:)`
+([the decision](../decisions/a-paged-list-merges-its-pages-by-number.md)).
 Connection handling is Relay's, the fetch policies are Relay's four, and
 the glossary terms are Relay's: operation, fragment, record, store,
 environment, retain, release buffer. Configuration keeps Relay's key names,
@@ -75,6 +77,6 @@ These are understood by the compiler and honored by the runtime:
 `@alias`, `@appendEdge`, `@prependEdge`, `@appendNode`, `@prependNode`,
 `@deleteEdge`, `@deleteRecord`, `@include`, `@skip`, `@required`, `@catch`,
 `@throwOnFieldError`, `@semanticNonNull` (schema), `@defer`, `@stream`,
-`@stream_connection`, `@inline`; and Baton's own `@cacheExpiration` and
-`@deletes`.
+`@stream_connection`, `@inline`; and Baton's own `@cacheExpiration`,
+`@deletes` and `@paged`.
 This section may rot. The rest must not.

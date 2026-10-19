@@ -1,5 +1,5 @@
 {
-  "schemaDigest": "05a112649a1212d03abe827e91364544",
+  "schemaDigest": "48225267547352f149f9ef93baefde85",
   "operations": [
     {
       "name": "Fixture",
@@ -2638,6 +2638,46 @@
       }
     },
     {
+      "name": "TestFriendsQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/PagedDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "page",
+          "type": "Int!"
+        }
+      ],
+      "fragments": [
+        "TestFriends_character"
+      ],
+      "text": "query TestFriendsQuery($id:ID!,$page:Int!){character(id:$id){...TestFriends_character,id}}fragment TestFriends_character on Character{id,friends(page:$page,perPage:2){pageInfo{hasNextPage},nodes{id,name}}}",
+      "lens": {
+        "type": "Query",
+        "accessors": [
+          {
+            "name": "character",
+            "key": "character",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "Character",
+              "accessors": [
+                {
+                  "name": "testFriends",
+                  "read": "spread",
+                  "fragment": "TestFriends_character"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "TestHasherVariable",
       "kind": "query",
       "source": "swift/Tests/BatonTests/EmitterDocuments.swift",
@@ -4535,6 +4575,156 @@
                   "read": "spread",
                   "optional": true,
                   "fragment": "TestAppearances_character"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestPagedCharactersQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/PagedDocuments.swift",
+      "variables": [
+        {
+          "name": "page",
+          "type": "Int!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestPagedCharactersQuery($page:Int!){page(page:$page,perPage:2){pageInfo{hasNextPage},characters{id,name}}}",
+      "lens": {
+        "type": "Query",
+        "accessors": [
+          {
+            "name": "page",
+            "key": "page",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "Page",
+              "accessors": [
+                {
+                  "name": "pageInfo",
+                  "key": "pageInfo",
+                  "read": "linked",
+                  "lens": {
+                    "type": "PageInfo",
+                    "accessors": [
+                      {
+                        "name": "hasNextPage",
+                        "key": "hasNextPage",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "characters",
+                  "key": "characters",
+                  "read": "linked",
+                  "optional": true,
+                  "list": {
+                    "optionalElements": false
+                  },
+                  "lens": {
+                    "type": "Character",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "name",
+                        "key": "name",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestPagedNotesQuery",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/PagedDocuments.swift",
+      "variables": [
+        {
+          "name": "page",
+          "type": "Int!"
+        },
+        {
+          "name": "authorId",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestPagedNotesQuery($page:Int!,$authorId:ID!){page(page:$page,perPage:2){pageInfo{hasNextPage,currentPage},notes(authorId:$authorId){id,text}}}",
+      "lens": {
+        "type": "Query",
+        "accessors": [
+          {
+            "name": "page",
+            "key": "page",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "Page",
+              "accessors": [
+                {
+                  "name": "pageInfo",
+                  "key": "pageInfo",
+                  "read": "linked",
+                  "lens": {
+                    "type": "PageInfo",
+                    "accessors": [
+                      {
+                        "name": "hasNextPage",
+                        "key": "hasNextPage",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "currentPage",
+                        "key": "currentPage",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "notes",
+                  "key": "notes",
+                  "read": "linked",
+                  "optional": true,
+                  "list": {
+                    "optionalElements": false
+                  },
+                  "lens": {
+                    "type": "Note",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "text",
+                        "key": "text",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
                 }
               ]
             }
@@ -8438,6 +8628,78 @@
             "key": "favorite",
             "read": "scalar",
             "optional": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestFriends_character",
+      "type": "Character",
+      "source": "swift/Tests/BatonTests/PagedDocuments.swift",
+      "operations": [
+        "TestFriendsQuery"
+      ],
+      "text": "fragment TestFriends_character on Character {\n  id\n  friends(page: $page, perPage: 2) {\n    pageInfo {\n      hasNextPage\n    }\n    nodes @paged(key: \"TestFriends_nodes\", page: $page) {\n      id\n      name\n    }\n  }\n}",
+      "lens": {
+        "type": "Character",
+        "accessors": [
+          {
+            "name": "id",
+            "key": "id",
+            "read": "scalar",
+            "optional": true
+          },
+          {
+            "name": "friends",
+            "key": "friends",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "CharacterPage",
+              "accessors": [
+                {
+                  "name": "pageInfo",
+                  "key": "pageInfo",
+                  "read": "linked",
+                  "lens": {
+                    "type": "PageInfo",
+                    "accessors": [
+                      {
+                        "name": "hasNextPage",
+                        "key": "hasNextPage",
+                        "read": "scalar"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "nodes",
+                  "key": "nodes",
+                  "read": "linked",
+                  "optional": true,
+                  "list": {
+                    "optionalElements": false
+                  },
+                  "lens": {
+                    "type": "Character",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "name",
+                        "key": "name",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
           }
         ]
       }

@@ -85,7 +85,11 @@ public enum Format18 {}
 public enum Format19 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 20 and the runtime reads format 21: a list paged by number merges its pages under `@paged`; rebuild with the compiler of this release")
 public enum Format20 {}
+
+@_spi(Generated)
+public enum Format21 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.
@@ -243,6 +247,53 @@ public struct ConnectionSlots: Sendable {
     }
 }
 
+/// The slots a paged list's merge and state use, on the container type the
+/// pages and the merged record share and on its page info type, plus the
+/// client fields the merge keeps on the merged record: where the list
+/// started, the span of each page in it, and whether a page is loading.
+/// Resolved once per paged list by the generated code.
+@_spi(Generated)
+public struct PagedSlots: Sendable {
+    public let container: TypeID
+    public let pageInfo: TypeID
+    public let pageInfoLink: Slot
+    public let hasNextPage: Slot
+    public let isLoadingNext: Slot
+    public let firstPage: Slot
+    public let pageLengths: Slot
+
+    public init(container: TypeID, pageInfo: TypeID) {
+        self.container = container
+        self.pageInfo = pageInfo
+        pageInfoLink = Registry.slot(container, "pageInfo")
+        hasNextPage = Registry.slot(pageInfo, "hasNextPage")
+        isLoadingNext = Registry.slot(container, "__isLoadingNext")
+        firstPage = Registry.slot(container, "__firstPage")
+        pageLengths = Registry.slot(container, "__pageLengths")
+    }
+}
+
+/// A paged list on the field that takes the page, its container: the client
+/// record of the container's type its pages merge into, keyed on the
+/// container's parent by the list and its arguments; the list field's own
+/// key on the container, which the merge finds the elements by; and the
+/// variable that names the page each run
+/// (`docs/decisions/a-paged-list-merges-its-pages-by-number.md`).
+@_spi(Generated)
+public struct PagedPlan: Sendable {
+    public let key: StorageKey
+    public let list: StorageKey
+    public let slots: PagedSlots
+    public let page: String
+
+    public init(key: StorageKey, list: StorageKey, slots: PagedSlots, page: String) {
+        self.key = key
+        self.list = list
+        self.slots = slots
+        self.page = page
+    }
+}
+
 /// A cursor argument of a connection field: a variable, or a constant that is
 /// not null (the compiler drops null constants).
 @_spi(Generated)
@@ -370,6 +421,9 @@ public struct PlanField: Sendable {
     public let key: StorageKey
     public let kind: Kind
     public let edit: Edit?
+    /// The paged list this field is the container of, when a field of its
+    /// selection carries `@paged`.
+    public let paged: PagedPlan?
     /// The `@defer` label of the part that carries the field, when deferred.
     public let deferred: String?
     /// The `@stream` label the field's items carry, when the list streams.
@@ -394,11 +448,12 @@ public struct PlanField: Sendable {
     /// lookup, its connection or its edit, or a field below it.
     let readsVariables: Bool
 
-    init(responseKey: String, key: StorageKey, kind: Kind, edit: Edit?, deferred: String?, streamed: String? = nil, caught: Bool, client: Bool, transient: Bool, guards: [[Guard]]) {
+    init(responseKey: String, key: StorageKey, kind: Kind, edit: Edit?, paged: PagedPlan? = nil, deferred: String?, streamed: String? = nil, caught: Bool, client: Bool, transient: Bool, guards: [[Guard]]) {
         self.responseKey = responseKey
         self.key = key
         self.kind = kind
         self.edit = edit
+        self.paged = paged
         self.deferred = deferred
         self.streamed = streamed
         self.caught = caught
@@ -412,6 +467,8 @@ public struct PlanField: Sendable {
         case .dynamic: fixedStorageKey = nil; readsVariables = true
         }
         if case .variable? = edit?.connections { readsVariables = true }
+        // A paged list's merge reads the page variable every run.
+        if paged != nil { readsVariables = true }
         if case .linked(let selection, _, let lookup, let connection) = kind {
             if selection.readsVariables { readsVariables = true }
             if let lookup, lookup.key.contains(where: { if case .variable = $0 { return true } else { return false } }) { readsVariables = true }
@@ -424,8 +481,8 @@ public struct PlanField: Sendable {
         PlanField(responseKey: responseKey, key: key, kind: .scalar(kind, list: list), edit: edit, deferred: deferred, caught: caught, client: client, transient: transient, guards: guards)
     }
 
-    public static func linked(_ responseKey: String, key: StorageKey, plural: Bool, lookup: Lookup? = nil, connection: ConnectionPlan? = nil, edit: Edit? = nil, deferred: String? = nil, streamed: String? = nil, caught: Bool = false, client: Bool = false, transient: Bool = false, guards: [[Guard]] = [], selection: Selection) -> PlanField {
-        PlanField(responseKey: responseKey, key: key, kind: .linked(selection, plural: plural, lookup: lookup, connection: connection), edit: edit, deferred: deferred, streamed: streamed, caught: caught, client: client, transient: transient, guards: guards)
+    public static func linked(_ responseKey: String, key: StorageKey, plural: Bool, lookup: Lookup? = nil, connection: ConnectionPlan? = nil, paged: PagedPlan? = nil, edit: Edit? = nil, deferred: String? = nil, streamed: String? = nil, caught: Bool = false, client: Bool = false, transient: Bool = false, guards: [[Guard]] = [], selection: Selection) -> PlanField {
+        PlanField(responseKey: responseKey, key: key, kind: .linked(selection, plural: plural, lookup: lookup, connection: connection), edit: edit, paged: paged, deferred: deferred, streamed: streamed, caught: caught, client: client, transient: transient, guards: guards)
     }
 
     /// Whether the variables select the field.
@@ -556,11 +613,15 @@ public final class Selection: Sendable {
     /// A field with its variables bound, its slot on the selection's own type.
     private func resolve(_ field: PlanField, _ variables: Variables, _ hold: Keys.Hold) -> ResolvedField {
         let storageKey = Selection.render(field, variables)
-        let kind: ResolvedField.Kind = switch field.kind {
-        case .scalar(let scalar, let list): .scalar(scalar, list: list)
+        var child: ResolvedSelection?
+        let kind: ResolvedField.Kind
+        switch field.kind {
+        case .scalar(let scalar, let list): kind = .scalar(scalar, list: list)
         case .linked(let selection, let plural, let lookup, let connection):
-            .linked(
-                selection.resolve(variables, hold),
+            let resolved = selection.resolve(variables, hold)
+            child = resolved
+            kind = .linked(
+                resolved,
                 plural: plural,
                 lookupKey: lookup.map { lookup in
                     let parts = lookup.key.map { part in
@@ -583,6 +644,22 @@ public final class Selection: Sendable {
                 }
             )
         }
+        let paged: ResolvedPaged? = field.paged.flatMap { paged in
+            guard let child else { return nil }
+            let key = Selection.render(paged.key, variables)
+            let list = Selection.render(paged.list, variables)
+            let listSlot = Selection.slot(paged.list, list, on: paged.slots.container, hold)
+            return ResolvedPaged(
+                storageKey: key,
+                rendered: paged.key.isRendered,
+                slot: Selection.slot(paged.key, key, on: type, hold),
+                listSlot: listSlot,
+                slots: paged.slots,
+                page: Selection.page(paged, variables),
+                copied: Selection.copied(child, listSlot: listSlot, pageInfoLink: paged.slots.pageInfoLink),
+                pageInfoCopied: Selection.pageInfoCopied(child, pageInfoLink: paged.slots.pageInfoLink)
+            )
+        }
         return ResolvedField(
             responseKey: field.responseKey,
             keyBytes: field.keyBytes,
@@ -597,6 +674,7 @@ public final class Selection: Sendable {
                     edgeType: edit.edgeType
                 )
             },
+            paged: paged,
             deferred: field.deferred,
             streams: field.streamed != nil,
             caught: field.caught,
@@ -641,6 +719,30 @@ public final class Selection: Sendable {
         let before = cursor(connection.before)
         if before.present { return .prepend(before: before.value) }
         return .replace
+    }
+
+    /// The page a paged list's container was fetched with: the page
+    /// variable's value, which the compiler requires every run to give; a
+    /// run that gives none merges nothing.
+    private static func page(_ paged: PagedPlan, _ variables: Variables) -> Int? {
+        if case .int(let page)? = variables[paged.page] { return page }
+        return nil
+    }
+
+    /// The container's slots a page merge copies: the fields the operation
+    /// selected of the container, except the list and the page info link.
+    private static func copied(_ container: ResolvedSelection, listSlot: Slot, pageInfoLink: Slot) -> [Slot] {
+        container.fields.compactMap { field in
+            if field.isTypename || field.slot.index == listSlot.index || field.slot.index == pageInfoLink.index { return nil }
+            return field.slot
+        }
+    }
+
+    /// The page info's slots a page merge copies: the fields the operation
+    /// selected of it.
+    private static func pageInfoCopied(_ container: ResolvedSelection, pageInfoLink: Slot) -> [Slot] {
+        guard let pageInfo = container.fields.first(where: { $0.slot.index == pageInfoLink.index }), case .linked(let selection, _, _, _) = pageInfo.kind else { return [] }
+        return selection.fields.compactMap { $0.isTypename ? nil : $0.slot }
     }
 
     /// The connection ids an edit names, from its variable or constant list.

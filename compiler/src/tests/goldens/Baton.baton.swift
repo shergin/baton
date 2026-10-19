@@ -6,10 +6,10 @@ import Foundation
 nonisolated enum Types {
     /// The schema's digest: pass it as the image's `version`, so an image
     /// written under another schema starts again.
-    static let schemaDigest = "05a112649a1212d03abe827e91364544"
+    static let schemaDigest = "48225267547352f149f9ef93baefde85"
     /// The format of this generated code, which the runtime that reads it
     /// declares; a runtime of another format fails to compile this line.
-    static let format = Baton.Format20.self
+    static let format = Baton.Format21.self
     static let ActivityLikeNotification = Baton.Registry.type("ActivityLikeNotification")
     static let ActivityMentionNotification = Baton.Registry.type("ActivityMentionNotification")
     static let ActivityMessageNotification = Baton.Registry.type("ActivityMessageNotification")
@@ -22,6 +22,7 @@ nonisolated enum Types {
     static let Asset = Baton.Registry.type("Asset")
     static let Baton_ = Baton.Registry.type("Baton")
     static let Character = Baton.Registry.type("Character")
+    static let CharacterPage = Baton.Registry.type("CharacterPage")
     static let CharacterSubmissionUpdateNotification = Baton.Registry.type("CharacterSubmissionUpdateNotification")
     static let Characters = Baton.Registry.type("Characters")
     static let Deleted = Baton.Registry.type("Deleted")
@@ -44,6 +45,7 @@ nonisolated enum Types {
     static let NoteConnection = Baton.Registry.type("NoteConnection")
     static let NoteEdge = Baton.Registry.type("NoteEdge")
     static let NotificationUnion = Baton.Registry.type("NotificationUnion")
+    static let Page = Baton.Registry.type("Page")
     static let PageInfo = Baton.Registry.type("PageInfo")
     static let Protocol_ = Baton.Registry.type("Protocol")
     static let Query = Baton.Registry.type("Query")
@@ -135,6 +137,7 @@ nonisolated enum Slots {
         static let __TestAuthorNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestAuthorNotes_notes_connection")
         static let __TestDeferredNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestDeferredNotes_notes_connection")
         static let __TestEdgesNames_notes_connection = Baton.Registry.slot(Types.Character, "__TestEdgesNames_notes_connection")
+        static let __TestFriends_nodes_paged_100720 = Baton.Registry.slot(Types.Character, "__TestFriends_nodes_paged(perPage:2)")
         static let __TestHiddenNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestHiddenNotes_notes_connection")
         static let __TestHiddenRecentNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestHiddenRecentNotes_notes_connection")
         static let __TestNotes_notes_connection = Baton.Registry.slot(Types.Character, "__TestNotes_notes_connection")
@@ -145,6 +148,7 @@ nonisolated enum Slots {
         static let created = Baton.Registry.slot(Types.Character, "created")
         static let episode = Baton.Registry.slot(Types.Character, "episode")
         static let favorite = Baton.Registry.slot(Types.Character, "favorite")
+        static let friends_e2abf8 = Baton.DynamicKey(Types.Character, "friends", [Baton.KeyArgument("page", [.variable("page")]), Baton.KeyArgument("perPage", [.literal("2")])])
         static let gender = Baton.Registry.slot(Types.Character, "gender")
         static let id = Baton.Registry.slot(Types.Character, "id")
         static let image = Baton.Registry.slot(Types.Character, "image")
@@ -167,6 +171,10 @@ nonisolated enum Slots {
         static let species = Baton.Registry.slot(Types.Character, "species")
         static let status = Baton.Registry.slot(Types.Character, "status")
         static let type = Baton.Registry.slot(Types.Character, "type")
+    }
+    nonisolated enum CharacterPage {
+        static let nodes = Baton.Registry.slot(Types.CharacterPage, "nodes")
+        static let pageInfo = Baton.Registry.slot(Types.CharacterPage, "pageInfo")
     }
     nonisolated enum CharacterSubmissionUpdateNotification {
         static let id = Baton.Registry.slot(Types.CharacterSubmissionUpdateNotification, "id")
@@ -293,7 +301,13 @@ nonisolated enum Slots {
         static let id = Baton.Registry.slot(Types.NotificationUnion, "id")
         static let status = Baton.Registry.slot(Types.NotificationUnion, "status")
     }
+    nonisolated enum Page {
+        static let characters = Baton.Registry.slot(Types.Page, "characters")
+        static let notes_a81f9d = Baton.DynamicKey(Types.Page, "notes", [Baton.KeyArgument("authorId", [.variable("authorId")])])
+        static let pageInfo = Baton.Registry.slot(Types.Page, "pageInfo")
+    }
     nonisolated enum PageInfo {
+        static let currentPage = Baton.Registry.slot(Types.PageInfo, "currentPage")
         static let endCursor = Baton.Registry.slot(Types.PageInfo, "endCursor")
         static let hasNextPage = Baton.Registry.slot(Types.PageInfo, "hasNextPage")
         static let hasPreviousPage = Baton.Registry.slot(Types.PageInfo, "hasPreviousPage")
@@ -308,6 +322,8 @@ nonisolated enum Slots {
         static let GenreCollection = Baton.Registry.slot(Types.Query, "GenreCollection")
         static let Notification = Baton.Registry.slot(Types.Query, "Notification")
         static let Viewer = Baton.Registry.slot(Types.Query, "Viewer")
+        static let __TestPagedCharacters_characters_paged_a42b44 = Baton.Registry.slot(Types.Query, "__TestPagedCharacters_characters_paged(perPage:2)")
+        static let __TestPagedNotes_notes_paged_13b716 = Baton.DynamicKey(Types.Query, "__TestPagedNotes_notes_paged", [Baton.KeyArgument("authorId", [.variable("authorId")]), Baton.KeyArgument("perPage", [.literal("2")])])
         static let __TestRootNotes_notes_connection = Baton.Registry.slot(Types.Query, "__TestRootNotes_notes_connection")
         static let asset_9e39ed = Baton.DynamicKey(Types.Query, "asset", [Baton.KeyArgument("uuid", [.variable("uuid")])])
         static let assets = Baton.Registry.slot(Types.Query, "assets")
@@ -325,7 +341,7 @@ nonisolated enum Slots {
         static let characters_192531 = Baton.DynamicKey(Types.Query, "characters", [Baton.KeyArgument("filter", [.literal("{\"name\":"), .variable("name"), .literal("}")])])
         static let characters_5517f9 = Baton.DynamicKey(Types.Query, "characters", [Baton.KeyArgument("page", [.variable("page")])])
         static let charactersByIds_59a627 = Baton.DynamicKey(Types.Query, "charactersByIds", [Baton.KeyArgument("ids", [.variable("ids")])])
-        static let charactersByIds_5192ed = Baton.DynamicKey(Types.Query, "charactersByIds", [Baton.KeyArgument("ids", [.literal("["), .variable("Type"), .literal(","), .variable("Protocol"), .literal(","), .variable("Any"), .literal(","), .variable("self"), .literal(","), .variable("init"), .literal(","), .variable("deinit"), .literal(","), .variable("subscript"), .literal(","), .variable("class"), .literal(","), .variable("struct"), .literal(","), .variable("enum"), .literal(","), .variable("func"), .literal(","), .variable("var"), .literal(","), .variable("let"), .literal(","), .variable("import"), .literal(","), .variable("extension"), .literal(","), .variable("operator"), .literal(","), .variable("static"), .literal(","), .variable("default"), .literal(","), .variable("case"), .literal(","), .variable("switch"), .literal(","), .variable("if"), .literal(","), .variable("else"), .literal(","), .variable("for"), .literal(","), .variable("in"), .literal(","), .variable("while"), .literal(","), .variable("repeat"), .literal(","), .variable("return"), .literal(","), .variable("break"), .literal(","), .variable("continue"), .literal(","), .variable("where"), .literal(","), .variable("is"), .literal(","), .variable("as"), .literal(","), .variable("try"), .literal(","), .variable("throw"), .literal(","), .variable("throws"), .literal(","), .variable("guard"), .literal(","), .variable("defer"), .literal(","), .variable("do"), .literal(","), .variable("catch"), .literal(","), .variable("true"), .literal(","), .variable("false"), .literal(","), .variable("nil"), .literal(","), .variable("super"), .literal(","), .variable("internal"), .literal(","), .variable("private"), .literal(","), .variable("public"), .literal(","), .variable("fileprivate"), .literal(","), .variable("open"), .literal(","), .variable("inout"), .literal(","), .variable("typealias"), .literal(","), .variable("associatedtype"), .literal(","), .variable("protocol"), .literal(","), .variable("some"), .literal(","), .variable("any"), .literal(","), .variable("rethrows"), .literal(","), .variable("fallthrough"), .literal(","), .variable("precedencegroup"), .literal(","), .variable("_"), .literal(","), .variable("Self"), .literal(","), .variable("async"), .literal(","), .variable("borrowing"), .literal(","), .variable("consume"), .literal(","), .variable("consuming"), .literal(","), .variable("copy"), .literal(","), .variable("discard"), .literal(","), .variable("each"), .literal(","), .variable("isolated"), .literal(","), .variable("sending"), .literal(","), .variable("then"), .literal(","), .variable("unsafe"), .literal(","), .variable("await"), .literal(","), .variable("anchor"), .literal(","), .variable("recordID"), .literal(","), .variable("satisfied"), .literal(","), .variable("missingRequiredField"), .literal(","), .variable("fieldErrors"), .literal(","), .variable("isPresent"), .literal(","), .variable("throwing"), .literal(","), .variable("caught"), .literal(","), .variable("refetchable"), .literal(","), .variable("refetch"), .literal(","), .variable("connection"), .literal(","), .variable("nodes"), .literal(","), .variable("hasNext"), .literal(","), .variable("hasPrevious"), .literal(","), .variable("isLoadingNext"), .literal(","), .variable("isLoadingPrevious"), .literal(","), .variable("connectionID"), .literal(","), .variable("loadNext"), .literal(","), .variable("loadPrevious"), .literal(","), .variable("bound"), .literal(","), .variable("errors"), .literal(","), .variable("child"), .literal(","), .variable("missing"), .literal(","), .variable("count"), .literal(","), .variable("fields"), .literal(","), .variable("lhs"), .literal(","), .variable("rhs"), .literal(","), .variable("hasher"), .literal(","), .variable("selection0"), .literal(","), .variable("selection"), .literal(","), .variable("optimistic"), .literal(","), .variable("selfValue"), .literal(","), .variable("values"), .literal(","), .variable("Fragment"), .literal(","), .variable("Spread"), .literal(","), .variable("Owner"), .literal(","), .variable("Query"), .literal(","), .variable("Operation"), .literal(","), .variable("RefetchQuery"), .literal(","), .variable("name"), .literal(","), .variable("document"), .literal(","), .variable("text"), .literal(","), .variable("plan"), .literal(","), .variable("errorBehavior"), .literal(","), .variable("throwsOnFieldError"), .literal(","), .variable("bubbles"), .literal(","), .variable("hasIncremental"), .literal(","), .variable("cacheExpiration"), .literal(","), .variable("Action"), .literal(","), .variable("OptimisticResponse"), .literal(","), .variable("hash"), .literal(","), .variable("commit"), .literal(","), .variable("callAsFunction"), .literal(","), .variable("Op"), .literal(","), .variable("variable"), .literal(","), .variable("payload"), .literal(","), .variable("retry"), .literal(","), .variable("subscription"), .literal(","), .variable("Sites"), .literal(","), .variable("Guards"), .literal(","), .variable("AbstractSlots"), .literal(","), .variable("schemaDigest"), .literal(","), .variable("format"), .literal(","), .variable("transient"), .literal(","), .variable("Swift"), .literal(","), .variable("Set"), .literal(","), .variable("Result"), .literal(","), .variable("Optional"), .literal(","), .variable("String"), .literal(","), .variable("Int"), .literal(","), .variable("Double"), .literal(","), .variable("Bool"), .literal(","), .variable("MainActor"), .literal(","), .variable("Hasher"), .literal(","), .variable("Sendable"), .literal("]")])])
+        static let charactersByIds_93fdad = Baton.DynamicKey(Types.Query, "charactersByIds", [Baton.KeyArgument("ids", [.literal("["), .variable("Type"), .literal(","), .variable("Protocol"), .literal(","), .variable("Any"), .literal(","), .variable("self"), .literal(","), .variable("init"), .literal(","), .variable("deinit"), .literal(","), .variable("subscript"), .literal(","), .variable("class"), .literal(","), .variable("struct"), .literal(","), .variable("enum"), .literal(","), .variable("func"), .literal(","), .variable("var"), .literal(","), .variable("let"), .literal(","), .variable("import"), .literal(","), .variable("extension"), .literal(","), .variable("operator"), .literal(","), .variable("static"), .literal(","), .variable("default"), .literal(","), .variable("case"), .literal(","), .variable("switch"), .literal(","), .variable("if"), .literal(","), .variable("else"), .literal(","), .variable("for"), .literal(","), .variable("in"), .literal(","), .variable("while"), .literal(","), .variable("repeat"), .literal(","), .variable("return"), .literal(","), .variable("break"), .literal(","), .variable("continue"), .literal(","), .variable("where"), .literal(","), .variable("is"), .literal(","), .variable("as"), .literal(","), .variable("try"), .literal(","), .variable("throw"), .literal(","), .variable("throws"), .literal(","), .variable("guard"), .literal(","), .variable("defer"), .literal(","), .variable("do"), .literal(","), .variable("catch"), .literal(","), .variable("true"), .literal(","), .variable("false"), .literal(","), .variable("nil"), .literal(","), .variable("super"), .literal(","), .variable("internal"), .literal(","), .variable("private"), .literal(","), .variable("public"), .literal(","), .variable("fileprivate"), .literal(","), .variable("open"), .literal(","), .variable("inout"), .literal(","), .variable("typealias"), .literal(","), .variable("associatedtype"), .literal(","), .variable("protocol"), .literal(","), .variable("some"), .literal(","), .variable("any"), .literal(","), .variable("rethrows"), .literal(","), .variable("fallthrough"), .literal(","), .variable("precedencegroup"), .literal(","), .variable("_"), .literal(","), .variable("Self"), .literal(","), .variable("async"), .literal(","), .variable("borrowing"), .literal(","), .variable("consume"), .literal(","), .variable("consuming"), .literal(","), .variable("copy"), .literal(","), .variable("discard"), .literal(","), .variable("each"), .literal(","), .variable("isolated"), .literal(","), .variable("sending"), .literal(","), .variable("then"), .literal(","), .variable("unsafe"), .literal(","), .variable("await"), .literal(","), .variable("anchor"), .literal(","), .variable("recordID"), .literal(","), .variable("satisfied"), .literal(","), .variable("missingRequiredField"), .literal(","), .variable("fieldErrors"), .literal(","), .variable("isPresent"), .literal(","), .variable("throwing"), .literal(","), .variable("caught"), .literal(","), .variable("refetchable"), .literal(","), .variable("refetch"), .literal(","), .variable("connection"), .literal(","), .variable("nodes"), .literal(","), .variable("hasNext"), .literal(","), .variable("hasPrevious"), .literal(","), .variable("isLoadingNext"), .literal(","), .variable("isLoadingPrevious"), .literal(","), .variable("connectionID"), .literal(","), .variable("paged"), .literal(","), .variable("loadNext"), .literal(","), .variable("loadPrevious"), .literal(","), .variable("bound"), .literal(","), .variable("errors"), .literal(","), .variable("child"), .literal(","), .variable("missing"), .literal(","), .variable("count"), .literal(","), .variable("fields"), .literal(","), .variable("lhs"), .literal(","), .variable("rhs"), .literal(","), .variable("hasher"), .literal(","), .variable("selection0"), .literal(","), .variable("selection"), .literal(","), .variable("optimistic"), .literal(","), .variable("selfValue"), .literal(","), .variable("values"), .literal(","), .variable("Fragment"), .literal(","), .variable("Spread"), .literal(","), .variable("Owner"), .literal(","), .variable("Query"), .literal(","), .variable("Operation"), .literal(","), .variable("RefetchQuery"), .literal(","), .variable("name"), .literal(","), .variable("document"), .literal(","), .variable("text"), .literal(","), .variable("plan"), .literal(","), .variable("errorBehavior"), .literal(","), .variable("throwsOnFieldError"), .literal(","), .variable("bubbles"), .literal(","), .variable("hasIncremental"), .literal(","), .variable("cacheExpiration"), .literal(","), .variable("Action"), .literal(","), .variable("OptimisticResponse"), .literal(","), .variable("hash"), .literal(","), .variable("commit"), .literal(","), .variable("callAsFunction"), .literal(","), .variable("Op"), .literal(","), .variable("variable"), .literal(","), .variable("payload"), .literal(","), .variable("retry"), .literal(","), .variable("subscription"), .literal(","), .variable("Sites"), .literal(","), .variable("Guards"), .literal(","), .variable("AbstractSlots"), .literal(","), .variable("schemaDigest"), .literal(","), .variable("format"), .literal(","), .variable("transient"), .literal(","), .variable("Swift"), .literal(","), .variable("Set"), .literal(","), .variable("Result"), .literal(","), .variable("Optional"), .literal(","), .variable("String"), .literal(","), .variable("Int"), .literal(","), .variable("Double"), .literal(","), .variable("Bool"), .literal(","), .variable("MainActor"), .literal(","), .variable("Hasher"), .literal(","), .variable("Sendable"), .literal("]")])])
         static let charactersByIds_0b7f7b = Baton.DynamicKey(Types.Query, "charactersByIds", [Baton.KeyArgument("ids", [.literal("["), .variable("id"), .literal(",\"2\"]")])])
         static let charactersMatching_ca82bd = Baton.DynamicKey(Types.Query, "charactersMatching", [Baton.KeyArgument("filters", [.variable("filters")])])
         static let charactersWithStatus_deb51f = Baton.DynamicKey(Types.Query, "charactersWithStatus", [Baton.KeyArgument("any", [.variable("any")]), Baton.KeyArgument("status", [.variable("status")])])
@@ -336,6 +352,7 @@ nonisolated enum Slots {
         static let node_c27cc2 = Baton.Registry.slot(Types.Query, "node(id:1)")
         static let notes_a9400e = Baton.DynamicKey(Types.Query, "notes", [Baton.KeyArgument("after", [.variable("cursor")]), Baton.KeyArgument("first", [.variable("count")])])
         static let notes_29a6d8 = Baton.Registry.slot(Types.Query, "notes(first:2)")
+        static let page_452d1b = Baton.DynamicKey(Types.Query, "page", [Baton.KeyArgument("page", [.variable("page")]), Baton.KeyArgument("perPage", [.literal("2")])])
         static let quote_bd29fc = Baton.DynamicKey(Types.Query, "quote", [Baton.KeyArgument("base", [.variable("base")]), Baton.KeyArgument("quote", [.variable("quote")])])
         static let quotes = Baton.Registry.slot(Types.Query, "quotes")
         static let search_6286a6 = Baton.Registry.slot(Types.Query, "search(name:\"$0.00\")")
@@ -540,6 +557,7 @@ nonisolated enum Guards {
     static let open_true = Baton.Guard("open", passing: true)
     static let operator_true = Baton.Guard("operator", passing: true)
     static let optimistic_true = Baton.Guard("optimistic", passing: true)
+    static let paged_true = Baton.Guard("paged", passing: true)
     static let payload_true = Baton.Guard("payload", passing: true)
     static let phase_true = Baton.Guard("phase", passing: true)
     static let plan_true = Baton.Guard("plan", passing: true)

@@ -1,7 +1,10 @@
 /// Connections: the merge of a page into its connection record and the edge
 /// directives' edits, as functions over a batch, where Relay keeps its
 /// connection handler. A connection is a client record on the parent that
-/// every page merges into, and it owns the edges inserted into it.
+/// every page merges into, and it owns the edges inserted into it. A paged
+/// list is the connection's sibling: a client record of the container's
+/// type on the container's parent, which pages merge into by number
+/// (`docs/decisions/a-paged-list-merges-its-pages-by-number.md`).
 extension Store {
     /// The connection an edit may change: in memory, live, and holding what
     /// the image has or more. One the store holds only as an empty record a
@@ -85,6 +88,90 @@ extension Store {
                 if case .missing = value { continue }
                 set(pageInfo, slot, value, &batch)
             }
+        }
+    }
+
+    /// Merges a page into its paged list's record. The fields the operation
+    /// selected of the container follow the page's, except the list and the
+    /// page info link, so a page record two lists share lends the other
+    /// list nothing. The list's first page replaces the merged list, the
+    /// page after the last merged appends, a page already merged rewrites
+    /// its own span in place, and any other page is ignored, as a
+    /// connection page after a cursor that is no longer the end is. The
+    /// elements are the page's records, each once across the list, nulls
+    /// dropped. The page info's selected fields follow the page's when the
+    /// page replaces or is the last merged. The record keeps where it
+    /// stands in `__firstPage` and `__pageLengths`.
+    func merge(_ list: Record, page: Record, paged: ResolvedPaged, number: Int, _ batch: inout Batch) {
+        let slots = paged.slots
+        let listSlot = paged.listSlot
+        for slot in paged.copied {
+            let value = page.peek(slot)
+            if case .missing = value { continue }
+            set(list, slot, value, &batch)
+        }
+        var lengths: [Int] = []
+        if case .list(let stored) = list.peek(slots.pageLengths) {
+            for case .int(let length) in stored { lengths.append(length) }
+        }
+        let first: Int? = if case .int(let first) = list.peek(slots.firstPage) { first } else { nil }
+        let existing = Store.edges(list, listSlot)
+        let incoming = Store.edges(page, listSlot)
+        var merged = ContiguousArray<Record?>()
+        var seen = Set<ObjectIdentifier>()
+        func keep(_ elements: ContiguousArray<Record?>) -> Int {
+            var kept = 0
+            for case let element? in elements where seen.insert(ObjectIdentifier(element)).inserted {
+                merged.append(element)
+                kept += 1
+            }
+            return kept
+        }
+        let isLast: Bool
+        switch first {
+        case let first? where !lengths.isEmpty && number != first:
+            if number == first + lengths.count {
+                merged.reserveCapacity(existing.count + incoming.count)
+                _ = keep(existing)
+                lengths.append(keep(incoming))
+                isLast = true
+            } else if number > first, number < first + lengths.count {
+                let position = number - first
+                let start = min(lengths[..<position].reduce(0, +), existing.count)
+                let end = min(start + lengths[position], existing.count)
+                merged.reserveCapacity(existing.count + incoming.count)
+                _ = keep(ContiguousArray(existing[..<start]))
+                _ = keep(ContiguousArray(existing[end...]))
+                // The page's own span, rewritten after the rest so an element
+                // the list already holds elsewhere stays where it was.
+                let tail = ContiguousArray(merged[start...])
+                merged.removeSubrange(start...)
+                lengths[position] = keep(incoming)
+                merged.append(contentsOf: tail)
+                isLast = position == lengths.count - 1
+            } else {
+                return
+            }
+        default:
+            merged.reserveCapacity(incoming.count)
+            lengths = [keep(incoming)]
+            set(list, slots.firstPage, .int(number), &batch)
+            isLast = true
+        }
+        set(list, listSlot, .refs(merged), &batch)
+        set(list, slots.pageLengths, .list(ContiguousArray(lengths.map(Value.int))), &batch)
+        guard isLast, case .ref(let serverPageInfo) = page.peek(slots.pageInfoLink) else { return }
+        let pageInfo: Record
+        if case .ref(let own) = list.peek(slots.pageInfoLink) {
+            pageInfo = own
+        } else {
+            pageInfo = record(key: list.key + ":pageInfo", type: slots.pageInfo, idOffset: -1)
+            set(list, slots.pageInfoLink, .ref(pageInfo), &batch)
+        }
+        for slot in paged.pageInfoCopied {
+            let value = serverPageInfo.peek(slot)
+            if case .missing = value { continue }
+            set(pageInfo, slot, value, &batch)
         }
     }
 

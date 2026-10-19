@@ -1,0 +1,11 @@
+{
+  "Character:1": {"__typename": "Character", "id": "1", "name": "Rick Sanchez"},
+  "Character:2": {"__typename": "Character", "id": "2", "name": "Morty Smith"},
+  "client:root": {"__TestPagedCharacters_characters_paged(perPage:2)": {"__ref": "client:root:__TestPagedCharacters_characters_paged(perPage:2)"}, "__typename": "Query", "page(page:1,perPage:2)": {"__ref": "client:root:page(page:1,perPage:2)"}},
+  "client:root:__TestPagedCharacters_characters_paged(perPage:2)": {"__firstPage": 1, "__pageLengths": [2], "__typename": "Page", "characters": {"__refs": ["Character:1", "Character:2"]}, "pageInfo": {"__ref": "client:root:__TestPagedCharacters_characters_paged(perPage:2):pageInfo"}},
+  "client:root:__TestPagedCharacters_characters_paged(perPage:2):pageInfo": {"__typename": "PageInfo", "hasNextPage": false},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:page(page:1,perPage:2)": {"__typename": "Page", "characters": {"__refs": ["Character:1", "Character:2"]}, "pageInfo": {"__ref": "client:root:page(page:1,perPage:2):pageInfo"}},
+  "client:root:page(page:1,perPage:2):pageInfo": {"__typename": "PageInfo", "hasNextPage": false},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

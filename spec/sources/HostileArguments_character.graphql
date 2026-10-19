@@ -90,7 +90,7 @@ fragment HostileArguments_character on Character
   hasPrevious: {type: "Boolean", defaultValue: true},
   isLoadingNext: {type: "Boolean", defaultValue: true},
   isLoadingPrevious: {type: "Boolean", defaultValue: true},
-  connectionID: {type: "Boolean", defaultValue: true},
+  connectionID: {type: "Boolean", defaultValue: true}, paged: {type: "Boolean", defaultValue: true},
   loadNext: {type: "Boolean", defaultValue: true},
   loadPrevious: {type: "Boolean", defaultValue: true},
   # The locals, parameters and local aliases of generated bodies.
@@ -201,7 +201,7 @@ fragment HostileArguments_character on Character
   ... @include(if: $refetch) { name } ... @include(if: $connection) { name }
   ... @include(if: $nodes) { name } ... @include(if: $hasNext) { name }
   ... @include(if: $hasPrevious) { name } ... @include(if: $isLoadingNext) { name }
-  ... @include(if: $isLoadingPrevious) { name } ... @include(if: $connectionID) { name }
+  ... @include(if: $isLoadingPrevious) { name } ... @include(if: $connectionID) { name } ... @include(if: $paged) { name }
   ... @include(if: $loadNext) { name } ... @include(if: $loadPrevious) { name }
   # The locals, parameters and local aliases of generated bodies.
   ... @include(if: $bound) { name } ... @include(if: $errors) { name }

@@ -16,7 +16,7 @@ A document is a query, a mutation, a subscription, or a fragment, carried by a m
 
 ## Directive
 
-A directive is the only way behaviour attaches to data. The set is Relay's: `@connection`, `@refetchable`, `@argumentDefinitions`, `@arguments`, `@alias`, `@required`, `@catch`, `@throwOnFieldError`, `@defer`, `@stream`, `@stream_connection`, `@inline`, `@include`, `@skip`, and the edge directives `@appendEdge`, `@prependEdge`, `@appendNode`, `@prependNode`, `@deleteEdge` and `@deleteRecord`. The two exceptions, which Relay has no word for, are `@cacheExpiration(seconds:)` and `@deletes(type:id:)`. Nothing is configured by an object at run time. [In the terminology.](../../terminology/#term-directive)
+A directive is the only way behaviour attaches to data. The set is Relay's: `@connection`, `@refetchable`, `@argumentDefinitions`, `@arguments`, `@alias`, `@required`, `@catch`, `@throwOnFieldError`, `@defer`, `@stream`, `@stream_connection`, `@inline`, `@include`, `@skip`, and the edge directives `@appendEdge`, `@prependEdge`, `@appendNode`, `@prependNode`, `@deleteEdge` and `@deleteRecord`. The three exceptions, which Relay has no word for, are `@cacheExpiration(seconds:)`, `@deletes(type:id:)` and `@paged(key:page:)`. Nothing is configured by an object at run time. [In the terminology.](../../terminology/#term-directive)
 
 {{host comments | Four directives appear in one figure: a refetchable connection with its argument definitions, and a mutation whose payload edge is appended to that connection.}}
 

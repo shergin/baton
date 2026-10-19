@@ -17,9 +17,11 @@ use crate::documents::Marker;
 
 /// The directives each place takes. A query also states its cache
 /// expiration, the first directive that is not Relay's
-/// (`docs/decisions/an-operation-states-its-expiration.md`), and a mutation
+/// (`docs/decisions/an-operation-states-its-expiration.md`), a mutation
 /// names the records it deletes, the second
-/// (`docs/decisions/a-mutation-names-the-record-it-deletes.md`).
+/// (`docs/decisions/a-mutation-names-the-record-it-deletes.md`), and a list
+/// field says it is paged by number, the third
+/// (`docs/decisions/a-paged-list-merges-its-pages-by-number.md`).
 const QUERY: &[&str] = &["throwOnFieldError", "cacheExpiration"];
 const MUTATION: &[&str] = &["throwOnFieldError", "deletes"];
 const SUBSCRIPTION: &[&str] = &["throwOnFieldError"];
@@ -43,6 +45,7 @@ const FIELD: &[&str] = &[
     "deleteRecord",
     "stream",
     "stream_connection",
+    "paged",
 ];
 const INLINE_FRAGMENT: &[&str] = &["include", "skip", "defer", "alias", "catch"];
 const SPREAD: &[&str] = &["include", "skip", "defer", "arguments", "alias", "catch"];

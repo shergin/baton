@@ -1,0 +1,6 @@
+query TestPagedCharactersQuery($page: Int!) {
+  page(page: $page, perPage: 2) {
+    pageInfo { hasNextPage }
+    characters @paged(key: "TestPagedCharacters_characters", page: $page) { id name }
+  }
+}

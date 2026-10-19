@@ -18,7 +18,7 @@ mutation HostilePayload {
       satisfied: name missingRequiredField: name fieldErrors: name
       isPresent: name throwing: name caught: name refetchable: name refetch: name
       connection: name nodes: name hasNext: name hasPrevious: name isLoadingNext: name
-      isLoadingPrevious: name connectionID: name loadNext: name loadPrevious: name
+      isLoadingPrevious: name connectionID: name paged: name loadNext: name loadPrevious: name
       # The locals, parameters and local aliases of generated bodies.
       bound: name errors: name child: name missing: name count: name lhs: name rhs: name
       hasher: name selection0: name selection: name optimistic: name selfValue: name values: name Fragment: name Spread: name Owner: name
@@ -64,7 +64,7 @@ mutation HostilePayload {
     fieldErrors: note { id } isPresent: note { id } throwing: note { id } caught: note { id }
     refetchable: note { id } refetch: note { id } connection: note { id } nodes: note { id }
     hasNext: note { id } hasPrevious: note { id } isLoadingNext: note { id }
-    isLoadingPrevious: note { id } connectionID: note { id } loadNext: note { id }
+    isLoadingPrevious: note { id } connectionID: note { id } paged: note { id } loadNext: note { id }
     loadPrevious: note { id }
     # The locals, parameters and local aliases of generated bodies.
     bound: note { id } errors: note { id } child: note { id } missing: note { id }

@@ -23,7 +23,7 @@ subscription HostileSubscriptionVariables(
   $missingRequiredField: Boolean!, $fieldErrors: Boolean!, $isPresent: Boolean!,
   $throwing: Boolean!, $caught: Boolean!, $refetchable: Boolean!, $refetch: Boolean!,
   $connection: Boolean!, $nodes: Boolean!, $hasNext: Boolean!, $hasPrevious: Boolean!,
-  $isLoadingNext: Boolean!, $isLoadingPrevious: Boolean!, $connectionID: Boolean!,
+  $isLoadingNext: Boolean!, $isLoadingPrevious: Boolean!, $connectionID: Boolean!, $paged: Boolean!,
   $loadNext: Boolean!, $loadPrevious: Boolean!,
   # The locals, parameters and local aliases of generated bodies.
   $bound: Boolean!, $errors: Boolean!, $child: Boolean!, $missing: Boolean!, $count: Boolean!,
@@ -95,7 +95,7 @@ subscription HostileSubscriptionVariables(
       ... @include(if: $connection) { cursor } ... @include(if: $nodes) { cursor }
       ... @include(if: $hasNext) { cursor } ... @include(if: $hasPrevious) { cursor }
       ... @include(if: $isLoadingNext) { cursor }
-      ... @include(if: $isLoadingPrevious) { cursor } ... @include(if: $connectionID) { cursor }
+      ... @include(if: $isLoadingPrevious) { cursor } ... @include(if: $connectionID) { cursor } ... @include(if: $paged) { cursor }
       ... @include(if: $loadNext) { cursor } ... @include(if: $loadPrevious) { cursor }
       # The locals, parameters and local aliases of generated bodies.
       ... @include(if: $bound) { cursor } ... @include(if: $errors) { cursor }

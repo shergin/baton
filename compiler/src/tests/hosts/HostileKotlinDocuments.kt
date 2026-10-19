@@ -49,7 +49,7 @@ import baton.Subscription
       # What every lens declares, and what a refetchable fragment and a connection add.
       satisfied: name missingRequiredField: name fieldErrors: name isPresent: name throwing: name
       caught: name refetchable: name refetch: name connection: name nodes: name hasNext: name
-      hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name
+      hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name paged: name
       loadNext: name loadPrevious: name
       # The locals, parameters and lambda parameters of generated bodies.
       bound: name errors: name child: name missing: name other: name it: name element: name
@@ -71,7 +71,7 @@ import baton.Subscription
       FieldError: name FieldErrors: name Generated: name GeneratedEnum: name Guard: name
       InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name Lookup: name
       Members: name MutationAction: name MutationOperation: name
-      OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name PlanField: name
+      OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name PagedPlan: name PagedSlots: name Payload: name Plan: name PlanField: name
       QueryOperation: name Refetch: name Registry: name ScalarKind: name
       Selection: name Slot: name StorageKey: name
       SubscriptionOperation: name Transient: name TypeID: name
@@ -117,7 +117,7 @@ fun KotlinScalars() {}
       isPresent: origin { id } throwing: origin { id } caught: origin { id }
       refetchable: origin { id } refetch: origin { id } connection: origin { id }
       nodes: origin { id } hasNext: origin { id } hasPrevious: origin { id }
-      isLoadingNext: origin { id } isLoadingPrevious: origin { id } connectionID: origin { id }
+      isLoadingNext: origin { id } isLoadingPrevious: origin { id } connectionID: origin { id } paged: origin { id }
       loadNext: origin { id } loadPrevious: origin { id }
       # The locals, parameters and lambda parameters of generated bodies.
       bound: origin { id } errors: origin { id } child: origin { id } missing: origin { id }
@@ -148,7 +148,7 @@ fun KotlinScalars() {}
       InputObject: origin { id } KeyArgument: origin { id } KeyPart: origin { id }
       Lens: origin { id } LensList: origin { id } Lookup: origin { id } Members: origin { id }
       MutationAction: origin { id } MutationOperation: origin { id }
-      OperationKind: origin { id } OperationType: origin { id } QueryType: origin { id } MutationType: origin { id } SubscriptionType: origin { id } Payload: origin { id }
+      OperationKind: origin { id } OperationType: origin { id } QueryType: origin { id } MutationType: origin { id } SubscriptionType: origin { id } PagedPlan: origin { id } PagedSlots: origin { id } Payload: origin { id }
       Plan: origin { id } PlanField: origin { id } QueryOperation: origin { id }
       Refetch: origin { id } Registry: origin { id }
       ScalarKind: origin { id } Selection: origin { id } Slot: origin { id }
@@ -219,7 +219,7 @@ fun KotlinLinks() {}
       ... @alias(as: "connection") { name } ... @alias(as: "nodes") { name }
       ... @alias(as: "hasNext") { name } ... @alias(as: "hasPrevious") { name }
       ... @alias(as: "isLoadingNext") { name } ... @alias(as: "isLoadingPrevious") { name }
-      ... @alias(as: "connectionID") { name } ... @alias(as: "loadNext") { name }
+      ... @alias(as: "connectionID") { name } ... @alias(as: "paged") { name } ... @alias(as: "loadNext") { name }
       ... @alias(as: "loadPrevious") { name }
       # The locals, parameters and lambda parameters of generated bodies.
       ... @alias(as: "bound") { name } ... @alias(as: "errors") { name }
@@ -267,7 +267,7 @@ fun KotlinLinks() {}
       ... @alias(as: "Lookup") { name } ... @alias(as: "Members") { name }
       ... @alias(as: "MutationAction") { name } ... @alias(as: "MutationOperation") { name }
       ... @alias(as: "OperationKind") { name }
-      ... @alias(as: "OperationType") { name } ... @alias(as: "QueryType") { name } ... @alias(as: "MutationType") { name } ... @alias(as: "SubscriptionType") { name } ... @alias(as: "Payload") { name }
+      ... @alias(as: "OperationType") { name } ... @alias(as: "QueryType") { name } ... @alias(as: "MutationType") { name } ... @alias(as: "SubscriptionType") { name } ... @alias(as: "PagedPlan") { name } ... @alias(as: "PagedSlots") { name } ... @alias(as: "Payload") { name }
       ... @alias(as: "Plan") { name } ... @alias(as: "PlanField") { name }
       ... @alias(as: "QueryOperation") { name } ... @alias(as: "Refetch") { name }
       ... @alias(as: "Registry") { name }
@@ -402,6 +402,7 @@ fun KotlinSpreadTarget() {}
       ... @alias(as: "isLoadingNext") { ...KotlinSpreadTarget_character }
       ... @alias(as: "isLoadingPrevious") { ...KotlinSpreadTarget_character }
       ... @alias(as: "connectionID") { ...KotlinSpreadTarget_character }
+      ... @alias(as: "paged") { ...KotlinSpreadTarget_character }
       ... @alias(as: "loadNext") { ...KotlinSpreadTarget_character }
       ... @alias(as: "loadPrevious") { ...KotlinSpreadTarget_character }
       # The locals, parameters and lambda parameters of generated bodies.
@@ -488,6 +489,8 @@ fun KotlinSpreadTarget() {}
       ... @alias(as: "MutationOperation") { ...KotlinSpreadTarget_character }
       ... @alias(as: "OperationKind") { ...KotlinSpreadTarget_character }
       ... @alias(as: "OperationType") { ...KotlinSpreadTarget_character } ... @alias(as: "QueryType") { ...KotlinSpreadTarget_character } ... @alias(as: "MutationType") { ...KotlinSpreadTarget_character } ... @alias(as: "SubscriptionType") { ...KotlinSpreadTarget_character }
+      ... @alias(as: "PagedPlan") { ...KotlinSpreadTarget_character }
+      ... @alias(as: "PagedSlots") { ...KotlinSpreadTarget_character }
       ... @alias(as: "Payload") { ...KotlinSpreadTarget_character }
       ... @alias(as: "Plan") { ...KotlinSpreadTarget_character }
       ... @alias(as: "PlanField") { ...KotlinSpreadTarget_character }
@@ -584,7 +587,7 @@ fun KotlinCaughtTarget() {}
       # What every lens declares, and what a refetchable fragment and a connection add.
       satisfied: name missingRequiredField: name fieldErrors: name isPresent: name throwing: name
       caught: name refetchable: name refetch: name connection: name nodes: name hasNext: name
-      hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name
+      hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name paged: name
       loadNext: name loadPrevious: name
       # The locals, parameters and lambda parameters of generated bodies.
       bound: name errors: name child: name missing: name other: name it: name element: name
@@ -606,7 +609,7 @@ fun KotlinCaughtTarget() {}
       FieldError: name FieldErrors: name Generated: name GeneratedEnum: name Guard: name
       InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name Lookup: name
       Members: name MutationAction: name MutationOperation: name
-      OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name PlanField: name
+      OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name PagedPlan: name PagedSlots: name Payload: name Plan: name PlanField: name
       QueryOperation: name Refetch: name Registry: name ScalarKind: name
       Selection: name Slot: name StorageKey: name
       SubscriptionOperation: name Transient: name TypeID: name
@@ -657,7 +660,7 @@ fun KotlinBodies() {}
           # What every lens declares, and what a refetchable fragment and a connection add.
           satisfied: totalCount missingRequiredField: totalCount fieldErrors: totalCount
           isPresent: totalCount throwing: totalCount caught: totalCount refetchable: totalCount
-          refetch: totalCount connection: totalCount nodes: totalCount loadNext: totalCount
+          refetch: totalCount connection: totalCount paged: totalCount nodes: totalCount loadNext: totalCount
           loadPrevious: totalCount
           # The locals, parameters and lambda parameters of generated bodies.
           bound: totalCount errors: totalCount child: totalCount missing: totalCount
@@ -686,7 +689,7 @@ fun KotlinBodies() {}
           KeyArgument: totalCount KeyPart: totalCount Lens: totalCount LensList: totalCount
           Lookup: totalCount Members: totalCount MutationAction: totalCount
           MutationOperation: totalCount OperationKind: totalCount
-          OperationType: totalCount QueryType: totalCount MutationType: totalCount SubscriptionType: totalCount Payload: totalCount Plan: totalCount PlanField: totalCount
+          OperationType: totalCount QueryType: totalCount MutationType: totalCount SubscriptionType: totalCount PagedPlan: totalCount PagedSlots: totalCount Payload: totalCount Plan: totalCount PlanField: totalCount
           QueryOperation: totalCount Refetch: totalCount Registry: totalCount
           ScalarKind: totalCount Selection: totalCount Slot: totalCount StorageKey: totalCount
           SubscriptionOperation: totalCount Transient: totalCount
@@ -730,7 +733,7 @@ fun KotlinConnection() {}
           satisfied: name missingRequiredField: name fieldErrors: name isPresent: name
           throwing: name caught: name refetchable: name refetch: name connection: name nodes: name
           hasNext: name hasPrevious: name isLoadingNext: name isLoadingPrevious: name
-          connectionID: name loadNext: name loadPrevious: name
+          connectionID: name paged: name loadNext: name loadPrevious: name
           # The locals, parameters and lambda parameters of generated bodies.
           bound: name errors: name child: name missing: name other: name it: name element: name
           count: name optimistic: name text: name fields: name
@@ -751,7 +754,7 @@ fun KotlinConnection() {}
           ErrorBehavior: name FieldError: name FieldErrors: name Generated: name GeneratedEnum: name
           Guard: name InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name
           Lookup: name Members: name MutationAction: name MutationOperation: name
-          OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name
+          OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name PagedPlan: name PagedSlots: name Payload: name Plan: name
           PlanField: name QueryOperation: name Refetch: name Registry: name
           ScalarKind: name Selection: name Slot: name StorageKey: name
           SubscriptionOperation: name Transient: name TypeID: name
@@ -786,7 +789,7 @@ fun KotlinRequired() {}
       # What every lens declares, and what a refetchable fragment and a connection add.
       satisfied: id missingRequiredField: id fieldErrors: id isPresent: id throwing: id caught: id
       refetchable: id refetch: id connection: id nodes: id hasNext: id hasPrevious: id
-      isLoadingNext: id isLoadingPrevious: id connectionID: id loadNext: id loadPrevious: id
+      isLoadingNext: id isLoadingPrevious: id connectionID: id paged: id loadNext: id loadPrevious: id
       # The locals, parameters and lambda parameters of generated bodies.
       bound: id errors: id child: id missing: id other: id it: id element: id count: id
       optimistic: id text: id fields: id
@@ -805,7 +808,7 @@ fun KotlinRequired() {}
       ConnectionSlots: id Deletion: id Document: id DynamicKey: id Edit: id ErrorBehavior: id FieldError: id
       FieldErrors: id Generated: id GeneratedEnum: id Guard: id InputObject: id KeyArgument: id
       KeyPart: id Lens: id LensList: id Lookup: id Members: id MutationAction: id
-      MutationOperation: id OperationKind: id OperationType: id QueryType: id MutationType: id SubscriptionType: id Payload: id
+      MutationOperation: id OperationKind: id OperationType: id QueryType: id MutationType: id SubscriptionType: id PagedPlan: id PagedSlots: id Payload: id
       Plan: id PlanField: id QueryOperation: id Refetch: id Registry: id
       ScalarKind: id Selection: id Slot: id StorageKey: id
       SubscriptionOperation: id Transient: id TypeID: id
@@ -849,7 +852,7 @@ fun KotlinAbstract() {}
       isPresent: name @catch throwing: name @catch caught: name @catch refetchable: name @catch
       refetch: name @catch connection: name @catch nodes: name @catch hasNext: name @catch
       hasPrevious: name @catch isLoadingNext: name @catch isLoadingPrevious: name @catch
-      connectionID: name @catch loadNext: name @catch loadPrevious: name @catch
+      connectionID: name @catch paged: name @catch loadNext: name @catch loadPrevious: name @catch
       # The locals, parameters and lambda parameters of generated bodies.
       bound: name @catch errors: name @catch child: name @catch missing: name @catch
       other: name @catch it: name @catch element: name @catch count: name @catch
@@ -878,7 +881,7 @@ fun KotlinAbstract() {}
       KeyArgument: name @catch KeyPart: name @catch Lens: name @catch LensList: name @catch
       Lookup: name @catch Members: name @catch MutationAction: name @catch
       MutationOperation: name @catch OperationKind: name @catch
-      OperationType: name @catch QueryType: name @catch MutationType: name @catch SubscriptionType: name @catch Payload: name @catch Plan: name @catch PlanField: name @catch
+      OperationType: name @catch QueryType: name @catch MutationType: name @catch SubscriptionType: name @catch PagedPlan: name @catch PagedSlots: name @catch Payload: name @catch Plan: name @catch PlanField: name @catch
       QueryOperation: name @catch Refetch: name @catch Registry: name @catch
       ScalarKind: name @catch Selection: name @catch Slot: name @catch StorageKey: name @catch
       SubscriptionOperation: name @catch Transient: name @catch
@@ -949,7 +952,7 @@ fun KotlinCaught() {}
       connection: name @required(action: LOG) nodes: name @required(action: LOG)
       hasNext: name @required(action: LOG) hasPrevious: name @required(action: LOG)
       isLoadingNext: name @required(action: LOG) isLoadingPrevious: name @required(action: LOG)
-      connectionID: name @required(action: LOG) loadNext: name @required(action: LOG)
+      connectionID: name @required(action: LOG) paged: name @required(action: LOG) loadNext: name @required(action: LOG)
       loadPrevious: name @required(action: LOG)
       # The locals, parameters and lambda parameters of generated bodies.
       bound: name @required(action: LOG) errors: name @required(action: LOG)
@@ -997,7 +1000,7 @@ fun KotlinCaught() {}
       Lookup: name @required(action: LOG) Members: name @required(action: LOG)
       MutationAction: name @required(action: LOG) MutationOperation: name @required(action: LOG)
       OperationKind: name @required(action: LOG)
-      OperationType: name @required(action: LOG) QueryType: name @required(action: LOG) MutationType: name @required(action: LOG) SubscriptionType: name @required(action: LOG) Payload: name @required(action: LOG)
+      OperationType: name @required(action: LOG) QueryType: name @required(action: LOG) MutationType: name @required(action: LOG) SubscriptionType: name @required(action: LOG) PagedPlan: name @required(action: LOG) PagedSlots: name @required(action: LOG) Payload: name @required(action: LOG)
       Plan: name @required(action: LOG) PlanField: name @required(action: LOG)
       QueryOperation: name @required(action: LOG) Refetch: name @required(action: LOG)
       Registry: name @required(action: LOG)
@@ -1047,7 +1050,7 @@ fun KotlinRequiredFields() {}
       $anchor: ID! $recordID: ID! $satisfied: ID! $missingRequiredField: ID! $fieldErrors: ID!
       $isPresent: ID! $throwing: ID! $caught: ID! $refetchable: ID! $refetch: ID! $connection: ID!
       $nodes: ID! $hasNext: ID! $hasPrevious: ID! $isLoadingNext: ID! $isLoadingPrevious: ID!
-      $connectionID: ID! $loadNext: ID! $loadPrevious: ID!
+      $connectionID: ID! $paged: ID! $loadNext: ID! $loadPrevious: ID!
       # The locals, parameters and lambda parameters of generated bodies.
       $bound: ID! $errors: ID! $child: ID! $missing: ID! $other: ID! $it: ID! $element: ID!
       $count: ID! $optimistic: ID! $text: ID! $fields: ID!
@@ -1068,7 +1071,7 @@ fun KotlinRequiredFields() {}
       $FieldError: ID! $FieldErrors: ID! $Generated: ID! $GeneratedEnum: ID! $Guard: ID!
       $InputObject: ID! $KeyArgument: ID! $KeyPart: ID! $Lens: ID! $LensList: ID! $Lookup: ID!
       $Members: ID! $MutationAction: ID! $MutationOperation: ID!
-      $OperationKind: ID! $OperationType: ID! $QueryType: ID! $MutationType: ID! $SubscriptionType: ID! $Payload: ID! $Plan: ID! $PlanField: ID!
+      $OperationKind: ID! $OperationType: ID! $QueryType: ID! $MutationType: ID! $SubscriptionType: ID! $PagedPlan: ID! $PagedSlots: ID! $Payload: ID! $Plan: ID! $PlanField: ID!
       $QueryOperation: ID! $Refetch: ID! $Registry: ID! $ScalarKind: ID! $Selection: ID! $Slot: ID!
       $StorageKey: ID! $SubscriptionOperation: ID! $Transient: ID!
       $TypeID: ID!
@@ -1079,7 +1082,7 @@ fun KotlinRequiredFields() {}
       $run: ID! $let: ID! $takeIf: ID! $map: ID! $lazy: ID! $listOf: ID! $mapOf: ID! $emptyList: ID!
       $emptyMap: ID! $mutableListOf: ID! $getOrThrow: ID! $success: ID! $failure: ID!
     ) @throwOnFieldError {
-      charactersByIds(ids: [$as, $break, $class, $continue, $do, $else, $false, $for, $fun, $if, $in, $interface, $is, $null, $object, $package, $return, $super, $this, $throw, $true, $try, $typealias, $typeof, $val, $var, $when, $while, $_, $by, $catch, $constructor, $delegate, $dynamic, $field, $file, $finally, $get, $import, $init, $param, $property, $receiver, $set, $setparam, $value, $where, $abstract, $actual, $annotation, $companion, $const, $crossinline, $data, $enum, $expect, $external, $final, $infix, $inline, $inner, $internal, $lateinit, $noinline, $open, $operator, $out, $override, $private, $protected, $public, $reified, $sealed, $suspend, $tailrec, $vararg, $context, $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $other, $it, $element, $count, $optimistic, $text, $fields, $name, $document, $kind, $errorBehavior, $cacheExpirationSeconds, $throwsOnFieldError, $bubbles, $hasIncremental, $plan, $selection, $selection0, $Action, $OptimisticResponse, $invoke, $commit, $variable, $payload, $copy, $component1, $component2, $javaClass, $of, $scalarText, $Undeclared, $size, $keys, $values, $entries, $Types, $Slots, $AbstractSlots, $Sites, $Guards, $schemaDigest, $format, $transient, $baton, $MappedScalar, $AbstractSlot, $Anchor, $ArgumentSite, $ConnectionCursor, $ConnectionPlan, $ConnectionSlots, $Deletion, $Document, $DynamicKey, $Edit, $ErrorBehavior, $FieldError, $FieldErrors, $Generated, $GeneratedEnum, $Guard, $InputObject, $KeyArgument, $KeyPart, $Lens, $LensList, $Lookup, $Members, $MutationAction, $MutationOperation, $OperationKind, $OperationType, $QueryType, $MutationType, $SubscriptionType, $Payload, $Plan, $PlanField, $QueryOperation, $Refetch, $Registry, $ScalarKind, $Selection, $Slot, $StorageKey, $SubscriptionOperation, $Transient, $TypeID, $Any, $Boolean, $Double, $Int, $List, $Long, $Map, $Pair, $Result, $String, $Unit, $Stable, $Immutable, $JvmName, $JvmField, $OptIn, $run, $let, $takeIf, $map, $lazy, $listOf, $mapOf, $emptyList, $emptyMap, $mutableListOf, $getOrThrow, $success, $failure]) { id name }
+      charactersByIds(ids: [$as, $break, $class, $continue, $do, $else, $false, $for, $fun, $if, $in, $interface, $is, $null, $object, $package, $return, $super, $this, $throw, $true, $try, $typealias, $typeof, $val, $var, $when, $while, $_, $by, $catch, $constructor, $delegate, $dynamic, $field, $file, $finally, $get, $import, $init, $param, $property, $receiver, $set, $setparam, $value, $where, $abstract, $actual, $annotation, $companion, $const, $crossinline, $data, $enum, $expect, $external, $final, $infix, $inline, $inner, $internal, $lateinit, $noinline, $open, $operator, $out, $override, $private, $protected, $public, $reified, $sealed, $suspend, $tailrec, $vararg, $context, $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent, $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious, $isLoadingNext, $isLoadingPrevious, $connectionID, $paged, $loadNext, $loadPrevious, $bound, $errors, $child, $missing, $other, $it, $element, $count, $optimistic, $text, $fields, $name, $document, $kind, $errorBehavior, $cacheExpirationSeconds, $throwsOnFieldError, $bubbles, $hasIncremental, $plan, $selection, $selection0, $Action, $OptimisticResponse, $invoke, $commit, $variable, $payload, $copy, $component1, $component2, $javaClass, $of, $scalarText, $Undeclared, $size, $keys, $values, $entries, $Types, $Slots, $AbstractSlots, $Sites, $Guards, $schemaDigest, $format, $transient, $baton, $MappedScalar, $AbstractSlot, $Anchor, $ArgumentSite, $ConnectionCursor, $ConnectionPlan, $ConnectionSlots, $Deletion, $Document, $DynamicKey, $Edit, $ErrorBehavior, $FieldError, $FieldErrors, $Generated, $GeneratedEnum, $Guard, $InputObject, $KeyArgument, $KeyPart, $Lens, $LensList, $Lookup, $Members, $MutationAction, $MutationOperation, $OperationKind, $OperationType, $QueryType, $MutationType, $SubscriptionType, $PagedPlan, $PagedSlots, $Payload, $Plan, $PlanField, $QueryOperation, $Refetch, $Registry, $ScalarKind, $Selection, $Slot, $StorageKey, $SubscriptionOperation, $Transient, $TypeID, $Any, $Boolean, $Double, $Int, $List, $Long, $Map, $Pair, $Result, $String, $Unit, $Stable, $Immutable, $JvmName, $JvmField, $OptIn, $run, $let, $takeIf, $map, $lazy, $listOf, $mapOf, $emptyList, $emptyMap, $mutableListOf, $getOrThrow, $success, $failure]) { id name }
     }
     """)
 fun KotlinVariables() {}
@@ -1112,7 +1115,7 @@ fun KotlinVariables() {}
       $fieldErrors: Boolean! $isPresent: Boolean! $throwing: Boolean! $caught: Boolean!
       $refetchable: Boolean! $refetch: Boolean! $connection: Boolean! $nodes: Boolean!
       $hasNext: Boolean! $hasPrevious: Boolean! $isLoadingNext: Boolean!
-      $isLoadingPrevious: Boolean! $connectionID: Boolean! $loadNext: Boolean!
+      $isLoadingPrevious: Boolean! $connectionID: Boolean! $paged: Boolean! $loadNext: Boolean!
       $loadPrevious: Boolean!
       # The locals, parameters and lambda parameters of generated bodies.
       $bound: Boolean! $errors: Boolean! $child: Boolean! $missing: Boolean! $other: Boolean!
@@ -1140,7 +1143,7 @@ fun KotlinVariables() {}
       $KeyArgument: Boolean! $KeyPart: Boolean! $Lens: Boolean! $LensList: Boolean!
       $Lookup: Boolean! $Members: Boolean! $MutationAction: Boolean! $MutationOperation: Boolean!
       $OperationKind: Boolean! $OperationType: Boolean! $QueryType: Boolean! $MutationType: Boolean! $SubscriptionType: Boolean!
-      $Payload: Boolean! $Plan: Boolean! $PlanField: Boolean! $QueryOperation: Boolean!
+      $PagedPlan: Boolean! $PagedSlots: Boolean! $Payload: Boolean! $Plan: Boolean! $PlanField: Boolean! $QueryOperation: Boolean!
       $Refetch: Boolean! $Registry: Boolean! $ScalarKind: Boolean!
       $Selection: Boolean! $Slot: Boolean! $StorageKey: Boolean!
       $SubscriptionOperation: Boolean! $Transient: Boolean! $TypeID: Boolean!
@@ -1206,7 +1209,7 @@ fun KotlinVariables() {}
           ... @include(if: $connection) { name } ... @include(if: $nodes) { name }
           ... @include(if: $hasNext) { name } ... @include(if: $hasPrevious) { name }
           ... @include(if: $isLoadingNext) { name } ... @include(if: $isLoadingPrevious) { name }
-          ... @include(if: $connectionID) { name } ... @include(if: $loadNext) { name }
+          ... @include(if: $connectionID) { name } ... @include(if: $paged) { name } ... @include(if: $loadNext) { name }
           ... @include(if: $loadPrevious) { name }
           # The locals, parameters and lambda parameters of generated bodies.
           ... @include(if: $bound) { name } ... @include(if: $errors) { name }
@@ -1253,7 +1256,7 @@ fun KotlinVariables() {}
           ... @include(if: $Lookup) { name } ... @include(if: $Members) { name }
           ... @include(if: $MutationAction) { name } ... @include(if: $MutationOperation) { name }
           ... @include(if: $OperationKind) { name }
-          ... @include(if: $OperationType) { name } ... @include(if: $QueryType) { name } ... @include(if: $MutationType) { name } ... @include(if: $SubscriptionType) { name } ... @include(if: $Payload) { name }
+          ... @include(if: $OperationType) { name } ... @include(if: $QueryType) { name } ... @include(if: $MutationType) { name } ... @include(if: $SubscriptionType) { name } ... @include(if: $PagedPlan) { name } ... @include(if: $PagedSlots) { name } ... @include(if: $Payload) { name }
           ... @include(if: $Plan) { name } ... @include(if: $PlanField) { name }
           ... @include(if: $QueryOperation) { name } ... @include(if: $Refetch) { name }
           ... @include(if: $Registry) { name }
@@ -1319,7 +1322,7 @@ fun KotlinNamesake() {}
       $fieldErrors: Boolean! $isPresent: Boolean! $throwing: Boolean! $caught: Boolean!
       $refetchable: Boolean! $refetch: Boolean! $connection: Boolean! $nodes: Boolean!
       $hasNext: Boolean! $hasPrevious: Boolean! $isLoadingNext: Boolean!
-      $isLoadingPrevious: Boolean! $connectionID: Boolean! $loadNext: Boolean!
+      $isLoadingPrevious: Boolean! $connectionID: Boolean! $paged: Boolean! $loadNext: Boolean!
       $loadPrevious: Boolean!
       # The locals, parameters and lambda parameters of generated bodies.
       $bound: Boolean! $errors: Boolean! $child: Boolean! $missing: Boolean! $other: Boolean!
@@ -1347,7 +1350,7 @@ fun KotlinNamesake() {}
       $KeyArgument: Boolean! $KeyPart: Boolean! $Lens: Boolean! $LensList: Boolean!
       $Lookup: Boolean! $Members: Boolean! $MutationAction: Boolean! $MutationOperation: Boolean!
       $OperationKind: Boolean! $OperationType: Boolean! $QueryType: Boolean! $MutationType: Boolean! $SubscriptionType: Boolean!
-      $Payload: Boolean! $Plan: Boolean! $PlanField: Boolean! $QueryOperation: Boolean!
+      $PagedPlan: Boolean! $PagedSlots: Boolean! $Payload: Boolean! $Plan: Boolean! $PlanField: Boolean! $QueryOperation: Boolean!
       $Refetch: Boolean! $Registry: Boolean! $ScalarKind: Boolean! $Selection: Boolean!
       $Slot: Boolean! $StorageKey: Boolean!
       $SubscriptionOperation: Boolean! $Transient: Boolean! $TypeID: Boolean!
@@ -1413,7 +1416,7 @@ fun KotlinNamesake() {}
           ... @include(if: $connection) { cursor } ... @include(if: $nodes) { cursor }
           ... @include(if: $hasNext) { cursor } ... @include(if: $hasPrevious) { cursor }
           ... @include(if: $isLoadingNext) { cursor }
-          ... @include(if: $isLoadingPrevious) { cursor } ... @include(if: $connectionID) { cursor }
+          ... @include(if: $isLoadingPrevious) { cursor } ... @include(if: $connectionID) { cursor } ... @include(if: $paged) { cursor }
           ... @include(if: $loadNext) { cursor } ... @include(if: $loadPrevious) { cursor }
           # The locals, parameters and lambda parameters of generated bodies.
           ... @include(if: $bound) { cursor } ... @include(if: $errors) { cursor }
@@ -1460,7 +1463,7 @@ fun KotlinNamesake() {}
           ... @include(if: $MutationAction) { cursor }
           ... @include(if: $MutationOperation) { cursor }
           ... @include(if: $OperationKind) { cursor }
-          ... @include(if: $OperationType) { cursor } ... @include(if: $QueryType) { cursor } ... @include(if: $MutationType) { cursor } ... @include(if: $SubscriptionType) { cursor } ... @include(if: $Payload) { cursor }
+          ... @include(if: $OperationType) { cursor } ... @include(if: $QueryType) { cursor } ... @include(if: $MutationType) { cursor } ... @include(if: $SubscriptionType) { cursor } ... @include(if: $PagedPlan) { cursor } ... @include(if: $PagedSlots) { cursor } ... @include(if: $Payload) { cursor }
           ... @include(if: $Plan) { cursor } ... @include(if: $PlanField) { cursor }
           ... @include(if: $QueryOperation) { cursor } ... @include(if: $Refetch) { cursor }
           ... @include(if: $Registry) { cursor } ... @include(if: $ScalarKind) { cursor }
@@ -1552,7 +1555,7 @@ fun KotlinSubscriptionVariables() {}
       hasPrevious: {type: "Boolean", defaultValue: true}
       isLoadingNext: {type: "Boolean", defaultValue: true}
       isLoadingPrevious: {type: "Boolean", defaultValue: true}
-      connectionID: {type: "Boolean", defaultValue: true}
+      connectionID: {type: "Boolean", defaultValue: true} paged: {type: "Boolean", defaultValue: true}
       loadNext: {type: "Boolean", defaultValue: true}
       loadPrevious: {type: "Boolean", defaultValue: true}
       # The locals, parameters and lambda parameters of generated bodies.
@@ -1617,7 +1620,7 @@ fun KotlinSubscriptionVariables() {}
       MutationOperation: {type: "Boolean", defaultValue: true}
       OperationKind: {type: "Boolean", defaultValue: true}
       OperationType: {type: "Boolean", defaultValue: true} QueryType: {type: "Boolean", defaultValue: true} MutationType: {type: "Boolean", defaultValue: true} SubscriptionType: {type: "Boolean", defaultValue: true}
-      Payload: {type: "Boolean", defaultValue: true} Plan: {type: "Boolean", defaultValue: true}
+      PagedPlan: {type: "Boolean", defaultValue: true} PagedSlots: {type: "Boolean", defaultValue: true} Payload: {type: "Boolean", defaultValue: true} Plan: {type: "Boolean", defaultValue: true}
       PlanField: {type: "Boolean", defaultValue: true}
       QueryOperation: {type: "Boolean", defaultValue: true}
       Refetch: {type: "Boolean", defaultValue: true} Registry: {type: "Boolean", defaultValue: true}
@@ -1695,7 +1698,7 @@ fun KotlinSubscriptionVariables() {}
       ... @include(if: $connection) { name } ... @include(if: $nodes) { name }
       ... @include(if: $hasNext) { name } ... @include(if: $hasPrevious) { name }
       ... @include(if: $isLoadingNext) { name } ... @include(if: $isLoadingPrevious) { name }
-      ... @include(if: $connectionID) { name } ... @include(if: $loadNext) { name }
+      ... @include(if: $connectionID) { name } ... @include(if: $paged) { name } ... @include(if: $loadNext) { name }
       ... @include(if: $loadPrevious) { name }
       # The locals, parameters and lambda parameters of generated bodies.
       ... @include(if: $bound) { name } ... @include(if: $errors) { name }
@@ -1741,7 +1744,7 @@ fun KotlinSubscriptionVariables() {}
       ... @include(if: $Lookup) { name } ... @include(if: $Members) { name }
       ... @include(if: $MutationAction) { name } ... @include(if: $MutationOperation) { name }
       ... @include(if: $OperationKind) { name }
-      ... @include(if: $OperationType) { name } ... @include(if: $QueryType) { name } ... @include(if: $MutationType) { name } ... @include(if: $SubscriptionType) { name } ... @include(if: $Payload) { name }
+      ... @include(if: $OperationType) { name } ... @include(if: $QueryType) { name } ... @include(if: $MutationType) { name } ... @include(if: $SubscriptionType) { name } ... @include(if: $PagedPlan) { name } ... @include(if: $PagedSlots) { name } ... @include(if: $Payload) { name }
       ... @include(if: $Plan) { name } ... @include(if: $PlanField) { name }
       ... @include(if: $QueryOperation) { name } ... @include(if: $Refetch) { name }
       ... @include(if: $Registry) { name } ... @include(if: $ScalarKind) { name }
@@ -1793,7 +1796,7 @@ fun KotlinArguments() {}
         anchor: false recordID: false satisfied: false missingRequiredField: false
         fieldErrors: false isPresent: false throwing: false caught: false refetchable: false
         refetch: false connection: false nodes: false hasNext: false hasPrevious: false
-        isLoadingNext: false isLoadingPrevious: false connectionID: false loadNext: false
+        isLoadingNext: false isLoadingPrevious: false connectionID: false paged: false loadNext: false
         loadPrevious: false
         # The locals, parameters and lambda parameters of generated bodies.
         bound: false errors: false child: false missing: false other: false it: false element: false
@@ -1816,7 +1819,7 @@ fun KotlinArguments() {}
         GeneratedEnum: false Guard: false InputObject: false KeyArgument: false KeyPart: false
         Lens: false LensList: false Lookup: false Members: false MutationAction: false
         MutationOperation: false OperationKind: false OperationType: false QueryType: false MutationType: false SubscriptionType: false
-        Payload: false Plan: false PlanField: false QueryOperation: false Refetch: false
+        PagedPlan: false PagedSlots: false Payload: false Plan: false PlanField: false QueryOperation: false Refetch: false
         Registry: false ScalarKind: false Selection: false Slot: false StorageKey: false
         SubscriptionOperation: false Transient: false TypeID: false
         # What generated code spells from the standard library and Compose.
@@ -1856,7 +1859,7 @@ fun KotlinArgumentSpread() {}
           satisfied: name missingRequiredField: name fieldErrors: name isPresent: name
           throwing: name caught: name refetchable: name refetch: name connection: name nodes: name
           hasNext: name hasPrevious: name isLoadingNext: name isLoadingPrevious: name
-          connectionID: name loadNext: name loadPrevious: name
+          connectionID: name paged: name loadNext: name loadPrevious: name
           # The locals, parameters and lambda parameters of generated bodies.
           bound: name errors: name child: name missing: name other: name it: name element: name
           count: name optimistic: name text: name fields: name
@@ -1877,7 +1880,7 @@ fun KotlinArgumentSpread() {}
           ErrorBehavior: name FieldError: name FieldErrors: name Generated: name GeneratedEnum: name
           Guard: name InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name
           Lookup: name Members: name MutationAction: name MutationOperation: name
-          OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name
+          OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name PagedPlan: name PagedSlots: name Payload: name Plan: name
           PlanField: name QueryOperation: name Refetch: name Registry: name
           ScalarKind: name Selection: name Slot: name StorageKey: name
           SubscriptionOperation: name Transient: name TypeID: name
@@ -1917,7 +1920,7 @@ fun KotlinArgumentSpread() {}
         isPresent: note { id } throwing: note { id } caught: note { id } refetchable: note { id }
         refetch: note { id } connection: note { id } nodes: note { id } hasNext: note { id }
         hasPrevious: note { id } isLoadingNext: note { id } isLoadingPrevious: note { id }
-        connectionID: note { id } loadNext: note { id } loadPrevious: note { id }
+        connectionID: note { id } paged: note { id } loadNext: note { id } loadPrevious: note { id }
         # The locals, parameters and lambda parameters of generated bodies.
         bound: note { id } errors: note { id } child: note { id } missing: note { id }
         other: note { id } it: note { id } element: note { id } count: note { id }
@@ -1946,7 +1949,7 @@ fun KotlinArgumentSpread() {}
         KeyArgument: note { id } KeyPart: note { id } Lens: note { id } LensList: note { id }
         Lookup: note { id } Members: note { id } MutationAction: note { id }
         MutationOperation: note { id } OperationKind: note { id }
-        OperationType: note { id } QueryType: note { id } MutationType: note { id } SubscriptionType: note { id } Payload: note { id } Plan: note { id } PlanField: note { id }
+        OperationType: note { id } QueryType: note { id } MutationType: note { id } SubscriptionType: note { id } PagedPlan: note { id } PagedSlots: note { id } Payload: note { id } Plan: note { id } PlanField: note { id }
         QueryOperation: note { id } Refetch: note { id } Registry: note { id }
         ScalarKind: note { id } Selection: note { id } Slot: note { id }
         StorageKey: note { id } SubscriptionOperation: note { id }
@@ -1994,7 +1997,7 @@ fun KotlinArgumentSpread() {}
           refetchable: episode { id } refetch: episode { id } connection: episode { id }
           nodes: episode { id } hasNext: episode { id } hasPrevious: episode { id }
           isLoadingNext: episode { id } isLoadingPrevious: episode { id }
-          connectionID: episode { id } loadNext: episode { id } loadPrevious: episode { id }
+          connectionID: episode { id } paged: episode { id } loadNext: episode { id } loadPrevious: episode { id }
           # The locals, parameters and lambda parameters of generated bodies.
           bound: episode { id } errors: episode { id } child: episode { id } missing: episode { id }
           other: episode { id } it: episode { id } element: episode { id } count: episode { id }
@@ -2026,7 +2029,7 @@ fun KotlinArgumentSpread() {}
           KeyPart: episode { id } Lens: episode { id } LensList: episode { id }
           Lookup: episode { id } Members: episode { id } MutationAction: episode { id }
           MutationOperation: episode { id }
-          OperationKind: episode { id } OperationType: episode { id } QueryType: episode { id } MutationType: episode { id } SubscriptionType: episode { id } Payload: episode { id }
+          OperationKind: episode { id } OperationType: episode { id } QueryType: episode { id } MutationType: episode { id } SubscriptionType: episode { id } PagedPlan: episode { id } PagedSlots: episode { id } Payload: episode { id }
           Plan: episode { id } PlanField: episode { id } QueryOperation: episode { id }
           Refetch: episode { id } Registry: episode { id }
           ScalarKind: episode { id } Selection: episode { id } Slot: episode { id }
@@ -2091,7 +2094,7 @@ fun KotlinInlineScalarsReach() {}
       # What every lens declares, and what a refetchable fragment and a connection add.
       satisfied: name missingRequiredField: name fieldErrors: name isPresent: name throwing: name
       caught: name refetchable: name refetch: name connection: name nodes: name hasNext: name
-      hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name
+      hasPrevious: name isLoadingNext: name isLoadingPrevious: name connectionID: name paged: name
       loadNext: name loadPrevious: name
       # The locals, parameters and lambda parameters of generated bodies.
       bound: name errors: name child: name missing: name other: name it: name element: name
@@ -2129,7 +2132,7 @@ fun KotlinInlineScalars2Reach() {}
       FieldError: name FieldErrors: name Generated: name GeneratedEnum: name Guard: name
       InputObject: name KeyArgument: name KeyPart: name Lens: name LensList: name Lookup: name
       Members: name MutationAction: name MutationOperation: name
-      OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name Payload: name Plan: name PlanField: name
+      OperationKind: name OperationType: name QueryType: name MutationType: name SubscriptionType: name PagedPlan: name PagedSlots: name Payload: name Plan: name PlanField: name
       QueryOperation: name Refetch: name Registry: name ScalarKind: name
       Selection: name Slot: name StorageKey: name
       SubscriptionOperation: name Transient: name TypeID: name
@@ -2203,7 +2206,7 @@ fun KotlinInlineLinksReach() {}
       isPresent: origin { id } throwing: origin { id } caught: origin { id }
       refetchable: origin { id } refetch: origin { id } connection: origin { id }
       nodes: origin { id } hasNext: origin { id } hasPrevious: origin { id }
-      isLoadingNext: origin { id } isLoadingPrevious: origin { id } connectionID: origin { id }
+      isLoadingNext: origin { id } isLoadingPrevious: origin { id } connectionID: origin { id } paged: origin { id }
       loadNext: origin { id } loadPrevious: origin { id }
       # The locals, parameters and lambda parameters of generated bodies.
       bound: origin { id } errors: origin { id } child: origin { id } missing: origin { id }
@@ -2250,7 +2253,7 @@ fun KotlinInlineLinks2Reach() {}
       InputObject: origin { id } KeyArgument: origin { id } KeyPart: origin { id }
       Lens: origin { id } LensList: origin { id } Lookup: origin { id } Members: origin { id }
       MutationAction: origin { id } MutationOperation: origin { id }
-      OperationKind: origin { id } OperationType: origin { id } QueryType: origin { id } MutationType: origin { id } SubscriptionType: origin { id } Payload: origin { id }
+      OperationKind: origin { id } OperationType: origin { id } QueryType: origin { id } MutationType: origin { id } SubscriptionType: origin { id } PagedPlan: origin { id } PagedSlots: origin { id } Payload: origin { id }
       Plan: origin { id } PlanField: origin { id } QueryOperation: origin { id }
       Refetch: origin { id } Registry: origin { id }
       ScalarKind: origin { id } Selection: origin { id } Slot: origin { id }
@@ -2330,7 +2333,7 @@ fun KotlinInlinePluralsReach() {}
       isPresent: episode { id } throwing: episode { id } caught: episode { id }
       refetchable: episode { id } refetch: episode { id } connection: episode { id }
       nodes: episode { id } hasNext: episode { id } hasPrevious: episode { id }
-      isLoadingNext: episode { id } isLoadingPrevious: episode { id } connectionID: episode { id }
+      isLoadingNext: episode { id } isLoadingPrevious: episode { id } connectionID: episode { id } paged: episode { id }
       loadNext: episode { id } loadPrevious: episode { id }
       # The locals, parameters and lambda parameters of generated bodies.
       bound: episode { id } errors: episode { id } child: episode { id } missing: episode { id }
@@ -2379,7 +2382,7 @@ fun KotlinInlinePlurals2Reach() {}
       KeyPart: episode { id } Lens: episode { id } LensList: episode { id } Lookup: episode { id }
       Members: episode { id } MutationAction: episode { id } MutationOperation: episode { id }
       OperationKind: episode { id } OperationType: episode { id } QueryType: episode { id } MutationType: episode { id } SubscriptionType: episode { id }
-      Payload: episode { id } Plan: episode { id } PlanField: episode { id }
+      PagedPlan: episode { id } PagedSlots: episode { id } Payload: episode { id } Plan: episode { id } PlanField: episode { id }
       QueryOperation: episode { id } Refetch: episode { id } Registry: episode { id }
       ScalarKind: episode { id } Selection: episode { id }
       Slot: episode { id } StorageKey: episode { id }
@@ -2532,6 +2535,7 @@ fun KotlinInlineSpreadsReach() {}
       ... @alias(as: "isLoadingNext") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "isLoadingPrevious") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "connectionID") { ...KotlinInlineSpreadTarget_character }
+      ... @alias(as: "paged") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "loadNext") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "loadPrevious") { ...KotlinInlineSpreadTarget_character }
       # The locals, parameters and lambda parameters of generated bodies.
@@ -2634,6 +2638,8 @@ fun KotlinInlineSpreads2Reach() {}
       ... @alias(as: "MutationOperation") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "OperationKind") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "OperationType") { ...KotlinInlineSpreadTarget_character } ... @alias(as: "QueryType") { ...KotlinInlineSpreadTarget_character } ... @alias(as: "MutationType") { ...KotlinInlineSpreadTarget_character } ... @alias(as: "SubscriptionType") { ...KotlinInlineSpreadTarget_character }
+      ... @alias(as: "PagedPlan") { ...KotlinInlineSpreadTarget_character }
+      ... @alias(as: "PagedSlots") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "Payload") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "Plan") { ...KotlinInlineSpreadTarget_character }
       ... @alias(as: "PlanField") { ...KotlinInlineSpreadTarget_character }

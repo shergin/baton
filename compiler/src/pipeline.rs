@@ -13,8 +13,8 @@ mod plan;
 pub use plan::{
     ArgumentPlan, ArgumentValuePlan, CatchTarget, ConditionClass, ConnectionPlan, ConstantPlan,
     DeletePlan, EditKind, EditPlan, FragmentPlan, LookupPlan, OperationKind, OperationPlan, Origin,
-    Plan, RefetchPlan, RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan, TypeKind,
-    TypePlan, VariablePlan,
+    PagedPlan, Plan, RefetchPlan, RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan,
+    TypeKind, TypePlan, VariablePlan,
 };
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -65,12 +65,19 @@ const ROOT_NAMES: [(SyntaxOperationKind, &str); 3] = [
     (SyntaxOperationKind::Subscription, "Subscription"),
 ];
 
-/// What Baton adds to the schema for Relay's front end to validate: the one
-/// directive that is not Relay's, a query's cache expiration
-/// (`docs/decisions/an-operation-states-its-expiration.md`). Declared as an
-/// extension, so Relay's text transforms leave it out of the operation text
-/// a server receives, as they do its own client directives.
-const BATON_DIRECTIVES: &str = "directive @cacheExpiration(seconds: Int!) on QUERY\n";
+/// What Baton adds to the schema for Relay's front end to validate: the
+/// directives that are not Relay's and that Relay's front end can type, a
+/// query's cache expiration
+/// (`docs/decisions/an-operation-states-its-expiration.md`) and a list
+/// paged by number
+/// (`docs/decisions/a-paged-list-merges-its-pages-by-number.md`). Declared
+/// as extensions, so Relay's text transforms leave them out of the
+/// operation text a server receives, as they do its own client directives;
+/// `@deletes` is taken off the syntax instead, since its variable's type is
+/// each record type's own. `page` is declared nullable so that a `$page:
+/// Int` the schema's own argument accepts passes Relay's check; the
+/// lowering requires the variable to name a page on every run.
+const BATON_DIRECTIVES: &str = "directive @cacheExpiration(seconds: Int!) on QUERY\ndirective @paged(key: String!, page: Int) on FIELD\n";
 
 /// Output of a successful compilation.
 pub struct Compiled {

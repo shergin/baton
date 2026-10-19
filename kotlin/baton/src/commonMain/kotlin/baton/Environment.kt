@@ -236,14 +236,18 @@ class Environment(
         fetch(type, variables, store.resolve(type.plan, variables), null)
     }
 
-    /** Fetches a page of a connection: the loading flag on the connection record is set for the duration, and the commit merges the page. */
-    internal suspend fun paginate(type: OperationType<*>, variables: Variables, connection: Record, loading: Slot) {
+    /**
+     * Fetches a page of a connection or of a paged list: the loading flag on
+     * the record the pages merge into is set for the duration, and the
+     * commit merges the page.
+     */
+    internal suspend fun paginate(type: OperationType<*>, variables: Variables, record: Record, loading: Slot) {
         if (ended) throw EnvironmentError.Gone
-        store.local { batch -> store.set(connection, loading, Value.True, batch) }
+        store.local { batch -> store.set(record, loading, Value.True, batch) }
         try {
             fetch(type, variables)
         } finally {
-            if (!ended) store.local { batch -> store.set(connection, loading, Value.False, batch) }
+            if (!ended) store.local { batch -> store.set(record, loading, Value.False, batch) }
         }
     }
 
@@ -508,8 +512,13 @@ class Environment(
         for (key in keys) handles.remove(key)?.cancel()
     }
 
-    /** The scope the lenses under [root] read in, made once per root: they fetch through this environment and are healed through the root. */
-    internal fun scope(root: Store.Root, variables: Variables): Owner = root.scope ?: Owner(variables, store, this, root)
+    /**
+     * The scope the lenses under [root] read in, made once per root: they
+     * fetch through this environment, are healed through the root, and page
+     * through [query], the operation that owns them, when it is a query.
+     */
+    internal fun scope(root: Store.Root, variables: Variables, query: OperationType<*>? = null): Owner =
+        root.scope ?: Owner(variables, store, this, root, query)
 
     /** A mutation action over this environment, as the composable for a mutation makes one. */
     internal fun <Op : MutationOperation<Data>, Data : Lens> action(): MutationAction<Op, Data> = MutationAction(this)

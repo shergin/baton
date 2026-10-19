@@ -894,6 +894,476 @@ fn deletes_naming_a_variable_the_mutation_does_not_declare_is_an_error() {
     );
 }
 
+/// Every error compiling the one-line `text` against `sdl` fails with, in
+/// order, each with the text it points at: the rest of the line from its
+/// column.
+fn errors_at_in(sdl: &str, text: &str) -> Vec<(String, String)> {
+    let config = Config {
+        path: PathBuf::from("baton.json"),
+        ..Config::default()
+    };
+    let source = document(text);
+    let Err(diagnostics) = compile(
+        sdl,
+        "schema.graphql",
+        &[],
+        std::slice::from_ref(&source),
+        &config,
+    ) else {
+        panic!("`{text}` compiled");
+    };
+    diagnostics
+        .iter()
+        .map(|diagnostic| {
+            let rendered = crate::diagnostics::render(diagnostic, std::slice::from_ref(&source));
+            assert_eq!(
+                (rendered.path.as_str(), rendered.line),
+                ("Pipeline.swift", 1)
+            );
+            (
+                diagnostic.message().to_string(),
+                text[rendered.column as usize - 1..].to_string(),
+            )
+        })
+        .collect()
+}
+
+/// The one error compiling the one-line `text` against the test schema
+/// fails with, and the text it points at.
+fn paged_error(text: &str) -> (String, String) {
+    let (sdl, _) = schema();
+    let errors = errors_at_in(&sdl, text);
+    assert_eq!(errors.len(), 1, "{errors:?}");
+    errors.into_iter().next().expect("one error")
+}
+
+/// The plan compiling `text` against the test schema gives.
+fn paging(text: &str) -> Plan {
+    let (sdl, path) = schema();
+    compile(&sdl, &path, &[], &[document(text)], &Config::default())
+        .unwrap_or_else(|errors| panic!("{errors:?}"))
+        .plan
+}
+
+/// The notes paged under the query root's `page`, as the tests' documents
+/// page them.
+const PAGED_NOTES: &str = "query Probe($page: Int!, $authorId: ID!) { page(page: $page, perPage: 2) { pageInfo { hasNextPage currentPage } notes(authorId: $authorId) @paged(key: \"Probe_notes\", page: $page) { id text } } }";
+
+#[test]
+fn a_paged_list_is_keyed_by_the_container_s_arguments_but_the_page_and_the_list_s_sorted() {
+    let plan = paging(PAGED_NOTES);
+    let operation = &plan.operations[0];
+    let client_key = serde_json::json!({
+        "name": "__Probe_notes_paged",
+        "arguments": [
+            {"name": "authorId", "value": {"kind": "variable", "value": "authorId"}},
+            {"name": "perPage", "value": {"kind": "constant", "value": {"kind": "int", "value": 2}}}
+        ]
+    });
+    let paged = serde_json::json!({
+        "key": "Probe_notes",
+        "storage_key": client_key,
+        "list": {
+            "name": "notes",
+            "arguments": [{"name": "authorId", "value": {"kind": "variable", "value": "authorId"}}]
+        },
+        "page_info_type": "PageInfo",
+        "page": "page"
+    });
+    let normalization =
+        serde_json::to_value(&operation.normalization[0]).expect("a plan serializes");
+    assert_eq!(normalization["paged"], paged);
+    assert_eq!(
+        normalization["storage_key"],
+        serde_json::json!({
+            "name": "page",
+            "arguments": [
+                {"name": "page", "value": {"kind": "variable", "value": "page"}},
+                {"name": "perPage", "value": {"kind": "constant", "value": {"kind": "int", "value": 2}}}
+            ]
+        }),
+        "the server's page is written under its own key"
+    );
+    let reader = serde_json::to_value(&operation.reader[0]).expect("a plan serializes");
+    assert_eq!(reader["paged"], paged);
+    assert_eq!(
+        reader["storage_key"], client_key,
+        "the lens reads the container through the client key"
+    );
+    let list = &reader["selections"][1];
+    assert_eq!(list["name"], "notes");
+    assert_eq!(list["storage_key"], paged["list"]);
+    assert!(
+        list["paged"].is_null(),
+        "the list itself is no container: {list}"
+    );
+}
+
+#[test]
+fn a_paged_list_in_a_fragment_on_an_entity_merges_into_a_record_keyed_on_the_entity() {
+    let plan = paging(
+        "fragment Probe_character on Character { id friends(page: $page, perPage: 2) { pageInfo { hasNextPage } nodes @paged(key: \"Probe_nodes\", page: $page) { id name } } } query ProbeQuery($id: ID!, $page: Int!) { character(id: $id) { ...Probe_character } }",
+    );
+    let fragment = plan
+        .fragments
+        .iter()
+        .find(|fragment| fragment.name == "Probe_character")
+        .expect("the fragment is planned");
+    assert_eq!(fragment.type_condition, "Character");
+    let friends = serde_json::to_value(&fragment.reader[1]).expect("a plan serializes");
+    assert_eq!(
+        friends["storage_key"],
+        serde_json::json!({
+            "name": "__Probe_nodes_paged",
+            "arguments": [
+                {"name": "perPage", "value": {"kind": "constant", "value": {"kind": "int", "value": 2}}}
+            ]
+        })
+    );
+    assert_eq!(friends["paged"]["list"]["name"], "nodes");
+    let operation = &plan.operations[0];
+    let character = serde_json::to_value(&operation.normalization[0]).expect("a plan serializes");
+    let written = character["selections"]
+        .as_array()
+        .expect("the character has a selection")
+        .iter()
+        .find(|selection| selection["name"] == "friends")
+        .expect("the operation writes the friends");
+    assert_eq!(written["paged"], friends["paged"]);
+    assert_eq!(written["storage_key"]["name"], "friends");
+
+    let output = crate::emit::swift(&plan, &Config::default()).expect("the plan emits");
+    assert!(
+        output
+            .shared
+            .contains("Baton.Registry.slot(Types.Character, \"__Probe_nodes_paged(perPage:2)\")"),
+        "the merged record's link is a slot of the character: {}",
+        output.shared
+    );
+}
+
+#[test]
+fn a_paged_key_ends_in_the_list_s_alias_and_the_list_keeps_its_field_s_storage_key() {
+    let plan = paging(
+        "query Probe($page: Int!) { page(page: $page) { pageInfo { hasNextPage } mine: notes(authorId: \"1\") @paged(key: \"Probe_mine\", page: $page) { id } } }",
+    );
+    let reader = serde_json::to_value(&plan.operations[0].reader[0]).expect("a plan serializes");
+    assert_eq!(reader["paged"]["key"], "Probe_mine");
+    assert_eq!(
+        reader["paged"]["storage_key"],
+        serde_json::json!({
+            "name": "__Probe_mine_paged",
+            "arguments": [
+                {"name": "authorId", "value": {"kind": "constant", "value": {"kind": "string", "value": "1"}}}
+            ]
+        })
+    );
+    assert_eq!(reader["paged"]["list"]["name"], "notes");
+}
+
+#[test]
+fn the_text_a_server_receives_does_not_say_paged() {
+    let plan = paging(PAGED_NOTES);
+    let sent = &plan.operations[0].text;
+    assert_eq!(
+        sent,
+        "query Probe($page:Int!,$authorId:ID!){page(page:$page,perPage:2){pageInfo{hasNextPage,currentPage},notes(authorId:$authorId){id,text}}}"
+    );
+    assert!(!sent.contains("paged"), "{sent}");
+}
+
+#[test]
+fn a_page_variable_with_a_default_is_one_paged_may_name() {
+    let plan = paging(
+        "query Probe($page: Int = 1) { page(page: $page) { pageInfo { hasNextPage } notes @paged(key: \"Probe_notes\", page: $page) { id } } }",
+    );
+    let normalization =
+        serde_json::to_value(&plan.operations[0].normalization[0]).expect("a plan serializes");
+    assert_eq!(normalization["paged"]["page"], "page");
+}
+
+#[test]
+fn paged_without_its_page_or_with_a_key_that_is_no_string_is_an_error_at_the_directive() {
+    let message = "`@paged` takes `key`, a string that names the list in the store, and `page`, the variable that names the page";
+    assert_eq!(
+        paged_error(
+            "query Probe($page: Int!) { page(page: $page) { pageInfo { hasNextPage } notes @paged(key: \"Probe_notes\") { id } } }"
+        ),
+        (
+            message.to_string(),
+            "@paged(key: \"Probe_notes\") { id } } }".to_string()
+        )
+    );
+    // A constant key of another type is Relay's front end's to refuse, as
+    // the schema extension declares `key: String!`; a variable reaches the
+    // lowering.
+    assert_eq!(
+        paged_error(
+            "query Probe($page: Int!, $key: String!) { page(page: $page) { pageInfo { hasNextPage } notes @paged(key: $key, page: $page) { id } } }"
+        ),
+        (
+            message.to_string(),
+            "@paged(key: $key, page: $page) { id } } }".to_string()
+        )
+    );
+}
+
+#[test]
+fn paged_naming_the_page_as_a_constant_is_an_error_at_the_directive() {
+    assert_eq!(
+        paged_error(
+            "query Probe($page: Int!) { page(page: $page) { pageInfo { hasNextPage } notes @paged(key: \"Probe_notes\", page: 1) { id } } }"
+        ),
+        (
+            "`@paged` names the page as a constant: the page is a variable of the operation, which `loadNext()` advances".to_string(),
+            "@paged(key: \"Probe_notes\", page: 1) { id } } }".to_string()
+        )
+    );
+}
+
+#[test]
+fn paged_on_a_scalar_or_on_a_link_that_is_no_list_is_an_error_at_the_directive() {
+    assert_eq!(
+        paged_error(
+            "query Probe($page: Int!) { page(page: $page) { pageInfo { hasNextPage } notes { text @paged(key: \"Probe_text\", page: $page) } } }"
+        ),
+        (
+            "`@paged` sits on `text`, a scalar: it names a list of records paged by number"
+                .to_string(),
+            "@paged(key: \"Probe_text\", page: $page) } } }".to_string()
+        )
+    );
+    assert_eq!(
+        paged_error(
+            "query Probe($page: Int!) { page(page: $page) { pageInfo @paged(key: \"Probe_pageInfo\", page: $page) { hasNextPage } notes { id } } }"
+        ),
+        (
+            "`@paged` sits on `pageInfo`, which is not a list of records: it names a list paged by number".to_string(),
+            "@paged(key: \"Probe_pageInfo\", page: $page) { hasNextPage } notes { id } } }"
+                .to_string()
+        )
+    );
+}
+
+#[test]
+fn paged_with_a_key_that_does_not_end_in_the_list_s_name_is_an_error_at_the_directive() {
+    assert_eq!(
+        paged_error(
+            "query Probe($page: Int!) { page(page: $page) { pageInfo { hasNextPage } notes @paged(key: \"BadKey_list\", page: $page) { id } } }"
+        ),
+        (
+            "`@paged` names the list `BadKey_list`: the key ends in `_notes`, as a connection's key ends in its field's name".to_string(),
+            "@paged(key: \"BadKey_list\", page: $page) { id } } }".to_string()
+        )
+    );
+}
+
+/// The reader refuses the fragment's argument by name; the operation's
+/// normalization, where Relay has settled the argument to its default, sees
+/// a constant, and says so at the same directive.
+#[test]
+fn paged_naming_an_argument_of_its_fragment_is_an_error_at_the_directive() {
+    let (sdl, _) = schema();
+    let text = "fragment Probe_character on Character @argumentDefinitions(page: {type: \"Int\", defaultValue: 1}) { friends(page: $page) { pageInfo { hasNextPage } nodes @paged(key: \"Probe_nodes\", page: $page) { id } } } query ProbeQuery($id: ID!) { character(id: $id) { ...Probe_character } }";
+    let at = text[text.find("@paged").expect("the document says @paged")..].to_string();
+    assert_eq!(
+        errors_at_in(&sdl, text),
+        vec![
+            (
+                "`@paged` names `$page`, an argument of the fragment: the page is a variable of the operation, which `loadNext()` advances".to_string(),
+                at.clone()
+            ),
+            (
+                "`@paged` names the page as a constant: the page is a variable of the operation, which `loadNext()` advances".to_string(),
+                at
+            ),
+        ]
+    );
+}
+
+#[test]
+fn paged_naming_a_page_variable_that_may_be_null_is_an_error_at_the_directive() {
+    let message = "`@paged` names `$page`, which may be null: declare it `Int!`, or give it a default, so that every run names its page";
+    for declared in ["$page: Int", "$page: Int = null"] {
+        let text = format!(
+            "query Probe({declared}) {{ page(page: $page) {{ pageInfo {{ hasNextPage }} notes @paged(key: \"Probe_notes\", page: $page) {{ id }} }} }}"
+        );
+        assert_eq!(
+            paged_error(&text),
+            (
+                message.to_string(),
+                "@paged(key: \"Probe_notes\", page: $page) { id } } }".to_string()
+            ),
+            "{declared}"
+        );
+    }
+}
+
+/// The lowering's own check of an undeclared page is not reached from a
+/// document: a variable the operation does not declare is refused by
+/// Relay's front end first, in the operation and in a fragment it spreads.
+#[test]
+fn paged_naming_a_variable_the_operation_does_not_declare_is_an_error() {
+    assert_eq!(
+        paged_error(
+            "query Probe { page(page: $page) { pageInfo { hasNextPage } notes @paged(key: \"Probe_notes\", page: $page) { id } } }"
+        )
+        .0,
+        "Expected variable `$page` to be defined on the operation 'Probe'"
+    );
+    assert_eq!(
+        paged_error(
+            "fragment Probe_character on Character { friends(page: $page) { pageInfo { hasNextPage } nodes @paged(key: \"Probe_nodes\", page: $page) { id } } } query ProbeQuery($id: ID!) { character(id: $id) { ...Probe_character } }"
+        )
+        .0,
+        "Operation 'ProbeQuery' references undefined variable: '$page'."
+    );
+}
+
+#[test]
+fn paged_on_a_root_field_is_an_error_at_the_directive() {
+    assert_eq!(
+        paged_error(
+            "query Probe($page: Int!) { assets @paged(key: \"Probe_assets\", page: $page) { uuid } }"
+        ),
+        (
+            "`@paged` names `$page`, which no field above `assets` takes here: the directive sits in the selection of the field that takes the page".to_string(),
+            "@paged(key: \"Probe_assets\", page: $page) { uuid } }".to_string()
+        )
+    );
+}
+
+#[test]
+fn paged_inside_a_field_that_does_not_take_the_page_is_an_error_at_the_directive() {
+    assert_eq!(
+        paged_error(
+            "query Probe($page: Int!) { page(page: $page) { pageInfo { hasNextPage } } character(id: \"1\") { friends { pageInfo { hasNextPage } nodes @paged(key: \"Probe_nodes\", page: $page) { id } } } }"
+        ),
+        (
+            "`@paged` names `$page`, which `friends` does not take: the directive sits in the selection of the field that takes the page".to_string(),
+            "@paged(key: \"Probe_nodes\", page: $page) { id } } } }".to_string()
+        )
+    );
+    assert_eq!(
+        paged_error(
+            "query Probe($page: Int!, $other: Int!) { page(page: $page) { pageInfo { hasNextPage } notes @paged(key: \"Probe_notes\", page: $other) { id } } }"
+        )
+        .0,
+        "`@paged` names `$other`, which `page` does not take: the directive sits in the selection of the field that takes the page",
+        "the container takes another variable than the one the directive names"
+    );
+}
+
+/// Containers `@paged` refuses: one behind an interface and one behind a
+/// union, one with no page info, one whose page info has no
+/// `hasNextPage: Boolean`, and one whose list takes an argument the
+/// container takes as well.
+const PAGING: &str = "
+type Query { feed(page: Int): Feed mixed(page: Int): Mixed bare(page: Int): Bare flagless(page: Int): Flagless shelf(page: Int, sort: String): Shelf }
+interface Feed { pageInfo: PageInfo! items: [Note] }
+type NoteFeed implements Feed { pageInfo: PageInfo! items: [Note] }
+union Mixed = NoteFeed
+type Bare { items: [Note] }
+type Flagless { pageInfo: Flags! items: [Note] }
+type Flags { hasNextPage: String }
+type Shelf { pageInfo: PageInfo! items(sort: String): [Note] }
+type PageInfo { hasNextPage: Boolean! }
+type Note { id: ID! text: String }
+";
+
+#[test]
+fn paged_under_an_interface_or_a_union_is_an_error_at_the_directive() {
+    assert_eq!(
+        errors_at_in(
+            PAGING,
+            "query Probe($page: Int!) { feed(page: $page) { pageInfo { hasNextPage } items @paged(key: \"Probe_items\", page: $page) { id } } }"
+        ),
+        vec![(
+            "`feed` returns `Feed`, an interface or union: a paged list's container is an object type".to_string(),
+            "@paged(key: \"Probe_items\", page: $page) { id } } }".to_string()
+        )]
+    );
+    assert_eq!(
+        errors_at_in(
+            PAGING,
+            "query Probe($page: Int!) { mixed(page: $page) { ... on NoteFeed { pageInfo { hasNextPage } items @paged(key: \"Probe_items\", page: $page) { id } } } }"
+        ),
+        vec![(
+            "`mixed` returns `Mixed`, an interface or union: a paged list's container is an object type".to_string(),
+            "@paged(key: \"Probe_items\", page: $page) { id } } } }".to_string()
+        )]
+    );
+}
+
+#[test]
+fn paged_under_a_type_without_a_page_info_that_says_has_next_page_is_an_error_at_the_directive() {
+    assert_eq!(
+        errors_at_in(
+            PAGING,
+            "query Probe($page: Int!) { bare(page: $page) { items @paged(key: \"Probe_items\", page: $page) { id } } }"
+        ),
+        vec![(
+            "`Bare` has no `pageInfo` with a `hasNextPage: Boolean`, which `@paged` reads the end of the list from".to_string(),
+            "@paged(key: \"Probe_items\", page: $page) { id } } }".to_string()
+        )]
+    );
+    assert_eq!(
+        errors_at_in(
+            PAGING,
+            "query Probe($page: Int!) { flagless(page: $page) { pageInfo { hasNextPage } items @paged(key: \"Probe_items\", page: $page) { id } } }"
+        ),
+        vec![(
+            "`Flagless` has no `pageInfo` with a `hasNextPage: Boolean`, which `@paged` reads the end of the list from".to_string(),
+            "@paged(key: \"Probe_items\", page: $page) { id } } }".to_string()
+        )]
+    );
+}
+
+#[test]
+fn paged_beside_no_selected_has_next_page_is_an_error_at_the_directive() {
+    let message = "`@paged` needs `pageInfo { hasNextPage }` selected beside `notes` on `Page`, which `hasNext` reads";
+    for selected in ["", "pageInfo { currentPage } "] {
+        let text = format!(
+            "query Probe($page: Int!) {{ page(page: $page) {{ {selected}notes @paged(key: \"Probe_notes\", page: $page) {{ id }} }} }}"
+        );
+        assert_eq!(
+            paged_error(&text),
+            (
+                message.to_string(),
+                "@paged(key: \"Probe_notes\", page: $page) { id } } }".to_string()
+            ),
+            "{selected}"
+        );
+    }
+}
+
+#[test]
+fn a_second_paged_list_under_one_container_is_an_error_at_its_directive() {
+    assert_eq!(
+        paged_error(
+            "query Probe($page: Int!) { page(page: $page) { pageInfo { hasNextPage } notes @paged(key: \"Probe_notes\", page: $page) { id } characters @paged(key: \"Probe_characters\", page: $page) { id } } }"
+        ),
+        (
+            "`page` has two `@paged` lists: a field pages one list".to_string(),
+            "@paged(key: \"Probe_characters\", page: $page) { id } } }".to_string()
+        )
+    );
+}
+
+#[test]
+fn paged_where_the_container_and_the_list_take_one_argument_is_an_error_at_the_directive() {
+    assert_eq!(
+        errors_at_in(
+            PAGING,
+            "query Probe($page: Int!) { shelf(page: $page, sort: \"new\") { pageInfo { hasNextPage } items(sort: \"old\") @paged(key: \"Probe_items\", page: $page) { id } } }"
+        ),
+        vec![(
+            "`@paged` cannot key the list: `shelf` and `items` both take `sort`".to_string(),
+            "@paged(key: \"Probe_items\", page: $page) { id } } }".to_string()
+        )]
+    );
+}
+
 #[test]
 fn the_text_an_operation_holds_ends_at_its_last_brace() {
     let (sdl, path) = schema();

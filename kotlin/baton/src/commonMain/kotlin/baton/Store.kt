@@ -913,6 +913,7 @@ class Store(
         for (edit in changes.edits) {
             when (edit) {
                 is ChangeSet.Edit.Merge -> merge(objects[edit.connection]!!, objects[edit.page]!!, edit.slots, edit.mode, batch)
+                is ChangeSet.Edit.MergePage -> mergePage(objects[edit.list]!!, objects[edit.page]!!, edit.paged, edit.number, batch)
                 is ChangeSet.Edit.Place -> {
                     // The delivery checked the list before this batch, on this thread; a parent that holds no list here
                     // was changed by this very change set, which cannot be.
@@ -992,16 +993,22 @@ class Store(
     /**
      * Where a response path leads through the store: the record, the
      * selection that reads it, and, when the last link followed was a
-     * connection field, the connection its page merges into, by the key the
-     * ingest gives it.
+     * connection field or a paged list's container, the record its page
+     * merges into, by the key the ingest gives it.
      */
-    internal class Place(val record: Record, val selection: ResolvedSelection, val connection: Pair<String, ResolvedConnection>?)
+    internal class Place(
+        val record: Record,
+        val selection: ResolvedSelection,
+        val connection: Pair<String, ResolvedConnection>?,
+        val paged: Pair<String, ResolvedPaged>? = null,
+    )
 
     internal fun locate(path: List<PathSegment>, selection: ResolvedSelection, from: Record = root): Place? {
         checkThread()
         var record = from
         var current = selection
         var connection: Pair<String, ResolvedConnection>? = null
+        var paged: Pair<String, ResolvedPaged>? = null
         var position = 0
         while (position < path.size) {
             val segment = path[position] as? PathSegment.Name ?: return null
@@ -1009,6 +1016,7 @@ class Store(
             val field = current.variant(record.type).field(segment.name) ?: return null
             val kind = field.kind as? ResolvedField.Kind.Linked ?: return null
             connection = kind.connection?.let { record.key + ":" + it.storageKey to it }
+            paged = field.paged?.let { record.key + ":" + it.storageKey to it }
             record = when (val value = record.peek(field.slot)) {
                 is Value.Ref -> value.record
                 is Value.Refs -> {
@@ -1020,7 +1028,7 @@ class Store(
             }
             current = kind.selection
         }
-        return Place(record, current, connection)
+        return Place(record, current, connection, paged)
     }
 
     internal companion object {

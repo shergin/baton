@@ -26,7 +26,7 @@ fragment HostileInlineLinks_character on Character @inline @throwOnFieldError {
   caught: origin { id } refetchable: origin { id } refetch: origin { id }
   connection: origin { id } nodes: origin { id } hasNext: origin { id }
   hasPrevious: origin { id } isLoadingNext: origin { id } isLoadingPrevious: origin { id }
-  connectionID: origin { id } loadNext: origin { id } loadPrevious: origin { id }
+  connectionID: origin { id } paged: origin { id } loadNext: origin { id } loadPrevious: origin { id }
   # The locals, parameters and local aliases of generated bodies.
   bound: origin { id } errors: origin { id } child: origin { id } missing: origin { id }
   count: origin { id } fields: origin { id } lhs: origin { id } rhs: origin { id }

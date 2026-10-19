@@ -62,6 +62,13 @@ side.
   `cursor`, and the field is `@connection(key:)`. The view reads `nodes`
   and `hasNext`, and calls `loadNext` when the end shows
   ([Pagination](../terminology.md#lists)). The store merges the pages.
+- **A list the schema pages by number is `@paged`.** On a schema without
+  cursors, the list field inside the field that takes the page carries
+  `@paged(key:, page:)`, the page is an `Int!` variable of the query, and
+  `pageInfo { hasNextPage }` is selected beside the list. The view reads
+  the list through the wrapper's lens, with `hasNext`, and calls
+  `loadNext()` when the end shows; no `@refetchable` fragment is needed
+  ([Paged list](../terminology.md#lists)).
 - **A write is an action.** A `@Mutation` compiles to an
   [action](../terminology.md#generated). Call it with one argument per
   variable, and an optional typed `OptimisticResponse`. When the write
@@ -161,7 +168,8 @@ Run, in this order:
 - [ ] Each child receives its lens through the parent's spread accessor.
       No view reads a field another view declared.
 - [ ] Each list is a `@connection` on a `@refetchable` fragment, and pages
-      with `loadNext`.
+      with `loadNext`; on a schema that pages by number, the list field is
+      `@paged` inside the field that takes the page.
 - [ ] Each write is an action. A write the user should see at once has a
       typed optimistic response. A write that changes a list names the
       connection with an edge directive.

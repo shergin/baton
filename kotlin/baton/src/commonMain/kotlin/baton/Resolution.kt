@@ -39,6 +39,24 @@ internal class ResolvedConnection(
     val mode: ConnectionMode,
 )
 
+/**
+ * A paged list with its variables bound: the client key on the container's
+ * parent and its slot there, the list's slot on the container type, the
+ * slots, and the page the container was fetched with.
+ */
+internal class ResolvedPaged(
+    val storageKey: String,
+    val rendered: Boolean,
+    val slot: Slot,
+    val listSlot: Slot,
+    val slots: PagedSlots,
+    val page: Long?,
+    /** The container's slots the merge copies from the page: the fields the operation selected of it, except the list and the page info link, so a page record two lists share lends the other list nothing. */
+    val copied: List<Slot>,
+    /** The page info's slots the merge copies: the fields selected of it. */
+    val pageInfoCopied: List<Slot>,
+)
+
 /** An edit with its connection ids bound. */
 internal class ResolvedEdit(val kind: Edit.Kind, val connections: List<String>, val edgeType: TypeID?)
 
@@ -54,6 +72,8 @@ internal class ResolvedField(
     val edit: ResolvedEdit?,
     /** The `@defer` label of the part that carries the field, when one does. */
     val deferred: String?,
+    /** The paged list the field is the container of, when one is. */
+    val paged: ResolvedPaged? = null,
     val caught: Boolean,
     /** A client field, which no response carries. */
     val client: Boolean,
@@ -72,10 +92,10 @@ internal class ResolvedField(
     /** Whether a complete response carries the field: the server's own, outside any deferred part. */
     val isServer: Boolean get() = !client && deferred == null
 
-    fun copy(slot: Slot = this.slot, kind: Kind = this.kind, deferred: String? = this.deferred, keyIndex: Int = this.keyIndex): ResolvedField =
-        ResolvedField(responseKey, keyBytes, storageKey, rendered, slot, kind, edit, deferred, caught, client, keyIndex, streams)
+    fun copy(slot: Slot = this.slot, kind: Kind = this.kind, deferred: String? = this.deferred, keyIndex: Int = this.keyIndex, paged: ResolvedPaged? = this.paged): ResolvedField =
+        ResolvedField(responseKey, keyBytes, storageKey, rendered, slot, kind, edit, deferred, paged, caught, client, keyIndex, streams)
 
-    /** The same field on another concrete type: its slot, and its connection's, interned there. */
+    /** The same field on another concrete type: its slot, and its connection's and its paged list's, interned there. */
     fun on(type: TypeID, keys: Keys?): ResolvedField {
         if (slot.type == type) return this
         val moved = when (kind) {
@@ -87,7 +107,10 @@ internal class ResolvedField(
                 Kind.Linked(kind.selection, kind.plural, kind.lookup, connection)
             }
         }
-        return copy(slot = slotOn(type, storageKey, rendered, keys), kind = moved)
+        val paged = paged?.let {
+            ResolvedPaged(it.storageKey, it.rendered, slotOn(type, it.storageKey, it.rendered, keys), it.listSlot, it.slots, it.page, it.copied, it.pageInfoCopied)
+        }
+        return copy(slot = slotOn(type, storageKey, rendered, keys), kind = moved, paged = paged)
     }
 
     private fun slotOn(type: TypeID, storageKey: String, rendered: Boolean, keys: Keys?): Slot {
@@ -136,21 +159,43 @@ internal class ResolvedVariant(val type: TypeID, val key: List<String>, fields: 
         for (field in read) {
             val kind = field.kind as? ResolvedField.Kind.Linked ?: continue
             followed.add(field)
-            val connection = kind.connection ?: continue
-            val link = ResolvedField(
-                responseKey = connection.storageKey,
-                keyBytes = ByteArray(0),
-                storageKey = connection.storageKey,
-                rendered = connection.rendered,
-                slot = connection.slot,
-                kind = ResolvedField.Kind.Linked(kind.selection, plural = false, lookup = null, connection = null),
-                edit = null,
-                deferred = null,
-                caught = field.caught,
-                client = true,
-            )
-            links.add(link)
-            followed.add(link)
+            // A connection's client record is read by the page's selection, and a paged list's merged record by the
+            // container's.
+            val linked = ResolvedField.Kind.Linked(kind.selection, plural = false, lookup = null, connection = null)
+            val connection = kind.connection
+            if (connection != null) {
+                val link = ResolvedField(
+                    responseKey = connection.storageKey,
+                    keyBytes = ByteArray(0),
+                    storageKey = connection.storageKey,
+                    rendered = connection.rendered,
+                    slot = connection.slot,
+                    kind = linked,
+                    edit = null,
+                    deferred = null,
+                    caught = field.caught,
+                    client = true,
+                )
+                links.add(link)
+                followed.add(link)
+            }
+            val paged = field.paged
+            if (paged != null) {
+                val link = ResolvedField(
+                    responseKey = paged.storageKey,
+                    keyBytes = ByteArray(0),
+                    storageKey = paged.storageKey,
+                    rendered = paged.rendered,
+                    slot = paged.slot,
+                    kind = linked,
+                    edit = null,
+                    deferred = null,
+                    caught = field.caught,
+                    client = true,
+                )
+                links.add(link)
+                followed.add(link)
+            }
         }
         clientLinks = links
         follows = followed
@@ -165,6 +210,10 @@ internal class ResolvedVariant(val type: TypeID, val key: List<String>, fields: 
             if (field.slot.index < 0) into.add(field.slot)
             val kind = field.kind as? ResolvedField.Kind.Linked ?: continue
             kind.connection?.let { if (it.slot.index < 0) into.add(it.slot) }
+            field.paged?.let {
+                if (it.slot.index < 0) into.add(it.slot)
+                if (it.listSlot.index < 0) into.add(it.listSlot)
+            }
             kind.selection.renderedSlots(into, seen)
         }
     }
@@ -350,10 +399,11 @@ private class Resolver(private val variables: Variables, private val keys: Keys)
 
     private fun field(field: PlanField, type: TypeID): ResolvedField {
         val storageKey = field.fixedStorageKey ?: render(field.key)
+        var child: ResolvedSelection? = null
         val kind = when (val kind = field.kind) {
             is PlanField.Kind.Scalar -> ResolvedField.Kind.Scalar(kind.kind, kind.list)
             is PlanField.Kind.Linked -> ResolvedField.Kind.Linked(
-                resolve(kind.selection),
+                resolve(kind.selection).also { child = it },
                 kind.plural,
                 kind.lookup?.let { lookup ->
                     val parts = lookup.key.map { part ->
@@ -370,6 +420,28 @@ private class Resolver(private val variables: Variables, private val keys: Keys)
                 },
             )
         }
+        val container = child
+        val paged = if (container == null) null else field.paged?.let { paged ->
+            val key = render(paged.key)
+            val list = render(paged.list)
+            val listSlot = slot(paged.list, list, paged.slots.container)
+            val pageInfoLink = paged.slots.pageInfoLink
+            // The container's slots the merge copies: the fields the operation selected of it, except the list and
+            // the page info link; and the page info's selected fields.
+            val copied = container.fields.filter { !it.isTypename && it.slot.index != listSlot.index && it.slot.index != pageInfoLink.index }.map { it.slot }
+            val pageInfo = container.fields.firstOrNull { it.slot.index == pageInfoLink.index }?.kind as? ResolvedField.Kind.Linked
+            val pageInfoCopied = pageInfo?.selection?.fields?.filter { !it.isTypename }?.map { it.slot } ?: emptyList()
+            ResolvedPaged(
+                key,
+                paged.key is StorageKey.Dynamic,
+                slot(paged.key, key, type),
+                listSlot,
+                paged.slots,
+                (variables[paged.page] as? Variable.Int)?.value,
+                copied,
+                pageInfoCopied,
+            )
+        }
         return ResolvedField(
             responseKey = field.responseKey,
             keyBytes = field.keyBytes,
@@ -379,6 +451,7 @@ private class Resolver(private val variables: Variables, private val keys: Keys)
             kind = kind,
             edit = field.edit?.let { ResolvedEdit(it.kind, connections(it.connections), it.edgeType) },
             deferred = field.deferred,
+            paged = paged,
             caught = field.caught,
             client = field.client,
             streams = field.streamed != null,

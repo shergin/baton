@@ -335,6 +335,16 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
                             frame.extraValues.add(Raw.REF, connectionRecord.toLong(), 0)
                             changes.edits.add(ChangeSet.Edit.Merge(connectionRecord, child, connection.slots, connection.mode))
                         }
+                        val paged = field.paged
+                        if (paged != null) {
+                            // The container is the server's page; the record the paged list merges into hangs off the parent by
+                            // the list's client key, and takes the page when the run named one.
+                            val listRecord = changes.record(changes.recordKeys[record] + ":" + paged.storageKey, kind.selection.type, -1)
+                            frame.extraSlots.add(paged.slot.index)
+                            frame.extraValues.add(Raw.REF, listRecord.toLong(), 0)
+                            val number = paged.page
+                            if (number != null) changes.edits.add(ChangeSet.Edit.MergePage(listRecord, child, paged, number))
+                        }
                         field.edit?.let { insertion(it, child) }
                     }
                 }

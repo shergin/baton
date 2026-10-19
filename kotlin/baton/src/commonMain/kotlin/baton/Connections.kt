@@ -4,7 +4,10 @@ package baton
 // directives' edits, as functions over the store and a batch, where Relay
 // keeps its connection handler. A connection is a client record on the
 // parent that every page merges into, and it owns the edges inserted into
-// it. See `spec/runtime.md`, section 4.
+// it. A paged list is the connection's sibling: a client record of the
+// container's type on the container's parent, which pages merge into by
+// number (`docs/decisions/a-paged-list-merges-its-pages-by-number.md`).
+// See `spec/runtime.md`, section 4.
 
 /**
  * The connection an edit may change: in memory, live, and holding what
@@ -85,6 +88,82 @@ internal fun Store.merge(connection: Record, page: Record, slots: ConnectionSlot
         val value = serverPageInfo.peek(slot)
         if (value == Value.Missing) continue
         set(pageInfo, slot, value, batch)
+    }
+}
+
+/**
+ * Merges a page into its paged list's record. The fields the operation
+ * selected of the container follow the page's, except the list and the
+ * page info link, so a page record two lists share lends the other list
+ * nothing. The list's first page replaces the merged list, the page after
+ * the last merged appends, a page already merged rewrites its own span in
+ * place, and any other page is ignored, as a connection page after a
+ * cursor that is no longer the end is. The elements are the page's
+ * records, each once across the list, nulls dropped. The page info's
+ * selected fields follow the page's when the page replaces or is the last
+ * merged. The record keeps where it stands in `__firstPage` and
+ * `__pageLengths`.
+ */
+internal fun Store.mergePage(list: Record, page: Record, paged: ResolvedPaged, number: Long, batch: Store.Batch) {
+    val slots = paged.slots
+    val listSlot = paged.listSlot
+    for (slot in paged.copied) {
+        val value = page.peek(slot)
+        if (value != Value.Missing) set(list, slot, value, batch)
+    }
+
+    val lengths = ArrayList<Int>()
+    (list.peek(slots.pageLengths) as? Value.List)?.values?.forEach { value -> (value as? Value.Int)?.let { lengths.add(it.value.toInt()) } }
+    val first = (list.peek(slots.firstPage) as? Value.Int)?.value
+    val existing = edges(list, listSlot)
+    val incoming = edges(page, listSlot)
+    val merged = ArrayList<Record?>(existing.size + incoming.size)
+    val seen = HashSet<Record>()
+    fun keep(elements: List<Record?>): Int {
+        var kept = 0
+        for (element in elements) {
+            if (element == null || !seen.add(element)) continue
+            merged.add(element)
+            kept += 1
+        }
+        return kept
+    }
+    val isLast: Boolean
+    if (first != null && lengths.isNotEmpty() && number != first) {
+        if (number == first + lengths.size) {
+            keep(existing)
+            lengths.add(keep(incoming))
+            isLast = true
+        } else if (number > first && number < first + lengths.size) {
+            val position = (number - first).toInt()
+            val start = minOf(lengths.subList(0, position).sum(), existing.size)
+            val end = minOf(start + lengths[position], existing.size)
+            keep(existing.subList(0, start))
+            keep(existing.subList(end, existing.size))
+            // The page's own span, rewritten after the rest so an element the list already holds elsewhere stays where it was.
+            val tail = ArrayList(merged.subList(start, merged.size))
+            merged.subList(start, merged.size).clear()
+            lengths[position] = keep(incoming)
+            merged.addAll(tail)
+            isLast = position == lengths.size - 1
+        } else {
+            return
+        }
+    } else {
+        lengths.clear()
+        lengths.add(keep(incoming))
+        set(list, slots.firstPage, Value.Int(number), batch)
+        isLast = true
+    }
+    set(list, listSlot, Value.Refs(merged), batch)
+    set(list, slots.pageLengths, Value.List(lengths.map { Value.Int(it.toLong()) }), batch)
+    if (!isLast) return
+    val serverPageInfo = (page.peek(slots.pageInfoLink) as? Value.Ref)?.record ?: return
+    val pageInfo = (list.peek(slots.pageInfoLink) as? Value.Ref)?.record
+        ?: recordFor(list.key + ":pageInfo", slots.pageInfo, -1).also { set(list, slots.pageInfoLink, Value.Ref(it), batch) }
+    for (slot in paged.pageInfoCopied) {
+        val value = serverPageInfo.peek(slot)
+        if (value != Value.Missing) set(pageInfo, slot, value, batch)
     }
 }
 

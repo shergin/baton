@@ -109,6 +109,20 @@ key>:edges:<n>`, numbered by the connection's `__connection_next_edge_index`
 client field. *Held by* tests/notes-page-1, tests/add-note-n9 and
 tests/add-note-node-n7.
 
+**A paged list's records hang off the container's parent.** The client
+record the pages of a list under `@paged(key:page:)` merge into is of the
+container's type, the field that takes the page, and is keyed by the
+container's parent's key, `:` and `__<key>_paged` with the container's
+arguments except the one that reads the page and the list field's
+arguments, sorted by name:
+`client:root:__TestPagedNotes_notes_paged(authorId:"1",perPage:2)`,
+`Character:1:__TestFriends_nodes_paged(perPage:2)`. Its page info is `<that
+key>:pageInfo`. It holds the list under the list field's own storage key,
+and keeps where it stands in the client fields `__firstPage` and
+`__pageLengths`, the span of each merged page, with `__isLoadingNext` while
+a page loads. The server's page keeps its own key beside it. *Held by*
+tests/paged-notes-1 and tests/friends-1.
+
 **A record holds slots, and a slot holds one of a closed set of values.**
 Missing, which means the store never received the field; null, which the
 server said; a boolean; an integer; a float; a string; a link to one
@@ -145,7 +159,9 @@ read goes through one.
 **A field is a response key, a storage key and a kind.** The kind is a
 scalar (string, int, float, bool or custom; a list or not) or a link (a
 selection; plural or not; a lookup, for a root field an entity satisfies; a
-connection). A field may carry an edit (an edge directive), a `@defer`
+connection; the container of a paged list, with the list's client key, the
+list field's key, the page info's type and the page variable). A field may
+carry an edit (an edge directive), a `@defer`
 label, whether it or an ancestor is caught by `@catch`, whether it is a
 client field no server answers, whether it is a transient root field, and
 its guards: alternatives of conjunctions of `@include` and `@skip`
@@ -158,16 +174,18 @@ rendered and numbered by the store; a lookup's key is composed from its
 arguments' values as the ingest composes a key from key fields; a
 connection learns its merge mode from its cursor arguments (an `after`
 present appends, a `before` present prepends, neither replaces; a variable
-given null is not present); an edit's connection ids come from its variable
-or constant list. A selection that reads no variable is resolved once and
+given null is not present); a paged list's container renders its client
+key and the list's key and takes its page from the page variable's value,
+and a run that gives none merges nothing; an edit's connection ids come
+from its variable or constant list. A selection that reads no variable is resolved once and
 shared by every store. The variant of each listed type is resolved at once;
 the variant of a type the plan did not list is resolved when a record of
 it first comes, from the fields every type reads and then the fields under
 each condition the type satisfies, by response key, the first winning, and
 is kept per type and per set of conditions. *Held by*
 tests/conditions-included and tests/conditions-excluded (guards),
-tests/notes-page-2 (a connection's mode), tests/union-unknown-type (an
-unlisted type's variant).
+tests/notes-page-2 (a connection's mode), tests/paged-notes-2 (a paged
+list's page), tests/union-unknown-type (an unlisted type's variant).
 
 **A mutation's plan may name the records it deletes.** Each is a type and
 a variable, from `@deletes(type:id:)` on the mutation, which the compiler
@@ -207,9 +225,9 @@ the compiler's goldens.
 fields a response is read by (every field but `__typename`); the ones a
 complete response must carry (the server's own, outside any deferred part,
 not the client's); the ones the availability check waits for (the same);
-the connections' client links; the links the collector follows (every
-link, deferred or not, and the client links); the client fields a payload
-writes. A walk tests no field for what it is. *Held by* the cases through
+the connections' and the paged lists' client links; the links the
+collector follows (every link, deferred or not, and the client links); the
+client fields a payload writes. A walk tests no field for what it is. *Held by* the cases through
 their reads and dumps; as a rule, *unheld*.
 
 ## 3. The ingest: a response to a change set
@@ -249,13 +267,15 @@ plural link's null element is a null entry; each object is read against the
 child selection with this record as its parent and the field's storage key
 and index as its path. A connection field's page is the server's record;
 the client record it merges into is written beside the page as a client
-link on the parent, and a merge edit is recorded with the mode. A field
+link on the parent, and a merge edit is recorded with the mode; so is a
+paged list's container, whose merge edit carries the page. A field
 with an edge directive records the insertion of the linked record, or, for
 a scalar id under `@deleteRecord` or `@deleteEdge`, the deletion by that
 id. A mutation's change set, from its response, its optimistic response or
 a payload committed for it, ends with the deletion by key of each record
 its plan names. *Held by* every dump with links; the connection link and
-merge by tests/notes-page-1; the edits by tests/add-note-n9,
+merge by tests/notes-page-1; the paged list's by tests/paged-notes-1; the
+edits by tests/add-note-n9,
 tests/add-note-node-n7, tests/delete-note-n2, tests/remove-note-n2,
 tests/discard-note-n2 and tests/discard-asset-a1.
 
@@ -367,6 +387,22 @@ replace); the merge of a second page, a refetch's replacement and a page
 after a cursor that is no longer the end by script `connections`; a
 prepending page's merge is *unheld*.
 
+**A page merges into its paged list by number.** The fields the operation
+selected of the container follow the page's, except the list and the page
+info link, so a page record two lists share lends the other list nothing.
+The list's first page, the one it started with, replaces the merged list; the
+page after the last merged appends; a page already merged, other than the
+first, rewrites its own span in place; any other page is ignored, as a
+connection page after a cursor that is no longer the end is. The elements
+are the page's records, referenced and not copied, each record once across
+the list, the first place kept, null elements dropped. The page info's
+selected fields follow the page's when the page replaces or is the last
+merged; a page rewritten in the middle leaves it. `__firstPage` and
+`__pageLengths` follow. *Held by* tests/paged-notes-1 and tests/friends-1
+(a replace); the merge of a second page, two lists under one server page
+keeping their own page info, a page rewritten in place, a page past the
+end ignored, and a refetch's replacement by script `paged`.
+
 **An edge directive edits a connection the store holds.** The connection
 an edit names must exist in memory, live, and hold what the image has or
 more (hydrated, or never empty); one the store does not hold that way is
@@ -448,10 +484,11 @@ missing link without one is a miss; a null link is fine; a link is
 followed, a deleted target not entered; every element of a list is
 followed. Then the client fields, which are hydrated and never waited for,
 and the records behind a client link brought back. Then the connections'
-client links: a connection record that holds nothing, swept or never
-filled, is a miss in memory and walked with the image at hand, and a link
-to a connection the image has no row for stays a miss. The query root's
-link to a connection is a cell of its own in the image, read here. *Held
+and the paged lists' client links: a merged record that holds nothing,
+swept or never filled, is a miss in memory and walked with the image at
+hand, and a link to one the image has no row for stays a miss. The query
+root's link to a connection or a paged list is a cell of its own in the
+image, read here. *Held
 by* `complete`; the rules one by one are *unheld* (script `check`).
 
 **A lookup binds in the check, never in a read.** A typed lookup names
@@ -593,6 +630,18 @@ record as a local write for the fetch's duration. *Held by*
 tests/notes-page-2 and tests/notes-page-3 for the pages' dumps; the walk
 from a lens is *unheld* (script `connections`).
 
+**A paged list reads through its container's lens.** The lens over the
+field that takes the page reads the merged record, so the list field reads
+the merged elements, and the lens gains `hasNext`, the merged page info's
+`hasNextPage` and nothing else, and `isLoadingNext`, the record's client
+flag. `loadNext` runs the operation that owns the lens with the variables
+it was run with and the page variable set to the first page plus the
+number of pages merged, and does nothing while a page is loading or when
+there is no next page; a lens made by hand, outside any operation, throws.
+A refetch of the owner fetches its own page, the first, and replaces the
+list. *Held by* script `paged` for the reads through the merged record;
+the walk from a lens is *unheld* (script `paged`).
+
 ## 7. The lifetime: roots, retention, ages, collection
 
 **A root is an operation's selection and the record it starts from, kept
@@ -657,9 +706,10 @@ not healed. A deleted record's fields and a client field report nothing.
 *unheld*.
 
 **A page's fetch has no handle and no root of its own.** The fetch runs the
-fragment's refetch query, the connection owns the merged pages, and the
-root the fetch makes waits in the release buffer like any fetch nothing
-retains. *Unheld* (script `connections`).
+fragment's refetch query, or for a paged list the operation that owns the
+lens; the connection or the paged list owns the merged pages, and the root
+the fetch makes waits in the release buffer like any fetch nothing retains.
+*Unheld* (scripts `connections` and `paged`).
 
 **A session ends once.** The environment's end cancels every fetch and
 stream it started, drops the roots, clears every record, closes the image

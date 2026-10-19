@@ -25,8 +25,11 @@ internal class Delivery(private val store: Store, private val resolved: Resolved
     /** An item's place: the streamed list's storage key and slot on the parent, and the index in it. */
     class Placement(val storageKey: String, val slot: Slot, val index: Int)
 
-    /** A connection whose page an object lands on: the page merges into the connection again once the object is in. */
-    class Remerge(val connectionKey: String, val slots: ConnectionSlots, val mode: ConnectionMode)
+    /** A connection, or a paged list, whose page an object lands on: the page merges into it again once the object is in. */
+    sealed interface Remerge {
+        class Connection(val key: String, val slots: ConnectionSlots, val mode: ConnectionMode) : Remerge
+        class Paged(val key: String, val paged: ResolvedPaged, val number: Long) : Remerge
+    }
 
     /**
      * One object a later part delivers: a deferred part's object, at the
@@ -95,7 +98,7 @@ internal class Delivery(private val store: Store, private val resolved: Resolved
                 dropped(path)
                 continue
             }
-            objects.add(ObjectPart(item.data, plan, place.record.key, place.record.type, place.record.isEntity, path, item.errors, remerge = remerge(place.connection)))
+            objects.add(ObjectPart(item.data, plan, place.record.key, place.record.type, place.record.isEntity, path, item.errors, remerge = remerge(place)))
         }
         return objects
     }
@@ -134,7 +137,7 @@ internal class Delivery(private val store: Store, private val resolved: Resolved
             return emptyList()
         }
         val first = start ?: left.size
-        val remerge = remerge(place.connection)
+        val remerge = remerge(place)
         return items.mapIndexed { offset, data ->
             ObjectPart(
                 data, kind.selection, place.record.key, place.record.type, place.record.isEntity,
@@ -144,9 +147,13 @@ internal class Delivery(private val store: Store, private val resolved: Resolved
         }
     }
 
-    /** The merge an object landing on a connection's page asks for. */
-    private fun remerge(connection: Pair<String, ResolvedConnection>?): Remerge? =
-        connection?.let { (key, resolved) -> Remerge(key, resolved.slots, resolved.mode) }
+    /** The merge an object landing on a connection's page, or on a paged list's, asks for. */
+    private fun remerge(place: Store.Place): Remerge? {
+        place.connection?.let { (key, resolved) -> return Remerge.Connection(key, resolved.slots, resolved.mode) }
+        val (key, resolved) = place.paged ?: return null
+        val number = resolved.page ?: return null
+        return Remerge.Paged(key, resolved, number)
+    }
 
     /**
      * Whether a streamed item still fits: the list it is an item of is as

@@ -623,6 +623,378 @@
       }
     },
     {
+      "name": "tests/paged-notes-1",
+      "operation": "TestPagedNotesQuery",
+      "kind": "query",
+      "document": "documents/TestPagedNotesQuery.graphql",
+      "variables": {
+        "page": 1,
+        "authorId": "1"
+      },
+      "responses": [
+        "tests/paged-notes-1.json"
+      ],
+      "records": "tests/paged-notes-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "page.hasNext",
+          "value": true
+        },
+        {
+          "path": "page.isLoadingNext",
+          "value": false
+        },
+        {
+          "path": "page.pageInfo.hasNextPage",
+          "value": true
+        },
+        {
+          "path": "page.pageInfo.currentPage",
+          "value": 1
+        },
+        {
+          "path": "page.notes.0.id",
+          "value": "n1"
+        },
+        {
+          "path": "page.notes.0.text",
+          "value": "Wubba lubba dub dub"
+        },
+        {
+          "path": "page.notes.1.id",
+          "value": "n2"
+        },
+        {
+          "path": "page.notes.1.text",
+          "value": "Portal gun needs charging"
+        }
+      ],
+      "override": {
+        "paths": [
+          "page.notes.1.text"
+        ],
+        "value": "Portal gun charged"
+      }
+    },
+    {
+      "name": "tests/paged-notes-2",
+      "operation": "TestPagedNotesQuery",
+      "kind": "query",
+      "document": "documents/TestPagedNotesQuery.graphql",
+      "variables": {
+        "page": 2,
+        "authorId": "1"
+      },
+      "responses": [
+        "tests/paged-notes-2.json"
+      ],
+      "records": "tests/paged-notes-2.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "page.hasNext",
+          "value": true
+        },
+        {
+          "path": "page.isLoadingNext",
+          "value": false
+        },
+        {
+          "path": "page.pageInfo.hasNextPage",
+          "value": true
+        },
+        {
+          "path": "page.pageInfo.currentPage",
+          "value": 2
+        },
+        {
+          "path": "page.notes.0.id",
+          "value": "n3"
+        },
+        {
+          "path": "page.notes.0.text",
+          "value": "Get Schwifty"
+        },
+        {
+          "path": "page.notes.1.id",
+          "value": "n4"
+        },
+        {
+          "path": "page.notes.1.text",
+          "value": "Avoid the Citadel"
+        }
+      ],
+      "override": {
+        "paths": [
+          "page.notes.0.text"
+        ],
+        "value": "Get Schwiftier"
+      }
+    },
+    {
+      "name": "tests/paged-notes-2-edited",
+      "operation": "TestPagedNotesQuery",
+      "kind": "query",
+      "document": "documents/TestPagedNotesQuery.graphql",
+      "variables": {
+        "page": 2,
+        "authorId": "1"
+      },
+      "responses": [
+        "tests/paged-notes-2-edited.json"
+      ],
+      "records": "tests/paged-notes-2-edited.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "page.hasNext",
+          "value": true
+        },
+        {
+          "path": "page.isLoadingNext",
+          "value": false
+        },
+        {
+          "path": "page.pageInfo.hasNextPage",
+          "value": true
+        },
+        {
+          "path": "page.pageInfo.currentPage",
+          "value": 2
+        },
+        {
+          "path": "page.notes.0.id",
+          "value": "n3"
+        },
+        {
+          "path": "page.notes.0.text",
+          "value": "Get Schwifty in here"
+        },
+        {
+          "path": "page.notes.1.id",
+          "value": "n4"
+        },
+        {
+          "path": "page.notes.1.text",
+          "value": "Avoid the Citadel"
+        }
+      ],
+      "override": {
+        "paths": [
+          "page.notes.0.text"
+        ],
+        "value": "Get Schwiftier"
+      }
+    },
+    {
+      "name": "tests/paged-notes-3",
+      "operation": "TestPagedNotesQuery",
+      "kind": "query",
+      "document": "documents/TestPagedNotesQuery.graphql",
+      "variables": {
+        "page": 3,
+        "authorId": "1"
+      },
+      "responses": [
+        "tests/paged-notes-3.json"
+      ],
+      "records": "tests/paged-notes-3.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "page.hasNext",
+          "value": false
+        },
+        {
+          "path": "page.isLoadingNext",
+          "value": false
+        },
+        {
+          "path": "page.pageInfo.hasNextPage",
+          "value": false
+        },
+        {
+          "path": "page.pageInfo.currentPage",
+          "value": 3
+        },
+        {
+          "path": "page.notes.0.id",
+          "value": "n5"
+        },
+        {
+          "path": "page.notes.0.text",
+          "value": "Call Birdperson"
+        }
+      ],
+      "override": {
+        "paths": [
+          "page.pageInfo.hasNextPage"
+        ],
+        "value": true
+      }
+    },
+    {
+      "name": "tests/paged-characters-1",
+      "operation": "TestPagedCharactersQuery",
+      "kind": "query",
+      "document": "documents/TestPagedCharactersQuery.graphql",
+      "variables": {
+        "page": 1
+      },
+      "responses": [
+        "tests/paged-characters-1.json"
+      ],
+      "records": "tests/paged-characters-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "page.hasNext",
+          "value": false
+        },
+        {
+          "path": "page.isLoadingNext",
+          "value": false
+        },
+        {
+          "path": "page.pageInfo.hasNextPage",
+          "value": false
+        },
+        {
+          "path": "page.characters.0.id",
+          "value": "1"
+        },
+        {
+          "path": "page.characters.0.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "page.characters.1.id",
+          "value": "2"
+        },
+        {
+          "path": "page.characters.1.name",
+          "value": "Morty Smith"
+        }
+      ],
+      "override": {
+        "paths": [
+          "page.characters.1.name"
+        ],
+        "value": "Morty Jr."
+      }
+    },
+    {
+      "name": "tests/friends-1",
+      "operation": "TestFriendsQuery",
+      "kind": "query",
+      "document": "documents/TestFriendsQuery.graphql",
+      "variables": {
+        "id": "1",
+        "page": 1
+      },
+      "responses": [
+        "tests/friends-1.json"
+      ],
+      "records": "tests/friends-1.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.id",
+          "value": "1"
+        },
+        {
+          "path": "character.friends.hasNext",
+          "value": true
+        },
+        {
+          "path": "character.friends.isLoadingNext",
+          "value": false
+        },
+        {
+          "path": "character.friends.pageInfo.hasNextPage",
+          "value": true
+        },
+        {
+          "path": "character.friends.nodes.0.id",
+          "value": "2"
+        },
+        {
+          "path": "character.friends.nodes.0.name",
+          "value": "Morty Smith"
+        },
+        {
+          "path": "character.friends.nodes.1.id",
+          "value": "3"
+        },
+        {
+          "path": "character.friends.nodes.1.name",
+          "value": "Summer Smith"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.friends.nodes.1.name"
+        ],
+        "value": "Tammy Gueterman"
+      }
+    },
+    {
+      "name": "tests/friends-2",
+      "operation": "TestFriendsQuery",
+      "kind": "query",
+      "document": "documents/TestFriendsQuery.graphql",
+      "variables": {
+        "id": "1",
+        "page": 2
+      },
+      "responses": [
+        "tests/friends-2.json"
+      ],
+      "records": "tests/friends-2.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "character.id",
+          "value": "1"
+        },
+        {
+          "path": "character.friends.hasNext",
+          "value": false
+        },
+        {
+          "path": "character.friends.isLoadingNext",
+          "value": false
+        },
+        {
+          "path": "character.friends.pageInfo.hasNextPage",
+          "value": false
+        },
+        {
+          "path": "character.friends.nodes.0.id",
+          "value": "4"
+        },
+        {
+          "path": "character.friends.nodes.0.name",
+          "value": "Beth Smith"
+        },
+        {
+          "path": "character.friends.nodes.1.id",
+          "value": "5"
+        },
+        {
+          "path": "character.friends.nodes.1.name",
+          "value": "Jerry Smith"
+        }
+      ],
+      "override": {
+        "paths": [
+          "character.friends.nodes.1.name"
+        ],
+        "value": "Doofus Rick"
+      }
+    },
+    {
       "name": "tests/add-note-node-n7",
       "operation": "TestAddNoteNode",
       "kind": "mutation",
@@ -2628,6 +3000,7 @@
     "scripts/notifications.json",
     "scripts/optimistic.json",
     "scripts/connections.json",
+    "scripts/paged.json",
     "scripts/lifetime.json",
     "scripts/ages.json",
     "scripts/phase.json",

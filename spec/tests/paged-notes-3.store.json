@@ -1,0 +1,10 @@
+{
+  "Note:n5": {"__typename": "Note", "id": "n5", "text": "Call Birdperson"},
+  "client:root": {"__TestPagedNotes_notes_paged(authorId:\"1\",perPage:2)": {"__ref": "client:root:__TestPagedNotes_notes_paged(authorId:\"1\",perPage:2)"}, "__typename": "Query", "page(page:3,perPage:2)": {"__ref": "client:root:page(page:3,perPage:2)"}},
+  "client:root:__TestPagedNotes_notes_paged(authorId:\"1\",perPage:2)": {"__firstPage": 3, "__pageLengths": [1], "__typename": "Page", "notes(authorId:\"1\")": {"__refs": ["Note:n5"]}, "pageInfo": {"__ref": "client:root:__TestPagedNotes_notes_paged(authorId:\"1\",perPage:2):pageInfo"}},
+  "client:root:__TestPagedNotes_notes_paged(authorId:\"1\",perPage:2):pageInfo": {"__typename": "PageInfo", "currentPage": 3, "hasNextPage": false},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:page(page:3,perPage:2)": {"__typename": "Page", "notes(authorId:\"1\")": {"__refs": ["Note:n5"]}, "pageInfo": {"__ref": "client:root:page(page:3,perPage:2):pageInfo"}},
+  "client:root:page(page:3,perPage:2):pageInfo": {"__typename": "PageInfo", "currentPage": 3, "hasNextPage": false},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

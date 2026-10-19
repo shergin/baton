@@ -88,6 +88,7 @@ fragment HostileSpreads_character on Character {
   ... @alias(as: "isLoadingNext") { ...HostileSpreadTarget_character }
   ... @alias(as: "isLoadingPrevious") { ...HostileSpreadTarget_character }
   ... @alias(as: "connectionID") { ...HostileSpreadTarget_character }
+  ... @alias(as: "paged") { ...HostileSpreadTarget_character }
   ... @alias(as: "loadNext") { ...HostileSpreadTarget_character }
   ... @alias(as: "loadPrevious") { ...HostileSpreadTarget_character }
   # The locals, parameters and local aliases of generated bodies.

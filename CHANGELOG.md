@@ -5,6 +5,38 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- `@paged(key:page:)`, the third directive that is not Relay's: a list
+  paged by number, as every list on AniList is, says so on the list field,
+  inside the field that takes the page, as in `Page(page: $page, perPage:
+  50) { pageInfo { hasNextPage } media(season: $season) @paged(key:
+  "SeasonQuery_media", page: $page) { ... } }`. The pages merge into a
+  client record of the container's type on the container's parent, keyed
+  by the list field and its arguments with the container's other
+  arguments, so two lists under one wrapper, two seasons of one list and
+  two page sizes never share it, and its page info is its own record: the
+  shared `pageInfo` slot that made one list read another's flag is not
+  read. The first page replaces, the next appends, a page already merged
+  rewrites its elements in place, any other is ignored; elements are
+  referenced, each record once. The container's lens gains `hasNext`,
+  which reads `hasNextPage` and nothing else, `isLoadingNext`, and
+  `loadNext()`, which runs the operation that owns the lens with its
+  variables and the next page; no `@refetchable` is needed, and a refetch
+  of the owner replaces the list. Both runtimes. The compiler declares the
+  directive beside `@cacheExpiration`, so Relay's front end checks its
+  arguments and a server never sees it, and reports at the directive: a
+  constant page, a fragment argument, a nullable variable, a key that does
+  not end in the field's name, a scalar, a field above that does not take
+  the page, a container without `pageInfo { hasNextPage }`. Swift format
+  21, Kotlin format 5: generated code of the format before fails to
+  compile at its marker; rebuild with this release's compiler. Held by the
+  cases `paged-notes-1` to `-3`, `paged-characters-1`, `friends-1` and
+  `friends-2` and the script `paged`
+  ([the decision](docs/decisions/a-paged-list-merges-its-pages-by-number.md),
+  [#49](https://github.com/shergin/baton/issues/49)). Not chosen: offsets,
+  which wait for a real schema; a previous page; edge directives into a
+  paged list; a second reading of the flag for a page info that is not
+  `pageInfo { hasNextPage }`, so the Rick and Morty API's lists keep
+  reading one page per operation value.
 - Four recipes for a public API with habits of its own, asked for on
   [#52](https://github.com/shergin/baton/issues/52), each in Swift and
   Kotlin and compiled against AniList's schema. None is a new concept.

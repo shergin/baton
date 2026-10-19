@@ -1,0 +1,3 @@
+query TestFriendsQuery($id: ID!, $page: Int!) {
+  character(id: $id) { ...TestFriends_character }
+}

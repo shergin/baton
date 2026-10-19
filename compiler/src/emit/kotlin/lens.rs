@@ -17,12 +17,12 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use super::super::writer::Writer;
 use super::literal::{Converters, jvm_getters, string_literal, type_reference, variable_literal};
-use super::shared::connection_member;
+use super::shared::{connection_member, paged_member};
 use crate::decide::{
     Accessor, AliasGuard, AliasedRead, Binding, BoundArgument, ConditionRead, ConnectionMembers,
     ErrorCheck, ErrorLine, FragmentLens, Guard, Guarded, LinkedForm, LinkedRead, LoadMore,
-    Primitive, Read, ReaderPlan, RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead, Shared,
-    SlotAccess, SpreadForm, SpreadGuard, SpreadRead, TypeTest,
+    PagedMembers, Primitive, Read, ReaderPlan, RefetchMembers, SatisfiedCheck, ScalarForm,
+    ScalarRead, Shared, SlotAccess, SpreadForm, SpreadGuard, SpreadRead, TypeTest,
 };
 use crate::kotlin_names::{enum_type_name, escape, slot_name};
 use crate::names::{guard_name, possible_types};
@@ -177,6 +177,9 @@ impl Lenses<'_> {
                     "connectionID",
                 ]);
             }
+            if plan.paged.is_some() {
+                names.extend(["hasNext", "isLoadingNext"]);
+            }
             let hidden = Hidden::new(names.iter().copied());
             let mut getters = jvm_getters(&names, &LENS_GETTERS).into_iter();
             for accessor in &plan.accessors {
@@ -186,6 +189,9 @@ impl Lenses<'_> {
             }
             if let Some(connection) = &plan.connection {
                 self.connection_members(writer, plan, connection, &hidden, &mut getters);
+            }
+            if let Some(paged) = &plan.paged {
+                self.paged_members(writer, paged, &mut getters);
             }
             if let Some(refetch) = &plan.refetch {
                 refetch_function(writer, refetch, &hidden);
@@ -629,6 +635,42 @@ impl Lenses<'_> {
             );
             load_more(writer, "loadPrevious", load, &slots, hidden);
         }
+    }
+
+    /// The members of a lens over a paged list's container: the state read
+    /// from the client record the pages merged into, and `loadNext()`
+    /// through the operation that owns the lens.
+    fn paged_members(
+        &self,
+        writer: &mut Writer,
+        paged: &PagedMembers,
+        getters: &mut impl Iterator<Item = Option<String>>,
+    ) {
+        let slots = format!(
+            "Slots.{}.{}",
+            slot_name(&paged.container_type),
+            paged_member(&paged.container_type, self.shared)
+        );
+        kdoc(
+            writer,
+            "Whether the server has a page after the last one merged, from the merged `pageInfo`.",
+        );
+        for state in ["hasNext", "isLoadingNext"] {
+            property(
+                writer,
+                state,
+                getters.next().flatten(),
+                Piece::expression("Boolean".to_string(), format!("anchor.{state}({slots})")),
+            );
+        }
+        kdoc(
+            writer,
+            "Fetches the next page through the operation that owns the lens, with its variables, and appends it; a no-op while loading or at the end.",
+        );
+        writer.line(format!(
+            "suspend fun loadNext(): Unit = anchor.loadNext({slots}, {})",
+            string_literal(&paged.page)
+        ));
     }
 
     /// `satisfied`: whether every `@required` field (NONE or LOG) of the

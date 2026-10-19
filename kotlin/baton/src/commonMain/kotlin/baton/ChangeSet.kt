@@ -59,6 +59,8 @@ internal class ChangeSet(val bytes: ByteArray) {
     /** What the store does after writing the entries; records are indices into the change set, connections their record keys. */
     sealed interface Edit {
         class Merge(val connection: Int, val page: Int, val slots: ConnectionSlots, val mode: ConnectionMode) : Edit
+        /** A page of a paged list merged into the list's record, by the page number the container was fetched with. */
+        class MergePage(val list: Int, val page: Int, val paged: ResolvedPaged, val number: Long) : Edit
         /** A streamed item set at its index in the parent's list, which is extended with nulls to reach the index. */
         class Place(val parent: Int, val slotIndex: Int, val index: Int, val item: Int) : Edit
         class InsertEdge(val edge: Int, val connections: List<String>, val prepend: Boolean) : Edit

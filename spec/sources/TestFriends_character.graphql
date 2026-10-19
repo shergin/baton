@@ -1,0 +1,7 @@
+fragment TestFriends_character on Character {
+  id
+  friends(page: $page, perPage: 2) {
+    pageInfo { hasNextPage }
+    nodes @paged(key: "TestFriends_nodes", page: $page) { id name }
+  }
+}

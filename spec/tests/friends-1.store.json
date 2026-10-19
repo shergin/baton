@@ -1,0 +1,12 @@
+{
+  "Character:1": {"__TestFriends_nodes_paged(perPage:2)": {"__ref": "Character:1:__TestFriends_nodes_paged(perPage:2)"}, "__typename": "Character", "friends(page:1,perPage:2)": {"__ref": "Character:1:friends(page:1,perPage:2)"}, "id": "1"},
+  "Character:1:__TestFriends_nodes_paged(perPage:2)": {"__firstPage": 1, "__pageLengths": [2], "__typename": "CharacterPage", "nodes": {"__refs": ["Character:2", "Character:3"]}, "pageInfo": {"__ref": "Character:1:__TestFriends_nodes_paged(perPage:2):pageInfo"}},
+  "Character:1:__TestFriends_nodes_paged(perPage:2):pageInfo": {"__typename": "PageInfo", "hasNextPage": true},
+  "Character:1:friends(page:1,perPage:2)": {"__typename": "CharacterPage", "nodes": {"__refs": ["Character:2", "Character:3"]}, "pageInfo": {"__ref": "Character:1:friends(page:1,perPage:2):pageInfo"}},
+  "Character:1:friends(page:1,perPage:2):pageInfo": {"__typename": "PageInfo", "hasNextPage": true},
+  "Character:2": {"__typename": "Character", "id": "2", "name": "Morty Smith"},
+  "Character:3": {"__typename": "Character", "id": "3", "name": "Summer Smith"},
+  "client:root": {"__typename": "Query", "character(id:\"1\")": {"__ref": "Character:1"}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

@@ -16,7 +16,7 @@ object Types {
     /** The schema's digest: pass it as the image's `version`, so an image written under another schema starts again. */
     val schemaDigest = "64c79d9bee49eec0fb16214f1f7b77c0"
     /** The format of this generated code, which the runtime that reads it declares; a runtime of another format fails to compile this line. */
-    val format = baton.Format4
+    val format = baton.Format5
     val ActivityLikeNotification: TypeID = Registry.type("ActivityLikeNotification")
     val ActivityMentionNotification: TypeID = Registry.type("ActivityMentionNotification")
     val ActivityMessageNotification: TypeID = Registry.type("ActivityMessageNotification")

@@ -1,0 +1,108 @@
+{
+  "name": "paged",
+  "steps": [
+    {
+      "attach": {"operation": "TestPagedNotesQuery", "variables": {"page": 1, "authorId": "1"}, "as": "notes", "response": "tests/paged-notes-1.json"},
+      "records": "tests/paged-notes-1.store.json",
+      "reads": [
+        {"handle": "notes", "path": "page.notes.1.text", "value": "Portal gun needs charging"},
+        {"handle": "notes", "path": "page.notes.2.text", "value": null},
+        {"handle": "notes", "path": "page.hasNext", "value": true}
+      ]
+    },
+    {
+      "commit": {"operation": "TestPagedNotesQuery", "variables": {"page": 2, "authorId": "1"}, "response": "tests/paged-notes-2.json"},
+      "records": "scripts/paged-merged.store.json",
+      "reads": [
+        {"handle": "notes", "path": "page.notes.0.text", "value": "Wubba lubba dub dub"},
+        {"handle": "notes", "path": "page.notes.1.text", "value": "Portal gun needs charging"},
+        {"handle": "notes", "path": "page.notes.2.text", "value": "Get Schwifty"},
+        {"handle": "notes", "path": "page.notes.3.text", "value": "Avoid the Citadel"},
+        {"handle": "notes", "path": "page.notes.4.text", "value": null},
+        {"handle": "notes", "path": "page.pageInfo.hasNextPage", "value": true},
+        {"handle": "notes", "path": "page.pageInfo.currentPage", "value": 2},
+        {"handle": "notes", "path": "page.hasNext", "value": true}
+      ]
+    },
+    {
+      "commit": {"operation": "TestPagedCharactersQuery", "variables": {"page": 1}, "response": "tests/paged-characters-1.json"},
+      "records": "scripts/paged-shared.store.json",
+      "notified": [{"record": "client:root:page(page:1,perPage:2):pageInfo", "field": "hasNextPage"}],
+      "reads": [
+        {"handle": "notes", "path": "page.hasNext", "value": true},
+        {"handle": "notes", "path": "page.pageInfo.hasNextPage", "value": true},
+        {"handle": "notes", "path": "page.notes.3.text", "value": "Avoid the Citadel"},
+        {"handle": "notes", "path": "page.notes.4.text", "value": null},
+        {"operation": "TestPagedCharactersQuery", "variables": {"page": 1}, "path": "page.hasNext", "value": false},
+        {"operation": "TestPagedCharactersQuery", "variables": {"page": 1}, "path": "page.characters.1.name", "value": "Morty Smith"}
+      ]
+    },
+    {
+      "commit": {"operation": "TestPagedNotesQuery", "variables": {"page": 2, "authorId": "1"}, "response": "tests/paged-notes-2-edited.json"},
+      "notified": [{"record": "Note:n3", "field": "text"}],
+      "reads": [
+        {"handle": "notes", "path": "page.notes.1.text", "value": "Portal gun needs charging"},
+        {"handle": "notes", "path": "page.notes.2.text", "value": "Get Schwifty in here"},
+        {"handle": "notes", "path": "page.notes.3.text", "value": "Avoid the Citadel"},
+        {"handle": "notes", "path": "page.notes.4.text", "value": null},
+        {"handle": "notes", "path": "page.hasNext", "value": true}
+      ]
+    },
+    {
+      "commit": {"operation": "TestPagedNotesQuery", "variables": {"page": 4, "authorId": "1"}, "response": "tests/paged-notes-3.json"},
+      "notified": [],
+      "reads": [
+        {"handle": "notes", "path": "page.notes.3.text", "value": "Avoid the Citadel"},
+        {"handle": "notes", "path": "page.notes.4.text", "value": null},
+        {"handle": "notes", "path": "page.pageInfo.currentPage", "value": 2},
+        {"handle": "notes", "path": "page.hasNext", "value": true}
+      ]
+    },
+    {
+      "commit": {"operation": "TestPagedNotesQuery", "variables": {"page": 3, "authorId": "1"}, "response": "tests/paged-notes-3.json"},
+      "reads": [
+        {"handle": "notes", "path": "page.notes.3.text", "value": "Avoid the Citadel"},
+        {"handle": "notes", "path": "page.notes.4.id", "value": "n5"},
+        {"handle": "notes", "path": "page.notes.4.text", "value": "Call Birdperson"},
+        {"handle": "notes", "path": "page.notes.5.text", "value": null},
+        {"handle": "notes", "path": "page.pageInfo.hasNextPage", "value": false},
+        {"handle": "notes", "path": "page.pageInfo.currentPage", "value": 3},
+        {"handle": "notes", "path": "page.hasNext", "value": false}
+      ]
+    },
+    {
+      "refetch": {"handle": "notes", "response": "tests/paged-notes-1.json"},
+      "records": "scripts/paged-replaced.store.json",
+      "reads": [
+        {"handle": "notes", "path": "page.notes.0.text", "value": "Wubba lubba dub dub"},
+        {"handle": "notes", "path": "page.notes.1.text", "value": "Portal gun needs charging"},
+        {"handle": "notes", "path": "page.notes.2.text", "value": null},
+        {"handle": "notes", "path": "page.pageInfo.currentPage", "value": 1},
+        {"handle": "notes", "path": "page.hasNext", "value": true}
+      ]
+    },
+    {
+      "attach": {"operation": "TestFriendsQuery", "variables": {"id": "1", "page": 1}, "as": "friends", "response": "tests/friends-1.json"},
+      "reads": [
+        {"handle": "friends", "path": "character.friends.nodes.1.name", "value": "Summer Smith"},
+        {"handle": "friends", "path": "character.friends.nodes.2.name", "value": null},
+        {"handle": "friends", "path": "character.friends.hasNext", "value": true}
+      ]
+    },
+    {
+      "commit": {"operation": "TestFriendsQuery", "variables": {"id": "1", "page": 2}, "response": "tests/friends-2.json"},
+      "records": "scripts/paged-friends.store.json",
+      "reads": [
+        {"handle": "friends", "path": "character.friends.nodes.0.name", "value": "Morty Smith"},
+        {"handle": "friends", "path": "character.friends.nodes.1.name", "value": "Summer Smith"},
+        {"handle": "friends", "path": "character.friends.nodes.2.name", "value": "Beth Smith"},
+        {"handle": "friends", "path": "character.friends.nodes.3.id", "value": "5"},
+        {"handle": "friends", "path": "character.friends.nodes.3.name", "value": "Jerry Smith"},
+        {"handle": "friends", "path": "character.friends.nodes.4.name", "value": null},
+        {"handle": "friends", "path": "character.friends.pageInfo.hasNextPage", "value": false},
+        {"handle": "friends", "path": "character.friends.hasNext", "value": false},
+        {"handle": "notes", "path": "page.notes.1.text", "value": "Portal gun needs charging"}
+      ]
+    }
+  ]
+}

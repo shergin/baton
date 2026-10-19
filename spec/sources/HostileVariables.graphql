@@ -17,7 +17,7 @@ query HostileVariables(
   $anchor: ID!, $recordID: ID!, $satisfied: ID!, $missingRequiredField: ID!,
   $fieldErrors: ID!, $isPresent: ID!, $throwing: ID!, $caught: ID!, $refetchable: ID!,
   $refetch: ID!, $connection: ID!, $nodes: ID!, $hasNext: ID!, $hasPrevious: ID!,
-  $isLoadingNext: ID!, $isLoadingPrevious: ID!, $connectionID: ID!, $loadNext: ID!,
+  $isLoadingNext: ID!, $isLoadingPrevious: ID!, $connectionID: ID!, $paged: ID!, $loadNext: ID!,
   $loadPrevious: ID!,
   # The locals, parameters and local aliases of generated bodies.
   $bound: ID!, $errors: ID!, $child: ID!, $missing: ID!, $count: ID!, $fields: ID!, $lhs: ID!,
@@ -50,7 +50,7 @@ query HostileVariables(
     # What every lens declares, and what a refetchable fragment and a connection add.
     $anchor, $recordID, $satisfied, $missingRequiredField, $fieldErrors, $isPresent,
     $throwing, $caught, $refetchable, $refetch, $connection, $nodes, $hasNext, $hasPrevious,
-    $isLoadingNext, $isLoadingPrevious, $connectionID, $loadNext, $loadPrevious,
+    $isLoadingNext, $isLoadingPrevious, $connectionID, $paged, $loadNext, $loadPrevious,
     # The locals, parameters and local aliases of generated bodies.
     $bound, $errors, $child, $missing, $count, $fields, $lhs, $rhs, $hasher, $selection0, $selection, $optimistic,
     $selfValue, $values, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery,

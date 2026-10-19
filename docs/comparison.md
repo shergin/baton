@@ -416,9 +416,10 @@ Relay is the reference, and Baton is deliberately closer to it than to
 either Apollo. The directives in a Baton file are Relay's:
 `@argumentDefinitions`, `@refetchable`, `@connection`, `@appendEdge`,
 `@prependEdge`, `@deleteEdge`, `@required`, `@catch`,
-`@throwOnFieldError`, `@alias`, `@defer`, `@stream`, beside two of Baton's
-own for what Relay has no word, `@cacheExpiration(seconds:)` on a query
-and `@deletes(type:id:)` on a mutation. A team that already
+`@throwOnFieldError`, `@alias`, `@defer`, `@stream`, beside three of
+Baton's own for what Relay has no word, `@cacheExpiration(seconds:)` on a
+query, `@deletes(type:id:)` on a mutation and `@paged(key:page:)` on a
+list paged by number. A team that already
 runs Relay on the web does not learn a second client. They learn that the read is a
 property instead of a hook.
 

@@ -375,11 +375,12 @@ public final class Environment {
         return committed
     }
 
-    /// Fetches a page of a connection: the loading flag on the connection
-    /// record is set for the duration, and the commit merges the page.
-    func paginate<Op: Query>(_ operation: Op.Type, variables: Variables, connection: Record, loading: Slot) async throws {
-        store.local { batch in store.set(connection, loading, .bool(true), &batch) }
-        defer { store.local { batch in store.set(connection, loading, .bool(false), &batch) } }
+    /// Fetches a page of a connection or of a paged list: the loading flag
+    /// on the record the pages merge into is set for the duration, and the
+    /// commit merges the page.
+    func paginate<Op: Query>(_ operation: Op.Type, variables: Variables, record: Record, loading: Slot) async throws {
+        store.local { batch in store.set(record, loading, .bool(true), &batch) }
+        defer { store.local { batch in store.set(record, loading, .bool(false), &batch) } }
         try await fetch(operation, variables: variables)
     }
 

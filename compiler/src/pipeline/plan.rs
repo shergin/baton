@@ -363,6 +363,25 @@ pub struct ConnectionPlan {
     pub before: Option<ArgumentValuePlan>,
 }
 
+/// `@paged(key:page:)` on a list field inside the field that takes the page,
+/// carried on that field, the container: the client record of the
+/// container's type the pages merge into, keyed on the container's parent by
+/// the list and its arguments, the list field's own key on the container,
+/// the page info's type, and the page variable each run names its page by
+/// (`docs/decisions/a-paged-list-merges-its-pages-by-number.md`).
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+pub struct PagedPlan {
+    pub key: String,
+    /// The client key on the container's parent: `__<key>_paged` with the
+    /// container's arguments except the page and the list field's.
+    pub storage_key: StorageKeyPlan,
+    /// The list field's storage key on the container type.
+    pub list: StorageKeyPlan,
+    pub page_info_type: String,
+    /// The variable that names the page.
+    pub page: String,
+}
+
 /// An edge directive on a mutation payload field: the edit the commit makes
 /// with the field's records, which Relay runs as a handle.
 #[derive(Debug, Clone, PartialEq, serde::Serialize)]
@@ -522,6 +541,10 @@ pub enum SelectionPlan {
         storage_key: StorageKeyPlan,
         lookup: Option<LookupPlan>,
         connection: Option<ConnectionPlan>,
+        /// The paged list this field is the container of, when a field of
+        /// its selection carries `@paged`.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        paged: Option<PagedPlan>,
         /// `@stream`: the label the streamed items carry.
         #[serde(skip_serializing_if = "Option::is_none")]
         streamed: Option<String>,

@@ -275,6 +275,26 @@ fun IssueList(repository: IssueList_repository) {
 </tr>
 </table>
 
+A list paged by number, as every list on AniList is, says so on the list
+field, inside the field that takes the page, with `@paged(key:, page:)`.
+The pages merge in the store under the list and its arguments, apart from
+the wrapper the server puts around them, and the wrapper's lens gains
+`hasNext`, `isLoadingNext` and `loadNext()`, which runs the screen's own
+query with the next page:
+
+```graphql
+query SeasonQuery($page: Int!, $season: MediaSeason) {
+  Page(page: $page, perPage: 50) {
+    pageInfo { hasNextPage }
+    media(season: $season, type: ANIME, sort: [POPULARITY_DESC])
+      @paged(key: "SeasonQuery_media", page: $page) {
+      id
+      ...MediaCard_media
+    }
+  }
+}
+```
+
 A Kotlin document is a `$$"""…"""` string, since `$` starts a template in a
 plain one and GraphQL's variables need it. The view marker stands on the
 composable, and the composable remembers the operation value it shows.
@@ -343,7 +363,7 @@ A screen written by a language model has the same shape as one written by a
 person, and goes through the same checks. The fragment beside the view is
 complete, valid GraphQL; the schema decides what exists; the generated lens
 decides what the body may read; the directives decide how data moves
-(`@connection`, `@appendEdge`, `@deletes`, `@required`, `@catch`). There is
+(`@connection`, `@paged`, `@appendEdge`, `@deletes`, `@required`, `@catch`). There is
 no cache policy to configure, no normalizer to teach and no updater function
 to write, so there is nothing a generator has to know that is not in the
 file in front of it. The vocabulary is closed and short

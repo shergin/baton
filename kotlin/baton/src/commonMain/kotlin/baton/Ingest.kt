@@ -102,9 +102,16 @@ internal object Ingest {
             cursor.changes.streams.add(anchor to placement.slot.index)
             item
         }
-        part.remerge?.let { remerge ->
-            val connection = cursor.changes.record(remerge.connectionKey, remerge.slots.connection, -1)
-            cursor.changes.edits.add(ChangeSet.Edit.Merge(connection, anchor, remerge.slots, remerge.mode))
+        when (val remerge = part.remerge) {
+            is Delivery.Remerge.Connection -> {
+                val connection = cursor.changes.record(remerge.key, remerge.slots.connection, -1)
+                cursor.changes.edits.add(ChangeSet.Edit.Merge(connection, anchor, remerge.slots, remerge.mode))
+            }
+            is Delivery.Remerge.Paged -> {
+                val list = cursor.changes.record(remerge.key, remerge.paged.slots.container, -1)
+                cursor.changes.edits.add(ChangeSet.Edit.MergePage(list, anchor, remerge.paged, remerge.number))
+            }
+            null -> Unit
         }
         cursor.changes.group()
         if (part.errors.isNotEmpty()) {

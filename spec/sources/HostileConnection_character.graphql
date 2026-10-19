@@ -23,7 +23,7 @@ fragment HostileConnection_character on Character
     # What every lens declares, and what a refetchable fragment and a connection add.
     satisfied: totalCount missingRequiredField: totalCount
     fieldErrors: totalCount isPresent: totalCount throwing: totalCount caught: totalCount
-    refetchable: totalCount refetch: totalCount connection: totalCount loadNext: totalCount
+    refetchable: totalCount refetch: totalCount connection: totalCount paged: totalCount loadNext: totalCount
     loadPrevious: totalCount
     # The locals, parameters and local aliases of generated bodies.
     bound: totalCount errors: totalCount child: totalCount missing: totalCount count: totalCount
