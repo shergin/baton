@@ -256,6 +256,12 @@ pub fn sections(root: &Path) -> Vec<Section> {
                     "docs/recipes/exchange.md",
                 ),
                 repo(
+                    "/recipes/budgeted-transport/",
+                    "A budgeted transport",
+                    "A queue, a meter and an outage over the transport's one verb, for an API that rations requests, in both runtimes.",
+                    "docs/recipes/budgeted-transport.md",
+                ),
+                repo(
                     "/recipes/uikit/",
                     "UIKit and AppKit",
                     "A handle held by a controller: the same reads, without SwiftUI.",
@@ -290,6 +296,24 @@ pub fn sections(root: &Path) -> Vec<Section> {
                     "Discover once, refresh by id",
                     "The pattern for external keys: look a subject up by its natural key once, then refresh any number of them through `nodes(ids:)`.",
                     "docs/recipes/discover-once.md",
+                ),
+                repo(
+                    "/recipes/unpaged-collection/",
+                    "An unpaged collection",
+                    "A whole list in one request: a long expiration, a grouping from each entry's own fields, and the image for the next launch.",
+                    "docs/recipes/unpaged-collection.md",
+                ),
+                repo(
+                    "/recipes/fields-by-path/",
+                    "Fields a server nulls by path",
+                    "What a list fragment selects when a server answers a field differently by the path that reached it, and a probe that tells.",
+                    "docs/recipes/fields-by-path.md",
+                ),
+                repo(
+                    "/recipes/json-scalar/",
+                    "A Json scalar",
+                    "A JSON scalar read as a type of the app's, one type per scalar, and never a dictionary on the read path.",
+                    "docs/recipes/json-scalar.md",
                 ),
                 repo(
                     "/recipes/porting-from-relay/",
