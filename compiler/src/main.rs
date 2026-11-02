@@ -12,8 +12,10 @@
 //!   `--check` writes nothing and names every output that is stale.
 //! - `validate --schema <sdl> <files…>` is the same compilation with no output.
 //! - `print <Name> --schema <sdl> <files…>` prints one operation's text and id.
-//! - `bench --schema <sdl> --fragments <n>` compiles a synthetic corpus twice
-//!   and prints the warm timings.
+//! - `bench --schema <sdl> [--language <swift|kotlin>] --fragments <n>` compiles
+//!   a synthetic corpus three times, deciding and printing it each time, and
+//!   prints the warm timings of every phase, the front end's and the two
+//!   after it.
 
 mod config;
 mod decide;
@@ -32,6 +34,7 @@ mod swift;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
+use std::time::{Duration, Instant};
 
 use crate::config::{Config, Language};
 use crate::diagnostics::Rendered;
@@ -414,14 +417,19 @@ fn compile_documents(options: &Options) -> Result<Compilation, DriverError> {
 /// and reported.
 fn emitted(compilation: &Compilation) -> Result<(emit::Output, decide::Program), DriverError> {
     let config = &compilation.sources.config;
-    let program = decided(compilation, &LanguageNaming::new(config))?;
-    let output = match config.language {
-        Language::Swift => emit::Swift.emit(&program),
-        Language::Kotlin => {
-            emit::Kotlin::new(config, kotlin_packages(&compilation.documents)).emit(&program)
-        }
-    };
+    let documents = &compilation.documents;
+    let program = decided(&compilation.plan, documents, &LanguageNaming::new(config))?;
+    let output = printed(config, documents, &program);
     Ok((output, program))
+}
+
+/// The code of a decided program, printed by the target of the language
+/// `config` names.
+fn printed(config: &Config, documents: &[Document], program: &decide::Program) -> emit::Output {
+    match config.language {
+        Language::Swift => emit::Swift.emit(program),
+        Language::Kotlin => emit::Kotlin::new(config, kotlin_packages(documents)).emit(program),
+    }
 }
 
 /// The package each Kotlin host declares, by its path: none for a host in
@@ -500,14 +508,14 @@ fn check_kotlin_package(compilation: &Compilation, writes_shared: bool) -> Resul
     )))
 }
 
-/// The program of a compilation decided in `naming`, or the name errors
-/// printed and reported.
+/// The program of `plan` decided in `naming`, or the name errors printed
+/// at their places in `documents` and reported.
 fn decided(
-    compilation: &Compilation,
+    plan: &pipeline::Plan,
+    documents: &[Document],
     naming: &LanguageNaming,
 ) -> Result<decide::Program, DriverError> {
-    let documents = &compilation.documents;
-    decide::program(&compilation.plan, naming).map_err(|errors| {
+    decide::program(plan, naming).map_err(|errors| {
         for error in &errors {
             match error {
                 NameError::Clash(clash) => eprintln!(
@@ -882,8 +890,14 @@ fn write_if_changed(path: &Path, text: &str) -> Result<(), DriverError> {
 }
 
 fn bench(arguments: &[String]) -> Result<(), DriverError> {
-    let options = parse_options("bench", arguments, &["schema", "config", "fragments"])?;
-    let sources = read_schema(&options)?;
+    let options = parse_options(
+        "bench",
+        arguments,
+        &["schema", "config", "fragments", "language"],
+    )?;
+    let language = language_of(&options)?;
+    let mut sources = read_schema(&options)?;
+    sources.config.language = language;
     let (sdl, schema_path, config) = (&sources.sdl, &sources.path, &sources.config);
     let count: usize = options
         .values
@@ -906,7 +920,15 @@ fn bench(arguments: &[String]) -> Result<(), DriverError> {
                     compiled.plan.operations.len()
                 );
                 report_timings(&compiled.timings, documents.len());
-                last = Some(compiled.timings);
+                let started = Instant::now();
+                let program = decided(&compiled.plan, &documents, &LanguageNaming::new(config))?;
+                let decide = started.elapsed();
+                let started = Instant::now();
+                let output = printed(config, &documents, &program);
+                let emit = started.elapsed();
+                let whole = compiled.timings.total() + decide + emit;
+                report_printing(decide, emit, whole, &output, language);
+                last = Some(whole);
             }
             Err(diagnostics) => {
                 for diagnostic in &diagnostics {
@@ -916,11 +938,8 @@ fn bench(arguments: &[String]) -> Result<(), DriverError> {
             }
         }
     }
-    if let Some(timings) = last {
-        println!(
-            "warm total: {:.1} ms",
-            timings.total().as_secs_f64() * 1000.0
-        );
+    if let Some(total) = last {
+        println!("warm total: {:.1} ms", total.as_secs_f64() * 1000.0);
     }
     Ok(())
 }
@@ -971,6 +990,29 @@ fn synthetic_document(index: usize, text: String) -> Document {
         text,
         embedded: None,
     }
+}
+
+/// The two phases after the front end, as the bench reports them: deciding
+/// the program and printing it, with what was printed and what the whole
+/// run took with the front end.
+fn report_printing(
+    decide: Duration,
+    emit: Duration,
+    whole: Duration,
+    output: &emit::Output,
+    language: Language,
+) {
+    let ms = |duration: Duration| duration.as_secs_f64() * 1000.0;
+    let bytes = output.shared.len() + output.files.values().map(String::len).sum::<usize>();
+    eprintln!(
+        "decide {:.1} ms, emit {:.1} ms: {} files, {:.1} MB of {}; whole run {:.1} ms",
+        ms(decide),
+        ms(emit),
+        output.files.len() + 1,
+        bytes as f64 / 1_000_000.0,
+        language.name(),
+        ms(whole)
+    );
 }
 
 fn report_timings(timings: &pipeline::Timings, document_count: usize) {

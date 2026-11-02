@@ -21,6 +21,40 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the compiler's two phases after the plan — 2026-11-01
+
+Revision: the working tree on top of `af41627`, which extends `batonc
+bench` to the two phases after the front end in the same change. Machine:
+Apple M1 Pro (MacBook Pro), macOS 26.5.2, Rust 1.98.0, the compiler's
+release profile (thin LTO, one codegen unit). Not from `BatonBenchmarks`:
+`batonc bench --schema spec/rickandmorty/schema.graphql`, with `--language
+kotlin` for the Kotlin row and `--fragments 2000` for the last, three runs
+of three rounds each; the third round is the warm one, and each column is
+the best of its three. Not a quiet machine: the load average stood
+between 5 and 10.
+
+The corpus is the bench's own, in memory: `n` fragments spread across
+`Character`, `Location` and `Episode` of the Rick and Morty schema, one
+query per twenty fragments spreading them. Nothing is read or written, so
+the rows are the compiler alone, without the process start, the file
+reads and the writes a build pays.
+
+| Corpus | Front end | Decide | Emit | Whole run | Printed |
+|---|---|---|---|---|---|
+| 500 fragments, 25 operations, Swift | 9.2 ms, of which transform 5.2 and lower 2.4 | 10.9 ms | 6.4 ms | 26.8 ms | 526 files, 0.9 MB |
+| The same, Kotlin | 8.9 ms | 11.0 ms | 12.2 ms | 32.2 ms | 526 files, 1.0 MB |
+| 2,000 fragments, 100 operations, Swift | 42.8 ms, of which transform 27.8 and lower 9.8 | 47.0 ms | 25.1 ms | 114.8 ms | 2,101 files, 3.7 MB |
+
+The front end is Relay's: schema, parse, ir, validate, transform and
+lower; the bench printed only those until this change, so what follows
+them was never in view. On this corpus the decide pass alone costs more
+than the whole front end, and with the emitter the two phases are nearly
+two thirds of a Swift run and seven tenths of a Kotlin one. The Kotlin
+emitter takes about twice the Swift one for a tenth more text. Four times
+the fragments cost 4.3 times the run, so nothing is quadratic in the
+documents. Where the decide pass spends its time is a profile's to name;
+nothing here is a claim about any change.
+
 ## Unreleased, the AniList list — 2026-10-18
 
 Revision: `c4b9078`. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2,
