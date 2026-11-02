@@ -3,7 +3,7 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
-## Unreleased
+## 0.18.0 (Knysh) — 2026-11-01
 
 - `@paged(key:page:)`, the third directive that is not Relay's: a list
   paged by number, as every list on AniList is, says so on the list field,
