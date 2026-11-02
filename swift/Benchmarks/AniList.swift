@@ -47,7 +47,13 @@ func readEntry(_ entry: EntryRow_mediaList, _ fields: inout Int) -> Int {
     sink &+= card.siteUrl?.utf8.count ?? 0
     fields &+= 14
     if let title = card.title {
-        sink &+= (title.romaji?.utf8.count ?? 0) &+ (title.english?.utf8.count ?? 0) &+ (title.native?.utf8.count ?? 0) &+ (title.userPreferred?.utf8.count ?? 0)
+        // Four optional strings summed in one expression time out Xcode 26.0's
+        // type checker, the floor the package supports; bound first, they do not.
+        let romaji = title.romaji?.utf8.count ?? 0
+        let english = title.english?.utf8.count ?? 0
+        let native = title.native?.utf8.count ?? 0
+        let preferred = title.userPreferred?.utf8.count ?? 0
+        sink &+= romaji &+ english &+ native &+ preferred
         fields &+= 4
     }
     if let cover = card.coverImage { sink &+= (cover.large?.utf8.count ?? 0) &+ (cover.color?.utf8.count ?? 0); fields &+= 2 }
