@@ -59,7 +59,7 @@ fn reported(plan: &Plan) -> Report {
 
 /// The program decided for `plan` in Swift's names, without configuration.
 fn decided(plan: &Plan) -> Program {
-    crate::decide::program(plan, &SwiftNaming::default())
+    crate::decide::program(plan, &SwiftNaming::default().into())
         .unwrap_or_else(|errors| panic!("{errors:?}"))
 }
 

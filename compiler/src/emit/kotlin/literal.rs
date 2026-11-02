@@ -44,7 +44,7 @@ pub(super) fn keyed_types_reference(condition: &str) -> String {
 
 /// A slot's constant among its type's in `Slots`.
 pub(super) fn slot_member(slot: &SlotRef) -> String {
-    slot.member(&slot_name)
+    slot.member(slot_name)
 }
 
 /// A slot's constant by its path, `Slots.Character.name`.

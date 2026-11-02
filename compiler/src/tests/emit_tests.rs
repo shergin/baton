@@ -374,7 +374,7 @@ fn report_swift_tests() -> BTreeMap<String, String> {
         .retain(|fragment| fragment.source != hostile_names::CORPUS);
     plan.operations
         .retain(|operation| operation.source != hostile_names::CORPUS);
-    let program = crate::decide::program(&plan, &SwiftNaming::new(&swift_tests_config()))
+    let program = crate::decide::program(&plan, &SwiftNaming::new(&swift_tests_config()).into())
         .unwrap_or_else(|errors| panic!("the test documents emit: {errors:?}"));
     BTreeMap::from([(
         "BatonTests.report.json".to_string(),
@@ -699,7 +699,7 @@ fn check_hideable_names(lens: &crate::decide::ReaderPlan) {
 fn the_names_a_lens_is_decided_to_spell_that_a_member_could_hide_are_the_ones_its_text_spells() {
     let program = crate::decide::program(
         &compile_swift_tests(),
-        &SwiftNaming::new(&swift_tests_config()),
+        &SwiftNaming::new(&swift_tests_config()).into(),
     )
     .unwrap_or_else(|errors| panic!("the test documents emit: {errors:?}"));
     for fragment in &program.fragments {

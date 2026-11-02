@@ -6,7 +6,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use super::lens::TypeTest;
 use super::{Guard, any};
-use crate::naming::Naming;
+use crate::naming::{LanguageNaming, Naming};
 use crate::pipeline::{ConditionClass, SelectionPlan};
 
 /// One thing a lens reads, after its occurrences merged: a field, a spread
@@ -453,7 +453,7 @@ fn collect_spreads<'a>(selections: &'a [SelectionPlan], type_name: &str, into: &
 pub(super) fn spread_accessor_names(
     selections: &[SelectionPlan],
     type_name: &str,
-    naming: &dyn Naming,
+    naming: &LanguageNaming,
 ) -> BTreeMap<String, String> {
     let mut fragments: Vec<&str> = Vec::new();
     collect_spreads(selections, type_name, &mut fragments);

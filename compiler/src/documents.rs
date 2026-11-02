@@ -2,7 +2,8 @@
 //! the files of a host language and standalone `.graphql` files, each
 //! remembering where it came from so diagnostics can point back into the host
 //! file. A host language is a `HostLanguage`, found by the extension of its
-//! files; Swift's is `swift::SwiftHost`.
+//! files; Swift's is `swift::SwiftHost`, Kotlin's `kotlin::KotlinHost`, and
+//! `Host` is either.
 
 use std::fmt;
 use std::path::{Path, PathBuf};
@@ -15,6 +16,7 @@ use crate::swift::SwiftHost;
 /// A language whose source files hold GraphQL documents: how the documents
 /// are found in a file, what the output a source writes is named, and what
 /// the host files are checked for once the documents compile.
+#[whichever::dispatchable]
 pub trait HostLanguage: Sync {
     /// The extensions of the language's source files, without the dot.
     fn extensions(&self) -> &'static [&'static str];
@@ -39,8 +41,15 @@ pub trait HostLanguage: Sync {
     fn check(&self, documents: &[Document], plan: &Plan) -> Vec<Rendered>;
 }
 
+/// A host language the compiler reads, whichever one a file is written in.
+#[whichever::dispatch(HostLanguage)]
+pub enum Host {
+    Swift(SwiftHost),
+    Kotlin(KotlinHost),
+}
+
 /// The host languages the compiler reads.
-pub const HOSTS: [&dyn HostLanguage; 2] = [&SwiftHost, &KotlinHost];
+pub static HOSTS: [Host; 2] = [Host::Swift(SwiftHost), Host::Kotlin(KotlinHost)];
 
 /// The source's path relative to `root`, each directory separator an
 /// underscore, with `suffix` in place of the language's own `extension`
@@ -62,10 +71,10 @@ pub fn output_name(source: &Path, root: &Path, extension: &str, suffix: &str) ->
 }
 
 /// The host language whose files have the extension of `path`.
-pub fn host_of(path: &Path) -> Option<&'static dyn HostLanguage> {
+pub fn host_of(path: &Path) -> Option<&'static Host> {
     let extension = extension(path);
     HOSTS
-        .into_iter()
+        .iter()
         .find(|host| host.extensions().contains(&extension))
 }
 

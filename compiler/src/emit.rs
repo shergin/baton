@@ -7,9 +7,9 @@
 //! `@semanticNonNull`, `@defer`), and the shared file of interned types and
 //! slots. It prints what `decide` settled and decides nothing itself.
 //!
-//! The target, `Swift`, keeps Swift's names and its printers together: the
-//! driver decides the plan in the target's names, then has the target print
-//! the decided program.
+//! The target, `Swift`, is the printers: the driver decides the plan in
+//! Swift's names, `names::SwiftNaming`, then has the target print the
+//! decided program.
 //!
 //! Output per host file `X.swift` is `X.baton.swift`; the per-target
 //! `Baton.baton.swift` carries `Types` and `Slots`. One printer per output:
@@ -29,9 +29,7 @@ mod writer;
 
 use std::collections::BTreeMap;
 
-use crate::config::Config;
 use crate::decide::Program;
-use crate::names::SwiftNaming;
 
 pub use kotlin::Kotlin;
 
@@ -54,27 +52,12 @@ const HEADER: &str =
 /// code names in the runtime raises it, here and in the runtime together.
 pub const FORMAT: u32 = 21;
 
-/// The Swift target: Swift's names, which the program is decided in, and
-/// the printers that write the decided program.
-pub struct Swift {
-    naming: SwiftNaming,
-}
+/// The Swift target: the printers that write a program decided in Swift's
+/// names.
+pub struct Swift;
 
 impl Swift {
-    /// The target `config` configures: a mapped scalar reads as the Swift
-    /// type `config` names for it.
-    pub fn new(config: &Config) -> Swift {
-        Swift {
-            naming: SwiftNaming::new(config),
-        }
-    }
-
-    /// The names to decide a program in for this target.
-    pub fn naming(&self) -> &SwiftNaming {
-        &self.naming
-    }
-
-    /// The Swift of a program decided in this target's names.
+    /// The Swift of a program decided in Swift's names.
     pub fn emit(&self, program: &Program) -> Output {
         let mut files: BTreeMap<String, String> = BTreeMap::new();
         for fragment in &program.fragments {
@@ -109,11 +92,10 @@ impl Swift {
 #[cfg(test)]
 pub fn swift(
     plan: &crate::pipeline::Plan,
-    config: &Config,
+    config: &crate::config::Config,
 ) -> Result<Output, Vec<crate::naming::NameError>> {
-    let target = Swift::new(config);
-    let program = crate::decide::program(plan, target.naming())?;
-    Ok(target.emit(&program))
+    let program = crate::decide::program(plan, &crate::names::SwiftNaming::new(config).into())?;
+    Ok(Swift.emit(&program))
 }
 
 #[cfg(test)]

@@ -24,7 +24,7 @@ use super::members::{
     selects_nodes, spread_accessor_names, written_accessor,
 };
 use super::written_key;
-use crate::naming::{Kind, NameError, Naming, Position, Reserved, Scope, Spelled};
+use crate::naming::{Kind, LanguageNaming, NameError, Naming, Position, Reserved, Scope, Spelled};
 use crate::pipeline::{
     ArgumentPlan, CatchTarget, ConditionClass, ConnectionPlan, ConstantPlan, FragmentPlan,
     PagedPlan, Plan, RefetchPlan, RequiredAction, SelectionPlan, StorageKeyPlan, VariablePlan,
@@ -66,9 +66,9 @@ pub(super) struct Readers<'a> {
     /// What a nested lens may not be named: the names a lens spells, and
     /// the program's fragments and operations.
     lens_names: Reserved,
-    /// How the target names what is generated, and the host type each
-    /// mapped scalar reads as.
-    pub naming: &'a dyn Naming,
+    /// How the language a run writes names what is generated, and the host
+    /// type each mapped scalar reads as.
+    pub naming: &'a LanguageNaming,
     /// The identifiers of the spreads with arguments, numbered in the order
     /// the lenses are decided.
     pub sites: BTreeSet<String>,
@@ -148,7 +148,7 @@ struct LensFacts {
 }
 
 impl<'a> Readers<'a> {
-    pub(super) fn new(plan: &Plan, naming: &'a dyn Naming) -> Readers<'a> {
+    pub(super) fn new(plan: &Plan, naming: &'a LanguageNaming) -> Readers<'a> {
         let mut deferred_fragments = BTreeSet::new();
         let mut caught_fragments = BTreeSet::new();
         for fragment in &plan.fragments {
@@ -958,7 +958,7 @@ fn scalar_read(
     type_name: &str,
     type_is_abstract: bool,
     context: Context<'_>,
-    naming: &dyn Naming,
+    naming: &LanguageNaming,
 ) -> Read {
     let SelectionPlan::Scalar {
         name,
@@ -1128,7 +1128,7 @@ fn hidden_names(
     path: &str,
     lens: &ReaderPlan,
     members: &[Member],
-    naming: &dyn Naming,
+    naming: &LanguageNaming,
 ) -> Vec<NameError> {
     let spelled: BTreeSet<&str> = lens
         .hideable_names()

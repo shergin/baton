@@ -7,7 +7,9 @@ use super::lens::{ListShape, Primitive, ReaderPlan, ScalarShape};
 use super::reader::Readers;
 use super::{NormalizationField, NormalizationKind, NormalizationSelection};
 use crate::config::OnError;
-use crate::naming::{Kind, NameError, Naming, Reserved, Scope, Spelled, Written, numbered};
+use crate::naming::{
+    Kind, LanguageNaming, NameError, Naming, Reserved, Scope, Spelled, Written, numbered,
+};
 use crate::pipeline::{
     ConstantPlan, DeletePlan, FragmentPlan, OperationKind, OperationPlan, TypeKind, VariablePlan,
 };
@@ -173,7 +175,7 @@ fn operation_scope(
     operation: &OperationPlan,
     data: &ReaderPlan,
     normalization: &NormalizationSelection,
-    naming: &dyn Naming,
+    naming: &LanguageNaming,
 ) -> Vec<NameError> {
     let none = Reserved::none(naming);
     let mut scope = Scope::new(operation.name.as_str(), &none);
@@ -212,7 +214,7 @@ fn nested_types(
     operation: &OperationPlan,
     data: &ReaderPlan,
     fragments: &[FragmentPlan],
-    naming: &dyn Naming,
+    naming: &LanguageNaming,
 ) -> Vec<NameError> {
     let none = Reserved::none(naming);
     let mut scope = Scope::new(operation.name.as_str(), &none);
@@ -244,7 +246,7 @@ fn builder(
     name: &str,
     selection: &NormalizationSelection,
     builder_names: &Reserved,
-    naming: &dyn Naming,
+    naming: &LanguageNaming,
     duplicates: &mut Vec<NameError>,
     payload: bool,
 ) -> BuilderPlan {
@@ -339,7 +341,7 @@ fn builder(
 
 /// A variable's shape: the scalars as the accessors read them, anything
 /// else as the request carries it.
-fn variable_shape(variable: &VariablePlan, naming: &dyn Naming) -> VariableShape {
+fn variable_shape(variable: &VariablePlan, naming: &LanguageNaming) -> VariableShape {
     let base = match variable.type_.base_kind() {
         TypeKind::Int
         | TypeKind::Float

@@ -59,7 +59,7 @@ impl SlotRef {
     /// field's, or `characters_1a2b3c` when the key has arguments. Slots are
     /// nested per type, so a type's name and a field's never run together
     /// into another pair's.
-    pub fn member(&self, slot_name: &dyn Fn(&str) -> String) -> String {
+    pub fn member(&self, slot_name: impl Fn(&str) -> String) -> String {
         if !self.has_arguments {
             return slot_name(&self.field);
         }

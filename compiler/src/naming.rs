@@ -11,16 +11,21 @@
 //! writing code that does not compile: at the document's name when the
 //! document chose one of the two, as an internal error when the compiler
 //! chose both. What a language reserves, escapes and spells is a `Naming`;
-//! Swift's is `names::SwiftNaming`.
+//! Swift's is `names::SwiftNaming`, Kotlin's `kotlin_names::KotlinNaming`,
+//! and `LanguageNaming` is the one of the language a run writes.
 
 use std::collections::BTreeSet;
 
+use crate::config::{Config, Language};
+use crate::kotlin_names::KotlinNaming;
+use crate::names::SwiftNaming;
 use crate::pipeline::{OperationKind, OperationPlan, Origin};
 
 /// What the decide pass asks of the language it decides names for: how a
 /// document's name becomes an identifier, which names a nested type may not
 /// take, how the generated families and the members every scope declares
 /// are spelled, and the host type a mapped scalar reads as.
+#[whichever::dispatchable]
 pub trait Naming {
     /// The language, as a message calls the code generated in it.
     fn language(&self) -> &'static str;
@@ -88,6 +93,26 @@ pub trait Naming {
     fn lens_members(&self) -> Vec<(&'static str, String)>;
 }
 
+/// The `Naming` of the language a run writes, Swift's or Kotlin's: decided
+/// from the configuration once and lent to every scope the program is
+/// decided in.
+#[whichever::dispatch(Naming)]
+pub enum LanguageNaming {
+    Swift(SwiftNaming),
+    Kotlin(KotlinNaming),
+}
+
+impl LanguageNaming {
+    /// The names of the language `config` writes, with the host type
+    /// `config` names for each mapped scalar.
+    pub fn new(config: &Config) -> LanguageNaming {
+        match config.language {
+            Language::Swift => SwiftNaming::new(config).into(),
+            Language::Kotlin => KotlinNaming::new(config).into(),
+        }
+    }
+}
+
 /// A name the generated code declares in a scope the document's names
 /// share, which the compiler chose: the name, how it meets the others, and
 /// what a message calls it.
@@ -108,7 +133,7 @@ impl Declared {
     }
 
     /// The type `naming` spells for `spelled`.
-    pub fn spelled(naming: &dyn Naming, spelled: Spelled) -> Declared {
+    pub fn spelled(naming: &impl Naming, spelled: Spelled) -> Declared {
         Declared::new(
             naming.spelling(spelled),
             Kind::Type,
@@ -246,7 +271,7 @@ impl Reserved {
     /// For nested types at `position`: the names `naming` keeps there, and
     /// the program's own, which a nested type would hide.
     pub fn new<S: Into<String>>(
-        naming: &dyn Naming,
+        naming: &impl Naming,
         position: Position,
         program: impl IntoIterator<Item = S>,
     ) -> Reserved {
@@ -264,7 +289,7 @@ impl Reserved {
     }
 
     /// For scopes that name nothing they nest after a document's names.
-    pub fn none(naming: &dyn Naming) -> Reserved {
+    pub fn none(naming: &impl Naming) -> Reserved {
         Reserved {
             names: BTreeSet::new(),
             suffix: "",
@@ -317,7 +342,7 @@ impl<'a> Scope<'a> {
 
     /// Declares the type `naming` spells for `spelled`, which the compiler
     /// chose.
-    pub fn declare_spelled(&mut self, naming: &dyn Naming, spelled: Spelled) {
+    pub fn declare_spelled(&mut self, naming: &impl Naming, spelled: Spelled) {
         self.declare(
             naming.spelling(spelled),
             Kind::Type,

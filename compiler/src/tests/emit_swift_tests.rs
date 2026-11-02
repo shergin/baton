@@ -42,7 +42,7 @@ fn decided_variables(text: &str) -> Vec<VariableValue> {
         &Config::default(),
     )
     .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
-    let program = crate::decide::program(&compiled.plan, &SwiftNaming::default())
+    let program = crate::decide::program(&compiled.plan, &SwiftNaming::default().into())
         .unwrap_or_else(|errors| panic!("the document declares names twice: {errors:?}"));
     program
         .operations
@@ -158,7 +158,7 @@ fn shape_of(primitive: Primitive, elements_non_null: Option<bool>) -> ScalarShap
             non_null: false,
         },
     };
-    ScalarShape::of(&type_, &SwiftNaming::with_host_types(host_types))
+    ScalarShape::of(&type_, &SwiftNaming::with_host_types(host_types).into())
 }
 
 #[test]

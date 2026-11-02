@@ -22,7 +22,7 @@ pub(super) const RUNTIME: &str = "Baton";
 
 /// A slot's constant among its type's in the shared enums.
 pub(super) fn slot_member(slot: &SlotRef) -> String {
-    slot.member(&slot_name)
+    slot.member(slot_name)
 }
 
 /// A slot's constant by its path in one of the shared enums:

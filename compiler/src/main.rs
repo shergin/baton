@@ -35,18 +35,18 @@ use std::process::ExitCode;
 
 use crate::config::{Config, Language};
 use crate::diagnostics::Rendered;
-use crate::documents::{Document, HOSTS, HostLanguage};
+use crate::documents::{Document, HOSTS, Host, HostLanguage};
 use crate::kotlin::KotlinHost;
-use crate::naming::NameError;
+use crate::naming::{LanguageNaming, NameError};
 use crate::swift::SwiftHost;
 
 /// The host language a run writes, which names the outputs: every
 /// source's, the shared file, and the files of an output directory the
 /// compiler owns.
-fn outputs(language: Language) -> &'static dyn HostLanguage {
+fn outputs(language: Language) -> Host {
     match language {
-        Language::Swift => &SwiftHost,
-        Language::Kotlin => &KotlinHost,
+        Language::Swift => Host::Swift(SwiftHost),
+        Language::Kotlin => Host::Kotlin(KotlinHost),
     }
 }
 
@@ -397,7 +397,7 @@ fn compile_documents(options: &Options) -> Result<Compilation, DriverError> {
         return Err(DriverError::Reported);
     }
     let mut rendered: Vec<Rendered> = HOSTS
-        .into_iter()
+        .iter()
         .flat_map(|host| host.check(&documents, &plan))
         .collect();
     rendered.extend(unused_fragments(&documents, &plan));
@@ -409,23 +409,19 @@ fn compile_documents(options: &Options) -> Result<Compilation, DriverError> {
     })
 }
 
-/// The code of a compilation in the language of its run, decided in the
-/// target's names and printed by it, or the name errors printed and
-/// reported.
+/// The code of a compilation in the language of its run, decided in that
+/// language's names and printed by its target, or the name errors printed
+/// and reported.
 fn emitted(compilation: &Compilation) -> Result<(emit::Output, decide::Program), DriverError> {
     let config = &compilation.sources.config;
-    match config.language {
-        Language::Swift => {
-            let target = emit::Swift::new(config);
-            let program = decided(compilation, target.naming())?;
-            Ok((target.emit(&program), program))
-        }
+    let program = decided(compilation, &LanguageNaming::new(config))?;
+    let output = match config.language {
+        Language::Swift => emit::Swift.emit(&program),
         Language::Kotlin => {
-            let target = emit::Kotlin::new(config, kotlin_packages(&compilation.documents));
-            let program = decided(compilation, target.naming())?;
-            Ok((target.emit(&program), program))
+            emit::Kotlin::new(config, kotlin_packages(&compilation.documents)).emit(&program)
         }
-    }
+    };
+    Ok((output, program))
 }
 
 /// The package each Kotlin host declares, by its path: none for a host in
@@ -508,7 +504,7 @@ fn check_kotlin_package(compilation: &Compilation, writes_shared: bool) -> Resul
 /// printed and reported.
 fn decided(
     compilation: &Compilation,
-    naming: &dyn naming::Naming,
+    naming: &LanguageNaming,
 ) -> Result<decide::Program, DriverError> {
     let documents = &compilation.documents;
     decide::program(&compilation.plan, naming).map_err(|errors| {
@@ -633,14 +629,14 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
     }
 
     if options.flags.contains("check") {
-        check_outputs(&planned, out_dir.as_deref(), outputs)?;
+        check_outputs(&planned, out_dir.as_deref(), &outputs)?;
     } else {
         for (path, text) in &planned {
             write_output(path, text)?;
         }
         if let Some(out_dir) = &out_dir {
             let written: Vec<&Path> = planned.iter().map(|(path, _)| path.as_path()).collect();
-            remove_stale_outputs(out_dir, &written, outputs)?;
+            remove_stale_outputs(out_dir, &written, &outputs)?;
         }
     }
     finish(&compilation.rendered)
@@ -652,7 +648,7 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
 fn check_outputs(
     planned: &[(PathBuf, String)],
     out_dir: Option<&Path>,
-    outputs: &dyn HostLanguage,
+    outputs: &Host,
 ) -> Result<(), DriverError> {
     let mut stale = 0;
     for (path, text) in planned {
@@ -782,7 +778,7 @@ fn persisted_documents(plan: &pipeline::Plan) -> String {
 fn remove_stale_outputs(
     out_dir: &Path,
     written: &[&Path],
-    outputs: &dyn HostLanguage,
+    outputs: &Host,
 ) -> Result<(), DriverError> {
     let Ok(entries) = std::fs::read_dir(out_dir) else {
         return Ok(());

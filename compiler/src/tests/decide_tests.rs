@@ -247,6 +247,11 @@ fn a_field_the_initial_part_selects_goes_before_its_deferred_copy() {
     assert_eq!(origins, vec![None, Some("Probe$defer$later")]);
 }
 
+/// The Swift naming with no configured host types.
+fn swift_naming() -> LanguageNaming {
+    SwiftNaming::default().into()
+}
+
 /// A named type of `kind`, nullable.
 fn named(kind: TypeKind) -> TypePlan {
     TypePlan::Named {
@@ -287,7 +292,7 @@ fn non_null(type_: TypePlan) -> TypePlan {
 fn an_id_and_an_unmapped_custom_scalar_are_kept_as_their_text() {
     for kind in [TypeKind::String, TypeKind::Id, TypeKind::CustomScalar] {
         assert_eq!(
-            ScalarShape::of(&named(kind), &SwiftNaming::default()).primitive,
+            ScalarShape::of(&named(kind), &swift_naming()).primitive,
             Primitive::String,
             "{kind:?}"
         );
@@ -303,11 +308,11 @@ fn an_enum_reads_as_the_enum_its_schema_type_names() {
         mapped: false,
     };
     assert_eq!(
-        ScalarShape::of(&status, &SwiftNaming::default()).primitive,
+        ScalarShape::of(&status, &swift_naming()).primitive,
         Primitive::Enum("Status".to_string())
     );
     assert_eq!(
-        ScalarShape::of(&list_of(status), &SwiftNaming::default()).primitive,
+        ScalarShape::of(&list_of(status), &swift_naming()).primitive,
         Primitive::Enum("Status".to_string())
     );
 }
@@ -315,15 +320,15 @@ fn an_enum_reads_as_the_enum_its_schema_type_names() {
 #[test]
 fn a_float_is_kept_as_a_double_a_boolean_as_a_bool_and_an_int_as_an_int() {
     assert_eq!(
-        ScalarShape::of(&named(TypeKind::Float), &SwiftNaming::default()).primitive,
+        ScalarShape::of(&named(TypeKind::Float), &swift_naming()).primitive,
         Primitive::Double
     );
     assert_eq!(
-        ScalarShape::of(&named(TypeKind::Boolean), &SwiftNaming::default()).primitive,
+        ScalarShape::of(&named(TypeKind::Boolean), &swift_naming()).primitive,
         Primitive::Bool
     );
     assert_eq!(
-        ScalarShape::of(&named(TypeKind::Int), &SwiftNaming::default()).primitive,
+        ScalarShape::of(&named(TypeKind::Int), &swift_naming()).primitive,
         Primitive::Int
     );
 }
@@ -336,16 +341,16 @@ fn elements_non_null(shape: ScalarShape) -> Option<bool> {
 
 #[test]
 fn a_scalar_shape_is_a_list_exactly_when_its_field_is() {
-    let float_list = ScalarShape::of(&list_of(named(TypeKind::Float)), &SwiftNaming::default());
+    let float_list = ScalarShape::of(&list_of(named(TypeKind::Float)), &swift_naming());
     assert_eq!(float_list.primitive, Primitive::Double);
     assert_eq!(elements_non_null(float_list), Some(false));
     let id_list = ScalarShape::of(
         &non_null(list_of(non_null(named(TypeKind::Id)))),
-        &SwiftNaming::default(),
+        &swift_naming(),
     );
     assert_eq!(id_list.primitive, Primitive::String);
     assert_eq!(elements_non_null(id_list), Some(true));
-    let id = ScalarShape::of(&non_null(named(TypeKind::Id)), &SwiftNaming::default());
+    let id = ScalarShape::of(&non_null(named(TypeKind::Id)), &swift_naming());
     assert_eq!(id.primitive, Primitive::String);
     assert_eq!(elements_non_null(id), None);
 }
@@ -360,7 +365,7 @@ fn a_list_shape_follows_its_elements_nullability_not_its_own() {
     ];
     for (type_, expected) in shapes {
         assert_eq!(
-            elements_non_null(ScalarShape::of(&type_, &SwiftNaming::default())),
+            elements_non_null(ScalarShape::of(&type_, &swift_naming())),
             Some(expected),
             "{type_:?}"
         );
@@ -434,7 +439,7 @@ fn a_key_whose_every_argument_is_a_null_constant_is_the_field_name_alone() {
     assert_eq!(slot.template, "characters");
     assert!(!slot.has_arguments);
     assert!(slot.arguments.is_empty());
-    assert_eq!(slot.member(&crate::names::slot_name), "characters");
+    assert_eq!(slot.member(crate::names::slot_name), "characters");
 }
 
 #[test]
@@ -653,7 +658,7 @@ fn mapped_fragment(text: &str, name: &str) -> ReaderPlan {
         &config,
     )
     .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
-    let program = program(&compiled.plan, &SwiftNaming::new(&config))
+    let program = program(&compiled.plan, &SwiftNaming::new(&config).into())
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     program
         .fragments
@@ -756,7 +761,7 @@ fn fragment_lenses(text: &str) -> BTreeMap<String, ReaderPlan> {
         &Config::default(),
     )
     .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
-    program(&compiled.plan, &SwiftNaming::default())
+    program(&compiled.plan, &swift_naming())
         .unwrap_or_else(|errors| panic!("{errors:?}"))
         .fragments
         .into_iter()

@@ -4,6 +4,9 @@
 
 use super::*;
 
+/// The Swift host the stale-output checks compare against.
+const SWIFT: Host = Host::Swift(SwiftHost);
+
 fn arguments(texts: &[&str]) -> Vec<String> {
     texts.iter().map(|text| text.to_string()).collect()
 }
@@ -95,7 +98,7 @@ fn fresh_outputs_pass_the_check() {
     let out = Scratch::new("fresh");
     let planned = fresh(&out);
     assert_eq!(
-        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        stale_count(check_outputs(&planned, Some(&out.0), &SWIFT)),
         0
     );
 }
@@ -107,7 +110,7 @@ fn an_edited_output_is_stale() {
     std::fs::write(out.join("Screen.baton.swift"), "// Screen, edited\n")
         .expect("the output is edited");
     assert_eq!(
-        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        stale_count(check_outputs(&planned, Some(&out.0), &SWIFT)),
         1
     );
     assert_eq!(
@@ -123,7 +126,7 @@ fn a_missing_output_is_stale() {
     let planned = fresh(&out);
     std::fs::remove_file(out.join("Screen.baton.swift")).expect("the output is removed");
     assert_eq!(
-        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        stale_count(check_outputs(&planned, Some(&out.0), &SWIFT)),
         1
     );
     assert!(
@@ -138,7 +141,7 @@ fn a_generated_file_nothing_writes_is_stale() {
     let planned = fresh(&out);
     std::fs::write(out.join("Removed.baton.swift"), "// Removed\n").expect("the stray is written");
     assert_eq!(
-        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        stale_count(check_outputs(&planned, Some(&out.0), &SWIFT)),
         1
     );
     assert!(
@@ -154,7 +157,7 @@ fn a_file_of_another_extension_in_the_output_directory_is_ignored() {
     std::fs::write(out.join("Notes.swift"), "// Notes\n").expect("the file is written");
     std::fs::write(out.join("Baton.report.json"), "{}\n").expect("the file is written");
     assert_eq!(
-        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        stale_count(check_outputs(&planned, Some(&out.0), &SWIFT)),
         0
     );
 }
@@ -168,17 +171,17 @@ fn a_planned_output_outside_the_output_directory_is_compared_too() {
     planned.push((report.clone(), "{}\n".to_string()));
     std::fs::write(&report, "{}\n").expect("the report is written");
     assert_eq!(
-        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        stale_count(check_outputs(&planned, Some(&out.0), &SWIFT)),
         0
     );
     std::fs::write(&report, "{ \"edited\": true }\n").expect("the report is edited");
     assert_eq!(
-        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        stale_count(check_outputs(&planned, Some(&out.0), &SWIFT)),
         1
     );
     std::fs::remove_file(&report).expect("the report is removed");
     assert_eq!(
-        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        stale_count(check_outputs(&planned, Some(&out.0), &SWIFT)),
         1
     );
 }
@@ -191,7 +194,7 @@ fn every_difference_is_counted() {
     std::fs::remove_file(out.join("Baton.baton.swift")).expect("the output is removed");
     std::fs::write(out.join("Removed.baton.swift"), "// Removed\n").expect("the stray is written");
     assert_eq!(
-        stale_count(check_outputs(&planned, Some(&out.0), &SwiftHost)),
+        stale_count(check_outputs(&planned, Some(&out.0), &SWIFT)),
         3
     );
 }

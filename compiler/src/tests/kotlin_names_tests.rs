@@ -6,12 +6,12 @@ use std::path::{Path, PathBuf};
 
 use super::*;
 use crate::documents::Document;
-use crate::naming::NameError;
+use crate::naming::{LanguageNaming, NameError};
 use crate::pipeline;
 
 /// The names `text`, one operation compiled against the test schema, would
 /// declare twice in `naming`'s generated code.
-fn clashes(text: &str, naming: &dyn Naming) -> Vec<String> {
+fn clashes(text: &str, naming: &LanguageNaming) -> Vec<String> {
     let schema_path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .expect("the compiler sits one level below the repository root")
@@ -114,19 +114,19 @@ fn a_schema_type_named_like_what_the_package_keeps_takes_a_suffix() {
 fn a_variable_named_like_what_its_class_declares_is_an_error_in_the_generated_kotlin() {
     let text = "query Probe($type: ID!) { character(id: $type) { id } }";
     assert_eq!(
-        clashes(text, &KotlinNaming::default()),
+        clashes(text, &KotlinNaming::default().into()),
         [
             "the variable `$type` clashes with the operation's `type` in the generated Kotlin; rename the variable"
         ]
     );
-    assert!(clashes(text, &crate::names::SwiftNaming::default()).is_empty());
+    assert!(clashes(text, &crate::names::SwiftNaming::default().into()).is_empty());
 }
 
 #[test]
 fn a_variable_named_like_a_runtime_type_the_class_spells_is_an_error() {
     let text = "query Probe($Variable: ID!) { character(id: $Variable) { id } }";
     assert_eq!(
-        clashes(text, &KotlinNaming::default()),
+        clashes(text, &KotlinNaming::default().into()),
         [
             "the variable `$Variable` clashes with the runtime's `Variable` in the generated Kotlin; rename the variable"
         ]
@@ -136,7 +136,7 @@ fn a_variable_named_like_a_runtime_type_the_class_spells_is_an_error() {
 #[test]
 fn a_variable_named_like_a_swift_member_is_free_in_kotlin() {
     let text = "query Probe($hashValue: ID!, $isStale: ID!) { a: character(id: $hashValue) { id } b: character(id: $isStale) { id } }";
-    assert!(clashes(text, &KotlinNaming::default()).is_empty());
+    assert!(clashes(text, &KotlinNaming::default().into()).is_empty());
 }
 
 #[test]
@@ -146,6 +146,9 @@ fn no_kind_of_operation_has_a_resolution_for_a_variable_to_clash_with() {
         "mutation Probe($resolution: ID!, $Resolution: Boolean!) { setFavorite(id: $resolution, favorite: $Resolution) { character { id } } }",
         "subscription Probe($resolution: ID!, $Resolution: Boolean!) { noteAdded(characterId: $resolution) { character { name @include(if: $Resolution) } } }",
     ] {
-        assert!(clashes(text, &KotlinNaming::default()).is_empty(), "{text}");
+        assert!(
+            clashes(text, &KotlinNaming::default().into()).is_empty(),
+            "{text}"
+        );
     }
 }

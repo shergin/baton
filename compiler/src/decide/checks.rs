@@ -6,7 +6,7 @@ use super::lens::{
     ErrorCheck, ErrorLine, Guarded, ReaderPlan, SatisfiedCheck, SlotAccess, host_type,
 };
 use super::members::{Member, collects_errors, condition_lens, own_members};
-use crate::naming::Naming;
+use crate::naming::LanguageNaming;
 use crate::pipeline::{RequiredAction, SelectionPlan, TypePlan};
 
 /// Marks `lens` to report the path of its first missing `@required` field,
@@ -38,7 +38,7 @@ pub(super) fn satisfied(
     type_name: &str,
     type_is_abstract: bool,
     members: &[Member],
-    naming: &dyn Naming,
+    naming: &LanguageNaming,
 ) -> Vec<Guarded<Option<SatisfiedCheck>>> {
     own_members(members)
         .map(|member| {
@@ -109,7 +109,7 @@ pub(super) fn field_errors(
     type_is_abstract: bool,
     members: &[Member],
     response_path: &str,
-    naming: &dyn Naming,
+    naming: &LanguageNaming,
 ) -> Vec<ErrorCheck> {
     let mut checks = Vec::new();
     for member in members {

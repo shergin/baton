@@ -62,10 +62,10 @@ fn emitted(path: &str, package: Option<&str>, text: &str) -> Output {
     if path.ends_with(".kt") {
         packages.insert(path.to_string(), package.map(str::to_string));
     }
-    let target = Kotlin::new(&config, packages);
-    let program = crate::decide::program(&compiled.plan, target.naming())
+    let naming = crate::kotlin_names::KotlinNaming::new(&config).into();
+    let program = crate::decide::program(&compiled.plan, &naming)
         .unwrap_or_else(|errors| panic!("the document declares names twice: {errors:?}"));
-    target.emit(&program)
+    Kotlin::new(&config, packages).emit(&program)
 }
 
 /// The one file `output` writes for a source.

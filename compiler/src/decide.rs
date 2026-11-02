@@ -36,7 +36,7 @@ pub use lens::{
 pub use operation::{BuilderPlan, BuilderValue, OperationValue, VariableBase, VariableValue};
 pub use selections::SelectionTable;
 
-use crate::naming::{NameError, Naming, Position, Reserved, Written};
+use crate::naming::{LanguageNaming, NameError, Naming, Position, Reserved, Written};
 use crate::pipeline::{
     ConditionClass, ConnectionPlan, EditPlan, LookupPlan, PagedPlan, Plan, SelectionPlan,
     StorageKeyPlan, TypePlan,
@@ -69,7 +69,7 @@ pub struct FragmentLens {
 /// numbers argument sites. Every name is spelled as `naming` spells it, and
 /// a mapped scalar reads as the host type `naming` names for it: the plan
 /// carries the scalar's name only.
-pub fn program(plan: &Plan, naming: &dyn Naming) -> Result<Program, Vec<NameError>> {
+pub fn program(plan: &Plan, naming: &LanguageNaming) -> Result<Program, Vec<NameError>> {
     let mut readers = reader::Readers::new(plan, naming);
     let builder_names = Reserved::new(
         naming,

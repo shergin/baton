@@ -11,7 +11,7 @@ use super::lens::{
     SlotAccess, SpreadGuard, TypeTest,
 };
 use super::{Guard, NormalizationKind, NormalizationSelection, Program};
-use crate::naming::{Kind, NameError, Naming, Reserved, Scope, Spelled, Written};
+use crate::naming::{Kind, LanguageNaming, NameError, Naming, Reserved, Scope, Spelled, Written};
 use crate::pipeline::{OperationKind, Plan, TypePlan};
 
 /// A field of an input object as its struct declares it: the schema's
@@ -70,7 +70,7 @@ pub struct Shared {
 
 impl Shared {
     /// What the lenses, plans and builders of `program` use.
-    pub(super) fn collect(plan: &Plan, program: &Program, naming: &dyn Naming) -> Shared {
+    pub(super) fn collect(plan: &Plan, program: &Program, naming: &LanguageNaming) -> Shared {
         let mut shared = Shared {
             schema_digest: plan.schema_digest.clone(),
             root_names: plan.root_names.clone(),
@@ -289,7 +289,7 @@ impl Shared {
     /// twice: the documents' types beside the shared enums, the runtime's
     /// module and what the generated code spells from the language itself,
     /// and in the enums the types, sets, slots and sites the lenses use.
-    pub(super) fn duplicates(&self, plan: &Plan, naming: &dyn Naming) -> Vec<NameError> {
+    pub(super) fn duplicates(&self, plan: &Plan, naming: &LanguageNaming) -> Vec<NameError> {
         let none = Reserved::none(naming);
         let mut module = Scope::new("the module", &none);
         for (name, what) in naming.module_names() {
@@ -412,7 +412,7 @@ impl Shared {
                 let mut scope = Scope::new(format!("{family}.{type_name}"), &none);
                 for slot in slots {
                     scope.declare(
-                        &slot.member(&|name| naming.slot_name(name)),
+                        &slot.member(|name| naming.slot_name(name)),
                         Kind::Static,
                         format!("the slot `{}`", slot.template),
                     );

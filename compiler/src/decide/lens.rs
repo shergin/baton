@@ -6,7 +6,7 @@ use std::collections::BTreeSet;
 
 use super::Guard;
 use super::keys::SlotRef;
-use crate::naming::{Naming, Spelled};
+use crate::naming::{LanguageNaming, Naming, Spelled};
 use crate::pipeline::{ArgumentValuePlan, ConstantPlan, StorageKeyPlan, TypeKind, TypePlan};
 
 /// A lens type: its accessors, the surface its kind has, and the lenses
@@ -398,7 +398,7 @@ impl ReaderKind {
 impl ScalarShape {
     /// The shape of a field of the type, a mapped scalar read as the host
     /// type `naming` names for it.
-    pub fn of(type_: &TypePlan, naming: &dyn Naming) -> ScalarShape {
+    pub fn of(type_: &TypePlan, naming: &LanguageNaming) -> ScalarShape {
         ScalarShape {
             primitive: Self::primitive(type_, naming),
             list: ListShape::of(type_),
@@ -429,7 +429,7 @@ impl ScalarShape {
         }
     }
 
-    pub fn primitive(type_: &TypePlan, naming: &dyn Naming) -> Primitive {
+    pub fn primitive(type_: &TypePlan, naming: &LanguageNaming) -> Primitive {
         if type_.is_mapped() {
             return Primitive::Mapped(host_type(type_.base_name(), naming));
         }
@@ -447,7 +447,7 @@ impl ScalarShape {
 /// lowering marks a scalar mapped only when the configuration names it, and
 /// the configuration's validation refuses a mapping without a type for the
 /// language.
-pub(super) fn host_type(scalar: &str, naming: &dyn Naming) -> String {
+pub(super) fn host_type(scalar: &str, naming: &LanguageNaming) -> String {
     naming
         .host_type(scalar)
         .unwrap_or_else(|| {
