@@ -17,17 +17,18 @@ are expected and listed without apology.
   ordered: two operations that write one field still let the last arrival
   win. Both runtimes; held by the script `ordering`
   ([the decision](docs/decisions/a-late-response-yields.md)).
-- A query of client fields alone compiles, as Relay's `useClientQuery`
-  does. The compiler marks it client-only (`isClientOnly` on the operation
-  type, Swift format 24, Kotlin format 7): its text is the author's
-  selection printed compact, it takes no persisted id, and it is never
-  sent. Its handle
-  attaches as `storeOnly` whatever policy the view asks, is never stale and
-  fetches for nothing; `refetch` and `Environment.fetch` throw the new
-  environment error `clientOnly`; `commitPayload` writes it. A mutation or
-  a subscription of client fields alone stays refused, now with a message
+
+- A query of client fields alone compiles, as Relay's `useClientQuery` does.
+  The compiler marks it client-only (`isClientOnly` on the operation type,
+  Swift format 24, Kotlin format 7): its text is the author's selection
+  printed compact, it takes no persisted id, and it is never sent. Its
+  handle attaches as `storeOnly` whatever policy the view asks, is never
+  stale and fetches for nothing; `refetch` and `Environment.fetch` throw the
+  new environment error `clientOnly`; `commitPayload` writes it. A mutation
+  or a subscription of client fields alone stays refused, now with a message
   that says why. Held by the script `client-only`
   ([the decision](docs/decisions/client-data-is-described-and-committed.md#a-client-only-operation-2026-11-05)).
+
 - An input object the schema declares `@oneOf` is generated as a choice:
   in Swift an enum with a case per field, `indirect` when a field's type
   contains the input, and in Kotlin a sealed interface with a data class
@@ -36,17 +37,21 @@ are expected and listed without apology.
   An input without `@oneOf` is the struct or data class it was. The plan's
   `inputs` entry is now an object with `fields` and `one_of`
   ([the decision](docs/decisions/a-oneof-input-reads-as-an-enum.md)).
+
 - The report names the schema coordinate of the field each accessor reads,
   `coordinate: "Type.field"`, beside its key, the schema's field name under
   an alias; a spread, an inline fragment under `@alias` and a type
   condition have none. The compiler's own message for a connection field it
   cannot find names the field the same way.
+
 - `Environment.fetch(_:)` in Swift no longer takes `firstPart`: rendering a
   deferred response's first part is the handle's, which it still does.
+
 - The goldens compile under the upcoming features
   `NonisolatedNonsendingByDefault` and `InferIsolatedConformances` beside
   default main-actor isolation, so generated code holds under the
   concurrency defaults a new Xcode app turns on.
+
 - The compiler's decide pass lost its two quadratic terms: fragments are
   indexed by name where `nested_types` scanned them, and each scope keeps a
   hashed index beside its declarations where the module-wide duplicates
