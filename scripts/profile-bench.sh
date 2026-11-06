@@ -3,7 +3,7 @@
 # the heaviest symbols on the main thread, by self time and by inclusive
 # time.
 #
-#   scripts/profile-bench.sh "<row label, or part of it>" [seconds] [--scope <symbol>] [--top <n>]
+#   scripts/profile-bench.sh "<row label, or part of it>" [seconds] [--only <sections>] [--scope <symbol>] [--top <n>]
 #
 # The suite's `--profile` mode runs the sections up to the row, prints the
 # executable's load address, waits for the profiler, loops the row for the
@@ -18,13 +18,20 @@
 set -eu
 root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$root"
-row="${1:?usage: scripts/profile-bench.sh \"<row label>\" [seconds] [--scope <symbol>] [--top <n>]}"
+row="${1:?usage: scripts/profile-bench.sh \"<row label>\" [seconds] [--only <sections>] [--scope <symbol>] [--top <n>]}"
 shift
 seconds=5
 case "${1:-}" in
   ''|-*) ;;
   *) seconds="$1"; shift ;;
 esac
+# The sections to run on the way to the row, handed to the suite; the
+# rest of the options go to the summary.
+only=""
+if [ "${1:-}" = "--only" ]; then
+  only="$2"
+  shift 2
+fi
 out="${BATON_PROFILE_DIR:-/tmp/baton-profile}"
 mkdir -p "$out"
 slug="$(printf '%s' "$row" | tr -c 'A-Za-z0-9' '-' | cut -c1-60)"
@@ -35,7 +42,7 @@ BATON_COMPILER=local swift build -c release --product BatonBenchmarks
 dsymutil "$binary" -o "$binary.dSYM"
 
 rm -f "$out/$slug.out"
-"$binary" --profile "$row" --profile-seconds "$((seconds + 2))" > "$out/$slug.out" 2>&1 &
+"$binary" --profile "$row" --profile-seconds "$((seconds + 2))" ${only:+--only "$only"} > "$out/$slug.out" 2>&1 &
 pid=$!
 # The sections before the row run first; the address is printed when the
 # row starts, a second and a half before its loop.
