@@ -43,6 +43,10 @@ are expected and listed without apology.
   cannot find names the field the same way.
 - `Environment.fetch(_:)` in Swift no longer takes `firstPart`: rendering a
   deferred response's first part is the handle's, which it still does.
+- The goldens compile under the upcoming features
+  `NonisolatedNonsendingByDefault` and `InferIsolatedConformances` beside
+  default main-actor isolation, so generated code holds under the
+  concurrency defaults a new Xcode app turns on.
 
 - A Swift operation value is a value, and its live side is the macro's
   projection: `@Query var issues: IssuesQuery` keeps `issues` the value the

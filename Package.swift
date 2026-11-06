@@ -141,13 +141,19 @@ let package = Package(
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         // The emitter's goldens, compiled as an app compiles them with the
-        // Xcode template's default of main-actor isolation: generated code
-        // states its isolation, so it builds under either default.
+        // Xcode template's default of main-actor isolation and the upcoming
+        // concurrency features a new app turns on: generated code states its
+        // isolation, so it builds under either default and under both.
         .testTarget(
             name: "BatonGoldenTests",
             dependencies: ["Baton"],
             path: "compiler/src/tests/goldens",
-            swiftSettings: [.swiftLanguageMode(.v6), .defaultIsolation(MainActor.self)]
+            swiftSettings: [
+                .swiftLanguageMode(.v6),
+                .defaultIsolation(MainActor.self),
+                .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+                .enableUpcomingFeature("InferIsolatedConformances"),
+            ]
         ),
         // The goldens of the second schema, AniList's, compiled the same way
         // in a module of their own, since each schema's shared file declares
@@ -156,7 +162,12 @@ let package = Package(
             name: "BatonAniListGoldenTests",
             dependencies: ["Baton"],
             path: "compiler/src/tests/goldens-anilist",
-            swiftSettings: [.swiftLanguageMode(.v6), .defaultIsolation(MainActor.self)]
+            swiftSettings: [
+                .swiftLanguageMode(.v6),
+                .defaultIsolation(MainActor.self),
+                .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+                .enableUpcomingFeature("InferIsolatedConformances"),
+            ]
         ),
         .testTarget(
             name: "BatonMacrosTests",
