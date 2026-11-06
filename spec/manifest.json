@@ -324,6 +324,46 @@
       }
     },
     {
+      "name": "tests/repeated-character-reordered",
+      "operation": "TestRepeatedCharacters",
+      "kind": "query",
+      "document": "documents/TestRepeatedCharacters.graphql",
+      "variables": {
+        "page": 1
+      },
+      "responses": [
+        "tests/repeated-character-reordered.json"
+      ],
+      "records": "tests/repeated-character-reordered.store.json",
+      "complete": true,
+      "reads": [
+        {
+          "path": "characters.results.0.id",
+          "value": "1"
+        },
+        {
+          "path": "characters.results.0.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "characters.results.0.status",
+          "value": "Alive"
+        },
+        {
+          "path": "characters.results.2.id",
+          "value": "1"
+        },
+        {
+          "path": "characters.results.2.name",
+          "value": "Rick Sanchez"
+        },
+        {
+          "path": "characters.results.2.status",
+          "value": "Alive"
+        }
+      ]
+    },
+    {
       "name": "tests/notes-page-1",
       "operation": "TestNotesQuery",
       "kind": "query",

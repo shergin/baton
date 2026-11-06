@@ -1,0 +1,8 @@
+query TestRepeatedConnectionNotes {
+  characters(page: 1) {
+    results {
+      id
+      notes(first: 1) @connection(key: "TestRepeatedConnectionNotes_notes") { edges { node { id text } } }
+    }
+  }
+}

@@ -57,6 +57,7 @@ struct OracleOperation: Sendable {
         "TestProfileQuery": { try OracleOperation(TestProfileQuery(id: $0.string("id")), reads: profileReads) },
         "TestStrictQuery": { try OracleOperation(TestStrictQuery(id: $0.string("id")), reads: strictReads) },
         "TestList": { try OracleOperation(TestList(page: $0.optionalInt("page")), reads: listReads) },
+        "TestRepeatedCharacters": { try OracleOperation(TestRepeatedCharacters(page: $0.optionalInt("page")), reads: repeatedCharactersReads) },
         "TestNotesQuery": { try OracleOperation(TestNotesQuery(id: $0.string("id")), reads: notesReads) },
         "TestNotesPaginationQuery": {
             try OracleOperation(TestNotesPaginationQuery(count: $0.optionalInt("count"), cursor: $0.optionalString("cursor"), id: $0.string("id")), reads: notesPaginationReads)
@@ -163,6 +164,17 @@ extension OracleOperation {
         "characters.results.19.episode.0.characters.56.image": {
             $0.characters?.results?.element(19)?.episode.element(0)?.characters.element(56)?.image.manifestValue ?? .null
         },
+    ]
+
+    /// The list prints one character twice, its members in another order
+    /// the second time: both elements read the one record.
+    static let repeatedCharactersReads: [String: @MainActor @Sendable (TestRepeatedCharacters.Data) -> Manifest.Value] = [
+        "characters.results.0.id": { $0.characters?.results?.element(0)?.id.manifestValue ?? .null },
+        "characters.results.0.name": { $0.characters?.results?.element(0)?.name.manifestValue ?? .null },
+        "characters.results.0.status": { $0.characters?.results?.element(0)?.status.manifestValue ?? .null },
+        "characters.results.2.id": { $0.characters?.results?.element(2)?.id.manifestValue ?? .null },
+        "characters.results.2.name": { $0.characters?.results?.element(2)?.name.manifestValue ?? .null },
+        "characters.results.2.status": { $0.characters?.results?.element(2)?.status.manifestValue ?? .null },
     ]
 
     static let episodesReads: [String: @MainActor @Sendable (TestEpisodesQuery.Data) -> Manifest.Value] = [

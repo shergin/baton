@@ -1,0 +1,8 @@
+{
+  "Character:1": {"__typename": "Character", "id": "1", "name": "Rick Sanchez", "status": "Alive"},
+  "Character:2": {"__typename": "Character", "id": "2", "name": "Morty Smith", "status": "Alive"},
+  "client:root": {"__typename": "Query", "characters(page:1)": {"__ref": "client:root:characters(page:1)"}},
+  "client:root:characters(page:1)": {"__typename": "Characters", "results": {"__refs": ["Character:1", "Character:2", "Character:1"]}},
+  "client:root:mutation": {"__typename": "Mutation"},
+  "client:root:subscription": {"__typename": "Subscription"}
+}

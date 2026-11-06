@@ -1,0 +1,8 @@
+query TestRepeatedPlainNotes {
+  characters(page: 1) {
+    results {
+      id
+      notes(first: 1) { edges { cursor node { id text } } pageInfo { endCursor hasNextPage } }
+    }
+  }
+}
