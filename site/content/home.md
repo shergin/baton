@@ -9,7 +9,7 @@
 <p class="lede">You write the fields a view needs, next to the view. Baton asks for them in one request, shows the cached data on the first frame, and re-renders only where a field changed. The compiler checks every field against the schema. The UI framework watches the records.</p>
 
 ```sh
-swift package add-dependency https://github.com/shergin/baton --from 0.15.0
+swift package add-dependency https://github.com/shergin/baton --from {{version}}
 ```
 
 <p class="trust">Swift 6.2 · Kotlin 2.4 · the platform's own frameworks and SQLite, nothing vendored · one compiler, already built</p>

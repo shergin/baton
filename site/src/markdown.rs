@@ -55,11 +55,14 @@ pub struct Body {
     pub scripts: Vec<String>,
 }
 
-/// Renders a markdown source into a body.
+/// Renders a markdown source into a body. `{{version}}` anywhere in the
+/// source, a code fence included, is the latest release, so an install
+/// snippet never names a release behind the one the manifest names.
 pub fn render(source: &str, context: &Context) -> Body {
     let plates = Cell::new(0);
     let mut scripts = Vec::new();
-    let expanded = expand_directives(source, context, &plates, &mut scripts);
+    let source = source.replace("{{version}}", &context.site.version);
+    let expanded = expand_directives(&source, context, &plates, &mut scripts);
     let mut body = render_markdown(&expanded, context);
     body.scripts.append(&mut scripts);
     body

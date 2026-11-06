@@ -9,7 +9,7 @@ In Swift, add the package and put the build plugin on each target that holds Gra
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/shergin/baton", from: "0.15.0"),
+    .package(url: "https://github.com/shergin/baton", from: "{{version}}"),
 ],
 targets: [
     .executableTarget(
@@ -28,7 +28,7 @@ import baton.gradle.BatonGenerate
 
 plugins {
     kotlin("multiplatform") version "2.4.20"
-    id("com.shergin.baton") version "0.15.0"
+    id("com.shergin.baton") version "{{version}}"
 }
 
 val generateBaton = tasks.named<BatonGenerate>("generateBaton") {
@@ -40,7 +40,7 @@ kotlin {
     sourceSets {
         commonMain {
             kotlin.srcDir(generateBaton.flatMap { it.outputDirectory })
-            dependencies { implementation("com.shergin.baton:baton:0.15.0") }
+            dependencies { implementation("com.shergin.baton:baton:{{version}}") }
         }
     }
 }
