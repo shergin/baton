@@ -65,7 +65,7 @@ note() {
   found="$found
 $1 names $2"
 }
-for file in Record.swift Plan.swift Resolution.swift Ingest.swift; do
+for file in Record.swift Plan.swift Resolution.swift Ingest.swift Cursor.swift ChangeSet.swift; do
   code "$file" | grep -qw Store && note "$file" Store
 done
 for file in Store.swift Availability.swift Hydration.swift Connections.swift Roots.swift Keys.swift; do
