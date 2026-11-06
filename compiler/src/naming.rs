@@ -14,7 +14,7 @@
 //! Swift's is `names::SwiftNaming`, Kotlin's `kotlin_names::KotlinNaming`,
 //! and `LanguageNaming` is the one of the language a run writes.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, HashMap};
 
 use crate::config::{Config, Language};
 use crate::kotlin_names::KotlinNaming;
@@ -316,6 +316,9 @@ pub struct Scope<'a> {
     path: String,
     reserved: &'a Reserved,
     declared: Vec<Declaration>,
+    /// The declarations of each name, as indices into `declared`, in the
+    /// order they were made.
+    by_name: HashMap<String, Vec<usize>>,
     errors: Vec<NameError>,
 }
 
@@ -325,6 +328,7 @@ impl<'a> Scope<'a> {
             path: path.into(),
             reserved,
             declared: Vec::new(),
+            by_name: HashMap::new(),
             errors: Vec::new(),
         }
     }
@@ -366,9 +370,14 @@ impl<'a> Scope<'a> {
             what: what.into(),
             written,
         };
-        if let Some(first) = self.declared.iter().find(|existing| {
-            existing.name == declaration.name && existing.kind.clashes(declaration.kind)
-        }) {
+        let first = self
+            .by_name
+            .get(&declaration.name)
+            .into_iter()
+            .flatten()
+            .map(|&index| &self.declared[index])
+            .find(|existing| existing.kind.clashes(declaration.kind));
+        if let Some(first) = first {
             self.errors.push(error(
                 &self.path,
                 self.reserved.language,
@@ -376,6 +385,10 @@ impl<'a> Scope<'a> {
                 &declaration,
             ));
         }
+        self.by_name
+            .entry(declaration.name.clone())
+            .or_default()
+            .push(self.declared.len());
         self.declared.push(declaration);
     }
 
@@ -385,9 +398,11 @@ impl<'a> Scope<'a> {
             return false;
         }
         !self
-            .declared
-            .iter()
-            .any(|existing| existing.name == name && existing.kind.clashes(kind))
+            .by_name
+            .get(name)
+            .into_iter()
+            .flatten()
+            .any(|&index| self.declared[index].kind.clashes(kind))
     }
 
     /// A member: the first of `candidates` the scope has free, else the last

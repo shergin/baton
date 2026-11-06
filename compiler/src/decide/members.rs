@@ -41,7 +41,7 @@ impl Member {
 }
 
 /// A selection at a lens's own level and the conditions on the way to it.
-type Occurrence = (SelectionPlan, Vec<Guard>);
+type Occurrence<'a> = (&'a SelectionPlan, Vec<Guard>);
 
 /// What a lens over `selections` reads, each thing once: conditions become
 /// guards, an inline fragment every type satisfies folds into the lens, and
@@ -54,7 +54,7 @@ pub(super) fn members(selections: &[SelectionPlan]) -> Vec<Member> {
     gather(selections, &[], &mut occurrences);
     let mut groups: Vec<(Option<String>, Vec<Occurrence>)> = Vec::new();
     for (selection, guard) in occurrences {
-        let identity = member_identity(&selection);
+        let identity = member_identity(selection);
         match groups
             .iter_mut()
             .find(|(existing, _)| identity.is_some() && *existing == identity)
@@ -71,8 +71,11 @@ pub(super) fn members(selections: &[SelectionPlan]) -> Vec<Member> {
                 .iter()
                 .any(|(_, guard)| *guard != occurrences[0].1);
             let mut selection = occurrences[0].0.clone();
-            if let SelectionPlan::Linked { selections, .. }
-            | SelectionPlan::Inline { selections, .. } = &mut selection
+            // One occurrence keeps its own children; several merge theirs,
+            // each under its own conditions when those differ.
+            if occurrences.len() > 1
+                && let SelectionPlan::Linked { selections, .. }
+                | SelectionPlan::Inline { selections, .. } = &mut selection
             {
                 *selections = occurrences
                     .iter()
@@ -205,11 +208,7 @@ fn resolved_for(concrete: &str, selections: &[SelectionPlan]) -> Vec<SelectionPl
 /// The selections at a lens's own level, each with the conditions on the
 /// way to it: through conditions, and through inline fragments that fold
 /// into the lens.
-fn gather(
-    selections: &[SelectionPlan],
-    guard: &[Guard],
-    into: &mut Vec<(SelectionPlan, Vec<Guard>)>,
-) {
+fn gather<'a>(selections: &'a [SelectionPlan], guard: &[Guard], into: &mut Vec<Occurrence<'a>>) {
     for selection in selections {
         match selection {
             SelectionPlan::Condition {
@@ -238,7 +237,7 @@ fn gather(
             {
                 gather(child, guard, into)
             }
-            other => into.push((other.clone(), guard.to_vec())),
+            other => into.push((other, guard.to_vec())),
         }
     }
 }

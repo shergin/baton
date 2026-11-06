@@ -21,6 +21,42 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the decide pass without its two quadratic terms — 2026-11-06
+
+Revision: the working tree on top of `8c7590a`, against `8c7590a` itself
+built from a separate worktree. Machine: Apple M1 Pro (MacBook Pro),
+macOS 26.5.2, Rust 1.98.0, the compiler's release profile. Not from
+`BatonBenchmarks`: `batonc bench --schema spec/rickandmorty/schema.graphql`
+on the bench's own corpus, `--language swift` or `kotlin` and
+`--fragments` 500, 2000 or 4000, five runs of each configuration per
+binary, the two binaries alternating within a run; each figure is the
+median of the five warm third rounds. Load average between 3.2 and 4.6.
+
+The change gives the decide pass an index of fragments by name, which
+`nested_types` used to find by a linear scan, and a hashed index beside
+`Scope`'s declarations, whose linear find made the module-wide duplicates
+check quadratic; `members::gather` collects references instead of clones
+and merges children only where a group occurs more than once. The
+printed output is byte-identical.
+
+| Corpus | Front end | Decide | Emit | Whole run | Printed |
+|---|---|---|---|---|---|
+| 500 fragments, 25 operations, Swift, before | 9.1 ms | 9.8 ms | 5.8 ms | 24.7 ms | 526 files, 0.9 MB |
+| The same, after | 8.7 ms | 9.0 ms | 5.9 ms | 23.6 ms | 526 files, 0.9 MB |
+| 500 fragments, Kotlin, before | 8.7 ms | 10.7 ms | 11.3 ms | 30.7 ms | 526 files, 1.0 MB |
+| The same, after | 8.7 ms | 10.7 ms | 11.3 ms | 30.9 ms | 526 files, 1.0 MB |
+| 2,000 fragments, 100 operations, Swift, before | 41.4 ms | 43.7 ms | 23.7 ms | 108.3 ms | 2,101 files, 3.7 MB |
+| The same, after | 39.2 ms | 38.0 ms | 24.4 ms | 101.7 ms | 2,101 files, 3.7 MB |
+| 4,000 fragments, 200 operations, Swift, before | 115.7 ms, of which transform 84.8 | 101.4 ms | 49.1 ms | 266.2 ms | 4,201 files, 7.4 MB |
+| The same, after | 117.4 ms, of which transform 87.4 | 79.3 ms | 49.4 ms | 243.5 ms | 4,201 files, 7.4 MB |
+
+At 4,000 fragments the decide pass is 22 ms faster, a fifth of it, which
+is about what the profile put on the two scans together; at 500 the
+change is within the noise. Twice the fragments now cost the pass 2.09
+times, from 2.32 before, so what remains grows close to linearly. The
+front end does not: its transform costs 3.2 times as much at 4,000 as at
+2,000 on both binaries, and is now the larger term of a run at that size.
+
 ## Unreleased, the compiler's two phases after the plan — 2026-11-01
 
 Revision: the working tree on top of `af41627`, which extends `batonc

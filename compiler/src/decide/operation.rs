@@ -1,7 +1,7 @@
 //! The operation half of the decide pass: an operation value's variables and
 //! the names it declares, and a mutation's optimistic-response builders.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use super::lens::{ListShape, Primitive, ReaderPlan, ScalarShape};
 use super::reader::Readers;
@@ -110,7 +110,7 @@ pub enum VariableBase {
 /// `fragments` its lenses spread that its own types would hide.
 pub(super) fn operation(
     operation: &OperationPlan,
-    fragments: &[FragmentPlan],
+    fragments: &BTreeMap<&str, &FragmentPlan>,
     readers: &mut Readers<'_>,
     builder_names: &Reserved,
     duplicates: &mut Vec<NameError>,
@@ -216,7 +216,7 @@ fn operation_scope(
 fn nested_types(
     operation: &OperationPlan,
     data: &ReaderPlan,
-    fragments: &[FragmentPlan],
+    fragments: &BTreeMap<&str, &FragmentPlan>,
     naming: &LanguageNaming,
 ) -> Vec<NameError> {
     let none = Reserved::none(naming);
@@ -226,8 +226,7 @@ fn nested_types(
     }
     for name in data.spread_fragments() {
         let origin = fragments
-            .iter()
-            .find(|fragment| fragment.name == name)
+            .get(name)
             .and_then(|fragment| fragment.origin.clone());
         scope.declare_written(
             name,

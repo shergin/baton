@@ -38,8 +38,8 @@ pub use selections::SelectionTable;
 
 use crate::naming::{LanguageNaming, NameError, Naming, Position, Reserved, Written};
 use crate::pipeline::{
-    ConditionClass, ConnectionPlan, EditPlan, LookupPlan, PagedPlan, Plan, SelectionPlan,
-    StorageKeyPlan, TypePlan,
+    ConditionClass, ConnectionPlan, EditPlan, FragmentPlan, LookupPlan, PagedPlan, Plan,
+    SelectionPlan, StorageKeyPlan, TypePlan,
 };
 
 /// Everything the emitters print, in the plan's order.
@@ -91,13 +91,19 @@ pub fn program(plan: &Plan, naming: &LanguageNaming) -> Result<Program, Vec<Name
             lens: readers.fragment(fragment),
         })
         .collect();
+    // Each operation looks up the fragments its lenses spread, by name.
+    let fragments_by_name: BTreeMap<&str, &FragmentPlan> = plan
+        .fragments
+        .iter()
+        .map(|fragment| (fragment.name.as_str(), fragment))
+        .collect();
     let operations = plan
         .operations
         .iter()
         .map(|operation| {
             operation::operation(
                 operation,
-                &plan.fragments,
+                &fragments_by_name,
                 &mut readers,
                 &builder_names,
                 &mut duplicates,

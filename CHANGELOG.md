@@ -47,6 +47,13 @@ are expected and listed without apology.
   `NonisolatedNonsendingByDefault` and `InferIsolatedConformances` beside
   default main-actor isolation, so generated code holds under the
   concurrency defaults a new Xcode app turns on.
+- The compiler's decide pass lost its two quadratic terms: fragments are
+  indexed by name where `nested_types` scanned them, and each scope keeps a
+  hashed index beside its declarations where the module-wide duplicates
+  check scanned them; the members merge clones a subtree once per member.
+  At 4,000 fragments the pass takes 79 ms from 101, and twice the fragments
+  now cost it 2.1 times from 2.3; the printed output is byte-identical
+  ([BENCHMARKS.md](BENCHMARKS.md), 2026-11-06).
 
 - A Swift operation value is a value, and its live side is the macro's
   projection: `@Query var issues: IssuesQuery` keeps `issues` the value the
