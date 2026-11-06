@@ -102,7 +102,10 @@ struct ExchangeTests {
     func a_deadline_that_expires_during_the_backoff_fails_without_waiting() async throws {
         let transport = ScriptedTransport()
         transport.hold(TestHeaderQuery.name)
-        let exchange = Exchange(base: transport, deadline: .milliseconds(20))
+        // The step is large so the bound sits far below the shortest wait the
+        // exchange could take and far above a slow runner's scheduling delay.
+        let step: Duration = .seconds(10)
+        let exchange = Exchange(base: transport, deadline: .milliseconds(20), step: step)
         // The failure's instant is read off the main actor, so a busy main
         // actor in a full run does not count against the exchange.
         let task = Task.detached { [query] () -> (Int?, ContinuousClock.Instant) in
@@ -119,7 +122,7 @@ struct ExchangeTests {
         first.refuse(TransportError(statusCode: 503, body: "down"))
         let (status, failed) = await task.value
         #expect(status == 503)
-        #expect(failed - refused < .milliseconds(250), "the exchange failed before the shortest backoff it could not afford")
+        #expect(failed - refused < step / 5, "the exchange failed well before the shortest backoff it could not afford")
         #expect(transport.requestCount == 1)
     }
 
