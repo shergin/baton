@@ -116,7 +116,15 @@ are the same screen: a lookup, a connection, and a mutation with
   mirrors a fragment's fields goes stale the moment the store changes,
   and it defeats the per-field re-render. A Kotlin screen with no
   composition at all holds the handle, as [`views.md`](views.md) shows,
-  and does not hold a copy.
+  and does not hold a copy. A product whose core is pure, a clock, a
+  transition table, a projection that never sees Baton, reads each lens
+  into its own domain values at its boundary, converting as it goes, a
+  Unix integer to a `Date`, a generated enum to the domain's. That copy is
+  the domain's, not a model of the store's, and the rule does not forbid
+  it: the views that draw from the store still read the lens. `@inline`
+  freezes a fragment into a value, but where the destination types are the
+  domain's it moves the copy one layer and removes nothing; write the
+  conversion by hand at the boundary.
 - **A query file for a screen.** The screen's operation is assembled from
   the fragments spread into it. Write a fragment beside each view, and a
   query that spreads them. Never write a hand-merged query with every

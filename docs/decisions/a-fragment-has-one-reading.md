@@ -6,6 +6,10 @@ Status: accepted, 2026-10-04. Serves
 [What earns a concept](../principles/what-earns-a-concept.md). Reopen if a
 real screen needs both readings of one fragment and cannot spread an inline
 fragment beside its own, or if adopters' views start taking inline values.
+An adopter with a pure domain core converts each lens into its own types at
+the boundary by hand (seen 2026-11-05), where an inline value would move
+the copy one layer and remove nothing, so that reopening waits on views,
+not on domain layers.
 Sharpened 2026-10-06, before the build, with the rules it gained: what an
 inline fragment contains and that its spread takes Relay's directives but
 `@catch`, the `Hashable` value under `@catch`, operation roots, a value
