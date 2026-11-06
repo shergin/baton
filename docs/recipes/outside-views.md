@@ -98,6 +98,14 @@ needs no handle. The payload stays readable until `releaseBufferSize`
 completions of other operation values follow it. An optimistic response
 shows in the turn of the call, wherever the caller is.
 
+A write that reaches the app by another road, a REST response in the
+operation's shape, a socket's tick, a payload built by hand, goes through
+`commitPayload`, the door a fetch's response takes: the records merge, the
+edge directives apply and the image is written. A mutation's generated
+`OptimisticResponse` renders a `Payload` too, so a service that knows a
+write's outcome commits it typed, `commitPayload(mutation, response.payload)`,
+rather than as a JSON string.
+
 ## Why no `fetchQuery` returns data
 
 Relay's `fetchQuery` does not retain what it fetched either. Its

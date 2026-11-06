@@ -36,6 +36,15 @@ committed, so the preview draws from the fixture through the same lenses.
 network. The payload may carry part of what the operation selects, and
 what it leaves out reads as missing, as a partial response would.
 
+A recorded fixture is one source of a payload; a mutation's typed
+optimistic response is the other. The generated `OptimisticResponse`
+renders a `Payload`, its `payload`, so a preview or a test commits what a
+write would show through the same door, typed against the operation's
+shape instead of written as JSON by hand:
+`commitPayload(mutation, response.payload)`. There is no third builder: a
+query's payload is a recorded response, and a mutation's is its
+optimistic response or a recorded one.
+
 In Kotlin, `commitPayload` is a suspend function that runs on the
 environment's main dispatcher, whatever thread calls it. `Payload` wraps
 a `ByteArray` or a JSON `String`:
