@@ -129,14 +129,19 @@ package final class ResolvedSelection: Sendable {
     /// is whole only under a root a completed stream dated; the plan decided
     /// it once.
     let streams: Bool
+    /// Whether an entity's object the response prints again under the
+    /// selection may be taken as its first printing's record; the plan
+    /// decided it once.
+    let skipsRepeats: Bool
 
-    init(type: TypeID, key: [String], isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant], conditions: [(TypeID, [ResolvedField])] = [], memberships: [Selection.MembershipAnswer] = [], hold: Keys.Hold?, transient: Bool = false, streams: Bool = false) {
+    init(type: TypeID, key: [String], isAbstract: Bool, fields: [ResolvedField], listed: [TypeID: ResolvedVariant], conditions: [(TypeID, [ResolvedField])] = [], memberships: [Selection.MembershipAnswer] = [], hold: Keys.Hold?, transient: Bool = false, streams: Bool = false, skipsRepeats: Bool = false) {
         self.type = type
         self.key = key
         self.isAbstract = isAbstract
         self.transient = transient
         self.fields = fields
         self.streams = streams
+        self.skipsRepeats = skipsRepeats
         own = ResolvedVariant(type: type, key: key, fields: fields, typeName: type.name)
         self.listed = listed
         self.conditions = conditions
@@ -221,7 +226,7 @@ package final class ResolvedSelection: Sendable {
                 ResolvedVariant(type: variant.type, key: variant.key, fields: variant.fields.filter { $0.deferred == label }.map { $0.undeferred() }, typeName: variant.typeName)
             }
             let own = fields.filter { $0.deferred == label }.map { $0.undeferred() }
-            let selection = ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: own, listed: listed.mapValues(part), conditions: conditions.map { ($0.0, $0.1.filter { $0.deferred == label }.map { $0.undeferred() }) }, memberships: membershipKeys.map { Selection.MembershipAnswer(String(decoding: $0.bytes, as: UTF8.self), $0.condition) }, hold: hold)
+            let selection = ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: own, listed: listed.mapValues(part), conditions: conditions.map { ($0.0, $0.1.filter { $0.deferred == label }.map { $0.undeferred() }) }, memberships: membershipKeys.map { Selection.MembershipAnswer(String(decoding: $0.bytes, as: UTF8.self), $0.condition) }, hold: hold, skipsRepeats: skipsRepeats)
             guard !own.isEmpty || selection.listed.values.contains(where: { !$0.fields.isEmpty }) else { return nil }
             cache[label] = selection
             return selection

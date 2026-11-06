@@ -121,6 +121,17 @@ internal class ChangeSet(val bytes: ByteArray) {
     val recordCount: Int get() = recordKeys.size
     val entryCount: Int get() = values.size
 
+    /**
+     * How many objects the walk found printed again, byte for byte, under a
+     * selection it had read them under, and took as their records without a
+     * parse; and how many entries it appended before [group] kept one per
+     * record and slot. For the counts.
+     */
+    var skipped = 0
+        internal set
+    var entriesBeforeGrouping = 0
+        private set
+
     /** The record for a key, added on first sight. */
     fun record(key: String, type: TypeID, idOffset: Int): Int {
         index[key]?.let { return it }
@@ -188,6 +199,13 @@ internal class ChangeSet(val bytes: ByteArray) {
         }
     }
 
+    /** Appends the entries from [start] until [end] again, in their order: what a repeated printing emits. */
+    fun replayEntries(start: Int, end: Int) {
+        for (position in start until end) {
+            addEntry(entryRecords[position], entrySlots[position], values.kinds[position], values.first[position], values.second[position])
+        }
+    }
+
     fun addEntry(record: Int, slotIndex: Int, kind: Byte, first: Long, second: Int) {
         if (values.size == entryRecords.size) {
             val capacity = maxOf(8, entryRecords.size * 2)
@@ -216,6 +234,7 @@ internal class ChangeSet(val bytes: ByteArray) {
     fun group() {
         val recordCount = recordKeys.size
         val total = values.size
+        entriesBeforeGrouping = total
         val counts = IntArray(recordCount + 1)
         var highest = -1
         var highestRendered = -1

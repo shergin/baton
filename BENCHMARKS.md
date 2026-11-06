@@ -30,6 +30,65 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, an entity printed again, read by one compare — 2026-11-06
+
+Revision: the working tree on top of `13399c9`, against `13399c9` itself,
+in both runtimes. The cursor keeps, per selection, where each entity's
+object began, how long it ran, the record it settled as and the entries
+its reading appended, keyed by a hash of the object's first 64 bytes; a
+later object under that selection with the same bytes takes the record by
+one `memcmp` (a buffer compare on the JVM), has the first printing's
+entries appended again in its place, and is passed over. A selection with
+a connection, a paged list, an edge directive or a stream below, an object
+at a fixed record, and one under a selection with no key fields are read
+whole. An unmerged branch of 2026-10-09, `skip-repeated-subtrees`, had
+built and measured the same mechanism; its entry never reached this file.
+Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2 (25F84), Xcode 26.6,
+Swift 6.3.3, release build, the compiler built by
+`scripts/build-compiler.sh`. `BATON_COMPILER=local swift build -c release
+--product BatonBenchmarks`, then `.build/release/BatonBenchmarks --only
+ingest,anilist`, three runs of each binary one after another; best of the
+runs, the median of the medians in parentheses. The runs before ran at a
+load average of 3.4 with nothing else building; the runs after started as
+a test run of the suite ended, at a load average of 9.9 falling to 8.7,
+which the medians show and the bests do not.
+
+| Measurement | `13399c9` | The change |
+|---|---|---|
+| Response bytes into a change set, the fixture's 686,254 bytes | 1.69 ms (1.81) | 522 µs (529) |
+| Objects taken by compare, of the fixture's 1,568 entity objects | 0 | 652 |
+| Entries before grouping, the fixture; the change's count is a full reading's, the replays making it so | | 20,572 |
+| Ingest of an AniList chunk of 500 entries, per chunk | 1.82 ms (1.96) | 1.81 ms (1.85) |
+| Commit of both AniList chunks into an empty store | 5.34 ms (5.92) | 5.29 ms (5.51) |
+| The AniList reading, untracked, the whole list | 891 µs (936) | 896 µs (908) |
+
+`IngestTiming` on the JVM, for scale and not a benchmark: `gradle
+:baton:jvmTest --tests baton.IngestTiming` alone, in a worktree at
+`13399c9` and in the working tree, OpenJDK 21.0.12.1 on the same Mac, the
+medians of 100 runs after 200 warm-ups.
+
+| Step | `13399c9` | The change |
+|---|---|---|
+| Ingest of the fixture | 1.23 ms | 0.61 ms |
+| Commit of the fixture | 0.21 ms | 0.16 ms |
+
+The fixture is 85 % repeated bytes, and 652 of its 1,568 entity objects
+are taken by compare: the judgement of 2026-10-08 counted 659 repeats,
+and the seven not taken share their first 64 bytes with an earlier object
+that holds the key, one span being kept per key. The ingest is 3.2 times
+faster in Swift and twice on the JVM. A cut without the replay read
+494 µs in the same session; the replay, which keeps the last printing of a
+record winning as the contract says, costs the copies and a grouping over
+20,572 entries instead of 3,106, about 30 µs. The AniList chunk, which
+prints each entity once and whose objects are mostly keyed by their path,
+does not move: its entity objects are hashed and remembered with nothing
+to find, and the table is the one allocation its ingest gains
+(`allocations-ingest-anilist` in `benchmarks/counts.txt`, 3,916 to 3,918).
+The commit and the reads do not move, since the change set the commit
+receives is the one a full reading makes. The counts
+`objects-taken-by-compare` and `entries-before-grouping` hold the
+mechanism.
+
 ## Unreleased, the owner's scan over twenty sites, and the ingest's copy — 2026-11-06
 
 Revision: the working tree on top of `a81991d`, which adds the suite's

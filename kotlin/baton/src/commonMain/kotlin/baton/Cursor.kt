@@ -19,6 +19,27 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
 
     private val frames = ArrayList<Frame>()
 
+    /**
+     * The entities' objects the walk finished under selections whose repeats
+     * may be skipped: where each began, how long it ran, the record it
+     * settled as and the entries its parse appended, by the selection and a
+     * hash of the object's first bytes. A later object under that selection
+     * whose bytes equal a span's is the entity printed again: it takes the
+     * record, the first printing's entries are appended again in its place,
+     * and the walk moves past it; the change set is the one a parse would
+     * make, so the last printing of a record still wins. Open addressing at
+     * half load, one span per key, the first, so a key many objects share
+     * costs a missed skip and never a wrong one.
+     */
+    private var spanHashes = LongArray(spanCapacity(bytes.size / 512 + 4))
+    private var spanSelections = arrayOfNulls<ResolvedSelection>(spanHashes.size)
+    private var spanStarts = IntArray(spanHashes.size)
+    private var spanLengths = IntArray(spanHashes.size)
+    private var spanRecords = IntArray(spanHashes.size)
+    private var spanEntriesStarts = IntArray(spanHashes.size)
+    private var spanEntriesEnds = IntArray(spanHashes.size)
+    private var spanCount = 0
+
     /** The value the last scalar read gave, in the raw encoding. */
     private var valueKind: Byte = Raw.NULL
     private var valueFirst = 0L
@@ -161,6 +182,22 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
         val opening = scanner.position
         scanner.expect('{')
         if (depth >= DEPTH_LIMIT) throw IngestError(scanner.position, "selection nested deeper than $DEPTH_LIMIT levels")
+        // An entity printed again under this selection is the record its first
+        // printing settled as, found by one compare. An object at a fixed
+        // record, the root's or a deferred part's, neither looks one up nor is
+        // remembered; nor does one under a selection with no key fields, which
+        // settles as a record keyed by its path.
+        val skippable = plan.skipsRepeats && fixedRecord < 0 && plan.key.isNotEmpty()
+        var prefix = 0L
+        if (skippable) {
+            prefix = prefixHash(opening)
+            val found = repeated(plan, prefix, opening)
+            if (found >= 0) {
+                changes.skipped += 1
+                return found
+            }
+        }
+        val entriesBefore = changes.entryCount
         if (depth == frames.size) frames.add(Frame())
         val frame = frames[depth]
         frame.fields.clear()
@@ -365,7 +402,111 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
         for (position in 0 until frame.extraSlots.size) {
             changes.addEntry(record, frame.extraSlots.values[position], frame.extraValues.kinds[position], frame.extraValues.first[position], frame.extraValues.second[position])
         }
+        // Only an entity is remembered: an object keyed by its path is another record under another parent.
+        if (skippable && changes.recordIDOffsets[record] >= 0) remember(plan, prefix, opening, scanner.position, record, entriesBefore)
         return record
+    }
+
+    /**
+     * A hash of up to the first 64 bytes at [start], eight at a time, which
+     * needs no end to compute: an object's opening, its first keys and, as
+     * Relay prints objects, its type and its first values.
+     */
+    private fun prefixHash(start: Int): Long {
+        val length = minOf(64, bytes.size - start)
+        var hash = 0x9E3779B97F4A7C15uL.toLong()
+        var offset = 0
+        while (offset + 8 <= length) {
+            var word = 0L
+            for (index in 0 until 8) word = (word shl 8) or (bytes[start + offset + index].toLong() and 0xFF)
+            hash = (hash xor word) * 0xFF51AFD7ED558CCDuL.toLong()
+            hash = hash xor (hash ushr 32)
+            offset += 8
+        }
+        while (offset < length) {
+            hash = (hash xor (bytes[start + offset].toLong() and 0xFF)) * 0x100000001B3L
+            offset += 1
+        }
+        return hash
+    }
+
+    /**
+     * The record of the object at [opening] when its bytes equal those of the
+     * object remembered under the selection and the hash, the first printing's
+     * entries appended again and the walk moved past the bytes; -1 when none
+     * is remembered or the bytes differ.
+     */
+    private fun repeated(plan: ResolvedSelection, hash: Long, opening: Int): Int {
+        val mask = spanHashes.size - 1
+        var slot = hash.toInt() and mask
+        while (true) {
+            val selection = spanSelections[slot] ?: return -1
+            if (spanHashes[slot] == hash && selection === plan) {
+                val length = spanLengths[slot]
+                if (opening + length > bytes.size || !bytes.regionsEqual(opening, spanStarts[slot], length)) return -1
+                changes.replayEntries(spanEntriesStarts[slot], spanEntriesEnds[slot])
+                scanner.position = opening + length
+                return spanRecords[slot]
+            }
+            slot = (slot + 1) and mask
+        }
+    }
+
+    /** Remembers the entity's object just read, with the entries its parse appended from [entriesFrom] on, unless the key already has a span. */
+    private fun remember(plan: ResolvedSelection, hash: Long, start: Int, end: Int, record: Int, entriesFrom: Int) {
+        if ((spanCount + 1) * 2 > spanHashes.size) growSpans()
+        val mask = spanHashes.size - 1
+        var slot = hash.toInt() and mask
+        while (true) {
+            val selection = spanSelections[slot] ?: break
+            if (spanHashes[slot] == hash && selection === plan) return
+            slot = (slot + 1) and mask
+        }
+        spanHashes[slot] = hash
+        spanSelections[slot] = plan
+        spanStarts[slot] = start
+        spanLengths[slot] = end - start
+        spanRecords[slot] = record
+        spanEntriesStarts[slot] = entriesFrom
+        spanEntriesEnds[slot] = changes.entryCount
+        spanCount += 1
+    }
+
+    private fun growSpans() {
+        val oldHashes = spanHashes
+        val oldSelections = spanSelections
+        val oldStarts = spanStarts
+        val oldLengths = spanLengths
+        val oldRecords = spanRecords
+        val oldEntriesStarts = spanEntriesStarts
+        val oldEntriesEnds = spanEntriesEnds
+        spanHashes = LongArray(oldHashes.size * 2)
+        spanSelections = arrayOfNulls(spanHashes.size)
+        spanStarts = IntArray(spanHashes.size)
+        spanLengths = IntArray(spanHashes.size)
+        spanRecords = IntArray(spanHashes.size)
+        spanEntriesStarts = IntArray(spanHashes.size)
+        spanEntriesEnds = IntArray(spanHashes.size)
+        val mask = spanHashes.size - 1
+        for (old in oldHashes.indices) {
+            val selection = oldSelections[old] ?: continue
+            var slot = oldHashes[old].toInt() and mask
+            while (spanSelections[slot] != null) slot = (slot + 1) and mask
+            spanHashes[slot] = oldHashes[old]
+            spanSelections[slot] = selection
+            spanStarts[slot] = oldStarts[old]
+            spanLengths[slot] = oldLengths[old]
+            spanRecords[slot] = oldRecords[old]
+            spanEntriesStarts[slot] = oldEntriesStarts[old]
+            spanEntriesEnds[slot] = oldEntriesEnds[old]
+        }
+    }
+
+    /** Slots for the expected entities at half load, a power of two. */
+    private fun spanCapacity(expected: Int): Int {
+        var capacity = 16
+        while (capacity < expected * 2) capacity *= 2
+        return capacity
     }
 
     private fun giveKey(frame: Frame, index: Int, start: Int, end: Int, escaped: Boolean) {

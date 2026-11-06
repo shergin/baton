@@ -459,6 +459,12 @@ public struct PlanField: Sendable {
     /// Whether resolving the field reads a variable: its key, its guards, its
     /// lookup, its connection or its edit, or a field below it.
     let readsVariables: Bool
+    /// Whether an object the response prints again under the field's
+    /// selection may be taken as the record its first printing produced:
+    /// neither the field nor any below it carries a connection, a paged
+    /// list, an edge directive or a stream, whose edits are recorded once
+    /// per printing and not once per record.
+    let skipsRepeats: Bool
 
     init(responseKey: String, key: StorageKey, kind: Kind, edit: Edit?, paged: PagedPlan? = nil, deferred: String?, streamed: String? = nil, caught: Bool, client: Bool, transient: Bool, guards: [[Guard]]) {
         self.responseKey = responseKey
@@ -481,12 +487,15 @@ public struct PlanField: Sendable {
         if case .variable? = edit?.connections { readsVariables = true }
         // A paged list's merge reads the page variable every run.
         if paged != nil { readsVariables = true }
+        var skipsRepeats = edit == nil && paged == nil && streamed == nil
         if case .linked(let selection, _, let lookup, let connection) = kind {
             if selection.readsVariables { readsVariables = true }
             if let lookup, lookup.key.contains(where: { if case .variable = $0 { return true } else { return false } }) { readsVariables = true }
             if let connection, connection.readsVariables { readsVariables = true }
+            if connection != nil || !selection.skipsRepeats { skipsRepeats = false }
         }
         self.readsVariables = readsVariables
+        self.skipsRepeats = skipsRepeats
     }
 
     public static func scalar(_ responseKey: String, key: StorageKey, kind: ScalarKind, list: Bool, edit: Edit? = nil, deferred: String? = nil, caught: Bool = false, client: Bool = false, transient: Bool = false, guards: [[Guard]] = []) -> PlanField {
@@ -565,6 +574,12 @@ public final class Selection: Sendable {
     /// is whole only under a root a completed stream dated; decided once,
     /// here, and carried by every resolution.
     let streams: Bool
+    /// Whether an entity's object the response prints again under the
+    /// selection, byte for byte, may be taken as the record its first
+    /// printing produced: no field below carries a connection, a paged
+    /// list, an edge directive or a stream. Decided once, here, and carried
+    /// by every resolution.
+    let skipsRepeats: Bool
     private let resolution = Mutex<ResolvedSelection?>(nil)
 
     /// A selection every type reads alike.
@@ -585,6 +600,7 @@ public final class Selection: Sendable {
             if case .linked(let child, _, _, _) = field.kind { return child.streams }
             return false
         } }
+        skipsRepeats = variants.allSatisfy { $0.fields.allSatisfy(\.skipsRepeats) }
     }
 
     /// Binds the variables: fields whose guards fail are dropped, keys with
@@ -619,7 +635,7 @@ public final class Selection: Sendable {
         }
         // A selection that reads no variables renders no key, and its
         // resolution is shared by every store: it holds no store's keys.
-        return ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: others, listed: listed, conditions: conditions, memberships: memberships, hold: readsVariables ? hold : nil, transient: transient, streams: streams)
+        return ResolvedSelection(type: type, key: key, isAbstract: isAbstract, fields: others, listed: listed, conditions: conditions, memberships: memberships, hold: readsVariables ? hold : nil, transient: transient, streams: streams, skipsRepeats: skipsRepeats)
     }
 
     /// A field with its variables bound, its slot on the selection's own type.

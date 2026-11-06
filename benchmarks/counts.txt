@@ -1,4 +1,6 @@
 count allocations-ingest-fixture 67
+count entries-before-grouping 20572
+count objects-taken-by-compare 652
 count allocations-commit-fixture 4897
 count allocations-commit-same-payload 2
 count allocations-commit-one-field 7
@@ -24,7 +26,7 @@ count log-events-during-edge-commits 0
 count eviction-kept-the-last-launch 1
 count eviction-dropped-the-older-launch 1
 count allocations-check-hydrated 0
-count allocations-ingest-anilist 3916
+count allocations-ingest-anilist 3918
 count allocations-commit-anilist 41293
 count records-anilist-two-chunks 6014
 count notifications-anilist-save-one-field 2

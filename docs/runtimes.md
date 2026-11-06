@@ -17,7 +17,7 @@ named by their source set.
 | The store: records by key, batches, layers, the commit | `Store.swift` | `Store.kt` |
 | Records and values | `Record.swift`, `Value.swift` | `Record.kt`, `Value.kt` |
 | Scalars as the store keeps them: text, and a double's digits | `Scalars.swift` | `Text.kt`, `jvmSharedMain/Doubles.jvmShared.kt`, `jvmMain/Doubles.jvm.kt`, `androidMain/Doubles.android.kt` |
-| The ingest: scanner, cursor, change set | `Ingest.swift`, `Cursor.swift`, `ChangeSet.swift` | `Ingest.kt`, `Cursor.kt`, `ChangeSet.kt` |
+| The ingest: scanner, cursor, change set | `Ingest.swift`, `Cursor.swift`, `ChangeSet.swift` | `Ingest.kt`, `Cursor.kt`, `ChangeSet.kt`, `Bytes.kt`, `jvmSharedMain/Bytes.jvmShared.kt` |
 | The plan, and the format the generated code names | `Plan.swift` | `Plan.kt`, `Generated.kt`, `Markers.kt` |
 | Resolution: a plan for one set of variables | `Resolution.swift` | `Resolution.kt` |
 | Membership: which types satisfy which abstract type | `Membership.swift` | `Membership.kt` |

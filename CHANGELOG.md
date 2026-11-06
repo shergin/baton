@@ -5,6 +5,23 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- An entity's object a response prints again, byte for byte, under the
+  same selection is read by one compare instead of a parse: the ingest
+  keeps, per selection, where each entity's object began, how long it ran
+  and the record it settled as, and a later object under that selection
+  whose bytes equal a remembered span takes the record, has the first
+  printing's entries appended again in its place and is passed over, so
+  the change set is the one a full reading would make and the last
+  printing of a record still wins. A
+  selection below which a field carries a connection, a paged list, an
+  edge directive or a stream is read whole each time, as is an object at a
+  fixed record or one keyed by its path; a printing that differs by a
+  byte is parsed as before, so the dumps under `spec/` are unchanged. The
+  Rick and Morty page, 85 % of whose bytes are such repeats, ingests in
+  0.49 ms where it took 1.70; a list that prints each entity once, the
+  AniList chunk, is unchanged. Both runtimes; the counts `objects-taken-by-compare`
+  and `entries-before-grouping` show the mechanism in `benchmarks/counts.txt`.
+
 - The bench suite is a library, `BatonBench`, under the executable
   `BatonBenchmarks`, and runs by sections: `--only ingest,commit` runs the
   named ones, `--json <path>` writes every row's samples and every count

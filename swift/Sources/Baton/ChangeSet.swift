@@ -82,6 +82,12 @@ package struct ChangeSet: Sendable {
     /// Errors the response carried without a path, or with one that names
     /// no field it selected: nothing in the store holds them.
     package internal(set) var unplacedErrors: [FieldError] = []
+    /// How many objects the walk found printed again, byte for byte, under
+    /// a selection it had read them under, and took as their records
+    /// without a parse; and how many entries it appended before `group()`
+    /// kept one per record and slot. For the counts.
+    package internal(set) var skipped = 0
+    package internal(set) var entriesBeforeGrouping = 0
     var index: [String: Int32] = [:]
     /// The records whose entity key came from one unescaped key field, by
     /// the type and the field's bytes, in front of `index`: an entity a
@@ -117,6 +123,7 @@ package struct ChangeSet: Sendable {
     mutating func group() {
         let recordCount = recordKeys.count
         let total = entries.count
+        entriesBeforeGrouping = total
         var grouped = ContiguousArray<Int32>(repeating: 0, count: recordCount + 1)
         var sorted = ContiguousArray<Entry>()
         var kept = 0

@@ -260,6 +260,19 @@ class PlanField private constructor(
             linked.connection?.readsVariables == true
     }
 
+    /**
+     * Whether an object the response prints again under the field's selection
+     * may be taken as the record its first printing produced: neither the
+     * field nor any below it carries a connection, a paged list, an edge
+     * directive or a stream, whose edits are recorded once per printing and
+     * not once per record.
+     */
+    internal val skipsRepeats: Boolean = run {
+        if (edit != null || paged != null || streamed != null) return@run false
+        val linked = kind as? Kind.Linked ?: return@run true
+        linked.connection == null && linked.selection.skipsRepeats
+    }
+
     /** Whether the field is selected under [variables]: no guards, or one conjunction of guards that all hold. */
     internal fun selected(variables: Variables): Boolean =
         guards.isEmpty() || guards.any { conjunction -> conjunction.all { it.holds(variables) } }
@@ -328,4 +341,12 @@ class Selection(
     internal val streams: Boolean = variants.any { variant ->
         variant.fields.any { it.streamed != null || (it.kind as? PlanField.Kind.Linked)?.selection?.streams == true }
     }
+
+    /**
+     * Whether an entity's object the response prints again under the selection,
+     * byte for byte, may be taken as the record its first printing produced: no
+     * field below carries a connection, a paged list, an edge directive or a
+     * stream. Decided once here, and carried by every resolution.
+     */
+    internal val skipsRepeats: Boolean = variants.all { variant -> variant.fields.all { it.skipsRepeats } }
 }

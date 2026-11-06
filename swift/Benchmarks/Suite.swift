@@ -244,6 +244,8 @@ func run() async throws {
         measure("resolve the fixture plan for a page, per resolution", iterations: 50, ops: 100) {
             for page in 1...100 { _ = BenchFixture.plan.resolve(BenchFixture(page: page).variables, in: store.keys) }
         }
+        count("entries-before-grouping", changes.entriesBeforeGrouping, "    entries before grouping \(changes.entriesBeforeGrouping), after \(changes.entries.count); objects taken by compare \(changes.skipped)")
+        if options.countsOnly { count("objects-taken-by-compare", changes.skipped, "") }
     }
 
     await section("commit") {

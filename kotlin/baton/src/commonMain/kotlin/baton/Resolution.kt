@@ -243,6 +243,8 @@ internal class ResolvedSelection(
     val transient: Boolean = false,
     /** Whether a list somewhere in the selection streams, so that its data is whole only under a root a completed stream dated; the plan decided it once. */
     val streams: Boolean = false,
+    /** Whether an entity's object the response prints again under the selection may be taken as its first printing's record; the plan decided it once. */
+    val skipsRepeats: Boolean = false,
 ) {
     private val own = ResolvedVariant(type, key, fields)
     val membershipKeys: List<Pair<ByteArray, TypeID>> = memberships.map { it.responseKey.encodeToByteArray() to it.condition }
@@ -331,6 +333,7 @@ internal class ResolvedSelection(
                 membershipKeys.map { Selection.MembershipAnswer(it.first.decodeToString(), it.second) },
                 keys,
                 transient,
+                skipsRepeats = skipsRepeats,
             )
         }
         while (true) {
@@ -394,7 +397,7 @@ private class Resolver(private val variables: Variables, private val keys: Keys)
                 listed[concrete] = ResolvedVariant(concrete, variant.key ?: selection.key, fields.map { it.on(concrete, held) })
             }
         }
-        return ResolvedSelection(selection.type, selection.key, selection.isAbstract, others, listed, conditions, selection.memberships, held, selection.transient, selection.streams)
+        return ResolvedSelection(selection.type, selection.key, selection.isAbstract, others, listed, conditions, selection.memberships, held, selection.transient, selection.streams, selection.skipsRepeats)
     }
 
     private fun field(field: PlanField, type: TypeID): ResolvedField {

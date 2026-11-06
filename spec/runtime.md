@@ -259,6 +259,24 @@ twenty-four levels deep; deeper is malformed. *Held by* every case;
 tests/union-1, tests/node-fields-character and tests/node-fields-episode
 for the type read first; the key found after a link by tests/keys-1.
 
+**An entity printed again is read by comparing.** An entity's object the
+response prints again under the same selection, byte for byte, normalizes
+to the record its first printing produced: the ingest keeps, per
+selection, where each entity's object began, how long it ran and the
+entries its reading appended, and at a later object under that selection
+compares the bytes once; when they are equal it takes the record, appends
+the first printing's entries again in the later printing's place and
+passes over the bytes, so the change set is the one a full reading would
+make and the last printing of a record still wins (section 4). A
+printing that differs by a byte is read as any object is. A selection below which a field carries a
+connection, a paged list, an edge directive or a stream is read whole
+each time, since those record an edit per printing; so is an object at a
+fixed record, the root's or a deferred part's, and one under a selection
+with no key fields, which is a record keyed by its path under each
+parent. *Held by* every dump of a response that prints an entity twice,
+rickandmorty/characters-page-1 among them, which the reading leaves as it
+was; a printing that differs by tests/repeated-character-reordered.
+
 **A scalar is read by its kind.** A string, int, float or bool as JSON
 gives it; an int field answered with a float that is a whole number reads
 as that int; a custom scalar as its text; null as null. A list of scalars

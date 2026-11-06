@@ -36,13 +36,125 @@ extension Ingest {
         static let depthLimit = 24
         /// The response's `errors`, as read; resolved against the plan at the end.
         var rawErrors: [ResponseError] = []
+        /// The entities' objects the walk finished under selections whose
+        /// repeats may be skipped: where each began, how long it ran, the
+        /// record it settled as and the entries its parse appended, by the
+        /// selection and a hash of the object's first bytes. A later object
+        /// under that selection whose bytes equal a span's is the entity
+        /// printed again: it takes the record, the first printing's entries
+        /// are appended again in its place, and the walk moves past it; the
+        /// change set is the one a parse would make, so the last printing
+        /// of a record still wins. Open addressing at half load; one span
+        /// per key, the first, so a key many objects share costs a missed
+        /// skip and never a wrong one.
+        var spans: ContiguousArray<Span>
+        var spanCount = 0
+
+        struct Span {
+            var hash: UInt64
+            /// The selection the object was read under; nil in an empty slot.
+            var selection: ObjectIdentifier?
+            var start: Int32
+            var length: Int32
+            var record: Int32
+            /// The entries the printing's parse appended, the subtree's too.
+            var entriesStart: Int32
+            var entriesEnd: Int32
+
+            static let empty = Span(hash: 0, selection: nil, start: 0, length: 0, record: -1, entriesStart: 0, entriesEnd: 0)
+        }
 
         init(base: UnsafePointer<UInt8>, count: Int, changes: ChangeSet) {
             scanner = Scanner(base: base, count: count)
             self.changes = changes
+            spans = ContiguousArray(repeating: Span.empty, count: Cursor.spanCapacity(count / 512 + 4))
+        }
+
+        /// Slots for the expected entities at half load, a power of two.
+        private static func spanCapacity(_ expected: Int) -> Int {
+            var capacity = 16
+            while capacity < expected * 2 { capacity *= 2 }
+            return capacity
+        }
+
+        /// A hash of up to the first 64 bytes at `start`, eight at a time,
+        /// which needs no end to compute: an object's opening, its first keys
+        /// and, as Relay prints objects, its type and its first values.
+        @inline(__always)
+        func prefixHash(_ start: Int) -> UInt64 {
+            let length = min(64, count - start)
+            var hash: UInt64 = 0x9E37_79B9_7F4A_7C15
+            var offset = 0
+            while offset + 8 <= length {
+                let word = UnsafeRawPointer(base + start + offset).loadUnaligned(as: UInt64.self)
+                hash = (hash ^ word) &* 0xFF51_AFD7_ED55_8CCD
+                hash ^= hash >> 32
+                offset += 8
+            }
+            while offset < length {
+                hash = (hash ^ UInt64(base[start + offset])) &* 0x0000_0100_0000_01B3
+                offset += 1
+            }
+            return hash
+        }
+
+        /// The record of the object at `opening` when its bytes equal those
+        /// of the object remembered under the selection and the hash, the
+        /// first printing's entries appended again and the walk moved past
+        /// the bytes; nil when none is remembered or the bytes differ, where
+        /// the compare stopped at the first byte that did.
+        @inline(__always)
+        mutating func repeated(_ plan: ResolvedSelection, _ hash: UInt64, at opening: Int) -> Int32? {
+            let identity = ObjectIdentifier(plan)
+            let mask = spans.count - 1
+            var slot = Int(truncatingIfNeeded: hash) & mask
+            while true {
+                let span = spans[slot]
+                guard let selection = span.selection else { return nil }
+                if span.hash == hash, selection == identity {
+                    let length = Int(span.length)
+                    guard opening + length <= count, memcmp(base + opening, base + Int(span.start), length) == 0 else { return nil }
+                    // One entry at a time: a slice of the array appended to
+                    // itself would copy the whole array first.
+                    for index in Int(span.entriesStart)..<Int(span.entriesEnd) {
+                        changes.entries.append(changes.entries[index])
+                    }
+                    position = opening + length
+                    return span.record
+                }
+                slot = (slot + 1) & mask
+            }
+        }
+
+        /// Remembers the entity's object just read, with the entries its
+        /// parse appended from `entriesFrom` on, unless the key already has
+        /// a span.
+        mutating func remember(_ plan: ResolvedSelection, _ hash: UInt64, start: Int, end: Int, record: Int32, entriesFrom: Int) {
+            if (spanCount + 1) * 2 > spans.count { growSpans() }
+            let identity = ObjectIdentifier(plan)
+            let mask = spans.count - 1
+            var slot = Int(truncatingIfNeeded: hash) & mask
+            while let selection = spans[slot].selection {
+                if spans[slot].hash == hash, selection == identity { return }
+                slot = (slot + 1) & mask
+            }
+            spans[slot] = Span(hash: hash, selection: identity, start: Int32(start), length: Int32(end - start), record: record, entriesStart: Int32(entriesFrom), entriesEnd: Int32(changes.entries.count))
+            spanCount += 1
+        }
+
+        private mutating func growSpans() {
+            let old = spans
+            spans = ContiguousArray(repeating: Span.empty, count: old.count * 2)
+            let mask = spans.count - 1
+            for span in old where span.selection != nil {
+                var slot = Int(truncatingIfNeeded: span.hash) & mask
+                while spans[slot].selection != nil { slot = (slot + 1) & mask }
+                spans[slot] = span
+            }
         }
 
         var base: UnsafePointer<UInt8> { scanner.base }
+        var count: Int { scanner.count }
         var position: Int {
             get { scanner.position }
             set { scanner.position = newValue }
@@ -179,6 +291,21 @@ extension Ingest {
             let opening = position
             try expect(0x7B)
             guard depth < Cursor.depthLimit else { throw IngestError(offset: position, message: "selection nested deeper than 24 levels") }
+            // An entity printed again under this selection is the record its
+            // first printing settled as, found by one compare. An object at a
+            // fixed record, the root's or a deferred part's, neither looks
+            // one up nor is remembered; nor does one under a selection with
+            // no key fields, which settles as a record keyed by its path.
+            let skippable = plan.skipsRepeats && fixedRecord == nil && !plan.key.isEmpty
+            var prefix: UInt64 = 0
+            if skippable {
+                prefix = prefixHash(opening)
+                if let record = repeated(plan, prefix, at: opening) {
+                    changes.skipped += 1
+                    return record
+                }
+            }
+            let entriesBefore = changes.entries.count
             if depth == scratch.count {
                 var buffer = ContiguousArray<(Int, ChangeSet.RawValue)>()
                 buffer.reserveCapacity(16)
@@ -354,6 +481,11 @@ extension Ingest {
             }
             for (_, slot, value) in extra[depth] {
                 changes.entries.append(ChangeSet.Entry(record: record, slot: slot, value: value))
+            }
+            // Only an entity is remembered: an object keyed by its path is
+            // another record under another parent.
+            if skippable, changes.recordIsEntity[Int(record)] {
+                remember(plan, prefix, start: opening, end: position, record: record, entriesFrom: entriesBefore)
             }
             return record
         }
