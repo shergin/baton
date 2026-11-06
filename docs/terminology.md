@@ -142,14 +142,15 @@ operation and the path of the first required field that is null. See
 [the contract](../spec/runtime.md#6-the-lens-reads).
 Swift: a generated `satisfied` checks the lens; LOG's event is
 `requiredFieldMissing`; THROW makes the accessor `get throws`, raising
-`RequiredFieldError`; the root's failure is a `RequiredFieldError`, and a
-generated `missingRequiredField` finds the path.
+`RequiredFieldError`; the root's failure is the phase's
+`.failed(.requiredField(RequiredFieldError))`, and a generated
+`missingRequiredField` finds the path.
 Kotlin: the companion's generated `satisfied(anchor)` checks the lens, and a
 spread that bubbles reads null; LOG's event is
 `LogEvent.RequiredFieldMissing`; THROW makes the field's getter throw
 `RequiredFieldError`, since Kotlin has no throwing property; the root's
-failure is `Phase.Failed(RequiredFieldError)`, its path found by the
-companion's generated `missingRequiredField(anchor)`.
+failure is `Phase.Failed(PhaseFailure.RequiredField(RequiredFieldError))`,
+its path found by the companion's generated `missingRequiredField(anchor)`.
 
 **Catch.** *Concept: directive.* Relay: `@catch(to: RESULT | NULL)`, a field
 or aliased spread whose errors the view handles.
@@ -176,11 +177,13 @@ read non-optional under either, and inside `@catch`. See
 [the contract](../spec/runtime.md#6-the-lens-reads) and
 [its verdict](../spec/runtime.md#8-the-handle-policies-phase-fetch).
 Swift: the spread accessor is `get throws` and throws `FieldErrors`; the
-failed operation is `.failed(FieldErrors)`.
+failed operation is `.failed(.fieldErrors(FieldErrors))`.
 Kotlin: the spread's getter reads through the fragment companion's generated
 `throwing(anchor)`, which throws `FieldErrors`, beside `caught(anchor)`, the
-same as a `Result`; the failed operation is `Phase.Failed(FieldErrors)`, and
-`Environment.fetch`, `commitPayload` and a mutation's action throw it.
+same as a `Result`; the failed operation is
+`Phase.Failed(PhaseFailure.FieldErrors(FieldErrors))`, and
+`Environment.fetch`, `commitPayload` and a mutation's action throw the
+`FieldErrors`.
 
 **Deferred fragment.** *Composition: document, directive.* GraphQL:
 `...F @defer(label:)`, a fragment the server may deliver in a later part.
@@ -359,8 +362,9 @@ query value resolves to a handle exposing its phase, its data, a refetch and
 a retry, and a subscription value to one exposing its events; the handle
 travels with the value its storage hands out. Outside any view the value
 is unresolved and reads as loading; in a view outside every environment it
-is resolved to no handle and reads as failed with the environment error
-that says so, since the absence of an environment is not a session. See
+is resolved to no handle and reads as failed with the fetch's environment
+kind, not injected, since the absence of an environment is not a session.
+See
 [the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch).
 Swift: a `Hashable` struct; the handle exposes `phase`, `data`, `refetch`
 and `retry`; the value's `resolution`, generated code's, is a `Resolution`,
@@ -396,7 +400,8 @@ the `QueryState` that `rememberQuery` returns.
 
 **Phase.** *Concept: phase.* Named after `AsyncImagePhase`, the platform's
 own word for the same shape.
-Here: the state of a resolved operation: loading, ready, or failed. Always
+Here: the state of a resolved operation: loading, ready, or failed, the
+last with a [phase failure](#generated), one of a closed set. Always
 synchronously readable; previous data stays visible while refreshing, and
 the handle says a fetch runs behind it: behind ready data, or behind a
 failure on field errors or a `@required` null, whose data is in the store,
@@ -417,11 +422,37 @@ and keeping it on the root costs what the stored phase cost. See
 [the stored phase](decisions/the-phase-stays-stored.md) in part and
 restored [the first decision](decisions/a-handle-derives-its-phase.md) by
 another route.
-Swift: the handle says it with `isRefreshing`; the retry is `retry()`; the
-root's facts are `Store.Root.present` and `verdict`.
+Swift: `Phase`, `.loading`, `.ready(data)` or `.failed(PhaseFailure)`; the
+handle says it with `isRefreshing`; the retry is `retry()`; the root's facts
+are `Store.Root.present` and `verdict`.
 Kotlin: the sealed interface `Phase`, `Loading`, `Ready(data)` or
-`Failed(error)`, beside the sealed interface `Fetch`; the root's facts are
+`Failed(failure)`, beside the sealed interface `Fetch`; the root's facts are
 `Store.Root.present` and `verdict`, snapshot state.
+
+**Phase failure.** *Composition: phase, transport.* Baton's word, for what
+neither Relay nor the specification names: why a resolved operation shows
+no data, or fails on the data it has.
+Here: a closed set of four kinds, so a body switches it without a cast. The
+fetch's kind carries the fetch's [failure](#runtime) whole, with its own
+kind, so a transport's error, a request error, a malformed response and
+the environment's absence are read inside it; the field errors' kind is
+`@throwOnFieldError`'s uncaught errors; the required field's kind is a
+`@required` field that bubbled to the root; the missing data's kind is a
+`storeOnly` attach the store could not answer. A view outside every
+environment and a handle whose environment ended read the fetch's
+environment kind. A refetch throws the phase failure the phase would show.
+The error as thrown is read whatever the kind, for a message. See
+[the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch) and
+[the decision](decisions/a-failure-says-its-kind.md).
+Swift: `PhaseFailure`, `.fetch(Failure)`, `.fieldErrors(FieldErrors)`,
+`.requiredField(RequiredFieldError)` or `.missingData(MissingDataError)`,
+an `Error` whose `error` is the one as thrown; `refetch()` is
+`async throws(PhaseFailure)`.
+Kotlin: `PhaseFailure`, a sealed class of the data classes `Fetch`,
+`FieldErrors`, `RequiredField` and `MissingData`, a `Throwable` whose
+`error` is the one as thrown, so two readings of one unchanged failed
+phase are equal; `Phase.Failed.error` reads through it, and `refetch()`
+throws it.
 
 **Action.** *Composition: lens, operation value, environment.* The word
 follows SwiftUI's `dismiss` and `openURL`.
@@ -1066,10 +1097,11 @@ environment, remove the image, forget the credential last. See
 [the decision](decisions/the-environment-is-the-session.md) and
 [the accounts recipe](recipes/accounts.md).
 Swift: the end is `Environment.end()`; a handle still held reads
-`.failed(EnvironmentError.gone)`. A store dropped without an end clears its
-records when it is deallocated: the net, not the end.
+`.failed(.fetch(.environment(.gone)))`. A store dropped without an end
+clears its records when it is deallocated: the net, not the end.
 Kotlin: the end is `Environment.end()`, a `suspend` function, and `ended` says
-it happened; a handle still held reads `Phase.Failed(EnvironmentError.Gone)`.
+it happened; a handle still held reads
+`Phase.Failed(PhaseFailure.Fetch(Failure.Environment(EnvironmentError.Gone)))`.
 Kotlin has no deinit, so there is no net: a store dropped without an end is
 the garbage collector's, and only the end closes its image.
 
@@ -1293,18 +1325,18 @@ the transport threw, unchanged, and the error as thrown is read whatever
 the kind. A field error is not a kind: under `@throwOnFieldError` it fails
 the phase, as a `@required` field that bubbled does, but it is a fact about
 the data. A handle's [fetch](#runtime) carries it, a subscription's stream
-ends with it, and the [log](#runtime)'s events name its kind. What the
-phase's failed case and a refetch carry stays the error as thrown, which the
-decision leaves open. See
+ends with it, and the [log](#runtime)'s events name its kind. The phase's
+failed case and a refetch carry it whole, inside the fetch's kind of a
+[phase failure](#generated). See
 [the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch) and
 [the decision](decisions/a-failure-says-its-kind.md).
 Swift: `Failure`, whose `error` is the error as thrown; the phase's failed
-case and `refetch()` carry `any Error`.
+case and `refetch()` carry it as `PhaseFailure.fetch`.
 Kotlin: the sealed class `Failure`, `Transport`, `Request`, `Malformed` or
 `Environment`, whose `error` is the error as thrown and whose `of` classifies
-one; the phase's `Failed` holds a `Throwable`, `refetch()` throws it, a
-subscription's stream ends with `Stream.Ended(failure)`, and the log names the
-kind.
+one; the phase's `Failed` carries it as `PhaseFailure.Fetch`, `refetch()`
+throws that, a subscription's stream ends with `Stream.Ended(failure)`, and
+the log names the kind.
 
 **Fetch policy.** *Composition: store, operation value, environment.*
 Relay's four.

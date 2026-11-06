@@ -1887,7 +1887,7 @@ struct PersistenceTests {
         for _ in 0..<20 { await Task.yield() }
         #expect(environment.store.count == 3, "the store holds its three roots and none of the responses' records")
         #expect(environment.store.existing("Character:200001") == nil)
-        guard case .failed(let error as EnvironmentError) = handle.phase, error == .gone else {
+        guard case .failed(.fetch(.environment(.gone))) = handle.phase else {
             Issue.record("expected the handle to fail on gone, got \(handle.phase)")
             return
         }

@@ -14,7 +14,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
  * The Baton environment for a composition tree, provided on an ancestor:
  * `CompositionLocalProvider(LocalBaton provides environment) { ... }`. Null
  * outside every provider, where a query reads failed with
- * `EnvironmentError.NotInjected` and a subscription has no handle.
+ * the fetch's environment kind, not injected and a subscription has no handle.
  */
 val LocalBaton = staticCompositionLocalOf<Environment?> { null }
 
@@ -45,7 +45,7 @@ private class Remembered<Value>(val value: Value, private val hold: Hold?) : Rem
  * another policy, or another environment resolves anew, the policy applied
  * on that attach, and the earlier hold is released. Outside every provider
  * no handle is made and the phase reads failed with
- * `EnvironmentError.NotInjected`. The value given is not written to.
+ * the fetch's environment kind, not injected. The value given is not written to.
  */
 @Composable
 fun <Data : Lens, Op : QueryOperation<Data>> rememberQuery(operation: Op, fetchPolicy: FetchPolicy = FetchPolicy.Default): QueryState<Op, Data> {

@@ -137,7 +137,7 @@ Signing out and signing in again is a new environment. The Swift sample's
 | What the app still holds | What it sees |
 |---|---|
 | A view under `@Query`, `@Subscription` or `rememberQuery` | Resolves its operation again in the next environment the app injects, with no help from the app. |
-| A handle a model holds | Reads `.failed(EnvironmentError.gone)` in Swift, `Phase.Failed(EnvironmentError.Gone)` in Kotlin, and tells its observers, so the model resolves again in the current environment. |
+| A handle a model holds | Reads `.failed(.fetch(.environment(.gone)))` in Swift, `Phase.Failed(PhaseFailure.Fetch(Failure.Environment(EnvironmentError.Gone)))` in Kotlin, and tells its observers, so the model resolves again in the current environment. |
 | A lens a model holds | Finds its records cleared. |
 | A fetch in flight | Cancelled. A response that lands anyway reaches neither memory nor the image. |
 | A mutation in flight | Never cancelled, since the server applies it anyway; its response reaches neither memory nor the image. |

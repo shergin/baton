@@ -214,7 +214,7 @@ struct ListScreen: View {
                 .safeAreaInset(edge: .top) {
                     if list.fetch.failure?.error is Outage { OutageNote() }
                 }
-        case .failed(is Outage):
+        case .failed(.fetch(.transport(is Outage))):
             OutageNote()
         case .failed(let error):
             ContentUnavailableView("No list", systemImage: "list.bullet", description: Text(error.localizedDescription))

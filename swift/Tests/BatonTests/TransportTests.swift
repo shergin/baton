@@ -226,7 +226,7 @@ struct TransportTests {
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
-        guard case .failed(let error) = handle.phase, let errors = error as? GraphQLErrors else {
+        guard case .failed(.fetch(.request(let errors))) = handle.phase else {
             Issue.record("expected .failed(GraphQLErrors), got \(handle.phase)")
             return
         }

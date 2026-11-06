@@ -78,12 +78,12 @@ class TransportError(val statusCode: Int, val body: String, cause: Throwable? = 
     override val message: String get() = if (statusCode == 0) body else "HTTP $statusCode: $body"
 }
 
-/** Why a fetch failed, by kind, carrying its cause. */
+/** Why a fetch failed, by kind, carrying its cause. Each kind a data class, so a failure read twice compares equal. */
 sealed class Failure : Exception() {
-    class Transport(override val cause: Throwable) : Failure()
-    class Request(val errors: GraphQLErrors) : Failure()
-    class Malformed(val ingestError: IngestError) : Failure()
-    class Environment(val environmentError: EnvironmentError) : Failure()
+    data class Transport(override val cause: Throwable) : Failure()
+    data class Request(val errors: GraphQLErrors) : Failure()
+    data class Malformed(val ingestError: IngestError) : Failure()
+    data class Environment(val environmentError: EnvironmentError) : Failure()
 
     companion object {
         /** Classifies what a fetch threw: a failure as it is, the server's errors, a response the plan could not read, a missing environment, or the transport's own. */

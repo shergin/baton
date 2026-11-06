@@ -1,6 +1,7 @@
 # A failure says its kind
 
-Status: accepted, 2026-10-05. Serves
+Status: accepted, 2026-10-05; the open point on what the phase's failed
+case carries closed 2026-11-05, below. Serves
 [Honest data](../principles/honest-data.md),
 [Relay's words](../principles/relays-words.md) and
 [What earns a concept](../principles/what-earns-a-concept.md). Reopen if an
@@ -141,3 +142,34 @@ error here or a verdict of the data.
 - A verdict's failure typed as a kind of the fetch's: field errors, a
   bubbled `@required` field and data a `storeOnly` attach lacks are facts
   about the data.
+
+## The phase's failure, closed 2026-11-05
+
+The architecture review of 2026-11-05 found the cost of the open point in
+the first adopter outside the samples: a model cast the phase's `any Error`
+and the fetch's `failure.error` to the same app type twice to learn one
+fact, and the handle unwrapped the fetch's `Failure` to its bare error at
+the one place a view read it, so the kind this record closed was thrown
+away before it reached a body.
+
+- `Phase.failed` carries a closed set, `PhaseFailure`, of four kinds: the
+  fetch's `Failure`, whole, so its own kind survives; `FieldErrors` under
+  `@throwOnFieldError`; a `RequiredFieldError` for a bubbling root;
+  `MissingDataError` for a `storeOnly` attach the store could not answer. A
+  view outside every environment and a handle whose environment ended read
+  the fetch's environment kind: nothing could send a request.
+- `refetch()` throws the phase failure the phase would show, typed in
+  Swift (`throws(PhaseFailure)`), since the set is closed and every caller
+  handles it; `Environment.fetch` and `mutate` stay untyped, since each
+  throws two kinds. The error as thrown is read whatever the kind, so a
+  message or a cast an app still wants costs one property.
+- Kotlin mirrors it: `Phase.Failed(failure: PhaseFailure)`, a sealed class
+  of data classes that is a `Throwable`, so a `refetch` throws it and two
+  readings of one unchanged failed phase are equal.
+
+Not chosen: widening `Failure` with the data kinds, which would let a
+fetch's value carry a field error the fetch never produced; two more
+cases of `Phase` for the data's failures, which every view would switch
+and which would part data the store holds from data it does not along a
+line views do not draw; and a nested `Phase.Failure`, which Swift cannot
+spell inside a generic enum without making it generic.

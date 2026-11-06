@@ -34,11 +34,11 @@ struct OutsideViewsTests {
         environment.log = nil
 
         let handle = environment.handle(for: TestHeaderQuery(id: "5"), fetchPolicy: .storeOnly)
-        guard case .failed(let error) = handle.phase else {
-            Issue.record("expected a failure, got \(handle.phase)")
+        guard case .failed(.missingData(let error)) = handle.phase else {
+            Issue.record("expected missing data, got \(handle.phase)")
             return
         }
-        #expect(error is MissingDataError)
+        #expect(error.operationName == TestHeaderQuery.name)
         #expect(transport.requestCount == 0)
     }
 

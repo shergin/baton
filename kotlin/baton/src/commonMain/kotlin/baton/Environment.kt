@@ -180,10 +180,10 @@ class Environment(
      * Ends the session, once and for good: cancels every fetch the
      * environment started, drops the roots, clears every record, forgets
      * the session's keys, and closes the image once it has written what it
-     * was handed. A handle still held reads failed with
-     * `EnvironmentError.Gone` and tells its observers; a lens still held
-     * finds its records cleared; every later call fails with the same
-     * error, and a response that lands later reaches neither the store nor
+     * was handed. A handle still held reads failed with the fetch's
+     * environment kind, gone, and tells its observers; a lens still held
+     * finds its records cleared; every later call fails with
+     * `EnvironmentError.Gone`, and a response that lands later reaches neither the store nor
      * the log.
      */
     suspend fun end() {

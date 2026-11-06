@@ -620,7 +620,7 @@ internal class ScriptRun(private val script: Script) {
     private fun phase(handle: OperationHandle<*>): Script.State = when (val phase = handle.phase) {
         Phase.Loading -> Script.State("loading")
         is Phase.Ready -> Script.State("ready")
-        is Phase.Failed -> Script.State("failed", kind(phase.error), tagged = true)
+        is Phase.Failed -> Script.State("failed", kind(phase.failure), tagged = true)
     }
 
     private fun stream(stream: Stream): Script.State = when (stream) {
@@ -674,7 +674,16 @@ internal class ScriptRun(private val script: Script) {
             is GraphQLErrors -> "request"
             is IngestError -> "malformed"
             is Failure -> kind(error)
+            is PhaseFailure -> kind(error)
             else -> "transport"
+        }
+
+        /** A phase's failure as a script spells it: its own kind, and within the fetch's kind the fetch's, with an ended environment spelled apart. */
+        fun kind(failure: PhaseFailure): String = when (failure) {
+            is PhaseFailure.Fetch -> failure.failure.let { if (it is Failure.Environment && it.environmentError == EnvironmentError.Gone) "gone" else kind(it) }
+            is PhaseFailure.FieldErrors -> "fieldErrors"
+            is PhaseFailure.RequiredField -> "requiredField"
+            is PhaseFailure.MissingData -> "missingData"
         }
 
         fun kind(failure: Failure): String = when (failure) {

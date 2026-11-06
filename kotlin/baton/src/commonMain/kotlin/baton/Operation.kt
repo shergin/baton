@@ -124,7 +124,49 @@ interface SubscriptionOperation<Data : Lens> : Operation<Data>
 sealed interface Phase<out Data> {
     data object Loading : Phase<Nothing>
     data class Ready<Data>(val data: Data) : Phase<Data>
-    data class Failed(val error: Throwable) : Phase<Nothing>
+
+    /** No data to show, or data that fails the operation's own directives, for one of a closed set of reasons. */
+    data class Failed(val failure: PhaseFailure) : Phase<Nothing> {
+        /** The error as thrown or made: the transport's, the server's or the runtime's own, for a message or a cast. */
+        val error: Throwable get() = failure.error
+    }
+}
+
+/**
+ * Why a resolved operation's phase is failed: a closed set, so a composable
+ * branches on it without a cast. The fetch's kind carries the fetch's
+ * [Failure] whole, so the kind the failure says survives to the composable
+ * that reads the phase; the two data kinds are what the operation's
+ * directives make of data that is in the store; missing data is a
+ * `STORE_ONLY` attach the store could not answer. A composable outside every
+ * environment, and a handle whose environment ended, read the fetch's
+ * environment kind, since nothing could send a request. A `Throwable`, so a
+ * `refetch` throws it; each kind a data class, so two readings of one
+ * unchanged phase are equal.
+ */
+sealed class PhaseFailure : Exception() {
+    /** The network did not deliver, or nothing could send: the fetch's failure, with its kind. */
+    data class Fetch(val failure: Failure) : PhaseFailure()
+
+    /** `@throwOnFieldError`: uncaught field errors in the operation's own selection, or carried by the last response with no field to hold them. */
+    data class FieldErrors(val errors: baton.FieldErrors) : PhaseFailure()
+
+    /** A `@required` field that is null and bubbled to the operation's root. */
+    data class RequiredField(val requiredFieldError: RequiredFieldError) : PhaseFailure()
+
+    /** A `STORE_ONLY` attach whose data the store does not have. */
+    data class MissingData(val missingDataError: MissingDataError) : PhaseFailure()
+
+    /** The error as thrown or made: the transport's, the server's or the runtime's own. */
+    val error: Throwable
+        get() = when (this) {
+            is Fetch -> failure.error
+            is FieldErrors -> errors
+            is RequiredField -> requiredFieldError
+            is MissingData -> missingDataError
+        }
+
+    override val message: String get() = error.message ?: error.toString()
 }
 
 /**
@@ -158,7 +200,7 @@ class QueryState<Op : QueryOperation<Data>, Data : Lens> internal constructor(
     /** The handle, shared by every holder of an equal value; null outside every environment. */
     val handle: OperationHandle<Data>?,
 ) {
-    /** Loading, ready with its lens, or failed with the error that says why; failed with `EnvironmentError.NotInjected` outside every environment. */
+    /** Loading, ready with its lens, or failed with the failure that says why; failed with the fetch's environment kind, not injected, outside every environment. */
     val phase: Phase<Data> get() = handle?.phase ?: NOT_INJECTED
 
     /** The last fetch: idle, in flight, or failed with its failure and when; idle where no environment could make one. */
@@ -171,12 +213,12 @@ class QueryState<Op : QueryOperation<Data>, Data : Lens> internal constructor(
     val isStale: Boolean get() = handle?.isStale ?: false
 
     /**
-     * Fetches again and commits; the data stays visible meanwhile, and a
-     * failure is thrown here rather than shown in place of it. Outside every
-     * environment it throws `EnvironmentError.NotInjected`.
+     * Fetches again and commits; the data stays visible meanwhile, and the
+     * [PhaseFailure] the phase would show is thrown here instead. Outside
+     * every environment it throws the fetch's environment kind, not injected.
      */
     suspend fun refetch() {
-        (handle ?: throw EnvironmentError.NotInjected).refetch()
+        (handle ?: throw PhaseFailure.Fetch(Failure.Environment(EnvironmentError.NotInjected))).refetch()
     }
 
     /** After a failure, fetches again: a failure with data behind it keeps the data visible meanwhile; any other shows loading. */
@@ -185,7 +227,7 @@ class QueryState<Op : QueryOperation<Data>, Data : Lens> internal constructor(
     }
 
     private companion object {
-        val NOT_INJECTED: Phase<Nothing> = Phase.Failed(EnvironmentError.NotInjected)
+        val NOT_INJECTED: Phase<Nothing> = Phase.Failed(PhaseFailure.Fetch(Failure.Environment(EnvironmentError.NotInjected)))
     }
 }
 

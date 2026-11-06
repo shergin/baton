@@ -295,7 +295,7 @@ struct DeliveryTests {
         let handle = failing.handle(for: TestStrictQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
-        guard case .failed(let error) = handle.phase, let errors = error as? FieldErrors else {
+        guard case .failed(.fieldErrors(let errors)) = handle.phase else {
             Issue.record("expected .failed(FieldErrors), got \(handle.phase)")
             return
         }
@@ -330,7 +330,7 @@ struct DeliveryTests {
             .replacingOccurrences(of: #""name":"Rick Sanchez""#, with: #""name":null"#)
             .replacingOccurrences(of: #","hasNext":true}"#, with: #","errors":[{"message":"name hidden","path":["character","name"]}]}"#)
         environment.store.commit(try Ingest.normalize(Data(hidden.utf8), plan: plan))
-        guard case .failed(let error) = handle.phase, error is FieldErrors else { Issue.record("expected the field error, got \(handle.phase)"); return }
+        guard case .failed(.fieldErrors) = handle.phase else { Issue.record("expected the field error, got \(handle.phase)"); return }
 
         environment.store.commit(try Ingest.normalize(fixture("character-deferred-1"), plan: plan))
         guard case .ready = handle.phase else { Issue.record("expected ready again, got \(handle.phase)"); return }
@@ -365,7 +365,7 @@ struct DeliveryTests {
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
-        guard case .failed(let error) = handle.phase, let errors = error as? GraphQLErrors else {
+        guard case .failed(.fetch(.request(let errors))) = handle.phase else {
             Issue.record("expected .failed(GraphQLErrors), got \(handle.phase)")
             return
         }
@@ -402,7 +402,7 @@ struct DeliveryTests {
         let handle = environment.handle(for: TestProfileQuery(id: "1"))
         let retention = handle.retain()
         await handle.settle()
-        guard case .failed(let error) = handle.phase, let errors = error as? GraphQLErrors else {
+        guard case .failed(.fetch(.request(let errors))) = handle.phase else {
             Issue.record("expected .failed(GraphQLErrors), got \(handle.phase)")
             return
         }
@@ -1266,7 +1266,7 @@ struct DeliveryTests {
         let handle = environment.handle(for: TestList(page: 1))
         let retention = handle.retain()
         await handle.settle()
-        guard case .failed(let error as TransportError) = handle.phase else {
+        guard case .failed(.fetch(.transport(let error as TransportError))) = handle.phase else {
             Issue.record("expected a transport error, got \(handle.phase)")
             return
         }

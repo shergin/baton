@@ -2,6 +2,7 @@ package baton
 
 import baton.spec.Slots
 import baton.spec.TestHeaderQuery
+import baton.spec.TestList
 import baton.spec.TestRename
 import baton.spec.TestRequiredOrigin
 import baton.spec.TestStrictQuery
@@ -16,10 +17,13 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import kotlin.test.fail
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -41,11 +45,12 @@ class EnvironmentTests {
     fun `a query state outside every environment reads failed with the environment missing and its refetch throws it`() = runTest {
         val state = QueryState(TestHeaderQuery(id = "5"), null)
         assertNull(state.handle)
-        assertEquals(Phase.Failed(EnvironmentError.NotInjected), state.phase)
+        assertSame(EnvironmentError.NotInjected, environmentError(assertIs<Phase.Failed>(state.phase).failure))
+        assertEquals(state.phase, state.phase, "two readings of the missing environment are equal")
         assertEquals(Fetch.Idle, state.fetch)
         assertFalse(state.isRefreshing)
         assertFalse(state.isStale)
-        assertFailsWith<EnvironmentError.NotInjected> { state.refetch() }
+        assertSame(EnvironmentError.NotInjected, environmentError(assertFailsWith<PhaseFailure> { state.refetch() }))
     }
 
     @Test
@@ -62,12 +67,14 @@ class EnvironmentTests {
         val requiredNull = environment.handle(TestRequiredOrigin(id = "1"))
         val missingData = environment.handle(TestHeaderQuery(id = "999"), FetchPolicy.STORE_ONLY)
         val ready = environment.handle(TestHeaderQuery(id = "5"))
-        val handles = listOf(fieldErrors, requiredNull, missingData, ready)
+        val unanswered = environment.handle(TestList(page = 1))
+        val handles = listOf(fieldErrors, requiredNull, missingData, ready, unanswered)
         val holds = handles.map { it.retain() }
         runCurrent()
-        assertIs<FieldErrors>(assertIs<Phase.Failed>(fieldErrors.phase).error)
-        assertIs<RequiredFieldError>(assertIs<Phase.Failed>(requiredNull.phase).error)
-        assertIs<MissingDataError>(assertIs<Phase.Failed>(missingData.phase).error)
+        assertIs<PhaseFailure.Fetch>(assertIs<Phase.Failed>(unanswered.phase).failure)
+        assertIs<PhaseFailure.FieldErrors>(assertIs<Phase.Failed>(fieldErrors.phase).failure)
+        assertIs<PhaseFailure.RequiredField>(assertIs<Phase.Failed>(requiredNull.phase).failure)
+        assertIs<PhaseFailure.MissingData>(assertIs<Phase.Failed>(missingData.phase).failure)
         assertIs<Phase.Ready<*>>(ready.phase)
         for (handle in handles) {
             val first = handle.phase
@@ -75,6 +82,103 @@ class EnvironmentTests {
             assertEquals(first, second, "${handle.key} reads an equal phase twice")
         }
         for (hold in holds) hold.release()
+        environment.end()
+    }
+
+    /** An error an app's own transport throws, which no kind of Baton's names. */
+    private class Unreachable(val host: String) : Exception("$host is unreachable")
+
+    @Test
+    fun `a transport failure with no data to show fails the phase in the fetch's kind, with the error the app's transport threw inside it unchanged`() = runTest {
+        val unreachable = Unreachable("rickandmortyapi.com")
+        val environment = environment(
+            object : Transport {
+                override fun send(request: Request): Flow<ByteArray> = flow { throw unreachable }
+            },
+        )
+        val handle = environment.handle(TestHeaderQuery(id = "5"))
+        val hold = handle.retain()
+        runCurrent()
+        val failed = assertIs<Phase.Failed>(handle.phase)
+        val fetch = assertIs<PhaseFailure.Fetch>(failed.failure)
+        assertSame(unreachable, assertIs<Failure.Transport>(fetch.failure).cause, "the transport's kind carries the error as thrown")
+        assertSame(unreachable, failed.error, "the phase's error is the one the transport threw")
+        assertSame(unreachable, fetch.error)
+        assertEquals(unreachable.message, fetch.message)
+        hold.release()
+        environment.end()
+    }
+
+    @Test
+    fun `each kind of a phase failure gives the error under it as it was thrown or made, and its message is that error's`() {
+        val refused = GraphQLErrors(messages = listOf("not authorized"))
+        val request = PhaseFailure.Fetch(Failure.Request(refused))
+        assertSame(refused, request.error)
+        assertEquals("not authorized", request.message)
+
+        val gone = PhaseFailure.Fetch(Failure.Environment(EnvironmentError.Gone))
+        assertSame(EnvironmentError.Gone, gone.error)
+        assertEquals(EnvironmentError.Gone.message, gone.message)
+
+        val hidden = FieldErrors(listOf(FieldError("name hidden", "character.name")))
+        val fieldErrors = PhaseFailure.FieldErrors(hidden)
+        assertSame(hidden, fieldErrors.error)
+        assertEquals(hidden.message, fieldErrors.message)
+        assertEquals(fieldErrors, PhaseFailure.FieldErrors(FieldErrors(listOf(FieldError("name hidden", "character.name")))), "equal field errors make equal failures")
+
+        val origin = RequiredFieldError("character.origin", "TestRequiredOrigin")
+        val requiredField = PhaseFailure.RequiredField(origin)
+        assertSame(origin, requiredField.error)
+        assertEquals(origin.message, requiredField.message)
+
+        val missing = MissingDataError("TestHeaderQuery")
+        val missingData = PhaseFailure.MissingData(missing)
+        assertSame(missing, missingData.error)
+        assertEquals(missing.message, missingData.message)
+        assertSame(missing, Phase.Failed(missingData).error, "a failed phase gives the error of its failure")
+    }
+
+    @Test
+    fun `a refetch throws the failure the phase shows, and a caller catches its kind without a cast, field errors under throwOnFieldError and the transport's kind when nothing answers`() = runTest {
+        var attempts = 0
+        val transport = RecordedTransport { _ ->
+            attempts += 1
+            when (attempts) {
+                1 -> Spec.bytes("tests/character-name-shown.json")
+                2 -> Spec.bytes("tests/character-name-hidden.json")
+                else -> null
+            }
+        }
+        val environment = environment(transport)
+        val handle = environment.handle(TestStrictQuery(id = "1"))
+        val hold = handle.retain()
+        runCurrent()
+        assertIs<Phase.Ready<*>>(handle.phase)
+
+        val hidden = try {
+            handle.refetch()
+            null
+        } catch (failure: PhaseFailure) {
+            failure
+        }
+        when (hidden) {
+            is PhaseFailure.FieldErrors -> assertEquals(listOf("name hidden"), hidden.errors.errors.map { it.message })
+            else -> fail("expected the field errors, got $hidden")
+        }
+        assertEquals(Phase.Failed(hidden), handle.phase, "the phase shows the failure the refetch threw")
+
+        val unanswered = try {
+            handle.refetch()
+            null
+        } catch (failure: PhaseFailure) {
+            failure
+        }
+        when (unanswered) {
+            is PhaseFailure.Fetch -> assertEquals(0, assertIs<TransportError>(assertIs<Failure.Transport>(unanswered.failure).cause).statusCode)
+            else -> fail("expected the transport's kind, got $unanswered")
+        }
+        assertEquals(3, transport.requestCount)
+        hold.release()
         environment.end()
     }
 
@@ -168,8 +272,8 @@ class EnvironmentTests {
         assertFailsWith<EnvironmentError> { environment.fetch(TestHeaderQuery(id = "5")) }
         assertFailsWith<EnvironmentError> { environment.mutate(TestRename(id = "1", name = "Rick Prime")) }
         val handle = environment.handle(TestHeaderQuery(id = "5"))
-        assertEquals(Phase.Failed(EnvironmentError.Gone), handle.phase)
-        assertFailsWith<EnvironmentError> { handle.refetch() }
+        assertSame(EnvironmentError.Gone, environmentError(assertIs<Phase.Failed>(handle.phase).failure))
+        assertSame(EnvironmentError.Gone, environmentError(assertFailsWith<PhaseFailure> { handle.refetch() }))
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -221,3 +325,7 @@ class EnvironmentTests {
         assertEquals(1, recorded.requestCount)
     }
 }
+
+/** The environment error inside the fetch's environment kind of [failure]; fails the test on any other kind. */
+internal fun environmentError(failure: PhaseFailure): EnvironmentError =
+    assertIs<Failure.Environment>(assertIs<PhaseFailure.Fetch>(failure).failure).environmentError

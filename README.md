@@ -116,8 +116,8 @@ struct IssuesScreen: View {
             }
         case .loading:
             ProgressView()
-        case .failed(let error):
-            ErrorView(error) { issues.retry() }
+        case .failed(let failure):
+            ErrorView(failure) { issues.retry() }
         }
     }
 }
@@ -170,7 +170,7 @@ fun IssuesScreen(owner: String, name: String) {
         }
         Phase.Loading ->
             CircularProgressIndicator()
-        is Phase.Failed -> ErrorView(phase.error) {
+        is Phase.Failed -> ErrorView(phase.failure) {
             query.retry()
         }
     }

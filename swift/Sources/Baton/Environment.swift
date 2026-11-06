@@ -107,7 +107,7 @@ public final class Environment {
     /// Ends the session, once and for good: cancels every fetch and stream
     /// the environment started, drops the roots, clears every record and
     /// closes the image, giving its file back. A handle still held reads
-    /// `.failed(EnvironmentError.gone)` and tells its observers; a lens still
+    /// `.failed(.fetch(.environment(.gone)))` and tells its observers; a lens still
     /// held finds its records cleared; every later call on the environment
     /// fails with the same error, and a response that lands later reaches
     /// neither memory nor the image. The order of a sign-out is the app's:

@@ -182,7 +182,8 @@ class HttpTransportTests {
             val handle = environment.handle(TestHeaderQuery(id = "5"))
             val hold = handle.retain()
             handle.settle()
-            val errors = assertIs<GraphQLErrors>(assertIs<Phase.Failed>(handle.phase).error)
+            val fetch = assertIs<PhaseFailure.Fetch>(assertIs<Phase.Failed>(handle.phase).failure)
+            val errors = assertIs<Failure.Request>(fetch.failure).errors
             assertEquals(listOf("Cannot query field \"nope\" on type \"Query\"."), errors.messages)
             assertEquals(Variable.Object(mapOf("code" to Variable.String("GRAPHQL_VALIDATION_FAILED"))), errors.errors.single().extensions)
             assertIs<Failure.Request>(handle.fetch.failure)

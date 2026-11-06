@@ -188,7 +188,7 @@ class ComposeTests {
         }
         rule.waitForIdle()
         assertEquals(0, transport.requestCount, "a storeOnly attach asks nothing of the network")
-        assertEquals(Phase.Failed(MissingDataError("TestHeaderQuery")), phases.last())
+        assertEquals(Phase.Failed(PhaseFailure.MissingData(MissingDataError("TestHeaderQuery"))), phases.last())
         rule.runOnIdle { policy = FetchPolicy.STORE_OR_NETWORK }
         rule.waitForIdle()
         assertEquals(1, transport.requestCount, "the policy passed anew fetched on its attach")
@@ -221,7 +221,7 @@ class ComposeTests {
         rule.runOnIdle { providing = false }
         rule.waitForIdle()
         assertNull(states.last().handle, "with no environment above it no handle is made")
-        assertEquals(Phase.Failed(EnvironmentError.NotInjected), phases.last())
+        assertSame(EnvironmentError.NotInjected, environmentError(assertIs<Phase.Failed>(phases.last()).failure))
         rule.runOnIdle { assertEquals(0, handle.retainCount, "leaving the provider released the earlier hold") }
 
         rule.runOnIdle { providing = true }
@@ -242,8 +242,8 @@ class ComposeTests {
         rule.waitForIdle()
         val header = assertNotNull(remembered)
         assertNull(header.handle)
-        assertEquals(Phase.Failed(EnvironmentError.NotInjected), header.phase)
-        assertFailsWith<EnvironmentError.NotInjected> { rule.onStoreThread { header.refetch() } }
+        assertSame(EnvironmentError.NotInjected, environmentError(assertIs<Phase.Failed>(header.phase).failure))
+        assertSame(EnvironmentError.NotInjected, environmentError(assertFailsWith<PhaseFailure> { rule.onStoreThread { header.refetch() } }))
     }
 
     @Test

@@ -5,6 +5,18 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The phase's failed case carries a closed set. `Phase.failed(PhaseFailure)`
+  in Swift and `Phase.Failed(failure: PhaseFailure)` in Kotlin, with four
+  kinds: the fetch's `Failure`, kept whole so its own kind survives to the
+  body; the `FieldErrors` of `@throwOnFieldError`; the `RequiredFieldError`
+  of a bubbling root; the `MissingDataError` of a `storeOnly` attach. A view
+  outside every environment, and a handle whose environment ended, read the
+  fetch's environment kind. `refetch()` throws the phase failure the phase
+  would show, typed in Swift; `PhaseFailure.error` is the error as thrown,
+  and Kotlin's `Phase.Failed.error` reads through it, so a view that showed
+  a message shows the same one. The record *A failure says its kind* closes
+  the point it had left open, and the reason views had to cast.
+
 - The `onError` value `ABORT` is `HALT`, in `baton.json`, in Swift's
   `ErrorBehavior.halt` and in Kotlin's `ErrorBehavior.HALT`: the
   specification's proposal (graphql-spec#1163) renamed it, and Baton

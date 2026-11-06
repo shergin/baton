@@ -90,7 +90,7 @@ struct ScriptedTransportTests {
         let handle = environment.handle(for: TestHeaderQuery(id: "5"))
         let retention = handle.retain()
         await handle.settle()
-        guard case .failed(let error as TransportError) = handle.phase else {
+        guard case .failed(.fetch(.transport(let error as TransportError))) = handle.phase else {
             Issue.record("expected a transport error, got \(handle.phase)")
             return
         }

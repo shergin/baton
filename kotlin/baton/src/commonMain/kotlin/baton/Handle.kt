@@ -109,18 +109,18 @@ class OperationHandle<Data : Lens> internal constructor(
      */
     val phase: Phase<Data>
         get() {
-            if (ended) return Phase.Failed(EnvironmentError.Gone)
+            if (ended) return Phase.Failed(PhaseFailure.Fetch(Failure.Environment(EnvironmentError.Gone)))
             if (!root.present || awaitsOwnResponse) {
-                (fetch as? Fetch.Failed)?.let { return Phase.Failed(it.failure.error) }
-                if (missingData) return Phase.Failed(MissingDataError(type.name))
+                (fetch as? Fetch.Failed)?.let { return Phase.Failed(PhaseFailure.Fetch(it.failure)) }
+                if (missingData) return Phase.Failed(PhaseFailure.MissingData(MissingDataError(type.name)))
                 return Phase.Loading
             }
             if (type.throwsOnFieldError) {
                 val errors = unplaced + ((root.verdict as? Store.Verdict.FieldErrors)?.errors ?: emptyList())
-                if (errors.isNotEmpty()) return Phase.Failed(FieldErrors(errors))
+                if (errors.isNotEmpty()) return Phase.Failed(PhaseFailure.FieldErrors(FieldErrors(errors)))
             }
             if (type.bubbles) {
-                (root.verdict as? Store.Verdict.RequiredMissing)?.let { return Phase.Failed(RequiredFieldError(it.path, type.name)) }
+                (root.verdict as? Store.Verdict.RequiredMissing)?.let { return Phase.Failed(PhaseFailure.RequiredField(RequiredFieldError(it.path, type.name))) }
             }
             return Phase.Ready(data)
         }
@@ -213,7 +213,7 @@ class OperationHandle<Data : Lens> internal constructor(
             return
         }
         fetch = Fetch.InFlight
-        lateinit var current: Deferred<Throwable?>
+        lateinit var current: Deferred<PhaseFailure?>
         current = environment.scope.async(start = CoroutineStart.LAZY) { run(current) }
         job = current
         current.start()
@@ -222,10 +222,10 @@ class OperationHandle<Data : Lens> internal constructor(
     /**
      * The fetch itself, its outcome recorded unless a later fetch, an
      * eviction or the end took the handle over: their state is theirs.
-     * Returns what a `refetch` throws.
+     * Returns what a `refetch` throws: the failure the phase would show.
      */
-    private suspend fun run(current: Deferred<Throwable?>): Throwable? {
-        var failure: Throwable? = null
+    private suspend fun run(current: Deferred<PhaseFailure?>): PhaseFailure? {
+        var thrown: Throwable? = null
         try {
             val committed = environment.fetch(type, operation.variables, root.resolved) { first ->
                 // A deferred response shows its first part at once; it is fetched, and fresh, once the stream completes.
@@ -243,30 +243,31 @@ class OperationHandle<Data : Lens> internal constructor(
             fetch = Fetch.Idle
             return null
         } catch (error: Throwable) {
-            failure = error
+            thrown = error
         }
         if (job !== current) return null
         job = null
-        if (failure == null) {
+        if (thrown == null) {
             // The door dated the root and made its data present.
             fetch = Fetch.Idle
             awaitsOwnResponse = false
             // A response whose field errors fail the operation fails its refetch the same way.
-            return (phase as? Phase.Failed)?.error
+            return (phase as? Phase.Failed)?.failure
         }
-        // Data behind the failure stays visible; with nothing to show, the phase reads the failure.
-        fetch = Fetch.Failed(Failure.of(failure), store.now)
-        return failure
+        // Data behind the failure stays visible; with nothing to show, the phase reads the failure, with its kind.
+        val failure = Failure.of(thrown)
+        fetch = Fetch.Failed(failure, store.now)
+        return PhaseFailure.Fetch(failure)
     }
 
     /**
      * Fetches again and waits for the result; the data stays visible
      * meanwhile, and a failure is thrown rather than shown in its place. A
      * refetch that a later fetch superseded returns without one; after the
-     * environment's end it throws `EnvironmentError.Gone`.
+     * environment's end it throws the fetch's environment kind, gone.
      */
     suspend fun refetch() {
-        if (ended || environment.ended) throw EnvironmentError.Gone
+        if (ended || environment.ended) throw PhaseFailure.Fetch(Failure.Environment(EnvironmentError.Gone))
         start()
         val current = job ?: return
         current.join()

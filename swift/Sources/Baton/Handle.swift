@@ -65,8 +65,9 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle, Store.Judge {
     @ObservationIgnored let key: String
     /// The handle's root among the store's: what keeps its records alive.
     @ObservationIgnored let root: Store.Root
-    /// The fetch in flight; its value is the failure it ended with.
-    @ObservationIgnored private var task: Task<(any Error)?, Never>?
+    /// The fetch in flight; its value is the failure it ended with, which a
+    /// refetch throws.
+    @ObservationIgnored private var task: Task<PhaseFailure?, Never>?
     @ObservationIgnored var resolved: ResolvedSelection { root.resolved }
     /// The scope every lens of the handle reads in.
     @ObservationIgnored private let owner: Owner
@@ -119,19 +120,19 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle, Store.Judge {
     /// data comes; a `networkOnly` attach nobody shows waits for its own
     /// response.
     public var phase: Phase<Op.Data> {
-        if ended { return .failed(EnvironmentError.gone) }
+        if ended { return .failed(.fetch(.environment(.gone))) }
         guard root.present, !awaitsOwnResponse else {
-            if case .failed(let failure, _) = fetch { return .failed(failure.error) }
-            if missingData { return .failed(MissingDataError(operationName: Op.name)) }
+            if case .failed(let failure, _) = fetch { return .failed(.fetch(failure)) }
+            if missingData { return .failed(.missingData(MissingDataError(operationName: Op.name))) }
             return .loading
         }
         if Op.throwsOnFieldError {
             var errors = unplaced
             if case .fieldErrors(let found) = root.verdict { errors += found }
-            if !errors.isEmpty { return .failed(FieldErrors(errors)) }
+            if !errors.isEmpty { return .failed(.fieldErrors(FieldErrors(errors))) }
         }
         if Op.bubbles, case .requiredMissing(let path) = root.verdict {
-            return .failed(RequiredFieldError(bubbledToRootOf: Op.name, path: path))
+            return .failed(.requiredField(RequiredFieldError(bubbledToRootOf: Op.name, path: path)))
         }
         return .ready(data)
     }
@@ -251,7 +252,7 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle, Store.Judge {
         fetch = .inFlight
         task = Task { [weak self] in
             guard let self, let environment else { return nil }
-            var failure: (any Error)?
+            var thrown: (any Error)?
             do {
                 let committed = try await environment.fetch(operation, resolved: resolved) { [weak self] firstPart in
                     // A deferred response renders its first part at once, by
@@ -265,41 +266,43 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle, Store.Judge {
                 }
                 if !Task.isCancelled { unplaced = committed.unplaced }
             } catch {
-                failure = error
+                thrown = error
             }
             // A cancelled fetch was superseded or evicted. The handle's state
             // belongs to whoever cancelled it, however the fetch ended.
             guard !Task.isCancelled else { return nil }
             task = nil
-            switch failure {
-            case nil:
+            guard let thrown else {
                 // The door dated the root and made its data present.
                 fetch = .idle
                 awaitsOwnResponse = false
                 // A response whose field errors fail the operation fails its
                 // refetch the same way.
-                if case .failed(let error) = phase { return error }
-            case is CancellationError:
+                if case .failed(let failure) = phase { return failure }
+                return nil
+            }
+            if thrown is CancellationError {
                 // The transport cancelled its own work: nothing to show.
                 fetch = .idle
                 return nil
-            case let error?:
-                // The fetch records its failure and when, for every view of
-                // the handle; `refetch()` throws the error as well. Data
-                // behind the failure stays visible, and so does a failure the
-                // data is in the store for, which a later commit or attach
-                // can still settle by that data; with nothing to show, the
-                // phase reads the failure.
-                fetch = .failed(Failure(error), at: store.now)
             }
-            return failure
+            // The fetch records its failure and when, for every view of the
+            // handle; `refetch()` throws it as well, with its kind. Data
+            // behind the failure stays visible, and so does a failure the
+            // data is in the store for, which a later commit or attach can
+            // still settle by that data; with nothing to show, the phase
+            // reads the failure.
+            let failure = Failure(thrown)
+            fetch = .failed(failure, at: store.now)
+            return .fetch(failure)
         }
     }
 
     /// Fetches again and waits for the result; the data stays visible
-    /// meanwhile, and a failure is thrown rather than shown in its place. A
-    /// refetch that a later fetch superseded returns without one.
-    public func refetch() async throws {
+    /// meanwhile, and the failure the phase would show is thrown in its
+    /// place, with its kind. A refetch that a later fetch superseded returns
+    /// without one.
+    public func refetch() async throws(PhaseFailure) {
         start()
         if let failure = await task?.value { throw failure }
     }

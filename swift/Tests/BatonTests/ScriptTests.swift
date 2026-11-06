@@ -563,7 +563,20 @@ final class ScriptRun {
         case is GraphQLErrors: "request"
         case is IngestError: "malformed"
         case let failure as Failure: kind(of: failure)
+        case let failure as PhaseFailure: kind(of: failure)
         default: "transport"
+        }
+    }
+
+    /// A phase's failure as a script spells it: its own kind, and within the
+    /// fetch's kind the fetch's, with an ended environment spelled apart.
+    static func kind(of failure: PhaseFailure) -> String {
+        switch failure {
+        case .fetch(.environment(.gone)): "gone"
+        case .fetch(let failure): kind(of: failure)
+        case .fieldErrors: "fieldErrors"
+        case .requiredField: "requiredField"
+        case .missingData: "missingData"
         }
     }
 
@@ -671,7 +684,7 @@ final class LiveHandle {
                 switch handle.phase {
                 case .loading: .plain("loading")
                 case .ready: .plain("ready")
-                case .failed(let error): .tagged("failed", ScriptRun.kind(of: error))
+                case .failed(let failure): .tagged("failed", ScriptRun.kind(of: failure))
                 }
             },
             fetch: {

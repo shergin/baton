@@ -180,7 +180,7 @@ struct LifetimeTests {
         #expect(stale.character?.testHeader.name ?? "" == "")
         #expect(!misses.reads.isEmpty, "the read of the collected field was reported")
         let again = environment.handle(for: TestHeaderQuery(id: "11"), fetchPolicy: .storeOnly)
-        guard case .failed(let error) = again.phase, error is MissingDataError else {
+        guard case .failed(.missingData) = again.phase else {
             Issue.record("expected the collected lookup to be missing, got \(again.phase)")
             return
         }
@@ -216,7 +216,7 @@ struct LifetimeTests {
         guard case .ready = networkOnly.phase else { Issue.record("networkOnly should be ready after its fetch"); return }
 
         let offline = environment.handle(for: TestHeaderQuery(id: "999"), fetchPolicy: .storeOnly)
-        guard case .failed(let error) = offline.phase, error is MissingDataError else {
+        guard case .failed(.missingData) = offline.phase else {
             Issue.record("storeOnly must fail without data")
             return
         }
@@ -582,7 +582,11 @@ struct LifetimeTests {
         try await handle.refetch()
         #expect(counter.fired == 0, "ready again over the same root is no change")
 
-        await #expect(throws: TransportError.self) { try await handle.refetch() }
+        let thrown = await #expect(throws: PhaseFailure.self) { try await handle.refetch() }
+        guard case .fetch(.transport(_ as TransportError))? = thrown else {
+            Issue.record("expected the transport's failure, got \(String(describing: thrown))")
+            return
+        }
         #expect(counter.fired == 0)
         guard case .ready = handle.phase else { Issue.record("the data stays visible, got \(handle.phase)"); return }
         #expect(!handle.isRefreshing)
@@ -733,7 +737,7 @@ struct LifetimeTests {
         #expect(!ready.isRefreshing, "a second refetch does not hang either")
 
         empty.retry()
-        guard case .failed(let error as EnvironmentError) = empty.phase, error == .gone else {
+        guard case .failed(.fetch(.environment(.gone))) = empty.phase else {
             Issue.record("a retry with nothing to fetch with fails on the environment it lost, got \(empty.phase)")
             return
         }
@@ -782,7 +786,7 @@ struct LifetimeTests {
             Issue.record("no environment, no handle: expected not injected, got \(query.resolution)")
             return
         }
-        guard case .failed(let error as EnvironmentError) = query.phase, error == .notInjected else {
+        guard case .failed(.fetch(.environment(.notInjected))) = query.phase else {
             Issue.record("expected the missing environment, got \(query.phase)")
             return
         }
@@ -791,9 +795,16 @@ struct LifetimeTests {
             return
         }
         #expect(!query.isRefreshing)
-        await #expect(throws: EnvironmentError.notInjected) { try await query.refetch() }
+        do throws(PhaseFailure) {
+            try await query.refetch()
+            Issue.record("a refetch outside every environment threw nothing")
+        } catch .fetch(.environment(let error)) {
+            #expect(error == .notInjected)
+        } catch {
+            Issue.record("expected the missing environment, got \(error)")
+        }
         query.retry()
-        guard case .failed(let retried as EnvironmentError) = query.phase, retried == .notInjected else {
+        guard case .failed(.fetch(.environment(.notInjected))) = query.phase else {
             Issue.record("a retry has nothing to fetch with and changes nothing, got \(query.phase)")
             return
         }
@@ -1079,7 +1090,7 @@ struct LifetimeTests {
 
         await environment.end()
         #expect(notifications.fired == 1, "the phase told its observer")
-        guard case .failed(let error as EnvironmentError) = handle.phase, error == .gone else {
+        guard case .failed(.fetch(.environment(.gone))) = handle.phase else {
             Issue.record("expected the phase to fail on gone, got \(handle.phase)")
             return
         }
@@ -1114,7 +1125,7 @@ struct LifetimeTests {
 
         let handle = environment.handle(for: TestList(page: 1))
         let retention = handle.retain()
-        guard case .failed(let error as EnvironmentError) = handle.phase, error == .gone else {
+        guard case .failed(.fetch(.environment(.gone))) = handle.phase else {
             Issue.record("expected a handle made after the end to fail on gone, got \(handle.phase)")
             return
         }

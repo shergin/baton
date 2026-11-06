@@ -49,7 +49,8 @@ class OutsideViewsTests {
         val environment = environment(transport)
 
         val handle = environment.handle(TestHeaderQuery(id = "5"), FetchPolicy.STORE_ONLY)
-        assertIs<MissingDataError>(assertIs<Phase.Failed>(handle.phase).error)
+        val missing = assertIs<PhaseFailure.MissingData>(assertIs<Phase.Failed>(handle.phase).failure)
+        assertEquals(MissingDataError("TestHeaderQuery"), missing.missingDataError)
         assertEquals(0, transport.requestCount)
         environment.end()
     }

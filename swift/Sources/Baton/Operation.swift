@@ -52,8 +52,8 @@ public protocol Operation: Hashable, Sendable {
 /// reads through. Not injected: a view outside every
 /// `.environment(\.baton, ...)` asked, and there is no environment to make
 /// a handle in, so the value reads as failed with
-/// `EnvironmentError.notInjected`; nothing is fetched, and no store stands
-/// in. The absence of an environment is not a session.
+/// the fetch's environment kind, not injected; nothing is fetched, and no
+/// store stands in. The absence of an environment is not a session.
 @_spi(Generated)
 public enum Resolution<Handle: Sendable>: Sendable {
     case unresolved
@@ -135,7 +135,52 @@ extension Operation {
 public enum Phase<Data> {
     case loading
     case ready(Data)
-    case failed(any Error)
+    /// No data to show, or data that fails the operation's own directives,
+    /// for one of a closed set of reasons.
+    case failed(PhaseFailure)
+}
+
+/// Why a resolved operation's phase is failed: a closed set, so a body
+/// switches it without a cast. The fetch's kind carries the fetch's
+/// `Failure` whole, so the kind the failure says survives to the body that
+/// reads the phase; the two data kinds are what the operation's directives
+/// make of data that is in the store; missing data is a `storeOnly` attach
+/// the store could not answer. A view outside every environment, and a
+/// handle whose environment ended, read the fetch's environment kind, since
+/// nothing could send a request.
+public enum PhaseFailure: Error, Sendable, CustomStringConvertible, LocalizedError {
+    /// The network did not deliver, or nothing could send: the fetch's
+    /// failure, with its kind.
+    case fetch(Failure)
+    /// `@throwOnFieldError`: uncaught field errors in the operation's own
+    /// selection, or carried by the last response with no field to hold them.
+    case fieldErrors(FieldErrors)
+    /// A `@required` field that is null and bubbled to the operation's root.
+    case requiredField(RequiredFieldError)
+    /// A `storeOnly` attach whose data the store does not have.
+    case missingData(MissingDataError)
+
+    /// The error as thrown or made: the transport's, the server's or the
+    /// runtime's own, for a message, or for a cast an app still wants.
+    public var error: any Error {
+        switch self {
+        case .fetch(let failure): failure.error
+        case .fieldErrors(let errors): errors
+        case .requiredField(let error): error
+        case .missingData(let error): error
+        }
+    }
+
+    public var description: String {
+        switch self {
+        case .fetch(let failure): failure.description
+        case .fieldErrors(let errors): errors.description
+        case .requiredField(let error): error.description
+        case .missingData(let error): error.description
+        }
+    }
+
+    public var errorDescription: String? { description }
 }
 
 /// The last fetch of a handle, as a value read beside the phase: idle, in
@@ -163,12 +208,12 @@ public struct MissingDataError: Error, CustomStringConvertible, Sendable, Locali
 }
 
 extension Query {
-    /// Loading until resolved inside a view; failed with
-    /// `EnvironmentError.notInjected` in a view outside every environment.
+    /// Loading until resolved inside a view; failed with the fetch's
+    /// environment kind, not injected, in a view outside every environment.
     @MainActor public var phase: Phase<Data> {
         switch resolution {
         case .unresolved: .loading
-        case .notInjected: .failed(EnvironmentError.notInjected)
+        case .notInjected: .failed(.fetch(.environment(.notInjected)))
         case .resolved(let handle): handle.phase
         }
     }
@@ -183,13 +228,13 @@ extension Query {
     /// Whether the data predates an invalidation or the cache expiration.
     @MainActor public var isStale: Bool { resolution.handle?.isStale ?? false }
 
-    /// Fetches again and commits; the data stays visible meanwhile, and a
-    /// failure is thrown here rather than shown in place of it. Outside
-    /// every environment it throws `EnvironmentError.notInjected`.
-    @MainActor public func refetch() async throws {
+    /// Fetches again and commits; the data stays visible meanwhile, and the
+    /// failure the phase would show is thrown here instead. Outside every
+    /// environment it throws the fetch's environment kind, not injected.
+    @MainActor public func refetch() async throws(PhaseFailure) {
         switch resolution {
         case .unresolved: return
-        case .notInjected: throw EnvironmentError.notInjected
+        case .notInjected: throw .fetch(.environment(.notInjected))
         case .resolved(let handle): try await handle.refetch()
         }
     }

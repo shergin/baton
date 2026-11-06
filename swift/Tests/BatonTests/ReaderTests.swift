@@ -175,7 +175,7 @@ struct ReaderTests {
         #expect(environment.store.existing("Location:L9")?.deleted == true)
         #expect(!TestRequiredOrigin.Data.Character.satisfied(Anchor(record: character, variables: .none, store: environment.store)))
         #expect(TestThrowingOrigin_character.fieldErrors(throwing).map(\.path) == ["origin"])
-        guard case .failed(let error) = handle.phase, error is RequiredFieldError else {
+        guard case .failed(.requiredField) = handle.phase else {
             Issue.record("expected the bubbling operation to fail, got \(handle.phase)")
             return
         }

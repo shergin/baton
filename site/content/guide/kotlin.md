@@ -19,7 +19,7 @@ A document with a variable is written in a raw string delimited by `$$"""` and `
 | A mutation | `@Mutation(…) var addComment: CommentComposerAddComment.Action` | `val addComment = rememberMutation(CommentComposerAddComment)` |
 | Calling it | `try await addComment(input: …, connections: [id], optimistic: …)` | `addComment(input = …, connections = listOf(id), optimistic = …)` in a coroutine |
 | A subscription | `@Subscription(…) var noteAdded: NoteAdded` | `rememberSubscription(NoteAdded(…))` |
-| The phase | `.loading`, `.ready(data)`, `.failed(error)` | `Phase.Loading`, `Phase.Ready(data)`, `Phase.Failed(error)` |
+| The phase | `.loading`, `.ready(data)`, `.failed(failure)`, the failure one of four kinds | `Phase.Loading`, `Phase.Ready(data)`, `Phase.Failed(failure)`, the same kinds |
 | `@catch` | A `Result<T, FieldErrors>` | A `kotlin.Result<T>` whose failure is a `FieldErrors` |
 | `@required(action: THROW)` | A `get throws` accessor | A getter that throws `RequiredFieldError` |
 | A plural link | `Baton.List`, a collection of lenses identifiable by record | `LensList`, a `List` of lenses; key items by `recordID.key` |

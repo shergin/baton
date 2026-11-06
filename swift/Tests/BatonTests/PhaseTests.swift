@@ -24,7 +24,7 @@ struct PhaseTests {
         let handle = environment.handle(for: TestStrictQuery(id: "1"))
         let retention = handle.retain()
         await settled(handle)
-        guard case .failed(let error as FieldErrors) = handle.phase else {
+        guard case .failed(.fieldErrors(let error)) = handle.phase else {
             Issue.record("expected the unplaced error, got \(handle.phase)")
             return
         }
@@ -44,7 +44,7 @@ struct PhaseTests {
         let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
         let retention = handle.retain()
         await settled(handle)
-        guard case .failed(let error as RequiredFieldError) = handle.phase else {
+        guard case .failed(.requiredField(let error)) = handle.phase else {
             Issue.record("expected the required origin to fail the operation, got \(handle.phase)")
             return
         }
@@ -59,7 +59,7 @@ struct PhaseTests {
         let root = absent.handle(for: TestRequiredOrigin(id: "1"))
         let rootRetention = root.retain()
         await settled(root)
-        guard case .failed(let rootError as RequiredFieldError) = root.phase else {
+        guard case .failed(.requiredField(let rootError)) = root.phase else {
             Issue.record("expected the required character to fail the operation, got \(root.phase)")
             return
         }
@@ -77,7 +77,7 @@ struct PhaseTests {
         let handle = environment.handle(for: TestLoggedOrigin(id: "1"))
         let retention = handle.retain()
         await settled(handle)
-        guard case .failed(let error as RequiredFieldError) = handle.phase else {
+        guard case .failed(.requiredField(let error)) = handle.phase else {
             Issue.record("expected the required origin to fail the operation, got \(handle.phase)")
             return
         }
@@ -93,7 +93,7 @@ struct PhaseTests {
         let handle = environment.handle(for: TestRequiredOrigin(id: "1"))
         let retention = handle.retain()
         await settled(handle)
-        guard case .failed(let error) = handle.phase, error is RequiredFieldError else {
+        guard case .failed(.requiredField) = handle.phase else {
             Issue.record("expected the required origin to fail the operation, got \(handle.phase)")
             return
         }
@@ -114,7 +114,7 @@ struct PhaseTests {
         let handle = environment.handle(for: TestStrictQuery(id: "1"))
         let retention = handle.retain()
         await settled(handle)
-        guard case .failed(let error as FieldErrors) = handle.phase else {
+        guard case .failed(.fieldErrors(let error)) = handle.phase else {
             Issue.record("expected the unplaced error, got \(handle.phase)")
             return
         }
@@ -143,7 +143,7 @@ struct PhaseTests {
         let handle = environment.handle(for: TestStrictQuery(id: "1"))
         let retention = handle.retain()
         await settled(handle)
-        guard case .failed(let error) = handle.phase, error is FieldErrors else {
+        guard case .failed(.fieldErrors) = handle.phase else {
             Issue.record("expected the field error, got \(handle.phase)")
             return
         }
@@ -237,7 +237,7 @@ struct PhaseTests {
         handle.retry()
         await handle.settle()
         #expect(transport.requestCount == 2)
-        guard case .failed(let error as FieldErrors) = handle.phase else {
+        guard case .failed(.fieldErrors(let error)) = handle.phase else {
             Issue.record("expected the field error the store still holds, got \(handle.phase)")
             return
         }
@@ -303,7 +303,7 @@ struct PhaseTests {
         environment.invalidate()
         await handle.settle()
         #expect(transport.requestCount == 2)
-        guard case .failed(let error as FieldErrors) = handle.phase else {
+        guard case .failed(.fieldErrors(let error)) = handle.phase else {
             Issue.record("expected the field error the store still holds, got \(handle.phase)")
             return
         }
@@ -376,9 +376,13 @@ struct PhaseTests {
             Issue.record("expected ready, got \(handle.phase)")
             return
         }
-        let thrown = await #expect(throws: FieldErrors.self) { try await handle.refetch() }
-        #expect(thrown?.errors.map(\.message) == ["name hidden"])
-        guard case .failed(let error) = handle.phase, error is FieldErrors else {
+        let thrown = await #expect(throws: PhaseFailure.self) { try await handle.refetch() }
+        guard case .fieldErrors(let errors)? = thrown else {
+            Issue.record("expected the refetch to throw the field errors, got \(String(describing: thrown))")
+            return
+        }
+        #expect(errors.errors.map(\.message) == ["name hidden"])
+        guard case .failed(.fieldErrors) = handle.phase else {
             Issue.record("expected the field error, got \(handle.phase)")
             return
         }
@@ -421,15 +425,15 @@ struct PhaseTests {
 
         let attached = environment.handle(for: TestStrictQuery(id: "1"))
         #expect(attached === strict)
-        if case .failed(let error as FieldErrors) = attached.phase {
+        if case .failed(.fieldErrors(let error)) = attached.phase {
             #expect(error.errors.map(\.message) == ["name hidden"])
         } else {
             Issue.record("expected the committed error, got \(attached.phase)")
         }
         let bubbled = environment.handle(for: TestRequiredOrigin(id: "1"))
         #expect(bubbled === bubbling)
-        if case .failed(let error) = bubbled.phase {
-            #expect(error is RequiredFieldError)
+        if case .failed(.requiredField(let error)) = bubbled.phase {
+            #expect(error.path == "character.origin")
         } else {
             Issue.record("expected the required origin to fail the operation, got \(bubbled.phase)")
         }
@@ -493,7 +497,7 @@ struct PhaseTests {
         environment.store.commit(try Ingest.normalize(fixture("character-name-hidden"), plan: plan))
         let again = environment.handle(for: TestStrictQuery(id: "1"), fetchPolicy: .storeOnly)
         #expect(again === handle)
-        guard case .failed(let error as FieldErrors) = again.phase else {
+        guard case .failed(.fieldErrors(let error)) = again.phase else {
             Issue.record("expected the committed error, got \(again.phase)")
             return
         }
@@ -516,7 +520,7 @@ struct PhaseTests {
         environment.store.commit(try Ingest.normalize(fixture("required-origin-1-null"), plan: plan))
         let again = environment.handle(for: TestRequiredOrigin(id: "1"), fetchPolicy: .storeOnly)
         #expect(again === handle)
-        guard case .failed(let error) = again.phase, error is RequiredFieldError else {
+        guard case .failed(.requiredField) = again.phase else {
             Issue.record("expected the required origin to fail the operation, got \(again.phase)")
             return
         }
@@ -531,7 +535,7 @@ struct PhaseTests {
             let handle = environment.handle(for: TestStrictDeferred(id: "1"))
             let retention = handle.retain()
             await settled(handle)
-            guard case .failed(let error as FieldErrors) = handle.phase else {
+            guard case .failed(.fieldErrors(let error)) = handle.phase else {
                 Issue.record("expected the first part's error, got \(handle.phase)")
                 return
             }
@@ -557,7 +561,7 @@ struct PhaseTests {
         transport.deliver(fixture("strict-deferred-1-unplaced-error"), to: 0)
         transport.deliver(fixture("strict-deferred-2"), to: 0)
         await handle.settle()
-        guard case .failed(let error as FieldErrors) = handle.phase else {
+        guard case .failed(.fieldErrors(let error)) = handle.phase else {
             Issue.record("expected the unplaced error, got \(handle.phase)")
             return
         }
@@ -595,7 +599,7 @@ struct PhaseTests {
         }
         let own = TestStrictOrigin.plan.resolve(TestStrictOrigin(id: "1").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("strict-origin-1-moved"), plan: own))
-        guard case .failed(let error as FieldErrors) = handle.phase else {
+        guard case .failed(.fieldErrors(let error)) = handle.phase else {
             Issue.record("expected the moved-in error, got \(handle.phase)")
             return
         }
@@ -624,7 +628,7 @@ struct PhaseTests {
         // the error already.
         let own = TestStrictEpisodes.plan.resolve(TestStrictEpisodes(id: "1").variables, in: environment.store.keys)
         environment.store.commit(try Ingest.normalize(fixture("strict-episodes-1-moved"), plan: own))
-        guard case .failed(let error as FieldErrors) = handle.phase else {
+        guard case .failed(.fieldErrors(let error)) = handle.phase else {
             Issue.record("expected the moved-in error, got \(handle.phase)")
             return
         }
@@ -644,7 +648,7 @@ struct PhaseTests {
             return
         }
         environment.store.commit(try Ingest.normalize(fixture("required-origin-1-null"), plan: TestRequiredOrigin.plan.resolve(TestRequiredOrigin(id: "1").variables, in: environment.store.keys)))
-        guard case .failed(let error) = handle.phase, error is RequiredFieldError else {
+        guard case .failed(.requiredField) = handle.phase else {
             Issue.record("expected the required origin to fail the operation, got \(handle.phase)")
             return
         }
@@ -678,7 +682,7 @@ struct PhaseTests {
         let environment = Environment(transport: SilentTransport())
         environment.log = nil
         let handle = environment.handle(for: TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly)
-        guard case .failed(let missing as MissingDataError) = handle.phase else {
+        guard case .failed(.missingData(let missing)) = handle.phase else {
             Issue.record("expected missing data, got \(handle.phase)")
             return
         }
@@ -706,8 +710,12 @@ struct PhaseTests {
         }
 
         let before = ContinuousClock.now
-        let thrown = await #expect(throws: TransportError.self) { try await handle.refetch() }
-        #expect(thrown?.statusCode == 0, "the refetch throws the error as the transport threw it")
+        let failure = await #expect(throws: PhaseFailure.self) { try await handle.refetch() }
+        guard case .fetch(.transport(let thrown as TransportError))? = failure else {
+            Issue.record("expected the refetch to throw the transport's kind, got \(String(describing: failure))")
+            return
+        }
+        #expect(thrown.statusCode == 0, "the refetch throws the error as the transport threw it")
         guard case .ready = handle.phase else {
             Issue.record("the data stays visible, got \(handle.phase)")
             return
@@ -716,8 +724,8 @@ struct PhaseTests {
             Issue.record("expected a transport failure, got \(handle.fetch)")
             return
         }
-        #expect(error.statusCode == thrown?.statusCode)
-        #expect(error.body == thrown?.body)
+        #expect(error.statusCode == thrown.statusCode)
+        #expect(error.body == thrown.body)
         #expect(instant >= before)
         #expect(instant <= .now)
         #expect(handle.fetch.failure?.error is TransportError)
@@ -742,7 +750,7 @@ struct PhaseTests {
         let retention = handle.retain()
         defer { withExtendedLifetime(retention) {} }
         await settled(handle)
-        guard case .failed(let thrown as TransportError) = handle.phase else {
+        guard case .failed(.fetch(.transport(let thrown as TransportError))) = handle.phase else {
             Issue.record("expected the transport's error, got \(handle.phase)")
             return
         }
@@ -777,8 +785,8 @@ struct PhaseTests {
         } else {
             Issue.record("expected a request failure, got \(request.fetch)")
         }
-        if case .failed(let error) = request.phase {
-            #expect(error is GraphQLErrors)
+        if case .failed(.fetch(.request(let errors))) = request.phase {
+            #expect(errors.messages == ["not authorized"])
         } else {
             Issue.record("expected the phase to fail on the errors, got \(request.phase)")
         }
@@ -794,8 +802,8 @@ struct PhaseTests {
         } else {
             Issue.record("expected a malformed response, got \(malformed.fetch)")
         }
-        if case .failed(let error) = malformed.phase {
-            #expect(error is IngestError)
+        if case .failed(.fetch(.malformed(let error))) = malformed.phase {
+            #expect((malformed.fetch.failure?.error as? IngestError)?.message == error.message)
         } else {
             Issue.record("expected the phase to fail on the response, got \(malformed.phase)")
         }
@@ -841,7 +849,7 @@ struct PhaseTests {
             let handle = environment.handle(for: TestHeaderQuery(id: "5"))
             let retention = handle.retain()
             await handle.settle()
-            guard case .failed(let error as IngestError) = handle.phase else {
+            guard case .failed(.fetch(.malformed(let error))) = handle.phase else {
                 Issue.record("expected the phase to fail on the response, got \(handle.phase)")
                 _ = consume retention
                 continue
@@ -1030,7 +1038,7 @@ struct PhaseTests {
         environment.store.commit(try Ingest.normalize(fixture("character-name-hidden"), plan: plan))
         await drain()
         #expect(wakes.phase == 1)
-        guard case .failed(let error as FieldErrors) = handle.phase else {
+        guard case .failed(.fieldErrors(let error)) = handle.phase else {
             Issue.record("expected the field error the commit landed, got \(handle.phase)")
             return
         }
@@ -1218,5 +1226,109 @@ struct PhaseTests {
         #expect(transport.requestCount == 1, "a lens with no root heals nothing")
         #expect(!handle.isStale, "the operation the lens reads was not marked stale")
         withExtendedLifetime(retention) {}
+    }
+
+    /// An error an app's own transport throws, which no kind of Baton's names.
+    struct Unreachable: Error, Equatable {
+        let host: String
+    }
+
+    @Test("a transport failure with no data to show fails the phase in the fetch's kind, with the error the app's transport threw inside it unchanged")
+    func aTransportFailureWithoutDataReadsTheFetchKind() async throws {
+        let unreachable = Unreachable(host: "rickandmortyapi.com")
+        let environment = Environment(transport: LogTests.Throwing(error: unreachable))
+        environment.log = nil
+        let handle = environment.handle(for: TestHeaderQuery(id: "5"))
+        let retention = handle.retain()
+        defer { withExtendedLifetime(retention) {} }
+        await handle.settle()
+        guard case .failed(.fetch(.transport(let thrown as Unreachable))) = handle.phase else {
+            Issue.record("expected the transport's kind with the app's error inside, got \(handle.phase)")
+            return
+        }
+        #expect(thrown == unreachable)
+        guard case .failed(let failure) = handle.phase else { return }
+        #expect(failure.error as? Unreachable == unreachable, "the failure's error is the one the transport threw")
+        #expect(failure.description == Failure.transport(unreachable).description)
+        #expect(failure.localizedDescription == failure.description)
+    }
+
+    @Test("each kind of a phase failure gives the error under it as it was thrown or made, and describes itself by that error")
+    func aPhaseFailureGivesTheErrorUnderIt() async throws {
+        let refused = GraphQLErrors(messages: ["not authorized"])
+        let request = PhaseFailure.fetch(.request(refused))
+        #expect((request.error as? GraphQLErrors)?.messages == ["not authorized"])
+        #expect(request.description == Failure.request(refused).description)
+
+        let gone = PhaseFailure.fetch(.environment(.gone))
+        #expect(gone.error as? EnvironmentError == .gone)
+        #expect(gone.description == EnvironmentError.gone.description)
+
+        let hidden = FieldErrors([FieldError(message: "name hidden", path: "character.name")])
+        let fieldErrors = PhaseFailure.fieldErrors(hidden)
+        #expect(fieldErrors.error as? FieldErrors == hidden)
+        #expect(fieldErrors.description == hidden.description)
+
+        let origin = RequiredFieldError(path: "character.origin")
+        let requiredField = PhaseFailure.requiredField(origin)
+        #expect((requiredField.error as? RequiredFieldError)?.path == "character.origin")
+        #expect(requiredField.description == origin.description)
+
+        let environment = Environment(transport: SilentTransport())
+        environment.log = nil
+        let handle = environment.handle(for: TestHeaderQuery(id: "5"), fetchPolicy: .storeOnly)
+        guard case .failed(let missingData) = handle.phase, case .missingData(let missing) = missingData else {
+            Issue.record("expected missing data, got \(handle.phase)")
+            return
+        }
+        #expect((missingData.error as? MissingDataError)?.operationName == TestHeaderQuery.name)
+        #expect(missingData.description == missing.description)
+        #expect(missingData.localizedDescription == missing.description)
+    }
+
+    @Test("a refetch throws the failure the phase shows, and a caller catches its kind by its case without a cast: field errors under @throwOnFieldError, the transport's kind when nothing answers")
+    func aRefetchThrowsThePhaseFailureByItsKind() async throws {
+        let attempts = Attempts()
+        let transport = RecordedTransport { _ in
+            switch attempts.next() {
+            case 1: fixture("character-name-shown")
+            case 2: fixture("character-name-hidden")
+            default: nil
+            }
+        }
+        let environment = Environment(transport: transport)
+        environment.log = nil
+        let handle = environment.handle(for: TestStrictQuery(id: "1"))
+        let retention = handle.retain()
+        defer { withExtendedLifetime(retention) {} }
+        await settled(handle)
+        guard case .ready = handle.phase else {
+            Issue.record("expected ready, got \(handle.phase)")
+            return
+        }
+
+        do throws(PhaseFailure) {
+            try await handle.refetch()
+            Issue.record("a refetch over a hidden field threw nothing")
+        } catch .fieldErrors(let errors) {
+            #expect(errors.errors.map(\.message) == ["name hidden"])
+            guard case .failed(.fieldErrors(let shown)) = handle.phase else {
+                Issue.record("expected the phase to show the field errors thrown, got \(handle.phase)")
+                return
+            }
+            #expect(shown == errors)
+        } catch {
+            Issue.record("expected the field errors, got \(error)")
+        }
+
+        do throws(PhaseFailure) {
+            try await handle.refetch()
+            Issue.record("a refetch nothing answered threw nothing")
+        } catch .fetch(.transport(let error as TransportError)) {
+            #expect(error.statusCode == 0)
+        } catch {
+            Issue.record("expected the transport's kind, got \(error)")
+        }
+        #expect(transport.requestCount == 3)
     }
 }
