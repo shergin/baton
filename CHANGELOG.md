@@ -3,7 +3,7 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
-## Unreleased
+## 0.20.0 (Borodinsky) — 2026-11-06
 
 - The ingest builds the records, and the commit adopts them. After a
   response is normalized, off the main actor, the change set builds one
