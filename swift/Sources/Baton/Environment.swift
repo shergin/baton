@@ -220,11 +220,11 @@ public final class Environment {
     /// operation, whoever asked for it. `deleting` is the keys of the
     /// records a mutation's `@deletes` name, edits of the commit beside
     /// the payload's own.
-    func commit(_ payload: Data, plan: ResolvedSelection, root: Store.Root, replacing layer: UUID? = nil, checkingCancellation: Bool = true, complete: Bool = true, deleting deletions: [String] = []) async throws -> Committed {
+    func commit(_ payload: Data, plan: ResolvedSelection, root: Store.Root, replacing layer: UUID? = nil, checkingCancellation: Bool = true, complete: Bool = true, deleting deletions: [String] = [], issued: UInt32? = nil) async throws -> Committed {
         var changes = try await Ingest.normalized(payload, plan: plan, rootKey: root.record.key, complete: complete)
         changes.edits.append(contentsOf: deletions.map { ChangeSet.Edit.deleteByKey(key: $0) })
         if checkingCancellation { try Task.checkCancellation() }
-        return commit(changes, replacing: layer, dating: root, complete: complete)
+        return commit(changes, replacing: layer, dating: root, complete: complete, issued: issued)
     }
 
     /// The door's lower half: a change set committed as a server batch, and
@@ -234,14 +234,21 @@ public final class Environment {
     /// presence to the next check. The parts of a deferred stream after the
     /// first arrive here as the change sets the delivery assembled, and the
     /// last of them dates.
-    func commit(_ changes: ChangeSet, replacing layer: UUID? = nil, dating root: Store.Root? = nil, complete: Bool = true) -> Committed {
+    func commit(_ changes: ChangeSet, replacing layer: UUID? = nil, dating root: Store.Root? = nil, complete: Bool = true, issued: UInt32? = nil, operation: String? = nil) -> Committed {
         // The terminal check: a response that lands after the end, which
         // cancellation could not reach, a fetch awaited in a task of the
         // app's own or a mutation the server applied, reaches neither
         // memory nor the image.
         guard !ended else { return Committed() }
-        store.commit(changes, replacingOptimistic: layer)
-        if let root { evict(store.date(root, present: complete)) }
+        // A query's response to a request older than one whose answer has
+        // landed for the same root yields to it: a newer answer to the same
+        // question is in the store, and the log says so.
+        if let root, let issued, root.record === store.root, issued < root.issued {
+            if let operation { log(.responseSuperseded(operation: operation)) }
+            return Committed()
+        }
+        store.commit(changes, replacingOptimistic: layer, issued: issued)
+        if let root { evict(store.date(root, present: complete, issued: issued)) }
         var committed = Committed()
         committed.add(changes)
         return committed
@@ -319,6 +326,9 @@ public final class Environment {
         // The operation's root: a handle's, or one made here, which waits in
         // the release buffer once dated if nothing retains it.
         let root = store.root(Store.rootKey(Op.name, variables), resolved: resolved, record: store.root)
+        // The request's number, taken as it is issued: its response yields
+        // to a newer one of the root, and to a newer deletion.
+        let issued = store.issue()
         if !Op.hasIncremental {
             // The request is sent from the main actor, as every transport
             // call is; the response is awaited where it is read, off the
@@ -328,7 +338,7 @@ public final class Environment {
             // read must not land after the one that replaced it.
             let changes = try await Ingest.normalized(transport.send(request), for: request, plan: resolved, rootKey: root.record.key)
             try Task.checkCancellation()
-            return commit(changes, dating: root, complete: true)
+            return commit(changes, dating: root, complete: true, issued: issued, operation: Op.name)
         }
         var committed = Committed()
         var delivery = Delivery(store: store, resolved: resolved)
@@ -339,7 +349,7 @@ public final class Environment {
                 first = false
                 let opening = try await Ingest.normalizedFirstPart(part, plan: resolved, rootKey: Store.rootKey, complete: true)
                 try Task.checkCancellation()
-                committed.add(commit(opening.changes))
+                committed.add(commit(opening.changes, issued: issued))
                 delivery.committed(opening.changes)
                 delivery.announce(opening.pending)
                 firstPart?(committed)
@@ -356,11 +366,11 @@ public final class Environment {
                 // A streamed item whose list another commit changed since the
                 // stream left it is stale and dropped.
                 guard delivery.fits(object) else { continue }
-                committed.add(commit(change))
+                committed.add(commit(change, issued: issued))
                 delivery.committed(change)
             }
             for failure in failures {
-                _ = commit(failure.changes)
+                _ = commit(failure.changes, issued: issued)
                 committed.add(failure)
             }
             if !incremental.hasNext { completed = true; break }
@@ -371,7 +381,7 @@ public final class Environment {
         guard completed else { throw IngestError(offset: 0, message: "the incremental response ended before its last part") }
         // An incremental response is fetched, and fresh, once its stream
         // completes.
-        evict(store.date(root))
+        evict(store.date(root, issued: issued))
         return committed
     }
 
@@ -415,8 +425,9 @@ public final class Environment {
             // waiting, and no cancellation check stands before the commit.
             let request = request(Op.self, variables: operation.variables)
             let transport = transport
+            let issued = store.issue()
             let data = try await Task { try await transport.payload(request) }.value
-            uncaught = try await commit(data, plan: resolved, root: root, replacing: layer, checkingCancellation: false, deleting: deletions).uncaught
+            uncaught = try await commit(data, plan: resolved, root: root, replacing: layer, checkingCancellation: false, deleting: deletions, issued: issued).uncaught
         } catch {
             if let layer { store.revertOptimistic(layer) }
             throw error

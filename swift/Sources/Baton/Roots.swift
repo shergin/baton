@@ -51,6 +51,9 @@ extension Store {
         @ObservationIgnored fileprivate(set) var fetchEpoch = 0
         /// How many responses the store has committed for the operation.
         @ObservationIgnored fileprivate(set) var fetches = 0
+        /// The number of the request whose response last committed for the
+        /// root: a response to an older request yields to it.
+        @ObservationIgnored fileprivate(set) var issued: UInt32 = 0
         /// The fetch a heal asked for, by its number: a miss under that
         /// fetch's data is unexpected, and healed no further.
         @ObservationIgnored fileprivate(set) var healedAt: Int?
@@ -201,9 +204,10 @@ extension Store {
     /// present when the response was complete, whoever asked for it. A
     /// query just written that nothing retains waits in the release buffer,
     /// as Relay's does; the keys of the roots pushed out are returned.
-    func date(_ root: Root, present: Bool = true) -> [String] {
+    func date(_ root: Root, present: Bool = true, issued: UInt32? = nil) -> [String] {
         root.stamp(now, epoch: invalidationEpoch)
         root.fetches += 1
+        if let issued { root.issued = issued }
         if present { root.committed() }
         // An operation selecting a transient root field leaves no stamp: the
         // stamp carries the operation's variables, which would name what the

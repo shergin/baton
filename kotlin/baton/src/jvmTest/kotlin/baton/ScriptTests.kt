@@ -649,6 +649,7 @@ internal class ScriptRun(private val script: Script) {
         is LogEvent.AmbiguousIdentity -> Script.Event("ambiguousIdentity", mapOf("id" to event.id, "types" to event.types))
         is LogEvent.RequiredFieldMissing -> Script.Event("requiredFieldMissing", mapOf("type" to event.type, "path" to event.path))
         is LogEvent.PartDropped -> Script.Event("partDropped", mapOf("path" to event.path))
+        is LogEvent.ResponseSuperseded -> Script.Event("responseSuperseded", mapOf("operation" to event.operation))
         LogEvent.ImageOpened, LogEvent.ImageUnavailable, is LogEvent.ImageWritten, LogEvent.ImageWriteFailed -> Script.Event("image", emptyMap())
     }
 

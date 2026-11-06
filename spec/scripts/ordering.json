@@ -1,0 +1,64 @@
+{
+  "name": "ordering",
+  "steps": [
+    {
+      "attach": {"operation": "TestNotesQuery", "variables": {"id": "1"}, "as": "notes", "response": "tests/notes-page-1.json"},
+      "records": "tests/notes-page-1.store.json"
+    },
+    {
+      "attach": {"operation": "TestNotesQuery", "variables": {"id": "1"}, "policy": "storeAndNetwork", "as": "notes-again"},
+      "fetch": {"handle": "notes-again", "fetch": "inFlight"}
+    },
+    {
+      "commit": {"operation": "TestDiscardNote", "variables": {"id": "n2"}, "response": "tests/discard-note-n2.json"},
+      "records": "scripts/deletes-discarded.store.json",
+      "reads": [{"handle": "notes", "path": "character.notes.edges.1.node.text", "value": null}]
+    },
+    {
+      "answer": {"handle": "notes-again", "response": "tests/notes-page-1.json"},
+      "fetch": {"handle": "notes-again", "fetch": "idle"},
+      "notified": [],
+      "records": "scripts/deletes-discarded.store.json",
+      "reads": [
+        {"handle": "notes-again", "path": "character.notes.edges.0.node.id", "value": "n1"},
+        {"handle": "notes-again", "path": "character.notes.edges.1.node.text", "value": null},
+        {"handle": "notes", "path": "character.notes.edges.1.node.text", "value": null}
+      ]
+    },
+    {
+      "attach": {"operation": "TestNotesQuery", "variables": {"id": "1"}, "policy": "networkOnly", "as": "notes-fresh", "response": "tests/notes-page-1.json"},
+      "notified": [
+        {"record": "Character:1:notes(first:2):edges:1", "field": "node"}
+      ],
+      "records": "scripts/ordering-revived.store.json",
+      "reads": [
+        {"handle": "notes-fresh", "path": "character.notes.edges.1.node.text", "value": "Portal gun needs charging"},
+        {"handle": "notes", "path": "character.notes.edges.1.node.text", "value": "Portal gun needs charging"}
+      ]
+    },
+    {
+      "attach": {"operation": "TestNotesQuery", "variables": {"id": "1"}, "policy": "storeAndNetwork", "as": "late"},
+      "fetch": {"handle": "late", "fetch": "inFlight"}
+    },
+    {
+      "commit": {"operation": "TestNotesQuery", "variables": {"id": "1"}, "response": "tests/notes-page-1-renamed.json"},
+      "notified": [{"record": "Character:1", "field": "name"}],
+      "records": "scripts/ordering-superseded.store.json",
+      "reads": [{"handle": "late", "path": "character.name", "value": "Rick C-137"}]
+    },
+    {
+      "answer": {"handle": "late", "response": "tests/notes-page-1.json"},
+      "events": [
+        {"responseSuperseded": {"operation": "TestNotesQuery"}},
+        {"fetchCompleted": {"operation": "TestNotesQuery"}}
+      ],
+      "fetch": {"handle": "late", "fetch": "idle"},
+      "notified": [],
+      "records": "scripts/ordering-superseded.store.json",
+      "reads": [
+        {"handle": "late", "path": "character.name", "value": "Rick C-137"},
+        {"handle": "notes", "path": "character.name", "value": "Rick C-137"}
+      ]
+    }
+  ]
+}

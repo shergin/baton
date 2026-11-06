@@ -43,6 +43,19 @@ public final class Store {
     /// Bumped by `invalidate()`; handles fetched before it are stale.
     package private(set) var invalidationEpoch = 0
 
+    /// How many requests the environment has issued: a response carries the
+    /// number of the request it answers, a deletion the number current when
+    /// it was made, and a late response yields to a newer deletion and to a
+    /// newer response of its root
+    /// (`docs/decisions/a-late-response-yields.md`).
+    package private(set) var generation: UInt32 = 0
+
+    /// Numbers a request as the environment issues it.
+    func issue() -> UInt32 {
+        generation += 1
+        return generation
+    }
+
     /// Optimistic responses currently applied, oldest first.
     package private(set) var optimisticLayers: [OptimisticLayer] = []
 
@@ -416,20 +429,22 @@ public final class Store {
 
     /// The server's commit: the one server batch. With `id`, the server's
     /// answer to an optimistic mutation replaces the layer in the same
-    /// batch.
+    /// batch. `issued` is the number of the request the response answers,
+    /// which a record deleted since does not let revive it; a payload
+    /// committed now carries none.
     @discardableResult
-    package func commit(_ changes: ChangeSet, replacingOptimistic id: UUID?) -> Int {
+    package func commit(_ changes: ChangeSet, replacingOptimistic id: UUID?, issued: UInt32? = nil) -> Int {
         adoptConstants()
         defer { settleVerdictsIfNeeded() }
         if id == nil, optimisticLayers.isEmpty {
             var batch = Batch(.server, direct: true)
-            applyServer(changes, into: &batch)
+            applyServer(changes, into: &batch, issued: issued)
             return finish(batch)
         }
         var batch = Batch(.server)
         revertLayers(from: 0, into: &batch)
         if let id { optimisticLayers.removeAll { $0.id == id } }
-        applyServer(changes, into: &batch)
+        applyServer(changes, into: &batch, issued: issued)
         reapplyLayers(from: 0, into: &batch)
         return finish(batch)
     }
@@ -444,11 +459,11 @@ public final class Store {
 
     /// Applies a server's payload and hands the image what it changed, and
     /// what it could not change in memory, for the image to forget.
-    private func applyServer(_ changes: ChangeSet, into batch: inout Batch) {
+    private func applyServer(_ changes: ChangeSet, into batch: inout Batch, issued: UInt32?) {
         // Without an image an edit memory cannot make is simply not made.
         forgets = persistence == nil ? nil : Forgets()
         let start = batch.undo.count
-        apply(changes, into: &batch)
+        apply(changes, into: &batch, issued: issued)
         if let forgets, !forgets.keys.isEmpty || !forgets.ids.isEmpty {
             persistence?.forget(keys: forgets.keys, ids: forgets.ids)
             forgotten.note(keys: forgets.keys, ids: forgets.ids)
@@ -636,6 +651,9 @@ public final class Store {
         batch.flagged(record, was: record.deleted)
         batch.record(.deletion(record, was: record.deleted))
         record.setDeleted(deleted)
+        // A deletion remembers the request current when it was made, so a
+        // response to an older one does not revive the record.
+        if deleted { record.deletedAt = generation }
         nullsOrErrorsChanged = true
     }
 
@@ -714,7 +732,7 @@ public final class Store {
     /// value equal to the slot's current value is neither allocated nor
     /// recorded. The edits follow: connection pages merge, edges insert,
     /// records delete. The batch keeps the undo log of what changed.
-    private func apply(_ changes: ChangeSet, into batch: inout Batch) {
+    private func apply(_ changes: ChangeSet, into batch: inout Batch, issued: UInt32? = nil) {
         // What the response said of types the build did not list, before any
         // body tests a record of them against a condition; the image keeps
         // it for the next launch.
@@ -744,6 +762,9 @@ public final class Store {
 
         for index in 0..<objects.count {
             let record = objects[index]
+            // A response issued before the record was deleted does not revive
+            // it: its entries for the record are not written.
+            if record.deleted, let issued, issued <= record.deletedAt { continue }
             // A deleted record a payload names again comes back.
             if record.deleted { setDeleted(record, false, &batch) }
             let range = Int(changes.starts[index])..<Int(changes.starts[index + 1])

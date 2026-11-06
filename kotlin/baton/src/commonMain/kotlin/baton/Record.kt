@@ -57,6 +57,9 @@ class Record internal constructor(val type: TypeID, val key: String, internal va
     var deleted: Boolean = false
         private set
 
+    /** The number of the request current when the record was deleted, which a response to an older request does not revive. */
+    internal var deletedAt: Int = 0
+
     /** The dense slots' values, by index; null where the slot was never written. */
     private var values: Array<Value?> = EMPTY_VALUES
     /** The dense slots' channels, by index, each made at its slot's first read; empty until one is. */

@@ -445,6 +445,18 @@ payload that names the record again revives it, told the same way. *Held
 by* tests/delete-note-7 (the record as `null`); the notifications by
 script `notifications`.
 
+**A late response yields to a newer deletion and to a newer response of
+its root.** The store numbers each request the environment issues; a
+response carries its request's number, and a deletion the number current
+when it was made. A response whose number is not greater than the
+deletion's does not revive the record: its entries for the record are not
+written. A query's response whose number is smaller than that of the last
+response committed for its root is dropped at the door and logged. A
+payload committed by hand, an optimistic response and a subscription's
+event carry no number and may revive. Nothing else is ordered: two
+operations that write one field let the last arrival win. *Held by* script
+`ordering`.
+
 **An optimistic layer rebases under every commit.** An optimistic response
 is normalized by the mutation's plan at the mutation root and applied as a
 layer with an undo log, on the main thread, so it shows in the turn of the
@@ -923,8 +935,9 @@ changed in records that existed; a field error no `@catch` handled, by
 operation and response path; the image opened, unavailable, written with
 its batch count, or failed; a field read and never fetched; a value a
 reader's type cannot hold; an id naming records of several types; a
-`@required(action: LOG)` field null; a deferred part dropped. Never a
-record, a slot, a value, a variable or a response body. A debug build
+`@required(action: LOG)` field null; a deferred part dropped; a query's
+response dropped as superseded. Never a record, a slot, a value, a
+variable or a response body. A debug build
 prints the missing-data cases until a log is set. *Held by* script
 `events` for a fetch's events, the commits, a field error and a dropped
 part, and by script `heal` for missing and unexpected data; the image's

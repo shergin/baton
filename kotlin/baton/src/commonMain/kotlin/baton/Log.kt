@@ -71,6 +71,9 @@ sealed interface LogEvent {
     /** A part of a deferred response named a place the store or the plan does not have, and was dropped; [path] is the response path it named. */
     data class PartDropped(val path: String) : LogEvent
 
+    /** A query's response that answered a request older than one whose answer had already landed for the same root, dropped at the door. */
+    data class ResponseSuperseded(val operation: String) : LogEvent
+
     /** The image's file was opened, or taken again. */
     data object ImageOpened : LogEvent
 

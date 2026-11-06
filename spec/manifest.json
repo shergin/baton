@@ -3012,6 +3012,7 @@
     "scripts/transport.json",
     "scripts/streams.json",
     "scripts/deletes.json",
-    "scripts/deletes-image.json"
+    "scripts/deletes-image.json",
+    "scripts/ordering.json"
   ]
 }

@@ -489,8 +489,9 @@ not by how many storage keys the type has, and the keys rendered from
 variables written to it are kept in a short list apart. A record
 `@deleteRecord` or `@deletes` removed is *deleted*: links to it read as
 null, lists skip it, the bodies that read its fields and those that hold a
-link to it are told, and a payload that names it again revives it, told
-the same way; see
+link to it are told, and a payload that names it again revives it, told the same way, unless
+it answers a request issued before the deletion, which yields to it
+([the decision](decisions/a-late-response-yields.md)); see
 [the contract](../spec/runtime.md#1-types-keys-and-records),
 [its deletion](../spec/runtime.md#4-the-commit) and
 [A deletion is announced by its commit](decisions/deletion-is-announced-by-its-commit.md).
@@ -1049,7 +1050,9 @@ duration, failed with its failure's kind), the commit (its kind and the
 slots it changed in records that existed), a field error a fetch's response
 carried that no `@catch` handled, by operation and response path, the image
 (opened, unavailable, written, failed), a deferred part dropped for naming
-a place the store or the plan does not have, and missing data (a field read
+a place the store or the plan does not have, a query's response dropped for
+answering a request older than one already answered for its root, and
+missing data (a field read
 and never fetched, a value a reader's type cannot hold, an id naming records
 of several types, a `@required(action: LOG)` field that is null), each by
 type and field name. Debug builds print the missing-data cases until a log
@@ -1302,7 +1305,12 @@ handle the destination's `rememberQuery` then shares.
 **Fetch.** *Composition: operation value, environment, transport.* Relay's
 word: `fetchQuery`, and the fetch policies that say when one is made.
 Here: one request for an operation's data, from the transport through the
-ingest to the commit. A handle shows its last fetch as a value: idle, in
+ingest to the commit. The store numbers each request as the environment
+issues it, and the response carries the number: a query's response to a
+request older than one whose answer has landed for the same root is dropped
+at the door and logged, and a response to a request older than a deletion
+does not revive the record
+([the decision](decisions/a-late-response-yields.md)). A handle shows its last fetch as a value: idle, in
 flight, or failed with the [failure](#runtime) and when it failed, an
 instant of the monotonic clock; the operation value reads it beside its
 phase. Not a phase: the phase is what the data deserves, and the fetch is

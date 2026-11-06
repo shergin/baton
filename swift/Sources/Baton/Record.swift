@@ -14,6 +14,9 @@ public final class Record: Observable {
     /// Whether `@deleteRecord` removed it: links to it read as null and lists
     /// skip it, until a payload names it again.
     public private(set) var deleted = false
+    /// The number of the request current when the record was deleted, which
+    /// a response to an older request does not revive.
+    var deletedAt: UInt32 = 0
     /// Whether the record's row in the image has been read, so that the
     /// availability check reads it once.
     private(set) var hydrated = false

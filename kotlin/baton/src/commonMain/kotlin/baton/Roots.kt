@@ -98,9 +98,10 @@ internal fun Store.keepCompleted(root: Store.Root) {
  * nothing retains waits in the release buffer, as Relay's does; the keys of
  * the roots pushed out are returned.
  */
-internal fun Store.date(root: Store.Root, present: Boolean = true): List<String> {
+internal fun Store.date(root: Store.Root, present: Boolean = true, issued: Int? = null): List<String> {
     root.stamp(now, invalidationEpoch)
     root.fetches += 1
+    if (issued != null) root.issued = issued
     if (present) root.committed()
     // An operation selecting a transient root field leaves no stamp: the
     // stamp carries the operation's variables, which would name what the

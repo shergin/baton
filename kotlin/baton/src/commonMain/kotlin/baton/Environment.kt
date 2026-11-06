@@ -293,8 +293,9 @@ class Environment(
         }
         val committed = try {
             withContext(NonCancellable) {
+                val issued = store.issue()
                 val payload = transport.payload(request(type, operation.variables))
-                commit(payload, resolved, root, checkingCancellation = false, replacing = layer, deletions = deletions)
+                commit(payload, resolved, root, checkingCancellation = false, replacing = layer, deletions = deletions, issued = issued)
             }
         } catch (error: Throwable) {
             if (layer != null && !ended) store.revertOptimistic(layer)
@@ -384,6 +385,8 @@ class Environment(
         val request = request(type, variables)
         // The operation's root: a handle's, or one made here, which waits in the release buffer once dated if nothing retains it.
         val root = store.root(Store.rootKey(type.name, variables), resolved, store.root)
+        // The request's number, taken as it is issued: its response yields to a newer one of the root, and to a newer deletion.
+        val issued = store.issue()
         if (!type.hasIncremental) {
             // The request is sent from the store's thread, as every transport call is; the response is awaited where it is
             // read, on the ingest dispatcher, so the store's thread is entered once, for the commit, and not first when the
@@ -392,7 +395,7 @@ class Environment(
             val payloads = transport.send(request)
             val changes = withContext(ingestDispatcher) { Ingest.normalize(payloads.payload(request), resolved, root.record.key, complete = true) }
             currentCoroutineContext().ensureActive()
-            return commit(changes, root)
+            return commit(changes, root, issued = issued, operation = type.name)
         }
         var committed = Committed()
         val delivery = Delivery(store, resolved)
@@ -403,7 +406,7 @@ class Environment(
                 first = false
                 val opening = withContext(ingestDispatcher) { Ingest.normalizeFirstPart(part, resolved, Store.ROOT_KEY, complete = true) }
                 currentCoroutineContext().ensureActive()
-                committed += commit(opening.changes)
+                committed += commit(opening.changes, issued = issued)
                 delivery.committed(opening.changes)
                 delivery.announce(opening.pending)
                 firstPart?.invoke(committed)
@@ -419,11 +422,11 @@ class Environment(
             for ((index, change) in changes.withIndex()) {
                 // A streamed item whose list another commit changed since the stream left it is stale and dropped.
                 if (!delivery.fits(objects[index])) continue
-                committed += commit(change)
+                committed += commit(change, issued = issued)
                 delivery.committed(change)
             }
             for (failure in failures) {
-                commit(failure.changes)
+                commit(failure.changes, issued = issued)
                 committed += Committed.of(failure)
             }
             completed = !incremental.hasNext
@@ -433,7 +436,7 @@ class Environment(
         // and nothing dates the root, so the next attach fetches it whole.
         if (!completed) throw IngestError(0, "the incremental response ended before its last part")
         // An incremental response is fetched, and fresh, once its stream completes.
-        if (!ended) evict(store.date(root))
+        if (!ended) evict(store.date(root, issued = issued))
         return committed
     }
 
@@ -454,11 +457,12 @@ class Environment(
         complete: Boolean = true,
         replacing: Store.OptimisticLayer? = null,
         deletions: List<String> = emptyList(),
+        issued: Int? = null,
     ): Committed {
         val changes = withContext(ingestDispatcher) { Ingest.normalize(payload, plan, root.record.key, complete) }
         changes.edits.addAll(deletions.map(ChangeSet.Edit::DeleteByKey))
         if (checkingCancellation) currentCoroutineContext().ensureActive()
-        return commit(changes, root, complete, replacing)
+        return commit(changes, root, complete, replacing, issued)
     }
 
     /**
@@ -467,10 +471,23 @@ class Environment(
      * The server's answer to an optimistic mutation replaces its layer in
      * the same batch. A response that lands after the end reaches nothing.
      */
-    private fun commit(changes: ChangeSet, root: Store.Root? = null, complete: Boolean = true, replacing: Store.OptimisticLayer? = null): Committed {
+    private fun commit(
+        changes: ChangeSet,
+        root: Store.Root? = null,
+        complete: Boolean = true,
+        replacing: Store.OptimisticLayer? = null,
+        issued: Int? = null,
+        operation: String? = null,
+    ): Committed {
         if (ended) return Committed()
-        store.commit(changes, replacing)
-        if (root != null) evict(store.date(root, complete))
+        // A query's response to a request older than one whose answer has landed for the same root yields to it: a newer
+        // answer to the same question is in the store, and the log says so.
+        if (root != null && issued != null && root.record === store.root && issued < root.issued) {
+            if (operation != null) log(LogEvent.ResponseSuperseded(operation))
+            return Committed()
+        }
+        store.commit(changes, replacing, issued)
+        if (root != null) evict(store.date(root, complete, issued))
         return Committed.of(changes)
     }
 

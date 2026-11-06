@@ -613,6 +613,8 @@ final class ScriptRun {
             Manifest.Event(name: "requiredFieldMissing", fields: ["type": .string(type), "path": .string(path)])
         case .partDropped(let path):
             Manifest.Event(name: "partDropped", fields: ["path": .string(path)])
+        case .responseSuperseded(let operation):
+            Manifest.Event(name: "responseSuperseded", fields: ["operation": .string(operation)])
         case .imageOpened, .imageUnavailable, .imageWritten, .imageWriteFailed:
             nil
         }

@@ -41,6 +41,16 @@ class Store(
     internal var invalidationEpoch = 0
         private set
 
+    /** How many requests the environment has issued: a response carries the number of the request it answers, a deletion the number current when it was made, and a late response yields to a newer deletion and to a newer response of its root. */
+    internal var generation = 0
+        private set
+
+    /** Numbers a request as the environment issues it. */
+    internal fun issue(): Int {
+        generation += 1
+        return generation
+    }
+
     /** Where the store's clock starts. */
     private val origin = TimeSource.Monotonic.markNow()
 
@@ -219,6 +229,8 @@ class Store(
         internal var fetchEpoch = 0
         /** How many responses the store has committed for the operation. */
         internal var fetches = 0
+        /** The number of the request whose response last committed for the root: a response to an older request yields to it. */
+        internal var issued = 0
         /** The fetch a heal asked for, by its number: a miss under that fetch's data is unexpected, and healed no further. */
         internal var healedAt: Int? = null
         private val presentState = mutableStateOf(false)
@@ -488,19 +500,19 @@ class Store(
      * optimistic mutation, [replacing] its layer, removes the layer in that
      * same batch.
      */
-    internal fun commit(changes: ChangeSet, replacing: OptimisticLayer? = null): Int {
+    internal fun commit(changes: ChangeSet, replacing: OptimisticLayer? = null, issued: Int? = null): Int {
         checkThread()
         if (ended) return 0
         adoptConstants()
         if (replacing == null && optimisticLayers.isEmpty()) {
             val batch = Batch(BatchKind.SERVER, direct = true)
-            applyServer(changes, batch)
+            applyServer(changes, batch, issued)
             return finish(batch).also { settleVerdictsIfNeeded() }
         }
         val batch = Batch(BatchKind.SERVER, direct = false)
         revertLayers(0, batch)
         if (replacing != null) optimisticLayers.remove(replacing)
-        applyServer(changes, batch)
+        applyServer(changes, batch, issued)
         reapplyLayers(0, batch)
         return finish(batch).also { settleVerdictsIfNeeded() }
     }
@@ -511,16 +523,16 @@ class Store(
      * optimistic layers it runs while they are lifted, so the image hears the
      * server's values.
      */
-    private fun applyServer(changes: ChangeSet, batch: Batch) {
+    private fun applyServer(changes: ChangeSet, batch: Batch, issued: Int?) {
         val persistence = persistence
         if (persistence == null) {
-            apply(changes, batch)
+            apply(changes, batch, issued)
             return
         }
         val forgets = Forgets()
         this.forgets = forgets
         batch.persisted = LinkedHashSet()
-        apply(changes, batch)
+        apply(changes, batch, issued)
         this.forgets = null
         if (forgets.keys.isNotEmpty() || forgets.ids.isNotEmpty()) {
             persistence.forget(forgets.keys.toList(), forgets.ids.toList())
@@ -809,6 +821,8 @@ class Store(
         batch.record(Undo.Deletion(record, record.deleted))
         batch.persist(record, Slot(record.type, 0), root)
         record.setDeleted(deleted)
+        // A deletion remembers the request current when it was made, so a response to an older one does not revive the record.
+        if (deleted) record.deletedAt = generation
         nullsOrErrorsChanged = true
     }
 
@@ -844,7 +858,7 @@ class Store(
         return true
     }
 
-    private fun apply(changes: ChangeSet, batch: Batch) {
+    private fun apply(changes: ChangeSet, batch: Batch, issued: Int? = null) {
         // What the response said of types the build did not list; the image keeps it for the next launch.
         if (changes.memberships.isNotEmpty()) {
             for ((type, condition) in changes.memberships) Membership.learn(type, condition)
@@ -865,6 +879,8 @@ class Store(
         val values = changes.values
         for (index in 0 until changes.recordCount) {
             val record = objects[index]!!
+            // A response issued before the record was deleted does not revive it: its entries for the record are not written.
+            if (record.deleted && issued != null && issued <= record.deletedAt) continue
             record.reserve(changes.highestDenseSlot(index) + 1)
             // A deleted record a payload names again comes back.
             if (record.deleted) setDeleted(record, false, batch)

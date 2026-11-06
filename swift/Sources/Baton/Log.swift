@@ -54,6 +54,9 @@ public enum LogEvent: Sendable, Equatable {
     /// created, or under a label the plan does not know, and was dropped;
     /// `path` is the response path it named.
     case partDropped(path: String)
+    /// A query's response answered a request older than one whose answer
+    /// had already landed for the same root, and was dropped at the door.
+    case responseSuperseded(operation: String)
 
     /// The line a debug build prints for the missing-data cases, and nothing
     /// for the rest.

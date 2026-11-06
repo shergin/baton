@@ -5,6 +5,19 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A late response yields to a newer deletion and to a newer response of
+  its root. The store numbers each request as the environment issues it; a
+  response carries its request's number and a deletion the number current
+  when it was made, so a list fetched before a `@deletes` mutation and
+  answered after it no longer revives the deleted record, and a query's
+  response to a request older than one whose answer has already landed for
+  the same root is dropped at the door, logged as `responseSuperseded`. A
+  payload committed by hand, an optimistic response and a subscription's
+  event carry no number and may revive, as before. Nothing else is
+  ordered: two operations that write one field still let the last arrival
+  win. Both runtimes; held by the script `ordering`
+  ([the decision](docs/decisions/a-late-response-yields.md)).
+
 - A Swift operation value is a value, and its live side is the macro's
   projection: `@Query var issues: IssuesQuery` keeps `issues` the value the
   parent passed, and the body reads `$issues.phase`, `$issues.fetch`,
