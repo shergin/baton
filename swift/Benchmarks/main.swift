@@ -294,6 +294,12 @@ func run() async throws {
     measure("response bytes -> change set", iterations: 30) {
         _ = try! Ingest.normalize(data, plan: plan, rootKey: Store.rootKey)
     }
+    // The copy the ingest begins with, `[UInt8](data)`, alone: the change
+    // set keeps it to make strings from later.
+    measure("the response copied into [UInt8], alone", iterations: 30) {
+        let bytes = [UInt8](data)
+        if bytes[bytes.count / 2] == 0 { print("") }
+    }
     measure("resolve the fixture plan for a page, per resolution", iterations: 50, ops: 100) {
         for page in 1...100 { _ = BenchFixture.plan.resolve(BenchFixture(page: page).variables, in: store.keys) }
     }
@@ -417,6 +423,8 @@ func run() async throws {
         if sink == 42 { print("") }
     }
     try readPathBench(store: store, root: root)
+    print("dynamic sites: a row of 20 fields, 20 rows, under constant keys, 10 and 20 sites")
+    try sitesBench()
 
     print("availability")
     measure("check the fixture plan against the store", iterations: 50) {

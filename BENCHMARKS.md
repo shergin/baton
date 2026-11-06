@@ -21,6 +21,70 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the owner's scan over twenty sites, and the ingest's copy — 2026-11-06
+
+Revision: the working tree on top of `a81991d`, which adds the suite's
+*dynamic sites* section (`swift/Benchmarks/Sites.swift`) and, beside the
+ingest, a row timing its copy of the response alone; no runtime source
+changed. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2 (25F84),
+Xcode 26.6, Swift 6.3.3, release build, the compiler built by
+`scripts/build-compiler.sh`. `BATON_COMPILER=local swift build -c release
+--product BatonBenchmarks`, then the whole suite, five runs one after
+another; best of the runs, the median of the medians in parentheses. A
+quiet machine: the load average stood between 1.5 and 2.9 and nothing
+else was building.
+
+### Dynamic sites
+
+The row is a character as a configurable screen reads it: twenty fields
+of twenty characters committed by hand (`siteRows`), read through three
+lenses over the same records. The first selects every field under a
+constant key. The second makes ten of them dynamic sites: seven fields
+under `@include(if:)` or `@skip(if:)` on a variable of their own, and
+three keys with variables, `notes(first: $notesFirst)` and two aliases of
+it. The third makes all twenty dynamic: fourteen conditions, among them
+the fields of `origin` and `location`, and six keys with variables, the
+three `notes` and three of `friends(page:, perPage:)`. An owner settles a
+site by a scan, by identity, of the sites of its kind it has met, so a
+row of the twenty-site lens makes 126 comparisons where the ten-site lens
+makes 34. The schema has no field with arguments on an interface or a
+union, so no abstract slot is among the sites. Each lens's plan is
+resolved in the store before the commit, as its operation's fetch or
+check would resolve it.
+
+| Measurement | Best (median) |
+|---|---|
+| Tracked read, the suite's row body of 8 fields, per field | 581 ns (618) |
+| Untracked lens read, the suite's 8 fields, per field | 20.3 ns (20.5) |
+| 20 fields under constant keys, untracked, per field | 34.9 ns (35.1) |
+| 20 fields, 10 dynamic sites, untracked, per field | 35.5 ns (40.8); 40.7 ns at best in four of the five runs |
+| 20 fields, 20 dynamic sites, untracked, per field | 40.4 ns (40.8) |
+| A row body of 20 fields under constant keys, tracked, per field | 769 ns (795) |
+| The same, 10 dynamic sites | 774 ns (804) |
+| The same, 20 dynamic sites | 776 ns (807) |
+
+The scan does not show. Untracked, the ten-site and the twenty-site
+lenses read at the same 40.8 ns a field, though the second settles twice
+the sites with nearly four times the comparisons; what either costs over
+constant keys is one step of 5.8 ns a field, 116 ns a row, that does not
+grow with the sites. Tracked, the three lenses stand within 1.5 % of one
+another under Observation's registrar, 795 to 807 ns a field: a dynamic
+site costs at most about 12 ns of a tracked read, and none of it is a
+scan the runs can resolve.
+
+### The ingest's copy
+
+| Measurement | Best (median) |
+|---|---|
+| Response bytes into a change set, the fixture's 686,254 bytes | 1.69 ms (1.71) |
+| The same bytes copied into `[UInt8]` alone | 9.00 µs (9.62) |
+
+`Ingest.normalizeFirstPart` begins with `[UInt8](data)`, which the change
+set keeps to make strings from later. The copy is 0.5 % of the ingest at
+best and 0.6 % at the median, so it does not show. Two medians moved by
+more than a tenth in one run each: the ingest's, 2.08 ms in the first,
+and the copy's, 11.8 µs in the fifth.
+
 ## Unreleased, the decide pass without its two quadratic terms — 2026-11-06
 
 Revision: the working tree on top of `8c7590a`, against `8c7590a` itself
