@@ -956,19 +956,30 @@ carries, as an optimistic response's builder renders itself; it compares
 and hashes, since an operation value compares and hashes its variables.
 Named as the schema names it. A field whose type contains the input itself,
 `input Filter { not: Filter }`, is boxed, since a value type cannot hold
-itself; the value reads and writes it as any other field.
+itself; the value reads and writes it as any other field. An input the
+schema declares `@oneOf`, of which exactly one field is given and that one
+non-null, is a choice, not a record: a case per field, carrying the field's
+type made non-null, and the value renders the object with its one member,
+so the type says what the schema says and a caller cannot send none or two
+([the decision](decisions/a-oneof-input-reads-as-an-enum.md)).
 Swift: a struct, with a property per field, nil for a field left unset, and
 an initializer with a parameter per field; its `variable` is the object the
 request carries; it is `Hashable`. One named like a shared enum or a
 standard library type takes `Input` after its name, and a field named
-`variable` takes an underscore. The box is `Baton.Indirect`.
+`variable` takes an underscore. The box is `Baton.Indirect`. A `@oneOf`
+input is an enum, `indirect` when a field's type contains the input, with
+a case per field named as the struct's property would be.
 Kotlin: a `data class` implementing `InputObject`, with a `val` per field,
 null by default where the schema allows it, equal by its fields; its
 `variable` is the object the request carries. One named like a runtime or
 standard library type takes `Input` after its name, and a field named
 `variable` or `copy`, `componentN`, or `Variable` or `Variables`, which the
 rendering spells, takes an underscore. There is no box: a class holds a
-reference to its own type.
+reference to its own type. A `@oneOf` input is a sealed interface with a
+`data class` per field, named by the field capitalized, holding the field
+as its one `val`; a class named like a runtime or standard library type,
+a member, the interface itself, a type a sibling's field spells, which it
+would shadow, or an earlier case, takes an underscore.
 
 **Plan.** *Concept: plan.* Baton's word for the normalization artifact.
 Relay's normalization AST, renamed because it is data, not a tree the

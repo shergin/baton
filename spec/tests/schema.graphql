@@ -13,7 +13,8 @@
 # in the tests' `baton.json`, three custom scalars it maps to Foundation
 # types, and the shapes of AniList's schema the others lack: capitalized
 # root fields, one spelled like its type, an enum that grows behind a
-# `version` argument, and a union of twenty members with no interface.
+# `version` argument, and a union of twenty members with no interface; and
+# a `@oneOf` input, whose generated value is a choice of one field.
 # Documents.swift compiles against it
 # unchanged; every document here would also be valid against the public
 # schema except those that use the additions.
@@ -47,6 +48,7 @@ type Query {
   types: Types
   spellings: [Spelling]
   charactersMatching(filters: [FilterCharacter!]!): [Character]
+  characterBy(by: CharacterBy!): Character
   asset(uuid: String!): Asset
   assets: [Asset]
   assetsPricedAbove(price: Decimal!, among: [Decimal!]): [Asset]
@@ -491,4 +493,22 @@ input FilterLocation {
 input FilterEpisode {
   name: String
   episode: String
+}
+
+"""
+One way to name a character, of which exactly one is given: a scalar, an
+enum, a list of a scalar, an input whose name is its field's capitalized,
+and the input itself, one shape per field.
+"""
+input CharacterBy @oneOf {
+  id: ID
+  status: Status
+  names: [String!]
+  residence: Residence
+  fallback: CharacterBy
+}
+
+"""A character's home by dimension, the record a `CharacterBy` may hold."""
+input Residence {
+  dimension: String!
 }

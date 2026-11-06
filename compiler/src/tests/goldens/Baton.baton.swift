@@ -6,7 +6,7 @@ import Foundation
 nonisolated enum Types {
     /// The schema's digest: pass it as the image's `version`, so an image
     /// written under another schema starts again.
-    static let schemaDigest = "48225267547352f149f9ef93baefde85"
+    static let schemaDigest = "93c80765936ba3b35fbbd67d03023bcf"
     /// The format of this generated code, which the runtime that reads it
     /// declares; a runtime of another format fails to compile this line.
     static let format = Baton.Format24.self
@@ -336,6 +336,7 @@ nonisolated enum Slots {
         static let character_bca4f9 = Baton.DynamicKey(Types.Query, "character", [Baton.KeyArgument("id", [.variable("id")])])
         static let character_8fc9fb = Baton.DynamicKey(Types.Query, "character", [Baton.KeyArgument("id", [.variable("where")])])
         static let character_c74a1e = Baton.Registry.slot(Types.Query, "character(id:1)")
+        static let characterBy_836059 = Baton.DynamicKey(Types.Query, "characterBy", [Baton.KeyArgument("by", [.variable("by")])])
         static let characters_2b5ffd = Baton.DynamicKey(Types.Query, "characters", [Baton.KeyArgument("filter", [.variable("filter")])])
         static let characters_498461 = Baton.DynamicKey(Types.Query, "characters", [Baton.KeyArgument("filter", [.literal("{\"name\":"), .variable("name"), .literal(",\"status\":\"Alive\"}")])])
         static let characters_192531 = Baton.DynamicKey(Types.Query, "characters", [Baton.KeyArgument("filter", [.literal("{\"name\":"), .variable("name"), .literal("}")])])
@@ -691,6 +692,25 @@ nonisolated public enum Status: Baton.GeneratedEnum {
     }
 }
 
+/// The schema's input object `CharacterBy`, of which exactly one field is given: a case per field, with the field's value.
+nonisolated public indirect enum CharacterBy: Baton.InputObject {
+    case id(String)
+    case status(Status)
+    case names([String])
+    case residence(Residence)
+    case fallback(CharacterBy)
+
+    public var variable: Baton.Variable {
+        switch self {
+            case .id(let value): .object(["id": .init(value)])
+            case .status(let value): .object(["status": .init(value)])
+            case .names(let value): .object(["names": .init(value)])
+            case .residence(let value): .object(["residence": .init(value)])
+            case .fallback(let value): .object(["fallback": .init(value)])
+        }
+    }
+}
+
 /// The schema's input object `FilterCharacter`. A field left nil is absent from the request, as GraphQL distinguishes absent from null.
 nonisolated public struct FilterCharacter: Baton.InputObject {
     public var name: String?
@@ -714,6 +734,21 @@ nonisolated public struct FilterCharacter: Baton.InputObject {
         if let species { fields["species"] = .init(species) }
         if let type { fields["type"] = .init(type) }
         if let gender { fields["gender"] = .init(gender) }
+        return .object(fields)
+    }
+}
+
+/// The schema's input object `Residence`. A field left nil is absent from the request, as GraphQL distinguishes absent from null.
+nonisolated public struct Residence: Baton.InputObject {
+    public var dimension: String
+
+    public init(dimension: String) {
+        self.dimension = dimension
+    }
+
+    public var variable: Baton.Variable {
+        var fields: [String: Baton.Variable] = [:]
+        fields["dimension"] = .init(dimension)
         return .object(fields)
     }
 }

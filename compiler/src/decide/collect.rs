@@ -27,6 +27,15 @@ pub struct InputField {
     pub primitive: Primitive,
 }
 
+/// An input object as the shared file declares it: its fields, and whether
+/// it is a `@oneOf` input, a choice with a case per field rather than a
+/// record of optionals.
+#[derive(Debug, Clone, PartialEq)]
+pub struct InputShape {
+    pub fields: Vec<InputField>,
+    pub one_of: bool,
+}
+
 /// What the shared file declares.
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct Shared {
@@ -56,7 +65,7 @@ pub struct Shared {
     pub enums: BTreeMap<String, Vec<String>>,
     /// The schema's input objects the documents' variables name, with their
     /// fields, each declared as a struct of the target's.
-    pub inputs: BTreeMap<String, Vec<InputField>>,
+    pub inputs: BTreeMap<String, InputShape>,
     /// The slots of the schema extensions' fields, which the registry marks
     /// as the client's: a lens reads one as absent, not missing, until a
     /// payload writes it.
@@ -78,8 +87,9 @@ impl Shared {
             inputs: plan
                 .inputs
                 .iter()
-                .map(|(name, fields)| {
-                    let fields = fields
+                .map(|(name, input)| {
+                    let fields = input
+                        .fields
                         .iter()
                         .map(|field| InputField {
                             name: field.name.clone(),
@@ -88,7 +98,13 @@ impl Shared {
                             primitive: ScalarShape::primitive(&field.type_, naming),
                         })
                         .collect();
-                    (name.clone(), fields)
+                    (
+                        name.clone(),
+                        InputShape {
+                            fields,
+                            one_of: input.one_of,
+                        },
+                    )
                 })
                 .collect(),
             transient_types: plan.transient_types.clone(),

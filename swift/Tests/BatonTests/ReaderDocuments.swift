@@ -10,8 +10,8 @@ import Baton
 /// field, a type condition in an operation that throws on field errors, a
 /// link and a list of links an operation that throws reads through,
 /// variables named like Swift's keywords, a `@required(action: LOG)` field
-/// below a non-null link, and deferred spreads with and without `@catch` in
-/// operations that throw.
+/// below a non-null link, deferred spreads with and without `@catch` in
+/// operations that throw, and a variable of a `@oneOf` input.
 @MainActor
 struct ReaderDocuments {
     @Query("""
@@ -139,6 +139,13 @@ struct ReaderDocuments {
         }
         """)
     var filteredCharacters: TestFilteredCharacters
+
+    @Query("""
+        query TestCharacterBy($by: CharacterBy!) {
+          characterBy(by: $by) { id name }
+        }
+        """)
+    var characterBy: TestCharacterBy
 
     @Fragment("""
         fragment TestLogEdges_connection on NoteConnection {

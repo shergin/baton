@@ -24,7 +24,7 @@ import baton.Variables
 /** Interned schema types used by this module's documents. */
 object Types {
     /** The schema's digest: pass it as the image's `version`, so an image written under another schema starts again. */
-    val schemaDigest = "48225267547352f149f9ef93baefde85"
+    val schemaDigest = "93c80765936ba3b35fbbd67d03023bcf"
     /** The format of this generated code, which the runtime that reads it declares; a runtime of another format fails to compile this line. */
     val format = baton.Format7
     val ActivityLikeNotification: TypeID = Registry.type("ActivityLikeNotification")
@@ -357,6 +357,7 @@ object Slots {
         val character_bca4f9 = DynamicKey(Types.Query, "character", listOf(KeyArgument("id", listOf(KeyPart.Variable("id")))))
         val character_8fc9fb = DynamicKey(Types.Query, "character", listOf(KeyArgument("id", listOf(KeyPart.Variable("where")))))
         val character_c74a1e: Slot = Registry.slot(Types.Query, "character(id:1)")
+        val characterBy_836059 = DynamicKey(Types.Query, "characterBy", listOf(KeyArgument("by", listOf(KeyPart.Variable("by")))))
         val characters_2b5ffd = DynamicKey(Types.Query, "characters", listOf(KeyArgument("filter", listOf(KeyPart.Variable("filter")))))
         val characters_498461 = DynamicKey(Types.Query, "characters", listOf(KeyArgument("filter", listOf(KeyPart.Literal("{\"name\":"), KeyPart.Variable("name"), KeyPart.Literal(",\"status\":\"Alive\"}")))))
         val characters_192531 = DynamicKey(Types.Query, "characters", listOf(KeyArgument("filter", listOf(KeyPart.Literal("{\"name\":"), KeyPart.Variable("name"), KeyPart.Literal("}")))))
@@ -511,10 +512,25 @@ sealed interface Status : GeneratedEnum {
     }
 }
 
+/** The schema's input object `CharacterBy`, of which exactly one field is given: a class per field, with the field's value. */
+sealed interface CharacterBy : InputObject {
+    data class Id(val id: String) : CharacterBy { override val variable: Variable get() = Variable.Object(Variables.of("id" to Variable.of(id)).values) }
+    data class Status_(val status: Status) : CharacterBy { override val variable: Variable get() = Variable.Object(Variables.of("status" to Variable.of(status)).values) }
+    data class Names(val names: List<String>) : CharacterBy { override val variable: Variable get() = Variable.Object(Variables.of("names" to Variable.List(names.map { Variable.of(it) })).values) }
+    data class Residence_(val residence: Residence) : CharacterBy { override val variable: Variable get() = Variable.Object(Variables.of("residence" to Variable.of(residence)).values) }
+    data class Fallback(val fallback: CharacterBy) : CharacterBy { override val variable: Variable get() = Variable.Object(Variables.of("fallback" to Variable.of(fallback)).values) }
+}
+
 /** The schema's input object `FilterCharacter`. A field left null is absent from the request, as GraphQL distinguishes absent from null. */
 data class FilterCharacter(val name: String? = null, val status: String? = null, val species: String? = null, val type: String? = null, val gender: String? = null) : InputObject {
     override val variable: Variable
         get() = Variable.Object(Variables.of("name" to name?.let { Variable.of(it) }, "status" to status?.let { Variable.of(it) }, "species" to species?.let { Variable.of(it) }, "type" to type?.let { Variable.of(it) }, "gender" to gender?.let { Variable.of(it) }).values)
+}
+
+/** The schema's input object `Residence`. A field left null is absent from the request, as GraphQL distinguishes absent from null. */
+data class Residence(val dimension: String) : InputObject {
+    override val variable: Variable
+        get() = Variable.Object(Variables.of("dimension" to Variable.of(dimension)).values)
 }
 
 /** The conditions `@include` and `@skip` put on selections, which an owner settles once each. */

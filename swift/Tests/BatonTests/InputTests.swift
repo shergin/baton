@@ -49,4 +49,43 @@ struct InputTests {
         let data = TestKeys.Data(anchor: Anchor(record: store.root, variables: query.variables, store: store))
         #expect(data.characters?.info?.count == 1)
     }
+
+    @Test("a `@oneOf` input's case renders the object of its one field, as a record given that field alone would")
+    func aOneOfCaseRendersTheObjectOfItsOneField() {
+        #expect(CharacterBy.id("1").variable == .object(["id": .string("1")]))
+        #expect(CharacterBy.status(.DEAD).variable.json == #"{"status":"DEAD"}"#)
+        #expect(CharacterBy.names(["Rick", "Morty"]).variable.json == #"{"names":["Rick","Morty"]}"#)
+    }
+
+    @Test("a `@oneOf` case holding an input object renders that object's own fields under its one member")
+    func aOneOfCaseHoldingAnInputRendersItsObject() {
+        let residence = Residence(dimension: "C-137")
+        #expect(CharacterBy.residence(residence).variable == .object(["residence": residence.variable]))
+        #expect(CharacterBy.residence(residence).variable.json == #"{"residence":{"dimension":"C-137"}}"#)
+    }
+
+    @Test("a `@oneOf` case holding the input itself renders one object inside another, each with one member")
+    func aOneOfCaseHoldingItsOwnInputNests() {
+        let by = CharacterBy.fallback(.fallback(.id("1")))
+        #expect(by.variable.json == #"{"fallback":{"fallback":{"id":"1"}}}"#)
+    }
+
+    @Test("two equal `@oneOf` cases are equal and hash alike, and a case differs from another holding the same value")
+    func oneOfCasesAreEqualByCaseAndValue() {
+        #expect(CharacterBy.id("1") == .id("1"))
+        #expect(CharacterBy.id("1") != .id("2"))
+        #expect(CharacterBy.names(["1"]) != .id("1"))
+        #expect(CharacterBy.fallback(.id("1")) == .fallback(.id("1")))
+        #expect(Set<CharacterBy>([.id("1"), .id("1"), .fallback(.id("1"))]).count == 2)
+        #expect(TestCharacterBy(by: .id("1")) == TestCharacterBy(by: .id("1")))
+        #expect(TestCharacterBy(by: .id("1")) != TestCharacterBy(by: .fallback(.id("1"))))
+    }
+
+    @Test("an operation's `@oneOf` variable is carried as the object of its one field and keys the field by that text")
+    func aOneOfVariableIsCarriedAndKeyedAsItsObject() throws {
+        let query = TestCharacterBy(by: .residence(Residence(dimension: "C-137")))
+        #expect(query.variables.json == #"{"by":{"residence":{"dimension":"C-137"}}}"#)
+        let key = try rootKey(TestCharacterBy.plan, query.variables)
+        #expect(key == #"characterBy(by:{"residence":{"dimension":"C-137"}})"#)
+    }
 }

@@ -28,6 +28,14 @@ are expected and listed without apology.
   a subscription of client fields alone stays refused, now with a message
   that says why. Held by the script `client-only`
   ([the decision](docs/decisions/client-data-is-described-and-committed.md#a-client-only-operation-2026-11-05)).
+- An input object the schema declares `@oneOf` is generated as a choice:
+  in Swift an enum with a case per field, `indirect` when a field's type
+  contains the input, and in Kotlin a sealed interface with a data class
+  per field. The case carries the field's type made non-null and renders
+  the object with its one member, so the type says what the schema says.
+  An input without `@oneOf` is the struct or data class it was. The plan's
+  `inputs` entry is now an object with `fields` and `one_of`
+  ([the decision](docs/decisions/a-oneof-input-reads-as-an-enum.md)).
 
 - A Swift operation value is a value, and its live side is the macro's
   projection: `@Query var issues: IssuesQuery` keeps `issues` the value the

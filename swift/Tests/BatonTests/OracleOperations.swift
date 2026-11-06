@@ -125,6 +125,7 @@ struct OracleOperation: Sendable {
         },
         "TestPricedAssetsQuery": { try OracleOperation(TestPricedAssetsQuery(price: $0.decimal("price"), among: $0.optionalDecimals("among")), reads: [:]) },
         "TestFilteredCharacters": { try OracleOperation(TestFilteredCharacters(filters: $0.characterFilters("filters")), reads: [:]) },
+        "TestCharacterBy": { try OracleOperation(TestCharacterBy(by: $0.characterBy("by")), reads: [:]) },
     ]
 
     /// Binds a manifest case to its operation.
@@ -805,6 +806,33 @@ extension OperationVariables {
                 return string
             }
             return FilterCharacter(name: try field("name"), status: try field("status"), species: try field("species"), type: try field("type"), gender: try field("gender"))
+        }
+    }
+
+    /// A `CharacterBy`, given as the object of its one field.
+    func characterBy(_ name: String) throws -> CharacterBy {
+        try characterBy(try required(name), name)
+    }
+
+    private func characterBy(_ value: Manifest.Value, _ name: String) throws -> CharacterBy {
+        guard case .object(let fields) = value, fields.count == 1, let member = fields.first else { throw mismatch(name, value) }
+        switch (member.key, member.value) {
+        case ("id", .string(let id)):
+            return .id(id)
+        case ("status", .string(let status)):
+            return .status(Status(enumText: status))
+        case ("names", .list(let items)):
+            return .names(try items.map { item in
+                guard case .string(let string) = item else { throw mismatch(name, value) }
+                return string
+            })
+        case ("residence", .object(let residence)):
+            guard case .string(let dimension)? = residence["dimension"] else { throw mismatch(name, value) }
+            return .residence(Residence(dimension: dimension))
+        case ("fallback", let fallback):
+            return .fallback(try characterBy(fallback, name))
+        default:
+            throw mismatch(name, value)
         }
     }
 }

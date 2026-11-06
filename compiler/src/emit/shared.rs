@@ -7,7 +7,7 @@
 use super::swift::{input_field_type, runtime_value, slot_member, swift_literal, type_reference};
 use super::writer::Writer;
 use super::{FORMAT, HEADER};
-use crate::decide::{KeyPart, Shared, SlotRef};
+use crate::decide::{InputField, KeyPart, Shared, SlotRef};
 use crate::names::{
     enum_case_name, enum_type_name, guard_name, input_field_name, input_type_name, keyed_types,
     possible_types, slot_name, type_constant,
@@ -211,7 +211,12 @@ pub(super) fn shared_text(shared: &Shared) -> String {
             },
         );
     }
-    for (name, fields) in &shared.inputs {
+    for (name, input) in &shared.inputs {
+        if input.one_of {
+            one_of_input_text(&mut writer, name, &input.fields);
+            continue;
+        }
+        let fields = &input.fields;
         writer.blank();
         writer.doc(format!(
             "The schema's input object `{name}`. A field left nil is absent from the request, as GraphQL distinguishes absent from null."
@@ -346,4 +351,58 @@ fn parts_literal(slot: &SlotRef) -> String {
         })
         .collect();
     format!("{}, [{}]", swift_literal(&slot.field), arguments.join(", "))
+}
+
+/// A `@oneOf` input as a choice: an enum with a case per field, whose
+/// payload is the field's type made non-null, since the one field given is
+/// given a value; `indirect` when a field's type contains the input. Its
+/// `variable` renders the object with its one member.
+fn one_of_input_text(writer: &mut Writer, name: &str, fields: &[InputField]) {
+    writer.blank();
+    writer.doc(format!(
+        "The schema's input object `{name}`, of which exactly one field is given: a case per field, with the field's value."
+    ));
+    let indirect = if fields.iter().any(|field| field.indirect) {
+        "indirect "
+    } else {
+        ""
+    };
+    writer.block(
+        format!(
+            "nonisolated public {indirect}enum {}: {}",
+            input_type_name(name),
+            runtime_value("InputObject")
+        ),
+        |writer| {
+            for field in fields {
+                // The enum boxes itself when `indirect`; a case's payload is
+                // the field's type made non-null, never boxed on its own.
+                let required = InputField {
+                    type_: field.type_.required(),
+                    indirect: false,
+                    ..field.clone()
+                };
+                writer.line(format!(
+                    "case {}({})",
+                    input_field_name(&field.name),
+                    input_field_type(&required)
+                ));
+            }
+            writer.blank();
+            writer.block(
+                format!("public var variable: {}", runtime_value("Variable")),
+                |writer| {
+                    writer.block("switch self", |writer| {
+                        for field in fields {
+                            writer.line(format!(
+                                "case .{}(let value): .object([{}: .init(value)])",
+                                input_field_name(&field.name),
+                                swift_literal(&field.name)
+                            ));
+                        }
+                    });
+                },
+            );
+        },
+    );
 }

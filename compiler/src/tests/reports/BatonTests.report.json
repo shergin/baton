@@ -1,5 +1,5 @@
 {
-  "schemaDigest": "48225267547352f149f9ef93baefde85",
+  "schemaDigest": "93c80765936ba3b35fbbd67d03023bcf",
   "operations": [
     {
       "name": "Fixture",
@@ -1474,6 +1474,47 @@
                     "optional": false
                   },
                   "fragment": "TestCharacterValue_character"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestCharacterBy",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "variables": [
+        {
+          "name": "by",
+          "type": "CharacterBy!"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestCharacterBy($by:CharacterBy!){characterBy(by:$by){id,name}}",
+      "lens": {
+        "type": "Query",
+        "accessors": [
+          {
+            "name": "characterBy",
+            "key": "characterBy",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "Character",
+              "accessors": [
+                {
+                  "name": "id",
+                  "key": "id",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "name",
+                  "key": "name",
+                  "read": "scalar",
+                  "optional": true
                 }
               ]
             }

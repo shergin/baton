@@ -25,9 +25,10 @@ use schema::{SDLSchema, Schema, Type, TypeReference};
 use super::identity::Keys;
 use super::plan::{
     ArgumentPlan, ArgumentValuePlan, CatchPlan, CatchTarget, ConditionClass, ConnectionPlan,
-    ConstantPlan, DeletePlan, EditKind, EditPlan, FragmentPlan, InputFieldPlan, LookupArgumentPlan,
-    LookupPlan, OperationKind, OperationPlan, Origin, PagedPlan, PaginationPlan, Plan, RefetchPlan,
-    RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan, TypeKind, TypePlan, VariablePlan,
+    ConstantPlan, DeletePlan, EditKind, EditPlan, FragmentPlan, InputFieldPlan, InputPlan,
+    LookupArgumentPlan, LookupPlan, OperationKind, OperationPlan, Origin, PagedPlan,
+    PaginationPlan, Plan, RefetchPlan, RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan,
+    TypeKind, TypePlan, VariablePlan,
 };
 
 use crate::config::Config;
@@ -37,12 +38,13 @@ use crate::directives::Deletes;
 /// belong to through other inputs' fields, outside lists: a Swift value type
 /// cannot contain itself, so the generated struct boxes such a field. Every
 /// edge of a cycle is marked, so no cycle is left whole.
-fn mark_indirect(inputs: &mut BTreeMap<String, Vec<InputFieldPlan>>) {
+fn mark_indirect(inputs: &mut BTreeMap<String, InputPlan>) {
     // The inputs each input's fields name directly, outside lists.
     let direct: BTreeMap<String, Vec<String>> = inputs
         .iter()
-        .map(|(name, fields)| {
-            let named = fields
+        .map(|(name, input)| {
+            let named = input
+                .fields
                 .iter()
                 .filter(|field| {
                     field.type_.base_kind() == TypeKind::InputObject && !field.type_.is_list()
@@ -70,8 +72,8 @@ fn mark_indirect(inputs: &mut BTreeMap<String, Vec<InputFieldPlan>>) {
             .map(|named| named.iter().any(|next| reaches(next, target, direct, seen)))
             .unwrap_or(false)
     }
-    for (name, fields) in inputs.iter_mut() {
-        for field in fields.iter_mut() {
+    for (name, input) in inputs.iter_mut() {
+        for field in input.fields.iter_mut() {
             if field.type_.base_kind() != TypeKind::InputObject || field.type_.is_list() {
                 continue;
             }
@@ -103,7 +105,7 @@ struct Lowering<'a> {
     /// The enums the documents' types name, with their values.
     enums: std::cell::RefCell<BTreeMap<String, Vec<String>>>,
     /// The input objects the documents' variables name, with their fields.
-    inputs: std::cell::RefCell<BTreeMap<String, Vec<InputFieldPlan>>>,
+    inputs: std::cell::RefCell<BTreeMap<String, InputPlan>>,
     /// The definition being lowered, whose variables `@paged` checks its
     /// page against.
     scope: std::cell::RefCell<Scope>,
@@ -1725,10 +1727,15 @@ impl Lowering<'_> {
                     // input that names itself through a field ends here.
                     let seen = self.inputs.borrow().contains_key(&name);
                     if !seen {
-                        self.inputs.borrow_mut().insert(name.clone(), Vec::new());
-                        let fields: Vec<InputFieldPlan> = self
-                            .schema
-                            .input_object(*id)
+                        self.inputs.borrow_mut().insert(
+                            name.clone(),
+                            InputPlan {
+                                fields: Vec::new(),
+                                one_of: false,
+                            },
+                        );
+                        let input_object = self.schema.input_object(*id);
+                        let fields: Vec<InputFieldPlan> = input_object
                             .fields
                             .iter()
                             .map(|argument| InputFieldPlan {
@@ -1737,7 +1744,15 @@ impl Lowering<'_> {
                                 indirect: false,
                             })
                             .collect();
-                        self.inputs.borrow_mut().insert(name.clone(), fields);
+                        // `@oneOf`, the specification's: exactly one field is
+                        // given, and the generated value is a choice.
+                        let one_of = input_object
+                            .directives
+                            .iter()
+                            .any(|directive| directive.name.0.lookup() == "oneOf");
+                        self.inputs
+                            .borrow_mut()
+                            .insert(name.clone(), InputPlan { fields, one_of });
                     }
                 }
                 let mapped = kind == TypeKind::CustomScalar

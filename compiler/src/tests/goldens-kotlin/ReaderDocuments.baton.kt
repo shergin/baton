@@ -354,6 +354,55 @@ private object `TestCaughtPartQuery-plan` {
     }
 }
 
+/** Operation value for `query TestCharacterBy`. */
+@Immutable
+class TestCharacterBy(val by: CharacterBy) : QueryOperation<TestCharacterBy.Data> {
+    override val variables: Variables
+        get() = Variables.of("by" to Variable.of(by))
+    override val type: OperationType<Data> get() = Companion
+
+    override fun equals(other: Any?): Boolean = other is TestCharacterBy && other.by == by
+    override fun hashCode(): Int = listOf(by).hashCode()
+
+    companion object : QueryType<TestCharacterBy, TestCharacterBy.Data> {
+        override val name = "TestCharacterBy"
+        override val document: Document = Document.Text("query TestCharacterBy(\$by:CharacterBy!){characterBy(by:\$by){id,name}}")
+        override val kind = OperationKind.QUERY
+        override val plan: Plan by lazy { Plan(root = `TestCharacterBy-plan`.selection0, transient = Types.transient) }
+
+        override fun data(anchor: Anchor): Data = Data(anchor)
+    }
+
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val characterBy: CharacterByLens? get() = anchor.linked(anchor.owner.slot(Slots.Query.characterBy_836059))?.let(::CharacterByLens)
+        override fun equals(other: Any?): Boolean = other is TestCharacterBy.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class CharacterByLens(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Character.id)
+            val name: String? get() = anchor.string(Slots.Character.name)
+            override fun equals(other: Any?): Boolean = other is TestCharacterBy.Data.CharacterByLens && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+        }
+    }
+}
+
+private object `TestCharacterBy-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("characterBy", key = StorageKey.Dynamic(Slots.Query.characterBy_836059), plural = false, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false),
+        ))
+    }
+}
+
 /** Operation value for `query TestCollidingErrors`. */
 @Immutable
 class TestCollidingErrors(val id: String) : QueryOperation<TestCollidingErrors.Data> {

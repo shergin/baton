@@ -29,9 +29,21 @@ pub struct Plan {
     #[serde(skip_serializing_if = "BTreeSet::is_empty")]
     pub transient_types: BTreeSet<String>,
     /// The schema's input objects the documents' variables name, with their
-    /// fields in the schema's order, each generated as a Swift struct.
+    /// fields in the schema's order, each generated as a value: a struct, or
+    /// for an input declared `@oneOf` a choice with a case per field.
     #[serde(skip_serializing_if = "BTreeMap::is_empty")]
-    pub inputs: BTreeMap<String, Vec<InputFieldPlan>>,
+    pub inputs: BTreeMap<String, InputPlan>,
+}
+
+/// An input object as the schema declares it: its fields, and whether the
+/// schema declares it `@oneOf`, so that exactly one field is given, non-null,
+/// and the generated value is a choice rather than a record
+/// (`docs/decisions/a-oneof-input-reads-as-an-enum.md`).
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+pub struct InputPlan {
+    pub fields: Vec<InputFieldPlan>,
+    #[serde(skip_serializing_if = "is_false")]
+    pub one_of: bool,
 }
 
 /// A field of an input object, as the schema declares it.
@@ -233,6 +245,25 @@ impl TypePlan {
     pub fn non_null(&self) -> bool {
         match self {
             TypePlan::Named { non_null, .. } | TypePlan::List { non_null, .. } => *non_null,
+        }
+    }
+
+    /// The same type with its outermost position non-null: what a `@oneOf`
+    /// input's field holds when it is the one given.
+    pub fn required(&self) -> TypePlan {
+        match self {
+            TypePlan::Named {
+                name, kind, mapped, ..
+            } => TypePlan::Named {
+                name: name.clone(),
+                kind: *kind,
+                non_null: true,
+                mapped: *mapped,
+            },
+            TypePlan::List { element, .. } => TypePlan::List {
+                element: element.clone(),
+                non_null: true,
+            },
         }
     }
 

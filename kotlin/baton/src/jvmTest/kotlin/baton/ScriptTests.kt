@@ -465,6 +465,18 @@ internal class ScriptRun(private val script: Script) {
                 val companion = checkNotNull(classifier.companionObjectInstance) { "${classifier.simpleName} has no companion" }
                 companion::class.functions.first { it.name == "of" }.call(companion, value as String)
             }
+            // A `@oneOf` input, given as the object of its one field: the
+            // case whose one property is that field.
+            classifier.isSealed -> {
+                @Suppress("UNCHECKED_CAST")
+                val fields = value as Map<String, Any?>
+                val field = fields.keys.single()
+                val case = classifier.sealedSubclasses.single { case ->
+                    case.primaryConstructor?.parameters?.singleOrNull()?.name?.trimEnd('_') == field
+                }
+                val property = checkNotNull(checkNotNull(case.primaryConstructor).parameters.single().name)
+                construct(case, mapOf(property to fields[field]))
+            }
             else -> {
                 @Suppress("UNCHECKED_CAST")
                 construct(classifier, value as Map<String, Any?>)

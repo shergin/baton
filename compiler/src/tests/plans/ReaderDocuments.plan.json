@@ -3,7 +3,7 @@
     {
       "name": "TestCaughtAppearances_character",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 16,
+      "document": 17,
       "type_condition": "Character",
       "type_is_abstract": false,
       "possible_types": [
@@ -81,7 +81,7 @@
     {
       "name": "TestLogEdges_connection",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 14,
+      "document": 15,
       "type_condition": "NoteConnection",
       "type_is_abstract": false,
       "possible_types": [
@@ -156,7 +156,7 @@
     {
       "name": "TestLoggedNotes_character",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 15,
+      "document": 16,
       "type_condition": "Character",
       "type_is_abstract": false,
       "possible_types": [
@@ -241,7 +241,7 @@
     {
       "name": "TestOriginAndEpisode_character",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 19,
+      "document": 20,
       "type_condition": "Character",
       "type_is_abstract": false,
       "possible_types": [
@@ -777,7 +777,7 @@
     {
       "name": "TestCaughtPartQuery",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 17,
+      "document": 18,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -1106,6 +1106,204 @@
                   ]
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TestCharacterBy",
+      "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
+      "document": 14,
+      "kind": "query",
+      "root_type": "Query",
+      "variables": [
+        {
+          "name": "by",
+          "type": {
+            "shape": "named",
+            "name": "CharacterBy",
+            "kind": "input_object",
+            "non_null": true
+          },
+          "default_value": null
+        }
+      ],
+      "text": "query TestCharacterBy($by:CharacterBy!){characterBy(by:$by){id,name}}",
+      "throws_on_field_error": false,
+      "bubbles": false,
+      "has_incremental": false,
+      "error_behavior": null,
+      "reader": [
+        {
+          "kind": "linked",
+          "name": "characterBy",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Character",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "Character": [
+              "id"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "Character"
+          ],
+          "storage_key": {
+            "name": "characterBy",
+            "arguments": [
+              {
+                "name": "by",
+                "value": {
+                  "kind": "variable",
+                  "value": "by"
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "name",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "name",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            }
+          ]
+        }
+      ],
+      "normalization": [
+        {
+          "kind": "linked",
+          "name": "characterBy",
+          "alias": null,
+          "type": {
+            "shape": "named",
+            "name": "Character",
+            "kind": "object",
+            "non_null": false
+          },
+          "non_null": false,
+          "semantic_non_null": false,
+          "keys": {
+            "Character": [
+              "id"
+            ]
+          },
+          "is_abstract": false,
+          "possible_types": [
+            "Character"
+          ],
+          "storage_key": {
+            "name": "characterBy",
+            "arguments": [
+              {
+                "name": "by",
+                "value": {
+                  "kind": "variable",
+                  "value": "by"
+                }
+              }
+            ]
+          },
+          "lookup": null,
+          "connection": null,
+          "edit": null,
+          "required": null,
+          "catch": null,
+          "caught": false,
+          "bubbles": false,
+          "selections": [
+            {
+              "kind": "scalar",
+              "name": "id",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "ID",
+                "kind": "id",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "id",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
+            },
+            {
+              "kind": "scalar",
+              "name": "name",
+              "alias": null,
+              "type": {
+                "shape": "named",
+                "name": "String",
+                "kind": "string",
+                "non_null": false
+              },
+              "non_null": false,
+              "semantic_non_null": false,
+              "storage_key": {
+                "name": "name",
+                "arguments": []
+              },
+              "edit": null,
+              "required": null,
+              "catch": null,
+              "caught": false
             }
           ]
         }
@@ -4032,7 +4230,7 @@
     {
       "name": "TestStandaloneFragmentsQuery",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 21,
+      "document": 22,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -8261,7 +8459,7 @@
     {
       "name": "TestTwoFieldPartQuery",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 20,
+      "document": 21,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -9761,7 +9959,7 @@
     {
       "name": "TestUncaughtPartQuery",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",
-      "document": 18,
+      "document": 19,
       "kind": "query",
       "root_type": "Query",
       "variables": [
@@ -10117,53 +10315,130 @@
       ]
     }
   ],
-  "inputs": {
-    "FilterCharacter": [
-      {
-        "name": "name",
-        "type": {
-          "shape": "named",
-          "name": "String",
-          "kind": "string",
-          "non_null": false
-        }
-      },
-      {
-        "name": "status",
-        "type": {
-          "shape": "named",
-          "name": "String",
-          "kind": "string",
-          "non_null": false
-        }
-      },
-      {
-        "name": "species",
-        "type": {
-          "shape": "named",
-          "name": "String",
-          "kind": "string",
-          "non_null": false
-        }
-      },
-      {
-        "name": "type",
-        "type": {
-          "shape": "named",
-          "name": "String",
-          "kind": "string",
-          "non_null": false
-        }
-      },
-      {
-        "name": "gender",
-        "type": {
-          "shape": "named",
-          "name": "String",
-          "kind": "string",
-          "non_null": false
-        }
-      }
+  "enums": {
+    "Status": [
+      "ALIVE",
+      "DEAD",
+      "UNKNOWN"
     ]
+  },
+  "inputs": {
+    "CharacterBy": {
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "shape": "named",
+            "name": "ID",
+            "kind": "id",
+            "non_null": false
+          }
+        },
+        {
+          "name": "status",
+          "type": {
+            "shape": "named",
+            "name": "Status",
+            "kind": "enum",
+            "non_null": false
+          }
+        },
+        {
+          "name": "names",
+          "type": {
+            "shape": "list",
+            "element": {
+              "shape": "named",
+              "name": "String",
+              "kind": "string",
+              "non_null": true
+            },
+            "non_null": false
+          }
+        },
+        {
+          "name": "residence",
+          "type": {
+            "shape": "named",
+            "name": "Residence",
+            "kind": "input_object",
+            "non_null": false
+          }
+        },
+        {
+          "name": "fallback",
+          "type": {
+            "shape": "named",
+            "name": "CharacterBy",
+            "kind": "input_object",
+            "non_null": false
+          },
+          "indirect": true
+        }
+      ],
+      "one_of": true
+    },
+    "FilterCharacter": {
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": false
+          }
+        },
+        {
+          "name": "status",
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": false
+          }
+        },
+        {
+          "name": "species",
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": false
+          }
+        },
+        {
+          "name": "type",
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": false
+          }
+        },
+        {
+          "name": "gender",
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": false
+          }
+        }
+      ]
+    },
+    "Residence": {
+      "fields": [
+        {
+          "name": "dimension",
+          "type": {
+            "shape": "named",
+            "name": "String",
+            "kind": "string",
+            "non_null": true
+          }
+        }
+      ]
+    }
   }
 }

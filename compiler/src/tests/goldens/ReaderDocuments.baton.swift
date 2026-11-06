@@ -282,6 +282,52 @@ nonisolated public struct TestCaughtPartQuery: Baton.Query {
     }
 }
 
+/// Operation value for `query TestCharacterBy`.
+nonisolated public struct TestCharacterBy: Baton.Query {
+    public var by: CharacterBy
+
+    public init(by: CharacterBy) {
+        self.by = by
+    }
+
+    public static let name = "TestCharacterBy"
+    public static let document: Baton.Document = .text(#"query TestCharacterBy($by:CharacterBy!){characterBy(by:$by){id,name}}"#)
+
+    public var variables: Baton.Variables {
+        Baton.Variables(["by": Baton.Variable(self.by)])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.by == rhs.by
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.by)
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("characterBy", key: .dynamic(Slots.Query.characterBy_836059), plural: false, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false),
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false),
+    ])
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        @MainActor public var characterBy: CharacterByLens? { anchor.linked(anchor.owner.slot(Slots.Query.characterBy_836059)).map(CharacterByLens.init(anchor:)) }
+
+        nonisolated public struct CharacterByLens: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+            @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+        }
+    }
+}
+
 /// Operation value for `query TestCollidingErrors`.
 nonisolated public struct TestCollidingErrors: Baton.Query {
     public var id: String

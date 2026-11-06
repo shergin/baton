@@ -1,0 +1,3 @@
+query TestCharacterBy($by: CharacterBy!) {
+  characterBy(by: $by) { id name }
+}

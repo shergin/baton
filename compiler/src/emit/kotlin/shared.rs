@@ -13,8 +13,8 @@ use super::literal::{
 use super::{FORMAT, header};
 use crate::decide::{InputField, ListShape, Shared, SlotRef};
 use crate::kotlin_names::{
-    UNDECLARED, enum_type_name, enum_value_name, input_field_name, input_type_name, slot_name,
-    type_constant,
+    UNDECLARED, enum_type_name, enum_value_name, input_field_name, input_type_name,
+    one_of_case_name, slot_name, type_constant,
 };
 use crate::names::{guard_name, keyed_types, possible_types};
 use crate::pipeline::TypeKind;
@@ -169,7 +169,12 @@ pub(super) fn shared_text(
         writer.blank();
         enum_text(&mut writer, name, values);
     }
-    for (name, fields) in &shared.inputs {
+    for (name, input) in &shared.inputs {
+        if input.one_of {
+            one_of_input_text(&mut writer, name, &input.fields, converters);
+            continue;
+        }
+        let fields = &input.fields;
         writer.blank();
         let type_name = input_type_name(name);
         writer.line(format!(
@@ -372,4 +377,58 @@ fn field_shape(field: &InputField) -> ValueShape<'_> {
         list: ListShape::of(&field.type_),
         non_null: field.type_.non_null(),
     }
+}
+
+/// A `@oneOf` input as a choice: a sealed interface with a data class per
+/// field, holding the field's value, non-null, since the one field given is
+/// given a value. Each renders the object with its one member.
+fn one_of_input_text(
+    writer: &mut Writer,
+    name: &str,
+    fields: &[InputField],
+    converters: &Converters,
+) {
+    writer.blank();
+    let type_name = input_type_name(name);
+    writer.line(format!(
+        "/** The schema's input object `{name}`, of which exactly one field is given: a class per field, with the field's value. */"
+    ));
+    writer.block(
+        format!("sealed interface {type_name} : InputObject"),
+        |writer| {
+            let shapes: Vec<_> = fields
+                .iter()
+                .map(|field| {
+                    let mut shape = field_shape(field);
+                    shape.non_null = true;
+                    shape
+                })
+                .collect();
+            // A case is a class nested in the interface, so one named as a
+            // type another case's value spells would shadow that type.
+            let types: Vec<String> = shapes
+                .iter()
+                .map(|shape| converters.value_type(shape))
+                .collect();
+            let joined = types.join(" ");
+            let spelled = super::identifiers(&joined);
+            // Two fields that capitalize alike, `id` and `Id`, would be one
+            // class; the later takes an underscore, as a shadowed name does.
+            let mut taken: Vec<String> = Vec::new();
+            for (field, shape) in fields.iter().zip(&shapes) {
+                let property = input_field_name(&field.name);
+                let value = converters.value_expression(&property_read(&property), shape);
+                let mut case = one_of_case_name(&field.name, &type_name, &spelled);
+                while taken.contains(&case) {
+                    case.push('_');
+                }
+                taken.push(case.clone());
+                writer.line(format!(
+                    "data class {case}(val {property}: {}) : {type_name} {{ override val variable: Variable get() = Variable.Object(Variables.of({} to {value}).values) }}",
+                    converters.value_type(shape),
+                    string_literal(&field.name)
+                ));
+            }
+        },
+    );
 }

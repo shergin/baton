@@ -350,6 +350,23 @@ pub fn enum_value_name(value: &str, enum_type: &str) -> String {
     escape(value)
 }
 
+/// A `@oneOf` input's case as a class nested in its sealed interface: the
+/// field's name capitalized; one the runtime, the standard library, a
+/// member or the interface itself spells, or a type the cases' values
+/// spell, which the nested class would shadow, takes an underscore.
+pub fn one_of_case_name(field: &str, input_type: &str, spelled: &BTreeSet<&str>) -> String {
+    let name = crate::naming::capitalize(field);
+    if RUNTIME_NAMES.contains(&name.as_str())
+        || STANDARD_LIBRARY_NAMES.contains(&name.as_str())
+        || MEMBER_NAMES.iter().any(|(member, _)| *member == name)
+        || name == input_type.trim_matches('`')
+        || spelled.contains(name.as_str())
+    {
+        return format!("{name}_");
+    }
+    escape(&name)
+}
+
 /// A type the package declares for the schema's `name`: the name escaped,
 /// or with `suffix` after it where the package keeps the name.
 fn package_type_name(name: &str, suffix: &str) -> String {
