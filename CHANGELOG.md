@@ -3,6 +3,26 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
+## Unreleased
+
+- The bench suite is a library, `BatonBench`, under the executable
+  `BatonBenchmarks`, and runs by sections: `--only ingest,commit` runs the
+  named ones, `--json <path>` writes every row's samples and every count
+  as a report, `--repeat <n>` runs the selection n times in one process,
+  and `--profile "<row>"` loops one row for a profiler, which
+  `scripts/profile-bench.sh` drives through xctrace and summarizes by
+  symbol. Every row counts the allocations one run of its body makes,
+  printed beside its time, and eleven rows gate that count in
+  `benchmarks/counts.txt` as the notification counts are gated, so an
+  allocation added on a hot path shows in CI as a diff where a timing
+  would be noise. Rows named `floor:` measure the platform's own costs
+  beside Baton's: an `@Observable` stored property read, untracked and
+  tracked; Foundation's `JSONSerialization` over both fixtures; a
+  `[String: AnyObject]` table at the two stores' sizes; and
+  `sqlite3_step` over the image's rows with nothing decoded. The
+  hydration row makes its store in its setup, where it used to time the
+  store's deinit inside its body, a sixth of the row.
+
 ## 0.19.0 (Baranka) — 2026-11-06
 
 - A late response yields to a newer deletion and to a newer response of

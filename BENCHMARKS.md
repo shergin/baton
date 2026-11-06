@@ -5,6 +5,15 @@ machine. Every number comes from `swift run -c release BatonBenchmarks` (or
 the comparison package named in its section), recorded with the revision,
 machine, OS and date. Append; never edit a past entry.
 
+The suite runs by sections (`--only ingest,commit`), writes a report
+(`--json report.json`), repeats (`--repeat 3`), and loops one row for a
+profiler (`--profile "same payload"`, which `scripts/profile-bench.sh`
+drives and summarizes by symbol). Beside each row's time stands the
+count of allocations one run of its body makes; the deterministic ones
+are gated in `benchmarks/counts.txt` with the notification counts. Rows
+named `floor:` are the platform's own costs, measured in the same run,
+so a row stands beside what it cannot beat.
+
 Figures are those tables drawn again, by [`benchmarks/charts`](benchmarks/charts),
 with malevich, the library behind `kaz`. The plot panel is that library's
 pixel raster; the axes stay text. `cargo run --manifest-path

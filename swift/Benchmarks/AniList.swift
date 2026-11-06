@@ -131,12 +131,12 @@ func aniListBench() async throws {
     // The ingest of each chunk, off the clock of any commit.
     let planned = Store()
     let plans = aniListChunks.map { ListQuery.plan.resolve($0.variables, in: planned.keys) }
-    measure("ingest of a chunk of 500 entries, bytes -> change set, per chunk", iterations: 30, ops: 2) {
+    measure("ingest of a chunk of 500 entries, bytes -> change set, per chunk", iterations: 30, ops: 2, gate: "ingest-anilist") {
         for (data, plan) in zip(aniListResponses, plans) { _ = try! Ingest.normalize(data, plan: plan, rootKey: Store.rootKey) }
     }
     var fresh = Store()
     var changes: [ChangeSet] = []
-    measure("commit of both chunks into an empty store", iterations: 20, setup: {
+    measure("commit of both chunks into an empty store", iterations: 20, gate: "commit-anilist", setup: {
         fresh = Store()
         changes = zip(aniListChunks, aniListResponses).map { try! Ingest.normalize($1, plan: ListQuery.plan.resolve($0.variables, in: fresh.keys), rootKey: Store.rootKey) }
     }) {

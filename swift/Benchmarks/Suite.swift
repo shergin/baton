@@ -1,12 +1,13 @@
-// The bench suite. Every number in BENCHMARKS.md comes from here.
-//
-//   swift run -c release BatonBenchmarks
-//   swift run -c release BatonBenchmarks --quick   (three samples each, for CI)
+// The bench suite: every number in BENCHMARKS.md comes from here, through
+// `swift run -c release BatonBenchmarks`. The sections are run by `run()`
+// below; what the command line asks, how a row is measured and the report
+// are in Harness.swift, the platform's floor rows in Floors.swift.
 @_spi(Generated) import Baton
 import BatonSpec
 import BatonTesting
 import Foundation
 import Observation
+import SQLite3
 import Synchronization
 
 @MainActor
@@ -191,414 +192,349 @@ func assetPrices(_ count: Int) -> Data {
     return Data(#"{"data":{"assets":[\#(assets.joined(separator: ","))]}}"#.utf8)
 }
 
-/// `--quick`: three samples per measurement, so CI runs every bench once
-/// without waiting for numbers worth recording.
-let quick = CommandLine.arguments.contains("--quick")
-
-/// `--counts`: the suite prints only its deterministic counts, one
-/// `count <name> <value>` a line, which CI compares with
-/// `benchmarks/counts.txt`; a change to what a commit notifies or logs shows
-/// as a diff, where a timing would show as noise.
-let countsOnly = CommandLine.arguments.contains("--counts")
-
-/// Records a count that does not depend on the machine: printed as `line`
-/// in a normal run, and as `count <name> <value>` under `--counts`.
-func count(_ name: String, _ value: Int, _ line: String) {
-    print(countsOnly ? "count \(name) \(value)" : line)
-}
-
-/// How many samples a measurement asked for `iterations` takes.
-func rounds(_ iterations: Int) -> Int { quick ? 3 : iterations }
-
-func format(_ nanoseconds: Double) -> String {
-    nanoseconds >= 1_000_000 ? String(format: "%8.2f ms", nanoseconds / 1_000_000)
-        : nanoseconds >= 1_000 ? String(format: "%8.2f µs", nanoseconds / 1_000)
-        : String(format: "%8.1f ns", nanoseconds)
-}
-
-func report(_ label: String, _ samples: [Double], ops: Int) {
-    if countsOnly { return }
-    let sorted = samples.sorted()
-    let best = sorted[0] / Double(ops)
-    let median = sorted[sorted.count / 2] / Double(ops)
-    print("  \(label.padding(toLength: 64, withPad: " ", startingAt: 0)) best \(format(best))   median \(format(median))")
-}
-
-/// Times `body` alone, `iterations` times; `setup` runs before each sample,
-/// off the clock. An `observer` counts what its scopes received during the
-/// bodies only.
-@MainActor
-func measure(_ label: String, iterations: Int = 20, ops: Int = 1, observer: Observer? = nil, setup: () -> Void = {}, _ body: () -> Void) {
-    var samples: [Double] = []
-    for _ in 0..<rounds(iterations) {
-        setup()
-        let start = DispatchTime.now().uptimeNanoseconds
-        body()
-        samples.append(Double(DispatchTime.now().uptimeNanoseconds - start))
-        observer?.settle()
-    }
-    report(label, samples, ops: ops)
-}
-
-/// Times an asynchronous step by hand: `body` returns the nanoseconds it
-/// wants counted, so setup and teardown stay off the clock.
-@MainActor
-func measureEach(_ label: String, iterations: Int = 20, ops: Int = 1, _ body: () async -> UInt64) async {
-    var samples: [Double] = []
-    for _ in 0..<rounds(iterations) { samples.append(Double(await body())) }
-    report(label, samples, ops: ops)
-}
-
-/// Counts the notifications the observation scopes it starts receive. A
-/// scope fires once, and one that a sample did not fire stays armed into the
-/// next sample's setup, so each `observe` opens a round of its own and only
-/// what a round received before `settle` counts.
-@MainActor
-final class Observer {
-    private final class Round: @unchecked Sendable {
-        var fired = 0
-    }
-
-    /// What the settled rounds received.
-    private(set) var fired = 0
-    private var round = Round()
-
-    /// Registers one scope per element, each reading through `read`.
-    func observe<Element>(_ elements: [Element], _ read: (Element) -> Void) {
-        let round = Round()
-        self.round = round
-        for element in elements {
-            withObservationTracking { read(element) } onChange: { round.fired += 1 }
-        }
-    }
-
-    /// What the open round has received so far.
-    var pending: Int { round.fired }
-
-    /// Counts the current round and closes it.
-    func settle() {
-        fired += round.fired
-        round = Round()
-    }
-}
-
+/// The sections, in order. The fixture every section reads, the Rick and
+/// Morty page committed into one store, is made once before any row; a
+/// section that writes to that store leaves it holding the fixture again.
+/// The long session runs after the sections whose slots it would widen,
+/// and the floors last.
 @MainActor
 func run() async throws {
     let data = Spec.data("rickandmorty/characters-page-1.json")
     let variables = BenchFixture(page: 1).variables
     let store = Store()
     let plan = BenchFixture.plan.resolve(variables, in: store.keys)
-    print("Baton benchmarks — fixture \(data.count) bytes, \(ProcessInfo.processInfo.operatingSystemVersionString)\(quick ? ", quick" : "")")
-
-    print("ingest")
-    measure("response bytes -> change set", iterations: 30) {
-        _ = try! Ingest.normalize(data, plan: plan, rootKey: Store.rootKey)
+    if !options.countsOnly {
+        print("Baton benchmarks — fixture \(data.count) bytes, \(ProcessInfo.processInfo.operatingSystemVersionString)\(options.quick ? ", quick" : "")")
     }
-    // The copy the ingest begins with, `[UInt8](data)`, alone: the change
-    // set keeps it to make strings from later.
-    measure("the response copied into [UInt8], alone", iterations: 30) {
-        let bytes = [UInt8](data)
-        if bytes[bytes.count / 2] == 0 { print("") }
-    }
-    measure("resolve the fixture plan for a page, per resolution", iterations: 50, ops: 100) {
-        for page in 1...100 { _ = BenchFixture.plan.resolve(BenchFixture(page: page).variables, in: store.keys) }
-    }
-
-    print("commit")
     let changes = try Ingest.normalize(data, plan: plan, rootKey: Store.rootKey)
-    // A change set is resolved for one store, whose keys number it: an
-    // empty store takes one of its own.
-    var fresh = Store()
-    var freshChanges = changes
-    measure("into an empty store (899 records)", iterations: 20, setup: {
-        fresh = Store()
-        freshChanges = try! Ingest.normalize(data, plan: BenchFixture.plan.resolve(variables, in: fresh.keys), rootKey: Store.rootKey)
-    }) {
-        fresh.commit(freshChanges)
-    }
     store.commit(changes)
-    measure("same payload again (nothing changes)", iterations: 20) {
-        store.commit(changes)
-    }
     let root = BenchFixture.Data(anchor: Anchor(record: store.root, variables: variables, store: store))
     let rows = Array(root.characters!.results!)
-    let edited = String(decoding: data, as: UTF8.self).replacingOccurrences(of: "\"name\":\"Morty Smith\"", with: "\"name\":\"Morty C-137\"")
-    let editedChanges = try Ingest.normalize(Data(edited.utf8), plan: plan, rootKey: Store.rootKey)
-    let names = Observer()
-    measure("one field changed, 20 rows observing their name", iterations: 20, observer: names, setup: {
-        store.commit(changes)
-        names.observe(rows) { _ = $0.name }
-    }) {
-        store.commit(editedChanges)
-    }
-    count("notifications-per-commit-one-field", names.fired / rounds(20), "    notifications per commit: \(names.fired / rounds(20)) (the edited row's name)")
-    store.commit(changes)
-
-    print("reads")
-    let reads = rows.count * 8
-    measure("untracked lens read, per field", iterations: 50, ops: reads * 20) {
-        var sink = 0
-        for _ in 0..<20 {
-            for row in rows {
-                sink &+= row.name?.utf8.count ?? 0
-                sink &+= row.status?.utf8.count ?? 0
-                sink &+= row.species?.utf8.count ?? 0
-                sink &+= row.type?.utf8.count ?? 0
-                sink &+= row.gender?.utf8.count ?? 0
-                sink &+= row.image?.utf8.count ?? 0
-                sink &+= row.created?.utf8.count ?? 0
-                sink &+= row.origin?.name?.utf8.count ?? 0
-            }
-        }
-        if sink == 42 { print("") }
-    }
-    // The same number of reads of a custom scalar mapped to `Decimal`, each
-    // converting the stored text, from a store of its own.
-    let priced = Store()
-    let pricesPlan = BenchAssetPrices.plan.resolve(BenchAssetPrices().variables, in: priced.keys)
-    priced.commit(try Ingest.normalize(assetPrices(reads), plan: pricesPlan, rootKey: Store.rootKey))
-    let assets = Array(BenchAssetPrices.Data(anchor: Anchor(record: priced.root, variables: BenchAssetPrices().variables, store: priced)).assets!)
-    measure("untracked mapped Decimal read, per field", iterations: 50, ops: reads * 20) {
-        var sink = 0
-        for _ in 0..<20 {
-            for asset in assets {
-                sink &+= Int(asset.price?.exponent ?? 0)
-            }
-        }
-        if sink == 42 { print("") }
-    }
-    measure("tracked read, one row body of 8 fields, per field", iterations: 50, ops: reads) {
-        var sink = 0
-        for row in rows {
-            withObservationTracking {
-                sink &+= row.name?.utf8.count ?? 0
-                sink &+= row.status?.utf8.count ?? 0
-                sink &+= row.species?.utf8.count ?? 0
-                sink &+= row.type?.utf8.count ?? 0
-                sink &+= row.gender?.utf8.count ?? 0
-                sink &+= row.image?.utf8.count ?? 0
-                sink &+= row.created?.utf8.count ?? 0
-                sink &+= row.origin?.name?.utf8.count ?? 0
-            } onChange: {}
-        }
-        if sink == 42 { print("") }
-    }
-    // The same 8 fields as an `@inline` fragment's value, over the same
-    // records: the spread's accessor builds the struct in one call, and the
-    // body reads the struct. Per field, so the rows compare with the lens's.
-    let valueRoot = BenchValueFixture.Data(anchor: Anchor(record: store.root, variables: BenchValueFixture(page: 1).variables, store: store))
-    let valueRows = Array(valueRoot.characters!.results!)
-    measure("untracked value read, a value of 8 fields built per row, per field", iterations: 50, ops: reads * 20) {
-        var sink = 0
-        for _ in 0..<20 {
-            for row in valueRows {
-                let value = row.benchRowValue
-                sink &+= value.name?.utf8.count ?? 0
-                sink &+= value.status?.utf8.count ?? 0
-                sink &+= value.species?.utf8.count ?? 0
-                sink &+= value.type?.utf8.count ?? 0
-                sink &+= value.gender?.utf8.count ?? 0
-                sink &+= value.image?.utf8.count ?? 0
-                sink &+= value.created?.utf8.count ?? 0
-                sink &+= value.origin?.name?.utf8.count ?? 0
-            }
-        }
-        if sink == 42 { print("") }
-    }
-    measure("tracked value read, one row body building its value, per field", iterations: 50, ops: reads) {
-        var sink = 0
-        for row in valueRows {
-            withObservationTracking {
-                let value = row.benchRowValue
-                sink &+= value.name?.utf8.count ?? 0
-                sink &+= value.status?.utf8.count ?? 0
-                sink &+= value.species?.utf8.count ?? 0
-                sink &+= value.type?.utf8.count ?? 0
-                sink &+= value.gender?.utf8.count ?? 0
-                sink &+= value.image?.utf8.count ?? 0
-                sink &+= value.created?.utf8.count ?? 0
-                sink &+= value.origin?.name?.utf8.count ?? 0
-            } onChange: {}
-        }
-        if sink == 42 { print("") }
-    }
-    try readPathBench(store: store, root: root)
-    print("dynamic sites: a row of 20 fields, 20 rows, under constant keys, 10 and 20 sites")
-    try sitesBench()
-
-    print("availability")
-    measure("check the fixture plan against the store", iterations: 50) {
-        _ = store.check(plan)
-    }
-
-    print("writes: optimistic layers, one renamed character, 20 rows observing their name")
+    let edited = Data(String(decoding: data, as: UTF8.self).replacingOccurrences(of: "\"name\":\"Morty Smith\"", with: "\"name\":\"Morty C-137\"").utf8)
+    let editedChanges = try Ingest.normalize(edited, plan: plan, rootKey: Store.rootKey)
+    // The same payload, with `errors` naming each of the 20 rows' image.
+    let erroredText = String(String(decoding: data, as: UTF8.self).dropLast())
+        + ",\"errors\":[" + (0..<20).map { "{\"message\":\"image unavailable\",\"path\":[\"characters\",\"results\",\($0),\"image\"]}" }.joined(separator: ",") + "]}"
+    let errored = Data(erroredText.utf8)
+    // The mutation's layer, its answer, and the payload that renames back.
     let rename = BenchRename(id: "1", name: "Rick Prime")
     let renamePlan = BenchRename.plan.resolve(rename.variables, in: store.keys)
     let optimistic = BenchRename.OptimisticResponse(rename: .init(character: .init(id: "1", name: "Rick Prime"))).variable
     let layerChanges = try Ingest.normalize(Data(("{\"data\":" + optimistic.json + "}").utf8), plan: renamePlan, rootKey: Store.mutationRootKey)
-    let answer = try Ingest.normalize(Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Prime"}}}}"#.utf8), plan: renamePlan, rootKey: Store.mutationRootKey)
+    let small = Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Prime"}}}}"#.utf8)
+    let answer = try Ingest.normalize(small, plan: renamePlan, rootKey: Store.mutationRootKey)
+    let back = try Ingest.normalize(Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Sanchez"}}}}"#.utf8), plan: renamePlan, rootKey: Store.mutationRootKey)
     /// Back to the fixture with no layer, every row observing its name.
     func baseline(_ observer: Observer) {
         for layer in store.optimisticLayers { store.revertOptimistic(layer.id) }
         store.commit(changes)
         observer.observe(rows) { _ = $0.name }
     }
-    var layer = UUID()
-    let applied = Observer()
-    measure("apply a layer", iterations: 50, observer: applied, setup: { baseline(applied) }) {
-        layer = store.applyOptimistic(layerChanges)
-    }
-    let reverted = Observer()
-    measure("revert it", iterations: 50, observer: reverted, setup: {
-        baseline(Observer())
-        layer = store.applyOptimistic(layerChanges)
-        reverted.observe(rows) { _ = $0.name }
-    }) {
-        store.revertOptimistic(layer)
-    }
-    let rebased = Observer()
-    measure("commit the fixture under the layer", iterations: 20, observer: rebased, setup: {
-        baseline(Observer())
-        layer = store.applyOptimistic(layerChanges)
-        rebased.observe(rows) { _ = $0.name }
-    }) {
-        store.commit(changes)
-    }
-    let resolved = Observer()
-    measure("resolve the layer with the server's answer", iterations: 20, observer: resolved, setup: {
-        baseline(Observer())
-        layer = store.applyOptimistic(layerChanges)
-        resolved.observe(rows) { _ = $0.name }
-    }) {
-        store.commit(answer, replacingOptimistic: layer)
-    }
-    count("notifications-apply", applied.fired / rounds(50), "    notifications per step: apply \(applied.fired / rounds(50)), revert \(reverted.fired / rounds(50)), rebase \(rebased.fired / rounds(20)), resolve \(resolved.fired / rounds(20))")
-    if countsOnly {
-        count("notifications-revert", reverted.fired / rounds(50), "")
-        count("notifications-rebase", rebased.fired / rounds(20), "")
-        count("notifications-resolve", resolved.fired / rounds(20), "")
-    }
-    baseline(Observer())
 
-    let small = Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Prime"}}}}"#.utf8)
-    print("a mutation's payload: \(small.count) bytes, one record")
-    let back = try Ingest.normalize(Data(#"{"data":{"rename":{"character":{"id":"1","name":"Rick Sanchez"}}}}"#.utf8), plan: renamePlan, rootKey: Store.mutationRootKey)
-    measure("ingest", iterations: 200) {
-        _ = try! Ingest.normalize(small, plan: renamePlan, rootKey: Store.mutationRootKey)
-    }
-    // Every object under a union names its type: the ingest takes the type
-    // from the name, which costs a string and the registry's lock unless
-    // the plan's listed names match the bytes first.
-    let searched = Store()
-    let searchPlan = BenchSearch.plan.resolve(BenchSearch(name: "r").variables, in: searched.keys)
-    let searchPayload = searchResults(899)
-    print("a search of 899 results under a union: \(searchPayload.count) bytes")
-    measure("ingest of 899 objects under a union, each naming its type", iterations: 30) {
-        _ = try! Ingest.normalize(searchPayload, plan: searchPlan, rootKey: Store.rootKey)
-    }
-    measure("commit into the 899-record store, one field changing", iterations: 200, setup: { store.commit(back) }) {
-        store.commit(answer)
-    }
-    // The log's cost: the same commit with a sink counting every event.
-    let logged = Mutex(0)
-    store.log = { _ in logged.withLock { $0 &+= 1 } }
-    measure("the same commit, a counting log installed", iterations: 200, setup: { store.commit(back) }) {
-        store.commit(answer)
-    }
-    store.log = nil
-    count("events-logged-per-round", logged.withLock { $0 } / rounds(200), "    events logged: \(logged.withLock { $0 })")
-    store.commit(back)
-    let frame = Data(#"{"id":"1","type":"next","payload":{"data":{"noteAdded":{"id":"n9"}}}}"#.utf8)
-    measure("a subscription frame (\(frame.count) bytes), its envelope read", iterations: 200) {
-        _ = try! GraphQLTransportWebSocket.frame(frame)
+    await section("ingest") {
+        measure("response bytes -> change set", iterations: 30, gate: "ingest-fixture") {
+            _ = try! Ingest.normalize(data, plan: plan, rootKey: Store.rootKey)
+        }
+        // The copy the ingest begins with, `[UInt8](data)`, alone: the change
+        // set keeps it to make strings from later.
+        measure("the response copied into [UInt8], alone", iterations: 30) {
+            let bytes = [UInt8](data)
+            if bytes[bytes.count / 2] == 0 { print("") }
+        }
+        measure("resolve the fixture plan for a page, per resolution", iterations: 50, ops: 100) {
+            for page in 1...100 { _ = BenchFixture.plan.resolve(BenchFixture(page: page).variables, in: store.keys) }
+        }
     }
 
-    print("errors: the fixture with a field error on every row's image")
-    // The same payload, with `errors` naming each of the 20 rows' image.
-    let erroredText = String(String(decoding: data, as: UTF8.self).dropLast())
-        + ",\"errors\":[" + (0..<20).map { "{\"message\":\"image unavailable\",\"path\":[\"characters\",\"results\",\($0),\"image\"]}" }.joined(separator: ",") + "]}"
-    let errored = Data(erroredText.utf8)
-    measure("ingest with 20 field errors (plain ingest above)", iterations: 30) {
-        _ = try! Ingest.normalize(errored, plan: plan, rootKey: Store.rootKey)
-    }
-    let erroredChanges = try Ingest.normalize(errored, plan: plan, rootKey: Store.rootKey)
-    count("field-errors-resolved", erroredChanges.fieldErrors.count, "    errors resolved: \(erroredChanges.fieldErrors.count), uncaught: \(erroredChanges.uncaughtFieldErrors.count)")
-    if countsOnly { count("field-errors-uncaught", erroredChanges.uncaughtFieldErrors.count, "") }
-    let landed = Observer()
-    measure("commit the errors, 20 rows observing their image", iterations: 20, observer: landed, setup: {
+    await section("commit") {
+        // A change set is resolved for one store, whose keys number it: an
+        // empty store takes one of its own.
+        var fresh = Store()
+        var freshChanges = changes
+        measure("into an empty store (899 records)", iterations: 20, gate: "commit-fixture", setup: {
+            fresh = Store()
+            freshChanges = try! Ingest.normalize(data, plan: BenchFixture.plan.resolve(variables, in: fresh.keys), rootKey: Store.rootKey)
+        }) {
+            fresh.commit(freshChanges)
+        }
+        measure("same payload again (nothing changes)", iterations: 20, gate: "commit-same-payload") {
+            store.commit(changes)
+        }
+        let names = Observer()
+        measure("one field changed, 20 rows observing their name", iterations: 20, observer: names, gate: "commit-one-field", setup: {
+            store.commit(changes)
+            names.observe(rows) { _ = $0.name }
+        }) {
+            store.commit(editedChanges)
+        }
+        count("notifications-per-commit-one-field", names.fired / rounds(20), "    notifications per commit: \(names.fired / rounds(20)) (the edited row's name)")
         store.commit(changes)
-        landed.observe(rows) { _ = $0.image }
-    }) {
-        store.commit(erroredChanges)
     }
-    let cleared = Observer()
-    measure("commit that clears them, 20 rows observing their image", iterations: 20, observer: cleared, setup: {
-        store.commit(erroredChanges)
-        cleared.observe(rows) { _ = $0.image }
-    }) {
-        store.commit(changes)
-    }
-    count("notifications-errors-landing", landed.fired / rounds(20), "    notifications per commit: errors landing \(landed.fired / rounds(20)), errors clearing \(cleared.fired / rounds(20))")
-    if countsOnly { count("notifications-errors-clearing", cleared.fired / rounds(20), "") }
-    let caughtRows = rows.map { BenchCaught_character(anchor: $0.anchor) }
-    measure("@catch read of a field without an error, per field", iterations: 50, ops: caughtRows.count * 20) {
-        var sink = 0
-        for _ in 0..<20 {
-            for row in caughtRows {
-                if case .success(let image) = row.image { sink &+= image?.utf8.count ?? 0 }
+
+    try await section("reads") {
+        let reads = rows.count * 8
+        measure("untracked lens read, per field", iterations: 50, ops: reads * 20, gate: "untracked-read") {
+            var sink = 0
+            for _ in 0..<20 {
+                for row in rows {
+                    sink &+= row.name?.utf8.count ?? 0
+                    sink &+= row.status?.utf8.count ?? 0
+                    sink &+= row.species?.utf8.count ?? 0
+                    sink &+= row.type?.utf8.count ?? 0
+                    sink &+= row.gender?.utf8.count ?? 0
+                    sink &+= row.image?.utf8.count ?? 0
+                    sink &+= row.created?.utf8.count ?? 0
+                    sink &+= row.origin?.name?.utf8.count ?? 0
+                }
             }
+            if sink == 42 { print("") }
         }
-        if sink == 42 { print("") }
-    }
-    measure("satisfied check of a lens with one @required field, per lens", iterations: 50, ops: caughtRows.count * 20) {
-        var sink = 0
-        for _ in 0..<20 {
-            for row in caughtRows where BenchCaught_character.satisfied(row.anchor) { sink &+= 1 }
+        // The same number of reads of a custom scalar mapped to `Decimal`, each
+        // converting the stored text, from a store of its own.
+        let priced = Store()
+        let pricesPlan = BenchAssetPrices.plan.resolve(BenchAssetPrices().variables, in: priced.keys)
+        priced.commit(try Ingest.normalize(assetPrices(reads), plan: pricesPlan, rootKey: Store.rootKey))
+        let assets = Array(BenchAssetPrices.Data(anchor: Anchor(record: priced.root, variables: BenchAssetPrices().variables, store: priced)).assets!)
+        measure("untracked mapped Decimal read, per field", iterations: 50, ops: reads * 20) {
+            var sink = 0
+            for _ in 0..<20 {
+                for asset in assets {
+                    sink &+= Int(asset.price?.exponent ?? 0)
+                }
+            }
+            if sink == 42 { print("") }
         }
-        if sink == 42 { print("") }
+        measure("tracked read, one row body of 8 fields, per field", iterations: 50, ops: reads, gate: "tracked-read") {
+            var sink = 0
+            for row in rows {
+                withObservationTracking {
+                    sink &+= row.name?.utf8.count ?? 0
+                    sink &+= row.status?.utf8.count ?? 0
+                    sink &+= row.species?.utf8.count ?? 0
+                    sink &+= row.type?.utf8.count ?? 0
+                    sink &+= row.gender?.utf8.count ?? 0
+                    sink &+= row.image?.utf8.count ?? 0
+                    sink &+= row.created?.utf8.count ?? 0
+                    sink &+= row.origin?.name?.utf8.count ?? 0
+                } onChange: {}
+            }
+            if sink == 42 { print("") }
+        }
+        // The same 8 fields as an `@inline` fragment's value, over the same
+        // records: the spread's accessor builds the struct in one call, and the
+        // body reads the struct. Per field, so the rows compare with the lens's.
+        let valueRoot = BenchValueFixture.Data(anchor: Anchor(record: store.root, variables: BenchValueFixture(page: 1).variables, store: store))
+        let valueRows = Array(valueRoot.characters!.results!)
+        measure("untracked value read, a value of 8 fields built per row, per field", iterations: 50, ops: reads * 20) {
+            var sink = 0
+            for _ in 0..<20 {
+                for row in valueRows {
+                    let value = row.benchRowValue
+                    sink &+= value.name?.utf8.count ?? 0
+                    sink &+= value.status?.utf8.count ?? 0
+                    sink &+= value.species?.utf8.count ?? 0
+                    sink &+= value.type?.utf8.count ?? 0
+                    sink &+= value.gender?.utf8.count ?? 0
+                    sink &+= value.image?.utf8.count ?? 0
+                    sink &+= value.created?.utf8.count ?? 0
+                    sink &+= value.origin?.name?.utf8.count ?? 0
+                }
+            }
+            if sink == 42 { print("") }
+        }
+        measure("tracked value read, one row body building its value, per field", iterations: 50, ops: reads) {
+            var sink = 0
+            for row in valueRows {
+                withObservationTracking {
+                    let value = row.benchRowValue
+                    sink &+= value.name?.utf8.count ?? 0
+                    sink &+= value.status?.utf8.count ?? 0
+                    sink &+= value.species?.utf8.count ?? 0
+                    sink &+= value.type?.utf8.count ?? 0
+                    sink &+= value.gender?.utf8.count ?? 0
+                    sink &+= value.image?.utf8.count ?? 0
+                    sink &+= value.created?.utf8.count ?? 0
+                    sink &+= value.origin?.name?.utf8.count ?? 0
+                } onChange: {}
+            }
+            if sink == 42 { print("") }
+        }
+        try readPathBench(store: store, root: root)
     }
 
-    print("root fields: one reader, other root fields written")
-    try rootFieldBench(store: store, root: root)
+    try await section("sites", "a row of 20 fields, 20 rows, under constant keys, 10 and 20 sites") {
+        try sitesBench()
+    }
 
-    print("deletion: one @deleteRecord in a store of about 9,000 records")
-    try deletionBench(data: data, plan: plan)
+    await section("availability") {
+        measure("check the fixture plan against the store", iterations: 50, gate: "check") {
+            _ = store.check(plan)
+        }
+    }
 
-    print("connections: 42 pages of 50 notes merged into one connection")
-    try await connectionBench()
+    await section("writes", "optimistic layers, one renamed character, 20 rows observing their name") {
+        var layer = UUID()
+        let applied = Observer()
+        measure("apply a layer", iterations: 50, observer: applied, setup: { baseline(applied) }) {
+            layer = store.applyOptimistic(layerChanges)
+        }
+        let reverted = Observer()
+        measure("revert it", iterations: 50, observer: reverted, setup: {
+            baseline(Observer())
+            layer = store.applyOptimistic(layerChanges)
+            reverted.observe(rows) { _ = $0.name }
+        }) {
+            store.revertOptimistic(layer)
+        }
+        let rebased = Observer()
+        measure("commit the fixture under the layer", iterations: 20, observer: rebased, setup: {
+            baseline(Observer())
+            layer = store.applyOptimistic(layerChanges)
+            rebased.observe(rows) { _ = $0.name }
+        }) {
+            store.commit(changes)
+        }
+        let resolved = Observer()
+        measure("resolve the layer with the server's answer", iterations: 20, observer: resolved, setup: {
+            baseline(Observer())
+            layer = store.applyOptimistic(layerChanges)
+            resolved.observe(rows) { _ = $0.name }
+        }) {
+            store.commit(answer, replacingOptimistic: layer)
+        }
+        count("notifications-apply", applied.fired / rounds(50), "    notifications per step: apply \(applied.fired / rounds(50)), revert \(reverted.fired / rounds(50)), rebase \(rebased.fired / rounds(20)), resolve \(resolved.fired / rounds(20))")
+        if options.countsOnly {
+            count("notifications-revert", reverted.fired / rounds(50), "")
+            count("notifications-rebase", rebased.fired / rounds(20), "")
+            count("notifications-resolve", resolved.fired / rounds(20), "")
+        }
+        baseline(Observer())
+        store.commit(back)
+    }
 
-    print("edge directives: an optimistic @appendEdge on a connection of 50 edges")
-    try await edgeBench()
+    await section("mutation", "a mutation's payload: \(small.count) bytes, one record") {
+        measure("ingest", iterations: 200) {
+            _ = try! Ingest.normalize(small, plan: renamePlan, rootKey: Store.mutationRootKey)
+        }
+        measure("commit into the 899-record store, one field changing", iterations: 200, setup: { store.commit(back) }) {
+            store.commit(answer)
+        }
+        // The log's cost: the same commit with a sink counting every event.
+        let logged = Mutex(0)
+        store.log = { _ in logged.withLock { $0 &+= 1 } }
+        measure("the same commit, a counting log installed", iterations: 200, setup: { store.commit(back) }) {
+            store.commit(answer)
+        }
+        store.log = nil
+        count("events-logged-per-round", logged.withLock { $0 } / rounds(200), "    events logged: \(logged.withLock { $0 })")
+        store.commit(back)
+        let frame = Data(#"{"id":"1","type":"next","payload":{"data":{"noteAdded":{"id":"n9"}}}}"#.utf8)
+        measure("a subscription frame (\(frame.count) bytes), its envelope read", iterations: 200) {
+            _ = try! GraphQLTransportWebSocket.frame(frame)
+        }
+    }
 
-    print("lifetime: 42 pages scrolled, release buffer of 10")
-    try await scrollBench(data: data)
+    await section("union", "a search of 899 results under a union") {
+        // Every object under a union names its type: the ingest takes the type
+        // from the name, which costs a string and the registry's lock unless
+        // the plan's listed names match the bytes first.
+        let searched = Store()
+        let searchPlan = BenchSearch.plan.resolve(BenchSearch(name: "r").variables, in: searched.keys)
+        let searchPayload = searchResults(899)
+        if !options.countsOnly { print("  \(searchPayload.count) bytes") }
+        measure("ingest of 899 objects under a union, each naming its type", iterations: 30) {
+            _ = try! Ingest.normalize(searchPayload, plan: searchPlan, rootKey: Store.rootKey)
+        }
+    }
 
-    print("collection: a pass over 50,000 records, over 300 roots, and one that keeps none")
-    try await collectionBench()
+    try await section("errors", "the fixture with a field error on every row's image") {
+        measure("ingest with 20 field errors (plain ingest above)", iterations: 30) {
+            _ = try! Ingest.normalize(errored, plan: plan, rootKey: Store.rootKey)
+        }
+        let erroredChanges = try Ingest.normalize(errored, plan: plan, rootKey: Store.rootKey)
+        count("field-errors-resolved", erroredChanges.fieldErrors.count, "    errors resolved: \(erroredChanges.fieldErrors.count), uncaught: \(erroredChanges.uncaughtFieldErrors.count)")
+        if options.countsOnly { count("field-errors-uncaught", erroredChanges.uncaughtFieldErrors.count, "") }
+        let landed = Observer()
+        measure("commit the errors, 20 rows observing their image", iterations: 20, observer: landed, setup: {
+            store.commit(changes)
+            landed.observe(rows) { _ = $0.image }
+        }) {
+            store.commit(erroredChanges)
+        }
+        let cleared = Observer()
+        measure("commit that clears them, 20 rows observing their image", iterations: 20, observer: cleared, setup: {
+            store.commit(erroredChanges)
+            cleared.observe(rows) { _ = $0.image }
+        }) {
+            store.commit(changes)
+        }
+        count("notifications-errors-landing", landed.fired / rounds(20), "    notifications per commit: errors landing \(landed.fired / rounds(20)), errors clearing \(cleared.fired / rounds(20))")
+        if options.countsOnly { count("notifications-errors-clearing", cleared.fired / rounds(20), "") }
+        store.commit(changes)
+        let caughtRows = rows.map { BenchCaught_character(anchor: $0.anchor) }
+        measure("@catch read of a field without an error, per field", iterations: 50, ops: caughtRows.count * 20) {
+            var sink = 0
+            for _ in 0..<20 {
+                for row in caughtRows {
+                    if case .success(let image) = row.image { sink &+= image?.utf8.count ?? 0 }
+                }
+            }
+            if sink == 42 { print("") }
+        }
+        measure("satisfied check of a lens with one @required field, per lens", iterations: 50, ops: caughtRows.count * 20) {
+            var sink = 0
+            for _ in 0..<20 {
+                for row in caughtRows where BenchCaught_character.satisfied(row.anchor) { sink &+= 1 }
+            }
+            if sink == 42 { print("") }
+        }
+    }
 
-    print("re-evaluation: the fixture under @throwOnFieldError, 20 field errors landing")
-    try await reevaluationBench(data: data, errored: errored)
-
-    print("reports: the fixture committed with a log set")
-    reportBench(changes: changes)
-
-    print("persistence: the fixture's 898 records and the root, through the image")
-    await persistenceBench(data: data, edited: Data(edited.utf8), variables: variables)
-
-    print("incremental delivery: a multipart response of \(MultipartStub.parts) parts, \(MultipartStub.body.count / 1024) KB")
-    try await multipartBench()
-
-    print("streamed lists: \(StreamParts.count) items, one part each, through the environment")
-    try await streamBench()
-
-    print("keys with arguments: 5,000 rows, each an id and three fields under keys of one kind")
-    try argumentBench()
-
-    print("long session: 50,000 root lookups by id and 500 pages after cursors")
-    try longSessionBench()
-
-    print("anilist: two chunks of a MediaListCollection recorded from AniList, 1,000 entries")
-    try await aniListBench()
+    try await section("root-fields", "one reader, other root fields written") {
+        try rootFieldBench(store: store, root: root)
+    }
+    try await section("deletion", "one @deleteRecord in a store of about 9,000 records") {
+        try deletionBench(data: data, plan: plan)
+    }
+    try await section("connections", "42 pages of 50 notes merged into one connection") {
+        try await connectionBench()
+    }
+    try await section("edges", "an optimistic @appendEdge on a connection of 50 edges") {
+        try await edgeBench()
+    }
+    try await section("lifetime", "42 pages scrolled, release buffer of 10") {
+        try await scrollBench(data: data)
+    }
+    try await section("collection", "a pass over 50,000 records, over 300 roots, and one that keeps none") {
+        try await collectionBench()
+    }
+    try await section("reevaluation", "the fixture under @throwOnFieldError, 20 field errors landing") {
+        try await reevaluationBench(data: data, errored: errored)
+    }
+    await section("reports", "the fixture committed with a log set") {
+        reportBench(changes: changes)
+    }
+    await section("persistence", "the fixture's 898 records and the root, through the image") {
+        await persistenceBench(data: data, edited: edited, variables: variables)
+    }
+    try await section("incremental", "a multipart response of \(MultipartStub.parts) parts, \(MultipartStub.body.count / 1024) KB") {
+        try await multipartBench()
+    }
+    try await section("streams", "\(StreamParts.count) items, one part each, through the environment") {
+        try await streamBench()
+    }
+    try await section("arguments", "keys with arguments: 5,000 rows, each an id and three fields under keys of one kind") {
+        try argumentBench()
+    }
+    try await section("long-session", "50,000 root lookups by id and 500 pages after cursors") {
+        try longSessionBench()
+    }
+    try await section("anilist", "two chunks of a MediaListCollection recorded from AniList, 1,000 entries") {
+        try await aniListBench()
+    }
+    try await section("floors", "the platform's own costs beside the rows above") {
+        try floorsBench()
+    }
 }
 
 /// A server that answers every request with one `multipart/mixed` body,
@@ -930,7 +866,7 @@ func persistenceBench(data: Data, edited: Data, variables: Variables) async {
     let opened = now() - openStart
     print("  open of an image over its limit, evicting a launch's 898 rows and keeping 899: \(String(format: "%.2f", Double(opened) / 1_000_000)) ms, \(afterSecond) -> \(fileSize(evicted)) bytes")
     count("eviction-kept-the-last-launch", keptAssets ? 1 : 0, "    kept the last launch's rows: \(keptAssets), dropped the older launch's: \(droppedCharacters)")
-    if countsOnly { count("eviction-dropped-the-older-launch", droppedCharacters ? 1 : 0, "") }
+    if options.countsOnly { count("eviction-dropped-the-older-launch", droppedCharacters ? 1 : 0, "") }
     await third.close()
     try? FileManager.default.removeItem(at: evicted)
 
@@ -938,18 +874,47 @@ func persistenceBench(data: Data, edited: Data, variables: Variables) async {
     // reads. The next image on the file is a launch that reads what the
     // last one wrote.
     let reopened = Persistence(url: url)
-    measure("hydration: the check reads 898 rows into an empty store", iterations: 20) {
-        precondition(checks(Store(persistence: reopened)))
+    // The store is made in the setup and let go in the next one, so the row
+    // times the check and the rows it reads, not the store's deinit.
+    var cold = Store(persistence: reopened)
+    measure("hydration: the check reads 898 rows into an empty store", iterations: 20, setup: { cold = Store(persistence: reopened) }) {
+        precondition(checks(cold))
     }
-    measure("the same, per record", iterations: 20, ops: 898) {
-        precondition(checks(Store(persistence: reopened)))
+    measure("the same, per record", iterations: 20, ops: 898, setup: { cold = Store(persistence: reopened) }) {
+        precondition(checks(cold))
     }
     let hydrated = Store(persistence: reopened)
     let hydratedPlan = plan(for: hydrated)
     precondition(hydrated.check(hydratedPlan) != .miss)
-    measure("the check once the records are in memory", iterations: 50) {
+    measure("the check once the records are in memory", iterations: 50, gate: "check-hydrated") {
         precondition(hydrated.check(hydratedPlan) != .miss)
     }
+    // The engine's floor under hydration: the same 898 rows stepped by key
+    // from a second connection, inside one read transaction as the check
+    // reads them, their bytes counted and nothing decoded.
+    let keys = hydrated.recordsByKey.keys.filter { $0 != Store.rootKey && $0 != Store.mutationRootKey && $0 != Store.subscriptionRootKey }.sorted()
+    var connection: OpaquePointer?
+    var statement: OpaquePointer?
+    if sqlite3_open_v2(url.path, &connection, SQLITE_OPEN_READONLY, nil) == SQLITE_OK,
+       sqlite3_prepare_v2(connection, "SELECT row FROM records WHERE key = ?1", -1, &statement, nil) == SQLITE_OK {
+        measure("floor: sqlite3_step over the \(keys.count) rows by key, no decode", iterations: 20) {
+            var bytes = 0
+            sqlite3_exec(connection, "BEGIN", nil, nil, nil)
+            for key in keys {
+                key.withCString { text in
+                    sqlite3_bind_text(statement, 1, text, -1, nil)
+                    if sqlite3_step(statement) == SQLITE_ROW { bytes &+= Int(sqlite3_column_bytes(statement, 0)) }
+                    sqlite3_reset(statement)
+                }
+            }
+            sqlite3_exec(connection, "COMMIT", nil, nil, nil)
+            if bytes == 42 { print("") }
+        }
+    } else {
+        print("    the engine's floor was not measured: the file could not be opened a second time")
+    }
+    sqlite3_finalize(statement)
+    sqlite3_close(connection)
 
     // A launch: this program again, as a process that has never touched
     // SQLite, answering the fixture from the image. Once asking the moment
@@ -1116,7 +1081,7 @@ func collectionBench() async throws {
     let handle = environment.handle(for: BenchCharacterNames(page: 7))
     let retention = handle.retain()
     await handle.settle()
-    measure("a pass over one root reaching \(environment.store.count) records", iterations: 20) {
+    measure("a pass over one root reaching \(environment.store.count) records", iterations: 20, gate: "collection-pass") {
         environment.store.collect()
     }
     let beside = await retainRoots(in: environment)
@@ -1561,12 +1526,4 @@ func longSessionBench() throws {
     let beforeCollection = footprint()
     store.collect()
     print("    after a collection with no roots: keys the store numbers on Query \(store.keys.count(on: query)), on Character \(store.keys.count(on: character)); \(store.count) records; footprint \(megabytes(footprint() - beforeCollection))")
-}
-
-if CommandLine.arguments.count == 3, CommandLine.arguments[1].hasPrefix("--launch") {
-    await launch(CommandLine.arguments[2], opened: CommandLine.arguments[1] == "--launch-opened")
-} else if CommandLine.arguments.count == 3, CommandLine.arguments[1].hasPrefix("--anilist-launch") {
-    await aniListLaunch(CommandLine.arguments[2], opened: CommandLine.arguments[1] == "--anilist-launch-opened")
-} else {
-    try await run()
 }

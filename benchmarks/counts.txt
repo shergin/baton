@@ -1,4 +1,11 @@
+count allocations-ingest-fixture 67
+count allocations-commit-fixture 4897
+count allocations-commit-same-payload 2
+count allocations-commit-one-field 7
 count notifications-per-commit-one-field 1
+count allocations-untracked-read 0
+count allocations-tracked-read 242
+count allocations-check 0
 count notifications-apply 1
 count notifications-revert 1
 count notifications-rebase 0
@@ -12,8 +19,12 @@ count wakes-of-a-root-body-while-other-roots-written 0
 count notifications-per-page-appended 1
 count records-after-collecting-pages 4228
 count notifications-refetch-first-page 1
+count allocations-collection-pass 0
 count log-events-during-edge-commits 0
 count eviction-kept-the-last-launch 1
 count eviction-dropped-the-older-launch 1
+count allocations-check-hydrated 0
+count allocations-ingest-anilist 3916
+count allocations-commit-anilist 41293
 count records-anilist-two-chunks 6014
 count notifications-anilist-save-one-field 2

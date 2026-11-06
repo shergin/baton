@@ -223,12 +223,22 @@ let package = Package(
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
         ),
-        .executableTarget(
-            name: "BatonBenchmarks",
+        // The bench suite, every section of it, as a library: the
+        // executable below runs it on a Mac, and a device can run the same
+        // sections.
+        .target(
+            name: "BatonBench",
             dependencies: ["AniListDocuments", "Baton", "BatonTesting", "BatonSpec"],
             path: "swift/Benchmarks",
+            exclude: ["baton.json"],
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
+        ),
+        .executableTarget(
+            name: "BatonBenchmarks",
+            dependencies: ["BatonBench"],
+            path: "swift/BenchmarkRunner",
+            swiftSettings: [.swiftLanguageMode(.v6)]
         ),
     ]
 )
