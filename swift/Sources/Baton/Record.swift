@@ -116,15 +116,12 @@ public final class Record: Observable {
     /// silently: a record the ingest built links the records it built, and
     /// the store, holding some of those keys already, keeps its own.
     func relink(_ map: [ObjectIdentifier: Record]) {
-        @inline(__always) func mapped(_ target: Record) -> Record { map[ObjectIdentifier(target)] ?? target }
         for index in values.indices {
             switch values[index] {
             case .ref(let target):
                 if let other = map[ObjectIdentifier(target)] { values[index] = .ref(other) }
             case .refs(let targets):
-                if targets.contains(where: { $0.map { map[ObjectIdentifier($0)] != nil } ?? false }) {
-                    values[index] = .refs(ContiguousArray(targets.map { $0.map(mapped) }))
-                }
+                if let relinked = Self.relinked(targets, map) { values[index] = .refs(relinked) }
             default:
                 continue
             }
@@ -134,13 +131,25 @@ public final class Record: Observable {
             case .ref(let target):
                 if let other = map[ObjectIdentifier(target)] { renderedValues[position] = .ref(other) }
             case .refs(let targets):
-                if targets.contains(where: { $0.map { map[ObjectIdentifier($0)] != nil } ?? false }) {
-                    renderedValues[position] = .refs(ContiguousArray(targets.map { $0.map(mapped) }))
-                }
+                if let relinked = Self.relinked(targets, map) { renderedValues[position] = .refs(relinked) }
             default:
                 continue
             }
         }
+    }
+
+    /// The list with each link the map names pointed at the map's record;
+    /// nil when it names none. Plain loops: a closure handed to the
+    /// standard library's generics pays an executor check per call.
+    private static func relinked(_ targets: ContiguousArray<Record?>, _ map: [ObjectIdentifier: Record]) -> ContiguousArray<Record?>? {
+        var relinked = targets
+        var changed = false
+        for position in targets.indices {
+            guard let target = targets[position], let other = map[ObjectIdentifier(target)] else { continue }
+            relinked[position] = other
+            changed = true
+        }
+        return changed ? relinked : nil
     }
 
     /// Every slot that holds a value, taken once; for a walk that writes

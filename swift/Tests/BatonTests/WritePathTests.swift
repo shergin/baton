@@ -167,6 +167,86 @@ struct WritePathTests {
         #expect(location === store.existing("Location:3"))
     }
 
+    @Test("a list an adopted record holds names both the store's records and the records the same commit adopts, each target the record the store keeps under its key")
+    func anAdoptedListLinksFoundAndCreatedRecords() throws {
+        let store = Store()
+        store.log = nil
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
+        let rick = try #require(store.existing("Character:1"))
+        let morty = try #require(store.existing("Character:2"))
+        #expect(store.existing("Character:35") == nil, "the first page names characters one to twenty only")
+
+        // The pilot's cast opens with Rick and Morty, whom the store held, and
+        // goes on with Character:35, whom only this commit names.
+        store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: store.keys)))
+        let pilot = try #require(store.existing("Episode:1"))
+        guard case .refs(let cast) = pilot.read(Registry.slot(Registry.type("Episode"), "characters")) else {
+            Issue.record("the episode holds no list of characters")
+            return
+        }
+        #expect(cast.count > 2)
+        #expect(cast[0] === rick, "a found target is the store's record")
+        #expect(cast[1] === morty)
+        let created = try #require(store.existing("Character:35"))
+        #expect(cast[2] === created, "a created target is the record the commit adopted under its key")
+    }
+
+    @Test("an adopted record's argumented field links the record the store already held, as a field without arguments does")
+    func anAdoptedRenderedSlotLinksTheStoresRecords() throws {
+        let store = Store()
+        store.log = nil
+        store.commit(try Ingest.normalize(notesPage(1), plan: TestNotesQuery.plan.resolve(TestNotesQuery(id: "1").variables, in: store.keys)))
+        let first = try #require(store.existing("Note:n1"))
+        let second = try #require(store.existing("Note:n2"))
+        #expect(store.existing(#"client:root:page(page:1,perPage:2)"#) == nil)
+
+        // The page is new and names the notes the connection put in the store
+        // through `notes(authorId:)`, a slot the store numbers at run time.
+        let operation = TestPagedNotesQuery(page: 1, authorId: "1")
+        store.commit(try Ingest.normalize(fixture("paged-notes-1"), plan: TestPagedNotesQuery.plan.resolve(operation.variables, in: store.keys)))
+        let page = try #require(store.existing(#"client:root:page(page:1,perPage:2)"#))
+        let lists = page.storedSlots.compactMap { stored -> ContiguousArray<Record?>? in
+            guard case .refs(let records) = stored.value else { return nil }
+            return records
+        }
+        #expect(lists.count == 1, "the page holds one list, the argumented `notes`")
+        guard let notes = lists.first else { return }
+        #expect(notes.count == 2)
+        #expect(notes[0] === first, "the rendered slot links the store's own record")
+        #expect(notes[1] === second)
+        #expect(store.existing("Note:n1") === first)
+    }
+
+    @Test("a commit into an empty store, whose only records found are the roots, leaves every adopted record linking the adopted records")
+    func aCommitIntoAnEmptyStoreLinksAdoptedRecords() throws {
+        let store = Store()
+        store.log = nil
+        store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: store.keys)))
+        let rick = try #require(store.existing("Character:1"))
+        guard case .ref(let location) = rick.read(Registry.slot(Registry.type("Character"), "location")) else {
+            Issue.record("the character holds no location")
+            return
+        }
+        #expect(location === store.existing("Location:3"))
+
+        let pilot = try #require(store.existing("Episode:1"))
+        guard case .refs(let cast) = pilot.read(Registry.slot(Registry.type("Episode"), "characters")) else {
+            Issue.record("the episode holds no list of characters")
+            return
+        }
+        #expect(cast.count > 2)
+        #expect(cast[0] === rick)
+        #expect(cast[1] === store.existing("Character:2"))
+        #expect(cast[2] === store.existing("Character:35"))
+        // A character links its episodes, the episodes link it back.
+        guard case .refs(let appearances) = rick.read(Registry.slot(Registry.type("Character"), "episode")) else {
+            Issue.record("the character holds no list of episodes")
+            return
+        }
+        #expect(!appearances.isEmpty)
+        #expect(appearances[0] === pilot)
+    }
+
     @Test("a record an optimistic layer created is emptied when the layer lifts, and a body that read it through a link is told and reads it as missing")
     func createdRecordsAreUndone() async throws {
         let environment = Environment(transport: notesTransport())

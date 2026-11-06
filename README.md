@@ -327,7 +327,7 @@ notification handler calls the same environment, with no view involved:
   that read `user.name` is invalidated when that field of that record changes
   and at no other time. An unchanged refetch of the benchmark fixture costs
   the main actor under 200 µs and no view; committing all 899 records costs
-  it a third of a millisecond.
+  it a tenth of a millisecond.
 - **Honest data.** Nullability is what the schema says; `@required` and
   `@catch` work as in Relay, in Swift's terms (an optional lens, a `Result`,
   a `get throws`); field errors survive caching; staleness is a phase a view

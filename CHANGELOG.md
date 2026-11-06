@@ -3,6 +3,18 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
+## Unreleased
+
+- The commit relinks only what a built record links. The ingest notes,
+  per record it builds, whether a built record links it and whether it
+  holds a link; the commit maps the records it found among the linked
+  ones and relinks the adopted records that hold links against that map,
+  and when the map is empty, as in every commit into an empty store, whose
+  roots are found and linked by nothing, it walks nothing. The record's
+  relink runs plain loops. The commit of the Rick and Morty page into an
+  empty store falls from 312 to 100 µs on the main actor, the AniList
+  list's two chunks from 1.34 to 1.05 ms. Swift.
+
 ## 0.20.0 (Borodinsky) — 2026-11-06
 
 - The ingest builds the records, and the commit adopts them. After a

@@ -842,11 +842,17 @@ public final class Store {
             // actor.
             var garbage = Garbage()
             if adopts, found, adopted {
+                // Only a found record that a built record links can be
+                // reached from an adopted one: the map holds those, and when
+                // it holds none, as in a commit into an empty store, whose
+                // roots are found and linked by nothing, nothing is walked.
                 var map: [ObjectIdentifier: Record] = [:]
-                for index in 0..<objects.count where !created[index] {
+                for index in 0..<objects.count where !created[index] && prebuilt.linked[index] {
                     map[ObjectIdentifier(prebuilt.records[index])] = objects[index]
                 }
-                for index in 0..<objects.count where created[index] { objects[index].relink(map) }
+                if !map.isEmpty {
+                    for index in 0..<objects.count where created[index] && prebuilt.links[index] { objects[index].relink(map) }
+                }
             }
             for index in 0..<objects.count where !created[index] || !adopts { garbage.take(unheld: prebuilt.records[index]) }
             garbage.drop()

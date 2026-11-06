@@ -211,6 +211,10 @@ package struct ChangeSet: Sendable {
             records.append(Record(type: recordTypes[index], key: recordKeys[index], idOffset: recordIDOffsets[index]))
         }
         var hasNull = ContiguousArray<Bool>(repeating: false, count: count)
+        // Which records a built record links, and which hold a link: the
+        // commit relinks only those, against the linked ones the store had.
+        var linked = ContiguousArray<Bool>(repeating: false, count: count)
+        var links = ContiguousArray<Bool>(repeating: false, count: count)
         // The field errors are left to the commit, which sets them on an
         // adopted record as on any other: an error arriving counts as a
         // change of its slot, and the undo log holds it.
@@ -232,14 +236,23 @@ package struct ChangeSet: Sendable {
                 case .int(let int): value = .int(int)
                 case .double(let double): value = .double(double)
                 case .string(let start, let end, let escaped): value = .string(string(start, end, escaped: escaped))
-                case .ref(let target): value = .ref(records[Int(target)])
+                case .ref(let target):
+                    value = .ref(records[Int(target)])
+                    linked[Int(target)] = true
+                    links[index] = true
                 case .refs(let start, let listCount):
                     var list = ContiguousArray<Record?>()
                     list.reserveCapacity(Int(listCount))
                     for offset in 0..<Int(listCount) {
                         let target = refs[Int(start) + offset]
-                        list.append(target < 0 ? nil : records[Int(target)])
+                        if target < 0 {
+                            list.append(nil)
+                        } else {
+                            list.append(records[Int(target)])
+                            linked[Int(target)] = true
+                        }
                     }
+                    links[index] = true
                     value = .refs(list)
                 case .list(let start, let listCount):
                     var list = ContiguousArray<Value>()
@@ -275,7 +288,7 @@ package struct ChangeSet: Sendable {
             }
             records[index].fill(values: values, rendered: (renderedIDs, renderedValues), errors: nil)
         }
-        prebuilt.put(records, hasNull: hasNull)
+        prebuilt.put(records, hasNull: hasNull, linked: linked, links: links)
     }
 
     /// The entry of a record's slot, once grouped.
@@ -401,6 +414,8 @@ package struct ChangeSet: Sendable {
 package final class PrebuiltRecords: @unchecked Sendable {
     nonisolated(unsafe) private var records: ContiguousArray<Record> = []
     nonisolated(unsafe) private var hasNull: ContiguousArray<Bool> = []
+    nonisolated(unsafe) private var linked: ContiguousArray<Bool> = []
+    nonisolated(unsafe) private var links: ContiguousArray<Bool> = []
 
     package init() {}
 
@@ -408,17 +423,23 @@ package final class PrebuiltRecords: @unchecked Sendable {
     /// change set was built, and for the tests.
     package var count: Int { records.count }
 
-    func put(_ records: ContiguousArray<Record>, hasNull: ContiguousArray<Bool>) {
+    /// Puts the built records in, with whether each is linked by a built
+    /// record and whether each holds a link.
+    func put(_ records: ContiguousArray<Record>, hasNull: ContiguousArray<Bool>, linked: ContiguousArray<Bool>, links: ContiguousArray<Bool>) {
         self.records = records
         self.hasNull = hasNull
+        self.linked = linked
+        self.links = links
     }
 
     /// Takes the records out, leaving the box empty.
-    func take() -> (records: ContiguousArray<Record>, hasNull: ContiguousArray<Bool>) {
+    func take() -> (records: ContiguousArray<Record>, hasNull: ContiguousArray<Bool>, linked: ContiguousArray<Bool>, links: ContiguousArray<Bool>) {
         defer {
             records = []
             hasNull = []
+            linked = []
+            links = []
         }
-        return (records, hasNull)
+        return (records, hasNull, linked, links)
     }
 }

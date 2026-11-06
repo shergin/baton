@@ -30,6 +30,46 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the commit relinks only what a built record links — 2026-11-06
+
+Revision: the working tree on top of `4e6977c` (0.20.0), against `4e6977c`
+built from the clean tree. A profile of the commit into an empty store,
+taken in a session that set out to fold the record build into the cursor
+and stopped on its own evidence, put `Record.relink` at 60 % of the row:
+the empty store holds its root record, so the root key is found, and the
+commit relinked every adopted record against a one-entry map no built
+record could link, 85 % of it the runtime's executor check under the
+closures handed to `contains(where:)` and `map`. Now the build notes which
+records a built record links and which hold links, the commit maps the
+found records among the linked ones and walks nothing when the map is
+empty, and the relink runs plain loops. Machine: Apple M1 Pro (MacBook
+Pro), macOS 26.5.2 (25F84), Xcode 26.6, Swift 6.3.3, release build, the
+compiler built by `scripts/build-compiler.sh`. `BATON_COMPILER=local swift
+build -c release --product BatonBenchmarks` of each tree, then
+`BatonBenchmarks --only commit,anilist`, three runs of each binary one
+after another; best of the runs, the median of the medians in
+parentheses, and beside a row the allocations one run of its body makes.
+The load average stood at 4.5 before the runs and 7.6 after them, the
+runs of the change coming last.
+
+| Measurement | `4e6977c` | allocations | The change | allocations |
+|---|---|---|---|---|
+| Commit of the fixture into an empty store, 899 records | 312 µs (343) | 22 | 100 µs (110) | 21 |
+| The same payload again, nothing changes | 113 µs (116) | 2 | 114 µs (118) | 2 |
+| One field changed, 20 rows observing their name | 116 µs (120) | 7 | 116 µs (120) | 7 |
+| Ingest of an AniList chunk of 500 entries, per chunk, off the main actor | 4.23 ms (4.44) | 45,188 | 4.27 ms (4.43) | 45,192 |
+| Commit of both AniList chunks into an empty store, 6,014 records | 1.34 ms (1.44) | 47 | 1.05 ms (1.15) | 45 |
+| AniList launch: both handles ready after the image has opened | 1.59 ms (2.00) | | 1.59 ms (1.93) | |
+
+The fixture's commit into an empty store is a third of what the entry
+below measured and a fifth of the 472 µs before 0.20.0; the AniList
+chunks' commit a fifth of the 5.30 ms before it. The ingest pays two
+arrays of flags, four allocations in 45,192 for a chunk. A commit of
+records the store holds does not move. In `benchmarks/counts.txt`,
+`allocations-commit-fixture` 22 to 21, `allocations-commit-anilist` 47 to
+45, `allocations-ingest-fixture` 4,955 to 4,957 and
+`allocations-ingest-anilist` 45,188 to 45,192.
+
 ## Unreleased, the main actor decides and does not build — 2026-11-06
 
 Revision: the working tree on top of `4578e70`, against `4578e70` itself
