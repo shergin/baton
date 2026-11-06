@@ -9,7 +9,7 @@ nonisolated enum Types {
     static let schemaDigest = "48225267547352f149f9ef93baefde85"
     /// The format of this generated code, which the runtime that reads it
     /// declares; a runtime of another format fails to compile this line.
-    static let format = Baton.Format21.self
+    static let format = Baton.Format22.self
     static let ActivityLikeNotification = Baton.Registry.type("ActivityLikeNotification")
     static let ActivityMentionNotification = Baton.Registry.type("ActivityMentionNotification")
     static let ActivityMessageNotification = Baton.Registry.type("ActivityMessageNotification")

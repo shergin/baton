@@ -3,6 +3,17 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
+## Unreleased
+
+- The `onError` value `ABORT` is `HALT`, in `baton.json`, in Swift's
+  `ErrorBehavior.halt` and in Kotlin's `ErrorBehavior.HALT`: the
+  specification's proposal (graphql-spec#1163) renamed it, and Baton
+  takes the proposal's words as they stand. A configuration that
+  still says `ABORT` is refused by the loader with a message that names
+  the three words. Swift format 22, Kotlin format 6: generated code of
+  the format before fails to compile at its marker; rebuild with this
+  release's compiler.
+
 ## 0.18.0 (Knysh) — 2026-11-01
 
 - `@paged(key:page:)`, the third directive that is not Relay's: a list

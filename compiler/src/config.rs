@@ -157,7 +157,7 @@ impl Algorithm {
 pub enum OnError {
     Propagate,
     Null,
-    Abort,
+    Halt,
 }
 
 /// A `customScalarTypes` value: the Swift type a scalar reads as, or the
@@ -280,7 +280,9 @@ pub struct Config {
     #[serde(rename = "customScalarTypes", default)]
     pub custom_scalar_types: BTreeMap<String, HostTypes>,
     /// The `onError` request parameter every operation sends: `PROPAGATE`,
-    /// `NULL` or `ABORT`. Under `NULL` a server nulls an errored field in
+    /// `NULL` or `HALT`, the words of the specification's proposal as they
+    /// stand (graphql-spec#1163, which spelled `HALT` as `ABORT` at
+    /// first). Under `NULL` a server nulls an errored field in
     /// place, so a field the schema types non-null is typed by its semantic
     /// nullability: non-null only where errors are handled.
     #[serde(rename = "onError", default)]

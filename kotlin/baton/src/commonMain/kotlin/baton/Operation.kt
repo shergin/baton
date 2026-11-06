@@ -16,7 +16,7 @@ sealed interface Document {
 enum class OperationKind { QUERY, MUTATION, SUBSCRIPTION }
 
 /** The `onError` value a request carries when `baton.json` names one. */
-enum class ErrorBehavior(val wire: String) { PROPAGATE("PROPAGATE"), NULL("NULL"), ABORT("ABORT") }
+enum class ErrorBehavior(val wire: String) { PROPAGATE("PROPAGATE"), NULL("NULL"), HALT("HALT") }
 
 /** When a query's data comes from the store and when from the network. */
 enum class FetchPolicy {

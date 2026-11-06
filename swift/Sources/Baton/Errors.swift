@@ -181,6 +181,7 @@ public enum ErrorBehavior: String, Sendable {
     case propagate = "PROPAGATE"
     /// Errors null the field and stop there.
     case null = "NULL"
-    /// The first error fails the whole request.
-    case abort = "ABORT"
+    /// The first error fails the whole request. The proposal spelled it
+    /// `ABORT` at first; the word is the proposal's as it stands.
+    case halt = "HALT"
 }

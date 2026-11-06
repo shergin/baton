@@ -89,7 +89,11 @@ public enum Format19 {}
 public enum Format20 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 21 and the runtime reads format 22: the `onError` value `ABORT` is `HALT`, as the specification's proposal spells it; rebuild with the compiler of this release")
 public enum Format21 {}
+
+@_spi(Generated)
+public enum Format22 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.

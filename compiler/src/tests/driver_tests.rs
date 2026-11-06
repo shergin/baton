@@ -198,3 +198,18 @@ fn every_difference_is_counted() {
         3
     );
 }
+
+#[test]
+fn a_configuration_that_spells_on_error_abort_is_refused_with_a_message_naming_halt() {
+    let directory = Scratch::new("abort");
+    let path = directory.join("baton.json");
+    std::fs::write(&path, r#"{"onError": "ABORT"}"#).expect("the configuration is written");
+    let Err(error) = Config::load(&path) else {
+        panic!("`ABORT` is not an `onError` value since graphql-spec#1163 named it `HALT`");
+    };
+    let message = error.to_string();
+    assert!(message.contains("ABORT"), "{message}");
+    for word in ["PROPAGATE", "NULL", "HALT"] {
+        assert!(message.contains(word), "{message}");
+    }
+}

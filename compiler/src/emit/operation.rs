@@ -52,7 +52,7 @@ fn error_behavior_case(behavior: OnError) -> &'static str {
     match behavior {
         OnError::Propagate => "propagate",
         OnError::Null => "null",
-        OnError::Abort => "abort",
+        OnError::Halt => "halt",
     }
 }
 

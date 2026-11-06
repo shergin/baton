@@ -1212,7 +1212,10 @@ interface `Stream` (`Idle`, `Connecting`, `Open`, `Waiting(until)`,
 with `rememberSubscription(operation)`, whose `subscription` is the handle.
 
 **Error behavior.** *Composition: schema, lens, transport.* The GraphQL
-spec's `onError` request parameter (`PROPAGATE`, `NULL`, `ABORT`).
+spec's `onError` request parameter (`PROPAGATE`, `NULL`, `HALT`), a
+proposal at its first stage (graphql-spec#1163), whose words are taken as
+they stand: `HALT` was spelled `ABORT` at first, and `PROPAGATE` stays
+the default a server assumes.
 Here: `"onError"` in `baton.json`, decided at compile time and sent with
 every operation the target compiles; never inferred. Under `NULL` an error
 nulls a field in place, so the compiler types the fields the schema calls

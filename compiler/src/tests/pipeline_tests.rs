@@ -435,6 +435,50 @@ fn on_error_null_sends_the_value_and_types_non_null_fields_by_their_semantic_nul
 }
 
 #[test]
+fn on_error_halt_sends_the_halt_case_from_both_emitters() {
+    let (sdl, path) = schema();
+    let mut config: Config =
+        serde_json::from_str(r#"{"onError": "HALT"}"#).expect("the configuration parses");
+    config.path = PathBuf::from("baton.json");
+    let text = "query Probe { character(id: \"1\") { name } }";
+    let compiled = compile(&sdl, &path, &[], &[document(text)], &config)
+        .unwrap_or_else(|errors| panic!("{errors:?}"));
+    assert_eq!(
+        compiled.plan.operations[0].error_behavior,
+        Some(OnError::Halt)
+    );
+
+    let swift = crate::emit::swift(&compiled.plan, &Config::default()).expect("the plan emits");
+    let swift_file = swift
+        .files
+        .values()
+        .next()
+        .expect("the operation has a Swift file");
+    assert!(
+        swift_file.contains("public static let errorBehavior: Baton.ErrorBehavior? = .halt"),
+        "{swift_file}"
+    );
+
+    // The Kotlin emitter is reached as the driver reaches it: through the
+    // decide pass and the Kotlin naming.
+    let kotlin_config = Config::default();
+    let program = crate::decide::program(
+        &compiled.plan,
+        &crate::kotlin_names::KotlinNaming::new(&kotlin_config).into(),
+    )
+    .unwrap_or_else(|errors| panic!("{errors:?}"));
+    let kotlin = crate::emit::Kotlin::new(&kotlin_config, Default::default()).emit(&program);
+    assert!(
+        kotlin
+            .files
+            .values()
+            .any(|file| file
+                .contains("override val errorBehavior: ErrorBehavior? = ErrorBehavior.HALT")),
+        "no Kotlin file states the `HALT` behaviour"
+    );
+}
+
+#[test]
 fn a_query_states_its_cache_expiration_in_its_plan_and_its_swift_and_not_in_the_text_it_sends() {
     let (sdl, path) = schema();
     let text = "query Probe @cacheExpiration(seconds: 30) { character(id: \"1\") { name } }";

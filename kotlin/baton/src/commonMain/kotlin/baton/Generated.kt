@@ -24,9 +24,13 @@ annotation class Generated
  * format has its own numbers, per the decision that a format is per emitter.
  */
 @Generated
-object Format5
+object Format6
 
 /** The markers before: generated code that names one is of an earlier compiler, and does not compile. */
+@Deprecated("this generated code is of format 5 and the runtime reads format 6: the `onError` value `ABORT` is `HALT`, as the specification's proposal spells it; rebuild with the compiler of this release", level = DeprecationLevel.ERROR)
+@Generated
+object Format5
+
 @Deprecated("this generated code is of format 4 and the runtime reads format 5: a list paged by number merges its pages under `@paged`; rebuild with the compiler of this release", level = DeprecationLevel.ERROR)
 @Generated
 object Format4

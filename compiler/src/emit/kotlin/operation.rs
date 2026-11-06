@@ -249,7 +249,7 @@ fn error_behavior_case(behavior: OnError) -> &'static str {
     match behavior {
         OnError::Propagate => "PROPAGATE",
         OnError::Null => "NULL",
-        OnError::Abort => "ABORT",
+        OnError::Halt => "HALT",
     }
 }
 
