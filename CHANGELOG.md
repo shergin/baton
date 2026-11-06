@@ -3,7 +3,7 @@
 Notable changes, written so a person can read them. Pre-1.0, breaking changes
 are expected and listed without apology.
 
-## Unreleased
+## 0.19.0 (Baranka) — 2026-11-06
 
 - A late response yields to a newer deletion and to a newer response of
   its root. The store numbers each request as the environment issues it; a
