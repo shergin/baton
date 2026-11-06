@@ -50,7 +50,7 @@ const CONTEXTUAL_KEYWORDS: [&str; 12] = [
 
 /// What the generated code declares or spells that no list of the rules
 /// holds.
-const GENERATED_NAMES: [&str; 32] = [
+const GENERATED_NAMES: [&str; 27] = [
     // The checks every lens may have, and the methods of a lens.
     "satisfied",
     "missingRequiredField",
@@ -82,11 +82,6 @@ const GENERATED_NAMES: [&str; 32] = [
     "selection0",
     // What the runtime's protocols give a generated type.
     "hashValue",
-    "phase",
-    "isRefreshing",
-    "isStale",
-    "retry",
-    "subscription",
     // The standard library's type of the shared file's sets of types.
     "Set",
 ];
@@ -183,19 +178,11 @@ const GUARDS: (&str, &str) = ("Guards", "the shared enum `Guards`");
 const ABSTRACT_SLOTS: (&str, &str) = ("AbstractSlots", "the shared enum `AbstractSlots`");
 const VARIABLE: (&str, &str) = ("variable", "the optimistic response's `variable`");
 const VARIABLES: (&str, &str) = ("variables", "the operation's `variables`");
-const RESOLUTION: (&str, &str) = ("resolution", "the operation's `resolution`");
 const DATA: (&str, &str) = ("Data", "the operation's root lens `Data`");
 const ACTION: (&str, &str) = ("Action", "the mutation's `Action`");
 const OPTIMISTIC_RESPONSE: (&str, &str) =
     ("OptimisticResponse", "the mutation's `OptimisticResponse`");
 const HASH_VALUE: (&str, &str) = ("hashValue", "the `hashValue` every operation value has");
-const PHASE: (&str, &str) = ("phase", "the `phase` every query value has");
-const IS_REFRESHING: (&str, &str) = ("isRefreshing", "the `isRefreshing` every query value has");
-const IS_STALE: (&str, &str) = ("isStale", "the `isStale` every query value has");
-const SUBSCRIPTION_HANDLE: (&str, &str) = (
-    "subscription",
-    "the `subscription` every subscription value has",
-);
 const MODULE: (&str, &str) = ("Baton", "the runtime's module `Baton`");
 const SELF: (&str, &str) = ("Self", "Swift's keyword `Self`");
 
@@ -323,18 +310,7 @@ fn positions() -> Vec<Position> {
             query_variable_names,
             "query Probe($HOSTILE: ID!) @throwOnFieldError { charactersByIds(ids: [$HOSTILE]) { id } }",
             "$HOSTILE",
-            &[
-                VARIABLES,
-                RESOLUTION,
-                HASH_VALUE,
-                PHASE,
-                IS_REFRESHING,
-                IS_STALE,
-                DATA,
-                TYPES,
-                SLOTS,
-                MODULE,
-            ],
+            &[VARIABLES, HASH_VALUE, DATA, TYPES, SLOTS, MODULE],
         ),
         variable(
             MUTATION_VARIABLE,
@@ -359,17 +335,7 @@ fn positions() -> Vec<Position> {
             subscription_variable_names,
             r#"subscription Probe($HOSTILE: Boolean!) { noteAdded(characterId: "1") @catch { noteEdge { node { id } ... @include(if: $HOSTILE) { cursor } } } }"#,
             "$HOSTILE",
-            &[
-                VARIABLES,
-                RESOLUTION,
-                HASH_VALUE,
-                SUBSCRIPTION_HANDLE,
-                DATA,
-                TYPES,
-                SLOTS,
-                GUARDS,
-                MODULE,
-            ],
+            &[VARIABLES, HASH_VALUE, DATA, TYPES, SLOTS, GUARDS, MODULE],
         ),
         variable(
             FRAGMENT_ARGUMENT,
@@ -377,18 +343,7 @@ fn positions() -> Vec<Position> {
             r#"fragment Probe_character on Character @argumentDefinitions(HOSTILE: {type: "Boolean", defaultValue: true}) @refetchable(queryName: "ProbeRefetchQuery") { ... @include(if: $HOSTILE) { name } }"#,
             "HOSTILE:",
             &[
-                VARIABLES,
-                RESOLUTION,
-                HASH_VALUE,
-                PHASE,
-                IS_REFRESHING,
-                IS_STALE,
-                DATA,
-                TYPES,
-                SLOTS,
-                SITES,
-                GUARDS,
-                MODULE,
+                VARIABLES, HASH_VALUE, DATA, TYPES, SLOTS, SITES, GUARDS, MODULE,
             ],
         ),
         field(
@@ -1318,7 +1273,6 @@ fn every_name_the_generated_code_declares_or_binds_is_a_hostile_name() {
         "hasher",
         "Fragment",
         "Query",
-        "resolution",
         "variables",
         "variable",
         "refetch",

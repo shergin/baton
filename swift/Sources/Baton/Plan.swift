@@ -93,7 +93,11 @@ public enum Format20 {}
 public enum Format21 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 22 and the runtime reads format 23: an operation value carries no resolution; its live side is the storage's projection; rebuild with the compiler of this release")
 public enum Format22 {}
+
+@_spi(Generated)
+public enum Format23 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.

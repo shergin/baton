@@ -15,7 +15,7 @@ struct EpisodeScreen: View {
     var episode: EpisodeQuery
 
     var body: some View {
-        PhaseView(phase: episode.phase, retry: episode.retry) { data in
+        PhaseView(phase: $episode.phase, retry: $episode.retry) { data in
             List {
                 if let episode = data.episode {
                     Section {
@@ -51,7 +51,7 @@ struct LocationScreen: View {
     var location: LocationQuery
 
     var body: some View {
-        PhaseView(phase: location.phase, retry: location.retry) { data in
+        PhaseView(phase: $location.phase, retry: $location.retry) { data in
             List {
                 if let location = data.location {
                     Section {

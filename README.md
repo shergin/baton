@@ -104,7 +104,7 @@ struct IssuesScreen: View {
     var issues: IssuesQuery
 
     var body: some View {
-        switch issues.phase {
+        switch $issues.phase {
         case .ready(let data):
             if let repo = data.repository {
                 List {
@@ -117,7 +117,7 @@ struct IssuesScreen: View {
         case .loading:
             ProgressView()
         case .failed(let failure):
-            ErrorView(failure) { issues.retry() }
+            ErrorView(failure) { $issues.retry() }
         }
     }
 }

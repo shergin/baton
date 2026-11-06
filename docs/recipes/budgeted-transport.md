@@ -426,8 +426,9 @@ reads it beside the data:
 - With data in the store, from this launch or from the image, the phase
   stays ready and the data stays on screen. The fetch says why it is not
   fresher, and the view shows a calm line above it.
-- Without data, the phase is failed, with the `Outage` itself, and the
-  view shows the same line in place of the list.
+- Without data, the phase is failed in the fetch's transport kind, with
+  the `Outage` itself inside it, and the view shows the same line in place
+  of the list.
 
 That is [honest data](../principles/honest-data.md): a failed fetch is a
 value beside the data, never a new phase and never a new kind of failure.
@@ -436,13 +437,13 @@ The list screen of
 
 ```swift
 var body: some View {
-    switch list.phase {
+    switch $list.phase {
     case .loading:
         ProgressView()
     case .ready(let data):
         Shelves(data: data)
             .safeAreaInset(edge: .top) {
-                if list.fetch.failure?.error is Outage { OutageNote() }
+                if $list.fetch.failure?.error is Outage { OutageNote() }
             }
     case .failed(.fetch(.transport(is Outage))):
         OutageNote()

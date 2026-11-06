@@ -79,13 +79,13 @@ struct CharacterScreen: View {
 
     var body: some View {
         List {
-            PhaseView(phase: header.phase, retry: header.retry) { data in
+            PhaseView(phase: $header.phase, retry: $header.retry) { data in
                 if let character = data.character {
                     CharacterHeader(character: character.characterHeader)
                 }
             }
             Section("Episodes") {
-                switch episodes.phase {
+                switch $episodes.phase {
                 case .ready(let data):
                     if let character = data.character {
                         ForEach(character.episode) { episode in

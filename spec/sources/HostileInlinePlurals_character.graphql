@@ -34,15 +34,14 @@ fragment HostileInlinePlurals_character on Character @inline @throwOnFieldError 
   Fragment: episode { id } Spread: episode { id } Owner: episode { id } Query: episode { id }
   Operation: episode { id } RefetchQuery: episode { id }
   # What an operation value, a mutation's action and its optimistic response declare.
-  variables: episode { id } resolution: episode { id } name: episode { id }
+  variables: episode { id } name: episode { id }
   document: episode { id } text: episode { id } plan: episode { id }
   errorBehavior: episode { id } throwsOnFieldError: episode { id } bubbles: episode { id }
   hasIncremental: episode { id } cacheExpiration: episode { id } Data: episode { id } Action: episode { id }
   OptimisticResponse: episode { id } hash: episode { id } commit: episode { id }
   callAsFunction: episode { id } Op: episode { id } variable: episode { id } payload: episode { id }
   # What the runtime's protocols give a generated type.
-  hashValue: episode { id } phase: episode { id } isRefreshing: episode { id }
-  isStale: episode { id } retry: episode { id } subscription: episode { id }
+  hashValue: episode { id }
   # The shared enums.
   Types: episode { id } Sites: episode { id } Guards: episode { id } AbstractSlots: episode { id }
   schemaDigest: episode { id } format: episode { id } transient: episode { id }

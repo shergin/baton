@@ -36,7 +36,7 @@ struct MarkerMacroTests {
         )
     }
 
-    @Test("@Query turns the property into operation storage behind an init accessor, with the default policy")
+    @Test("@Query reads the value from operation storage behind an init accessor, with the default policy, and projects the state as `$screen`")
     func query() {
         expectExpansion(
             """
@@ -53,11 +53,15 @@ struct MarkerMacroTests {
                         _screen = Baton.OperationStorage(initialValue, fetchPolicy: .default)
                     }
                     get {
-                        _screen.resolved
+                        _screen.value
                     }
                 }
 
                 private var _screen: Baton.OperationStorage<Screen>
+
+                var $screen: Baton.QueryState<Screen> {
+                    _screen.state
+                }
             }
             """
         )
@@ -80,17 +84,21 @@ struct MarkerMacroTests {
                         _screen = Baton.OperationStorage(initialValue, fetchPolicy: .storeOrNetwork)
                     }
                     get {
-                        _screen.resolved
+                        _screen.value
                     }
                 }
 
                 private var _screen: Baton.OperationStorage<Screen>
+
+                var $screen: Baton.QueryState<Screen> {
+                    _screen.state
+                }
             }
             """
         )
     }
 
-    @Test("@Subscription turns the property into subscription storage behind an init accessor")
+    @Test("@Subscription reads the value from subscription storage behind an init accessor and projects the handle as `$live`")
     func subscription() {
         expectExpansion(
             """
@@ -107,11 +115,15 @@ struct MarkerMacroTests {
                         _live = Baton.SubscriptionStorage(initialValue)
                     }
                     get {
-                        _live.resolved
+                        _live.value
                     }
                 }
 
                 private var _live: Baton.SubscriptionStorage<Live>
+
+                var $live: Baton.SubscriptionHandle<Live>? {
+                    _live.state
+                }
             }
             """
         )

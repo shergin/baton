@@ -22,12 +22,12 @@ fragment HostileScalars_character on Character {
   rhs: name hasher: name selection0: name selection: name optimistic: name selfValue: name values: name Fragment: name Spread: name
   Owner: name Query: name Operation: name RefetchQuery: name
   # What an operation value, a mutation's action and its optimistic response declare.
-  variables: name resolution: name name: name document: name text: name plan: name
+  variables: name name: name document: name text: name plan: name
   errorBehavior: name throwsOnFieldError: name bubbles: name hasIncremental: name cacheExpiration: name Data: name
   Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name Op: name
   variable: name payload: name
   # What the runtime's protocols give a generated type.
-  hashValue: name phase: name isRefreshing: name isStale: name retry: name subscription: name
+  hashValue: name
   # The shared enums.
   Types: name Sites: name Guards: name AbstractSlots: name schemaDigest: name format: name transient: name
   # The modules, and what the generated code spells from the standard library.

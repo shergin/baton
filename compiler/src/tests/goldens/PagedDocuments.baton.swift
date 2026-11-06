@@ -43,7 +43,6 @@ nonisolated public struct TestFriends_character: Baton.Lens {
 nonisolated public struct TestFriendsQuery: Baton.Query {
     public var id: String
     public var page: Int
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String, page: Int) {
         self.id = id
@@ -102,7 +101,6 @@ nonisolated public struct TestFriendsQuery: Baton.Query {
 /// Operation value for `query TestPagedCharactersQuery`.
 nonisolated public struct TestPagedCharactersQuery: Baton.Query {
     public var page: Int
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(page: Int) {
         self.page = page
@@ -179,7 +177,6 @@ nonisolated public struct TestPagedCharactersQuery: Baton.Query {
 nonisolated public struct TestPagedNotesQuery: Baton.Query {
     public var page: Int
     public var authorId: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(page: Int, authorId: String) {
         self.page = page

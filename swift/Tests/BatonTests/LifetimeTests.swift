@@ -36,11 +36,36 @@ struct StorageProbe: View {
     let storage: OperationStorage<TestHeaderQuery>
 
     var body: some View {
-        if case .ready(let data) = storage.resolved.phase {
+        if case .ready(let data) = storage.state.phase {
             Text(data.character?.testHeader.name ?? "")
         } else {
             Text("loading")
         }
+    }
+}
+
+/// What a view's body saw, kept for the test to read after the render.
+final class Captured<Value>: @unchecked Sendable {
+    var value: Value?
+}
+
+/// A view holding a query's storage that hands the value and the state the
+/// storage resolved it to back to the test.
+struct StateProbe<Op: Baton.Query>: View {
+    let storage: OperationStorage<Op>
+    let value: Captured<Op>
+    let state: Captured<QueryState<Op>>
+
+    init(_ storage: OperationStorage<Op>, value: Captured<Op> = Captured(), state: Captured<QueryState<Op>>) {
+        self.storage = storage
+        self.value = value
+        self.state = state
+    }
+
+    var body: some View {
+        value.value = storage.value
+        state.value = storage.state
+        return Text("probe")
     }
 }
 
@@ -692,28 +717,31 @@ struct LifetimeTests {
         #expect(environment.store.rootCount == 0, "released with an empty buffer, the handle is no root")
     }
 
-    @Test("a subscription value reaches the handle the storage that resolved it holds, a bare value reaches none, and the stream closes when the view goes away")
+    @Test("a subscription storage in an environment holds the value's handle open as its state, and closes the stream when the view goes away")
     func subscriptionResolution() async throws {
-        final class Seen: @unchecked Sendable { var handle: SubscriptionHandle<TestNoteAdded>? }
+        final class Seen: @unchecked Sendable {
+            var value: TestNoteAdded?
+            var handle: SubscriptionHandle<TestNoteAdded>?
+        }
         struct Probe: View {
             let storage: SubscriptionStorage<TestNoteAdded>
             let seen: Seen
             var body: some View {
-                seen.handle = storage.resolved.subscription
+                seen.value = storage.value
+                seen.handle = storage.state
                 return Text("probe")
             }
         }
         let environment = Baton.Environment(transport: SilentTransport(), subscriptions: DeliveryTests.Events())
         let value = TestNoteAdded(characterId: "resolution", connections: [])
-        #expect(value.subscription == nil)
         let seen = Seen()
         autoreleasepool {
             let renderer = ImageRenderer(content: Probe(storage: SubscriptionStorage(value), seen: seen).environment(\.baton, environment))
             #expect(renderer.cgImage != nil)
+            #expect(seen.value == value, "the storage hands the value back as it was passed")
             #expect(seen.handle === environment.subscriptionHandle(for: value))
             #expect(seen.handle?.isActive == true, "the storage opened the stream")
         }
-        #expect(value.subscription == nil, "the value itself holds nothing")
         let handle = try #require(seen.handle)
         await until { !handle.isActive }
         #expect(handle.retainCount == 0, "the storage released the handle when the view went away")
@@ -749,11 +777,13 @@ struct LifetimeTests {
         _ = consume emptyRetention
     }
 
-    @Test("a view outside every environment makes no handle: its query reads as failed on the missing environment, its subscription has no live side, and its mutation throws")
+    @Test("a view outside every environment makes no handle: its query state has none and reads as failed on the missing environment, its subscription state is nil, and its mutation throws")
     func aViewOutsideEveryEnvironmentMakesNoHandle() async throws {
         final class Seen: @unchecked Sendable {
-            var query: TestList?
-            var subscription: TestNoteAdded?
+            var value: TestList?
+            var query: QueryState<TestList>?
+            var rendered = false
+            var subscription: SubscriptionHandle<TestNoteAdded>?
             var mutation: MutationAction<TestSetFavorite>?
         }
         struct Probe: View {
@@ -762,18 +792,15 @@ struct LifetimeTests {
             let mutation: MutationStorage<TestSetFavorite>
             let seen: Seen
             var body: some View {
-                seen.query = query.resolved
-                seen.subscription = subscription.resolved
+                seen.value = query.value
+                seen.query = query.state
+                seen.subscription = subscription.state
+                seen.rendered = true
                 seen.mutation = mutation.action
                 return Text("probe")
             }
         }
         let value = TestList(page: 404)
-        guard case .loading = value.phase else {
-            Issue.record("a value never put in a view is unresolved and reads as loading, got \(value.phase)")
-            return
-        }
-
         let seen = Seen()
         autoreleasepool {
             let probe = Probe(query: OperationStorage(value), subscription: SubscriptionStorage(TestNoteAdded(characterId: "1", connections: [])), mutation: MutationStorage(), seen: seen)
@@ -781,11 +808,9 @@ struct LifetimeTests {
             #expect(renderer.cgImage != nil)
         }
 
+        #expect(seen.value == value, "the value reads as it was passed, environment or not")
         let query = try #require(seen.query)
-        guard case .notInjected = query.resolution else {
-            Issue.record("no environment, no handle: expected not injected, got \(query.resolution)")
-            return
-        }
+        #expect(query.handle == nil, "no environment, no handle")
         guard case .failed(.fetch(.environment(.notInjected))) = query.phase else {
             Issue.record("expected the missing environment, got \(query.phase)")
             return
@@ -795,6 +820,8 @@ struct LifetimeTests {
             return
         }
         #expect(!query.isRefreshing)
+        #expect(!query.isStale)
+        #expect(query.fetchTime == nil)
         do throws(PhaseFailure) {
             try await query.refetch()
             Issue.record("a refetch outside every environment threw nothing")
@@ -809,16 +836,119 @@ struct LifetimeTests {
             return
         }
 
-        let subscription = try #require(seen.subscription)
-        guard case .notInjected = subscription.resolution else {
-            Issue.record("no environment, no stream: expected not injected, got \(subscription.resolution)")
-            return
-        }
-        #expect(subscription.subscription == nil)
+        #expect(seen.rendered)
+        #expect(seen.subscription == nil, "no environment, no stream")
 
         let mutation = try #require(seen.mutation)
         await #expect(throws: EnvironmentError.notInjected) { _ = try await mutation.commit(TestSetFavorite(id: "1", favorite: true)) }
         #expect(!mutation.isInFlight)
+    }
+
+    @Test("a query state forwards its phase, fetch, refreshing, staleness, fetch time, refetch and retry to the handle its storage resolved")
+    func aQueryStateForwardsEachMemberToItsHandle() async throws {
+        let gate = GatedTransport()
+        let environment = Baton.Environment(transport: gate)
+        environment.log = nil
+        let operation = TestList(page: 1)
+        let captured = Captured<QueryState<TestList>>()
+        var retention: Retention?
+        autoreleasepool {
+            let renderer = ImageRenderer(content: StateProbe(OperationStorage(operation), state: captured).environment(\.baton, environment))
+            #expect(renderer.cgImage != nil)
+            retention = captured.value?.handle?.retain()
+        }
+        defer { withExtendedLifetime(retention) {} }
+        let state = try #require(captured.value)
+        let handle = try #require(state.handle)
+        #expect(handle === environment.handle(for: operation), "the state reads the handle every equal value shares")
+
+        /// Holds every member the state forwards against the handle's own.
+        func expectForwarded(_ moment: String, sourceLocation: SourceLocation = #_sourceLocation) {
+            #expect(String(describing: state.phase) == String(describing: handle.phase), "\(moment): the phase", sourceLocation: sourceLocation)
+            #expect(String(describing: state.fetch) == String(describing: handle.fetch), "\(moment): the fetch", sourceLocation: sourceLocation)
+            #expect(state.isRefreshing == handle.isRefreshing, "\(moment): refreshing", sourceLocation: sourceLocation)
+            #expect(state.isStale == handle.isStale, "\(moment): staleness", sourceLocation: sourceLocation)
+            #expect(state.fetchTime == handle.fetchTime, "\(moment): the fetch time", sourceLocation: sourceLocation)
+        }
+
+        await until { gate.pending == 1 }
+        guard case .loading = state.phase, case .inFlight = state.fetch else {
+            Issue.record("expected the first fetch loading and in flight, got \(state.phase) and \(state.fetch)")
+            return
+        }
+        expectForwarded("the first fetch")
+
+        gate.fail(URLError(.notConnectedToInternet))
+        await until { if case .failed = handle.phase { true } else { false } }
+        guard case .failed(.transport(let error as URLError), _) = state.fetch else {
+            Issue.record("expected the transport's failure, got \(state.fetch)")
+            return
+        }
+        #expect(error.code == .notConnectedToInternet)
+        expectForwarded("the failed fetch")
+
+        state.retry()
+        await until { gate.pending == 1 }
+        guard case .loading = handle.phase else {
+            Issue.record("the state's retry reached the handle, which shows loading again, got \(handle.phase)")
+            return
+        }
+        expectForwarded("the retry")
+        gate.respond(fixtureData)
+        await handle.settle()
+        guard case .ready = state.phase else {
+            Issue.record("expected the data, got \(state.phase)")
+            return
+        }
+        #expect(state.fetchTime != nil, "the commit dated the operation")
+        expectForwarded("the data")
+
+        let refetch = Task { try await state.refetch() }
+        await until { gate.pending == 1 }
+        #expect(handle.isRefreshing, "the state's refetch reached the handle")
+        expectForwarded("the refetch")
+        gate.respond(fixtureData)
+        try await refetch.value
+        #expect(!state.isRefreshing)
+        expectForwarded("the refetched data")
+
+        environment.invalidate()
+        #expect(state.isStale)
+        expectForwarded("the invalidation")
+        await until { gate.pending == 1 }
+        gate.respond(fixtureData)
+        await until { !handle.isRefreshing }
+        #expect(!state.isStale)
+        expectForwarded("the data fetched again")
+    }
+
+    @Test("two equal values are equal whatever their views resolved them to, since a value compares by its variables alone")
+    func equalValuesAreEqualWhateverTheirViewsResolvedThemTo() {
+        let first = Baton.Environment(transport: SilentTransport())
+        let second = Baton.Environment(transport: SilentTransport())
+        let values = (0..<3).map { _ in Captured<TestHeaderQuery>() }
+        let states = (0..<3).map { _ in Captured<QueryState<TestHeaderQuery>>() }
+        autoreleasepool {
+            let renderers = [
+                ImageRenderer(content: AnyView(StateProbe(OperationStorage(TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly), value: values[0], state: states[0]).environment(\.baton, first))),
+                ImageRenderer(content: AnyView(StateProbe(OperationStorage(TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly), value: values[1], state: states[1]).environment(\.baton, second))),
+                ImageRenderer(content: AnyView(StateProbe(OperationStorage(TestHeaderQuery(id: "1"), fetchPolicy: .storeOnly), value: values[2], state: states[2]))),
+            ]
+            for renderer in renderers {
+                #expect(renderer.cgImage != nil)
+            }
+        }
+
+        let handles = states.map { $0.value?.handle }
+        #expect(handles[0] != nil && handles[1] != nil && handles[0] !== handles[1], "each environment resolved the value to its own handle")
+        #expect(states[2].value != nil && handles[2] == nil, "the view outside every environment resolved it to none")
+        let resolved = values.compactMap(\.value)
+        #expect(resolved.count == 3)
+        for value in resolved {
+            #expect(value == TestHeaderQuery(id: "1"))
+            #expect(value.hashValue == TestHeaderQuery(id: "1").hashValue)
+        }
+        #expect(Set(resolved).count == 1)
     }
 
     @Test("a request with nothing to send it fails on what is missing: the lens's environment or the subscription transport")

@@ -34,15 +34,14 @@ fragment HostileLinks_character on Character {
   Fragment: origin { id } Spread: origin { id } Owner: origin { id } Query: origin { id }
   Operation: origin { id } RefetchQuery: origin { id }
   # What an operation value, a mutation's action and its optimistic response declare.
-  variables: origin { id } resolution: origin { id } name: origin { id }
+  variables: origin { id } name: origin { id }
   document: origin { id } text: origin { id } plan: origin { id }
   errorBehavior: origin { id } throwsOnFieldError: origin { id } bubbles: origin { id }
   hasIncremental: origin { id } cacheExpiration: origin { id } Data: origin { id } Action: origin { id }
   OptimisticResponse: origin { id } hash: origin { id } commit: origin { id }
   callAsFunction: origin { id } Op: origin { id } variable: origin { id } payload: origin { id }
   # What the runtime's protocols give a generated type.
-  hashValue: origin { id } phase: origin { id } isRefreshing: origin { id }
-  isStale: origin { id } retry: origin { id } subscription: origin { id }
+  hashValue: origin { id }
   # The shared enums.
   Types: origin { id } Sites: origin { id } Guards: origin { id } AbstractSlots: origin { id }
   schemaDigest: origin { id } format: origin { id } transient: origin { id }

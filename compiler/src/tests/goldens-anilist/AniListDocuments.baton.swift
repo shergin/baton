@@ -96,7 +96,6 @@ nonisolated public struct MediaCard_media: Baton.Lens {
 /// Operation value for `query EntryQuery`.
 nonisolated public struct EntryQuery: Baton.Query {
     public var id: Int
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: Int) {
         self.id = id
@@ -197,7 +196,6 @@ nonisolated public struct ListQuery: Baton.Query {
     public var userId: Int
     public var mediaType: MediaType
     public var chunk: Int
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(userId: Int, mediaType: MediaType, chunk: Int) {
         self.userId = userId

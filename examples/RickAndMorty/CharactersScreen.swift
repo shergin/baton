@@ -44,7 +44,7 @@ struct CharactersScreen: View {
     var characters: CharactersScreenQuery
 
     var body: some View {
-        PhaseView(phase: characters.phase, retry: characters.retry) { data in
+        PhaseView(phase: $characters.phase, retry: $characters.retry) { data in
             List {
                 if let results = data.characters?.results {
                     ForEach(results) { character in
@@ -55,13 +55,13 @@ struct CharactersScreen: View {
                 }
             }
             .overlay(alignment: .bottom) {
-                if characters.isRefreshing { ProgressView().padding() }
+                if $characters.isRefreshing { ProgressView().padding() }
             }
         }
         .navigationTitle("Characters")
         .toolbar {
             Button("Refresh", systemImage: "arrow.clockwise") {
-                Task { try? await characters.refetch() }
+                Task { try? await $characters.refetch() }
             }
         }
     }

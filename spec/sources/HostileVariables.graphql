@@ -28,8 +28,6 @@ query HostileVariables(
   $throwsOnFieldError: ID!, $bubbles: ID!, $hasIncremental: ID!, $cacheExpiration: ID!, $Action: ID!,
   $OptimisticResponse: ID!, $hash: ID!, $commit: ID!, $callAsFunction: ID!, $Op: ID!,
   $variable: ID!, $payload: ID!,
-  # What the runtime's protocols give a generated type.
-  $retry: ID!, $subscription: ID!,
   # The shared enums.
   $Sites: ID!, $Guards: ID!, $AbstractSlots: ID!, $schemaDigest: ID!, $format: ID!, $transient: ID!,
   # The modules, and what the generated code spells from the standard library.
@@ -57,8 +55,6 @@ query HostileVariables(
     # What an operation value, a mutation's action and its optimistic response declare.
     $name, $document, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles,
     $hasIncremental, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $payload,
-    # What the runtime's protocols give a generated type.
-    $retry, $subscription,
     # The shared enums.
     $Sites, $Guards, $AbstractSlots, $schemaDigest, $format, $transient,
     # The modules, and what the generated code spells from the standard library.

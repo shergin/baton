@@ -15,7 +15,7 @@ struct IssueScreen: View {
     var issue: IssueQuery
 
     var body: some View {
-        PhaseView(phase: issue.phase, retry: issue.retry) { data in
+        PhaseView(phase: $issue.phase, retry: $issue.retry) { data in
             if let detail = data.node?.asIssue?.detail {
                 IssueDetail(issue: detail)
             } else {

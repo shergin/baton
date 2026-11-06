@@ -131,7 +131,6 @@ nonisolated public struct TestThrowingOrigin_character: Baton.Lens {
 /// Operation value for `query TestCaughtEpisodes`.
 nonisolated public struct TestCaughtEpisodes: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -201,7 +200,6 @@ nonisolated public struct TestCaughtEpisodes: Baton.Query {
 /// Operation value for `query TestCaughtPartQuery`.
 nonisolated public struct TestCaughtPartQuery: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -287,7 +285,6 @@ nonisolated public struct TestCaughtPartQuery: Baton.Query {
 /// Operation value for `query TestCollidingErrors`.
 nonisolated public struct TestCollidingErrors: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -387,7 +384,6 @@ nonisolated public struct TestCollidingErrors: Baton.Query {
 /// Operation value for `query TestCollidingRequired`.
 nonisolated public struct TestCollidingRequired: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -467,7 +463,6 @@ nonisolated public struct TestCollidingRequired: Baton.Query {
 /// Operation value for `query TestFilteredCharacters`.
 nonisolated public struct TestFilteredCharacters: Baton.Query {
     public var filters: [FilterCharacter]
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(filters: [FilterCharacter]) {
         self.filters = filters
@@ -515,7 +510,6 @@ nonisolated public struct TestFilteredCharacters: Baton.Query {
 nonisolated public struct TestKeywordVariables: Baton.Query {
     public var `where`: String
     public var `in`: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(`where`: String, `in`: String) {
         self.`where` = `where`
@@ -582,7 +576,6 @@ nonisolated public struct TestKeywordVariables: Baton.Query {
 /// Operation value for `query TestLoggedOrigin`.
 nonisolated public struct TestLoggedOrigin: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -662,7 +655,6 @@ nonisolated public struct TestLoggedOrigin: Baton.Query {
 /// Operation value for `query TestRequiredOrigin`.
 nonisolated public struct TestRequiredOrigin: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -742,7 +734,6 @@ nonisolated public struct TestRequiredOrigin: Baton.Query {
 /// Operation value for `query TestReservedNames`.
 nonisolated public struct TestReservedNames: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -830,7 +821,6 @@ nonisolated public struct TestReservedNames: Baton.Query {
 /// Operation value for `query TestStandaloneFragmentsQuery`.
 nonisolated public struct TestStandaloneFragmentsQuery: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -901,7 +891,6 @@ nonisolated public struct TestStandaloneFragmentsQuery: Baton.Query {
 /// Operation value for `query TestStrictEpisodes`.
 nonisolated public struct TestStrictEpisodes: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -1001,7 +990,6 @@ nonisolated public struct TestStrictEpisodes: Baton.Query {
 /// Operation value for `query TestStrictOrigin`.
 nonisolated public struct TestStrictOrigin: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -1101,7 +1089,6 @@ nonisolated public struct TestStrictOrigin: Baton.Query {
 /// Operation value for `query TestSwiftNames`.
 nonisolated public struct TestSwiftNames: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -1302,7 +1289,6 @@ nonisolated public struct TestSwiftNames: Baton.Query {
 /// Operation value for `query TestThrowingNode`.
 nonisolated public struct TestThrowingNode: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -1403,7 +1389,6 @@ nonisolated public struct TestThrowingNode: Baton.Query {
 /// Operation value for `query TestTwoFieldPartQuery`.
 nonisolated public struct TestTwoFieldPartQuery: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id
@@ -1467,7 +1452,6 @@ nonisolated public struct TestTwoFieldPartQuery: Baton.Query {
 nonisolated public struct TestTwoScopes: Baton.Query {
     public var a: String
     public var b: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(a: String, b: String) {
         self.a = a
@@ -1557,7 +1541,6 @@ nonisolated public struct TestTwoScopes: Baton.Query {
 /// Operation value for `query TestUncaughtPartQuery`.
 nonisolated public struct TestUncaughtPartQuery: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id

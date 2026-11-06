@@ -111,7 +111,6 @@ fragment HostileInlineSpreads_character on Character @inline @throwOnFieldError 
   ... @alias(as: "RefetchQuery") { ...HostileInlineSpreadTarget_character }
   # What an operation value, a mutation's action and its optimistic response declare.
   ... @alias(as: "variables") { ...HostileInlineSpreadTarget_character }
-  ... @alias(as: "resolution") { ...HostileInlineSpreadTarget_character }
   ... @alias(as: "name") { ...HostileInlineSpreadTarget_character }
   ... @alias(as: "document") { ...HostileInlineSpreadTarget_character }
   ... @alias(as: "text") { ...HostileInlineSpreadTarget_character }
@@ -132,11 +131,6 @@ fragment HostileInlineSpreads_character on Character @inline @throwOnFieldError 
   ... @alias(as: "payload") { ...HostileInlineSpreadTarget_character }
   # What the runtime's protocols give a generated type.
   ... @alias(as: "hashValue") { ...HostileInlineSpreadTarget_character }
-  ... @alias(as: "phase") { ...HostileInlineSpreadTarget_character }
-  ... @alias(as: "isRefreshing") { ...HostileInlineSpreadTarget_character }
-  ... @alias(as: "isStale") { ...HostileInlineSpreadTarget_character }
-  ... @alias(as: "retry") { ...HostileInlineSpreadTarget_character }
-  ... @alias(as: "subscription") { ...HostileInlineSpreadTarget_character }
   # The shared enums.
   ... @alias(as: "Types") { ...HostileInlineSpreadTarget_character }
   ... @alias(as: "Slots") { ...HostileInlineSpreadTarget_character }

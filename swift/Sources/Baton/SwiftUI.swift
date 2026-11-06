@@ -16,66 +16,101 @@ extension EnvironmentValues {
 
 /// The handle a view's storage holds, with the retention that keeps its
 /// records alive, kept in the view's state and let go when SwiftUI drops
-/// that state.
+/// that state. No handle in a view outside every environment.
 @MainActor
 final class RetainedHandle<Handle: AnyOperationHandle> {
     var handle: Handle?
     var retention: Retention?
-    /// Whether the view saw no environment at its last update: no handle
-    /// was made, and the value says why.
-    var notInjected = false
-
-    /// How the value stands: resolved to the handle, not injected, or, with
-    /// neither, unresolved.
-    var resolution: Resolution<Handle> {
-        if let handle { return .resolved(handle) }
-        return notInjected ? .notInjected : .unresolved
-    }
 }
 
 /// What a `@Query` property expands to: owns the handle for the view's
-/// lifetime, retains it while the view lives, and hands out the operation
-/// value with the handle attached.
+/// lifetime, retains it while the view lives, hands the value back as it
+/// was passed, and the handle's state through the projection.
 @MainActor
 public struct OperationStorage<Op: Query>: DynamicProperty {
     @SwiftUI.Environment(\.baton) private var environment
     @State private var retained = RetainedHandle<OperationHandle<Op>>()
-    private let value: Op
+    private let operation: Op
     private let fetchPolicy: FetchPolicy
 
     public init(_ value: Op, fetchPolicy: FetchPolicy = .default) {
-        self.value = value
+        operation = value
         self.fetchPolicy = fetchPolicy
     }
 
     /// Resolves the value to a handle when the value or the environment the
     /// view sees changed: a handle belongs to the environment that made it.
     /// A view outside every environment gets no handle: the absence of an
-    /// environment is not a session, and the value says so.
+    /// environment is not a session, and the state says so.
     public nonisolated mutating func update() {
         MainActor.assumeIsolated {
             guard let current = environment else {
                 retained.handle = nil
                 retained.retention = nil
-                retained.notInjected = true
                 return
             }
-            retained.notInjected = false
-            if retained.handle?.operation != value || retained.handle?.environment !== current {
-                let handle = current.handle(for: value, fetchPolicy: fetchPolicy)
+            if retained.handle?.operation != operation || retained.handle?.environment !== current {
+                let handle = current.handle(for: operation, fetchPolicy: fetchPolicy)
                 retained.retention = handle.retain()
                 retained.handle = handle
             }
         }
     }
 
-    /// The value, resolved. Outside a view it is unresolved and reads as
-    /// loading; in a view outside every environment it reads as failed.
-    public var resolved: Op {
-        var resolved = value
-        resolved.resolution = retained.resolution
-        return resolved
+    /// The value the parent passed, as it is.
+    public var value: Op { operation }
+
+    /// The value's live side, which the projection `$name` reads: the handle
+    /// the storage resolved it to, or none outside every environment.
+    public var state: QueryState<Op> { QueryState(handle: retained.handle) }
+}
+
+/// The live side of a query value in a view, what `$issues` reads: the
+/// handle the storage resolved the value to in the environment the view
+/// sees, or none outside every environment, where the phase reads failed
+/// with the fetch's environment kind, not injected. The Swift twin of the
+/// Kotlin runtime's `QueryState`.
+@MainActor
+public struct QueryState<Op: Query> {
+    /// The handle, shared by every holder of an equal value; nil outside
+    /// every environment.
+    public let handle: OperationHandle<Op>?
+
+    init(handle: OperationHandle<Op>?) {
+        self.handle = handle
     }
+
+    /// Loading, ready with its lens, or failed with the failure that says
+    /// why; failed with the fetch's environment kind, not injected, outside
+    /// every environment.
+    public var phase: Phase<Op.Data> { handle?.phase ?? .failed(.fetch(.environment(.notInjected))) }
+
+    /// The last fetch: idle, in flight, or failed with its failure and when;
+    /// idle where no environment could make one.
+    public var fetch: Fetch { handle?.fetch ?? .idle }
+
+    /// Whether a fetch is running while earlier data stays visible.
+    public var isRefreshing: Bool { handle?.isRefreshing ?? false }
+
+    /// Whether the data predates an invalidation or the cache expiration.
+    public var isStale: Bool { handle?.isStale ?? false }
+
+    /// When the store last committed the operation's response: the root's
+    /// age, in this launch or, from the image, an earlier one.
+    public var fetchTime: ContinuousClock.Instant? { handle?.fetchTime }
+
+    /// Fetches again and commits; the data stays visible meanwhile, and the
+    /// failure the phase would show is thrown here instead. Outside every
+    /// environment it throws the fetch's environment kind, not injected.
+    public func refetch() async throws(PhaseFailure) {
+        guard let handle else { throw .fetch(.environment(.notInjected)) }
+        try await handle.refetch()
+    }
+
+    /// After a failure, fetches again. A failure on field errors or a
+    /// `@required` null keeps its data visible meanwhile, as a refetch does;
+    /// any other shows loading.
+    public func retry() { handle?.retry() }
 }
 
 /// What a `@Mutation` property expands to: the environment and the in-flight
@@ -93,16 +128,16 @@ public struct MutationStorage<Op: Mutation>: DynamicProperty {
 }
 
 /// What a `@Subscription` property expands to: subscribes while the view
-/// lives, closes the stream when SwiftUI drops the view's state, and hands out
-/// the operation value with the handle attached.
+/// lives, closes the stream when SwiftUI drops the view's state, hands the
+/// value back as it was passed, and the handle through the projection.
 @MainActor
 public struct SubscriptionStorage<Op: Subscription>: DynamicProperty {
     @SwiftUI.Environment(\.baton) private var environment
     @State private var retained = RetainedHandle<SubscriptionHandle<Op>>()
-    private let value: Op
+    private let operation: Op
 
     public init(_ value: Op) {
-        self.value = value
+        operation = value
     }
 
     /// Resolves the value to a handle when the value or the environment the
@@ -112,25 +147,22 @@ public struct SubscriptionStorage<Op: Subscription>: DynamicProperty {
             guard let current = environment else {
                 retained.handle = nil
                 retained.retention = nil
-                retained.notInjected = true
                 return
             }
-            retained.notInjected = false
-            if retained.handle?.operation != value || retained.handle?.environment !== current {
-                let handle = current.subscriptionHandle(for: value)
+            if retained.handle?.operation != operation || retained.handle?.environment !== current {
+                let handle = current.subscriptionHandle(for: operation)
                 retained.retention = handle.retain()
                 retained.handle = handle
             }
         }
     }
 
-    /// The value with its handle attached; `subscription` reaches the live
-    /// side through it.
-    public var resolved: Op {
-        var resolved = value
-        resolved.resolution = retained.resolution
-        return resolved
-    }
+    /// The value the parent passed, as it is.
+    public var value: Op { operation }
+
+    /// The handle the storage holds open, which the projection `$name`
+    /// reads; nil outside every environment.
+    public var state: SubscriptionHandle<Op>? { retained.handle }
 }
 
 // MARK: Lists

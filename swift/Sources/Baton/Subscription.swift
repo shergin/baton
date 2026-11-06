@@ -266,10 +266,3 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
         stream = .idle
     }
 }
-
-/// A subscription value, resolved inside a view through `@Subscription`.
-extension Subscription {
-    /// The live side, which the storage that resolved the value holds; nil
-    /// outside a view, and in a view outside every environment.
-    @MainActor public var subscription: SubscriptionHandle<Self>? { resolution.handle }
-}

@@ -729,15 +729,17 @@ parks its root in the buffer, so the first attach finds the fetch made or
 on the way and makes none. *Held by* script `phase` for a handle shared by
 equal values; `preload` is *unheld*.
 
-**A value is resolved by a view, and no environment is not a session.**
-Outside any view an operation value is unresolved and reads as loading. A
-view's storage resolves it to a handle in the environment the view sees,
-retains the root for the view's life, and resolves again when the value or
-the environment changes. A view outside every environment gets no handle:
-the value reads as failed with the environment error that says so, its
-fetch is idle, a refetch throws that error, and nothing is fetched; a
-mutation action outside every environment throws it too. No placeholder
-environment and no store stand in. *Unheld* (the Swift tests prove it).
+**A value is resolved by a view's storage, and no environment is not a
+session.** An operation value is its variables and reads nothing of its
+own. A view's storage resolves it to a handle in the environment the view
+sees, retains the root for the view's life, resolves again when the value
+or the environment changes, and gives the view the handle's state apart
+from the value. A view outside every environment gets no handle: the state
+reads failed with the fetch's environment kind, not injected, its fetch is
+idle, a refetch throws that failure, and nothing is fetched; a mutation
+action outside every environment throws the environment error. No
+placeholder environment and no store stand in. *Unheld* (the Swift tests
+prove it).
 
 **An attach applies a policy.** The store is checked for the operation's
 data (not under `networkOnly`, which asks it nothing); a complete answer

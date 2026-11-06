@@ -98,7 +98,7 @@ Where Swift and Kotlin differ:
 |---|---|---|
 | The document | A string in the macro, `@Fragment("""...""")` | A `$$"""..."""` raw string, since `$` starts a template in a plain one; a document without a variable may be a plain one |
 | Where the marker stands | On the stored property: `@Fragment(...) var issue: IssueRow_issue` | On the composable, which takes the lens as a parameter |
-| A query | `@Query(...) var issue: IssueQuery`, whose value the parent passes | `val issue = rememberQuery(IssueQuery(id = id))` in the composable |
+| A query | `@Query(...) var issue: IssueQuery`, whose value the parent passes; the body reads `$issue.phase` | `val issue = rememberQuery(IssueQuery(id = id))` in the composable, whose `phase` the body reads |
 | A mutation | `@Mutation(...) var addComment: CommentComposerAddComment.Action` | `val addComment = rememberMutation(CommentComposerAddComment)` |
 | Calling it | `try await addComment(input: ..., connections: [id], optimistic: ...)` | `addComment(input = ..., connections = listOf(id), optimistic = ...)` in a coroutine |
 | `@catch` | A `Result` | A `Result` |

@@ -95,7 +95,7 @@ struct TriageScreen: View {
     @SwiftUI.Environment(\.baton) private var environment
 
     var body: some View {
-        PhaseView(phase: triage.phase, retry: triage.retry) { data in
+        PhaseView(phase: $triage.phase, retry: $triage.retry) { data in
             List {
                 Section("Assigned to \(data.viewer.login) · \(data.assigned.issueCount)") {
                     if let nodes = data.assigned.nodes {
@@ -113,16 +113,16 @@ struct TriageScreen: View {
                 }
             }
             .overlay(alignment: .bottom) {
-                if triage.isRefreshing { ProgressView().padding() }
+                if $triage.isRefreshing { ProgressView().padding() }
             }
         }
         .navigationTitle("Triage")
         .toolbar {
             Button("Refresh", systemImage: "arrow.clockwise") {
-                Task { try? await triage.refetch() }
+                Task { try? await $triage.refetch() }
             }
             Button("Refresh rows", systemImage: "arrow.triangle.2.circlepath") {
-                guard case .ready(let data) = triage.phase, let environment else { return }
+                guard case .ready(let data) = $triage.phase, let environment else { return }
                 let ids = (data.assigned.nodes ?? .empty).compactMap { $0.asIssue?.id ?? $0.asPullRequest?.id }
                     + (data.created.nodes ?? .empty).compactMap { $0.asIssue?.id ?? $0.asPullRequest?.id }
                 Task { try? await environment.fetch(RefreshRowsQuery(ids: Array(ids.prefix(50)))) }

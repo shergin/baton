@@ -357,18 +357,21 @@ Swift: `mutate` makes the anchor of the data it returns.
 
 **Operation value.** *Concept: operation value.*
 Here: a value of an operation's variables, compared and hashed by them, the
-thing a parent constructs and a navigation path carries. Inside a view a
-query value resolves to a handle exposing its phase, its data, a refetch and
-a retry, and a subscription value to one exposing its events; the handle
-travels with the value its storage hands out. Outside any view the value
-is unresolved and reads as loading; in a view outside every environment it
-is resolved to no handle and reads as failed with the fetch's environment
-kind, not injected, since the absence of an environment is not a session.
-See
-[the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch).
-Swift: a `Hashable` struct; the handle exposes `phase`, `data`, `refetch`
-and `retry`; the value's `resolution`, generated code's, is a `Resolution`,
-unresolved, resolved to the handle, or not injected.
+thing a parent constructs and a navigation path carries, and nothing else:
+it reads no phase and carries no handle. Inside a view, the storage behind
+the marker resolves a query value to an operation handle exposing its
+phase, its data, a refetch and a retry, and a subscription value to one
+exposing its events, and the view reads the handle apart from the value.
+In a view outside every environment there is no handle, and what the view
+reads says so: failed with the fetch's environment kind, not injected,
+since the absence of an environment is not a session. See
+[the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch) and
+[the decision](decisions/the-live-side-is-the-projection.md).
+Swift: a `Hashable` struct, equal by its variables. `@Query`'s projection,
+`$name`, is a `QueryState`: the handle's `phase`, `fetch`, `isRefreshing`,
+`isStale`, `fetchTime`, `refetch()` and `retry()`, over a `handle` that is
+nil outside every environment; `@Subscription`'s projection is the
+`SubscriptionHandle?` itself.
 Kotlin: an `@Immutable` class equal and hashed by its variables, a
 `QueryOperation`, `MutationOperation` or `SubscriptionOperation`, carrying no
 handle; `rememberQuery` resolves it to a `QueryState`, whose `handle` is null
@@ -1230,7 +1233,8 @@ payload work. The environment's subscription transport carries them,
 through the one verb every [transport](#runtime) has. See
 [the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch).
 Swift: `@Subscription("…")` expands like `@Query`: its storage subscribes
-while the view lives and closes the stream when it goes. The handle exposes
+while the view lives and closes the stream when it goes, and the body reads
+the handle through the projection, `$name`, nil outside every environment. The handle exposes
 `events`, `latest`, `error`, `resumptions` and `stream`; `isActive` is
 connecting or open; `retry()` opens the stream. The environment's
 `isActive` is set from the app's scene phase; its `subscriptions`

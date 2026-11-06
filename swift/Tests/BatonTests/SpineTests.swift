@@ -730,8 +730,7 @@ struct SpineTests {
     @Test("operation values hash by their variables only")
     func operationValueIdentity() {
         let a = TestHeaderQuery(id: "1")
-        var b = TestHeaderQuery(id: "1")
-        b.resolution = .notInjected
+        let b = TestHeaderQuery(id: "1")
         #expect(a == b)
         #expect(a.hashValue == b.hashValue)
         #expect(TestHeaderQuery(id: "2") != a)

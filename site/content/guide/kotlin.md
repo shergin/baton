@@ -15,7 +15,7 @@ A document with a variable is written in a raw string delimited by `$$"""` and `
 | | Swift | Kotlin |
 |---|---|---|
 | The document | `@Fragment("""…""")` on a stored property | `@Fragment($$"""…""")` on the composable |
-| A query | `@Query(…) var issue: IssueQuery`, whose value the parent passes | `val issue = rememberQuery(IssueQuery(id = id))` |
+| A query | `@Query(…) var issue: IssueQuery`, whose value the parent passes; the body reads `$issue.phase` | `val issue = rememberQuery(IssueQuery(id = id))`, whose `phase` the body reads |
 | A mutation | `@Mutation(…) var addComment: CommentComposerAddComment.Action` | `val addComment = rememberMutation(CommentComposerAddComment)` |
 | Calling it | `try await addComment(input: …, connections: [id], optimistic: …)` | `addComment(input = …, connections = listOf(id), optimistic = …)` in a coroutine |
 | A subscription | `@Subscription(…) var noteAdded: NoteAdded` | `rememberSubscription(NoteAdded(…))` |

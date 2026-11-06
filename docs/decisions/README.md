@@ -71,3 +71,4 @@ principle, the proof belongs here.
 - [A streamed list grows in its slot](a-streamed-list-grows-in-its-slot.md)
 - [A mutation names the record it deletes when its payload does not](a-mutation-names-the-record-it-deletes.md)
 - [A list paged by number merges its pages under `@paged`](a-paged-list-merges-its-pages-by-number.md)
+- [An operation value is a value; its live side is the storage's projection](the-live-side-is-the-projection.md)

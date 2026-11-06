@@ -1054,45 +1054,6 @@ struct PhaseTests {
         #expect(wakes.refreshing == 0, "no fetch ran")
     }
 
-    @Test("a query value reads its handle's fetch once resolved, and an idle fetch before")
-    func aQueryValueReadsTheFetch() async throws {
-        let gate = GatedTransport()
-        let environment = Environment(transport: gate)
-        environment.log = nil
-        var operation = TestList(page: 1)
-        guard case .idle = operation.fetch else {
-            Issue.record("expected an unresolved value to read idle, got \(operation.fetch)")
-            return
-        }
-        let handle = environment.handle(for: operation)
-        let retention = handle.retain()
-        defer { withExtendedLifetime(retention) {} }
-        operation.resolution = .resolved(handle)
-        await until { gate.pending == 1 }
-        gate.respond(fixtureData)
-        await settled(handle)
-
-        let refetch = Task { try? await handle.refetch() }
-        await until { gate.pending == 1 }
-        guard case .inFlight = operation.fetch else {
-            Issue.record("expected the value to read the fetch in flight, got \(operation.fetch)")
-            return
-        }
-        #expect(operation.isRefreshing)
-        gate.fail(URLError(.notConnectedToInternet))
-        await refetch.value
-        guard case .ready = operation.phase else {
-            Issue.record("the data stays visible, got \(operation.phase)")
-            return
-        }
-        guard case .failed(.transport(let error as URLError), _) = operation.fetch else {
-            Issue.record("expected the value to read the transport's failure, got \(operation.fetch)")
-            return
-        }
-        #expect(error.code == .notConnectedToInternet)
-        #expect(!operation.isRefreshing)
-    }
-
     /// What a heal's reads report: the slots read missing, and those read
     /// unexpected with the value found.
     final class Reports: @unchecked Sendable {

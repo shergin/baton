@@ -215,7 +215,7 @@ fn a_name_the_document_chose_that_the_generated_code_needs_is_an_error_at_the_na
     write(
         &directory,
         "Probe.swift",
-        r##"@Query("query Probe($variables: ID!, $resolution: ID!) { character(id: $variables) { id } node(id: $resolution) { id } }")
+        r##"@Query("query Probe($variables: ID!, $hashValue: ID!) { character(id: $variables) { id } node(id: $hashValue) { id } }")
 var probe: Probe
 @Mutation("mutation Rename($id: ID!) { variable: setFavorite(id: $id, favorite: true) { character { id } } }")
 var rename: Rename.Action
@@ -239,7 +239,7 @@ var baton: Baton
         [
             "Probe.swift:11:21: error: the fragment `Baton` clashes with the runtime's module `Baton` in the generated Swift; rename the fragment",
             "Probe.swift:1:21: error: the variable `$variables` clashes with the operation's `variables` in the generated Swift; rename the variable",
-            "Probe.swift:1:38: error: the variable `$resolution` clashes with the operation's `resolution` in the generated Swift; rename the variable",
+            "Probe.swift:1:38: error: the variable `$hashValue` clashes with the `hashValue` every operation value has in the generated Swift; rename the variable",
             "Probe.swift:3:40: error: the field `variable` clashes with the optimistic response's `variable` in the generated Swift; choose another alias",
             "Probe.swift:5:119: error: the field `connectionID` clashes with the connection's `connectionID` in the generated Swift; choose another alias",
             "Probe.swift:5:99: error: the field `hasNext` clashes with the connection's `hasNext` in the generated Swift; choose another alias",

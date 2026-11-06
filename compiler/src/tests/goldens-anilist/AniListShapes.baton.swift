@@ -87,7 +87,6 @@ extension DeleteEntryMutation.Action {
 /// Operation value for `query EntryScoresQuery`.
 nonisolated public struct EntryScoresQuery: Baton.Query {
     public var id: Int
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: Int) {
         self.id = id
@@ -138,7 +137,6 @@ nonisolated public struct EntryScoresQuery: Baton.Query {
 /// Operation value for `query MediaQuery`.
 nonisolated public struct MediaQuery: Baton.Query {
     public var id: Int
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: Int) {
         self.id = id
@@ -263,7 +261,6 @@ nonisolated public struct MediaQuery: Baton.Query {
 /// Operation value for `query NotificationsQuery`.
 nonisolated public struct NotificationsQuery: Baton.Query {
     public var page: Int
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(page: Int) {
         self.page = page
@@ -435,7 +432,6 @@ nonisolated public struct SeasonQuery: Baton.Query {
     public var season: MediaSeason
     public var seasonYear: Int
     public var page: Int
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(season: MediaSeason, seasonYear: Int, page: Int) {
         self.season = season
@@ -536,7 +532,6 @@ nonisolated public struct SeasonQuery: Baton.Query {
 /// Operation value for `query ThreadCommentsQuery`.
 nonisolated public struct ThreadCommentsQuery: Baton.Query {
     public var threadId: Int
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(threadId: Int) {
         self.threadId = threadId
@@ -593,7 +588,6 @@ nonisolated public struct ThreadCommentsQuery: Baton.Query {
 
 /// Operation value for `query ViewerQuery`.
 nonisolated public struct ViewerQuery: Baton.Query {
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init() {
     }

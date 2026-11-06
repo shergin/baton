@@ -31,14 +31,13 @@ fragment HostileConnection_character on Character
     selfValue: totalCount values: totalCount Fragment: totalCount Spread: totalCount Owner: totalCount
     Query: totalCount Operation: totalCount RefetchQuery: totalCount
     # What an operation value, a mutation's action and its optimistic response declare.
-    variables: totalCount resolution: totalCount name: totalCount document: totalCount
+    variables: totalCount name: totalCount document: totalCount
     text: totalCount plan: totalCount errorBehavior: totalCount throwsOnFieldError: totalCount
     bubbles: totalCount hasIncremental: totalCount cacheExpiration: totalCount Data: totalCount Action: totalCount
     OptimisticResponse: totalCount hash: totalCount commit: totalCount
     callAsFunction: totalCount Op: totalCount variable: totalCount payload: totalCount
     # What the runtime's protocols give a generated type.
-    hashValue: totalCount phase: totalCount isRefreshing: totalCount isStale: totalCount
-    retry: totalCount subscription: totalCount
+    hashValue: totalCount
     # The shared enums.
     Sites: totalCount Guards: totalCount AbstractSlots: totalCount schemaDigest: totalCount format: totalCount transient: totalCount
     # The modules, and what the generated code spells from the standard library.

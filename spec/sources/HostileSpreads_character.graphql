@@ -111,7 +111,6 @@ fragment HostileSpreads_character on Character {
   ... @alias(as: "RefetchQuery") { ...HostileSpreadTarget_character }
   # What an operation value, a mutation's action and its optimistic response declare.
   ... @alias(as: "variables") { ...HostileSpreadTarget_character }
-  ... @alias(as: "resolution") { ...HostileSpreadTarget_character }
   ... @alias(as: "name") { ...HostileSpreadTarget_character }
   ... @alias(as: "document") { ...HostileSpreadTarget_character }
   ... @alias(as: "text") { ...HostileSpreadTarget_character }
@@ -132,11 +131,6 @@ fragment HostileSpreads_character on Character {
   ... @alias(as: "payload") { ...HostileSpreadTarget_character }
   # What the runtime's protocols give a generated type.
   ... @alias(as: "hashValue") { ...HostileSpreadTarget_character }
-  ... @alias(as: "phase") { ...HostileSpreadTarget_character }
-  ... @alias(as: "isRefreshing") { ...HostileSpreadTarget_character }
-  ... @alias(as: "isStale") { ...HostileSpreadTarget_character }
-  ... @alias(as: "retry") { ...HostileSpreadTarget_character }
-  ... @alias(as: "subscription") { ...HostileSpreadTarget_character }
   # The shared enums.
   ... @alias(as: "Types") { ...HostileSpreadTarget_character }
   ... @alias(as: "Slots") { ...HostileSpreadTarget_character }

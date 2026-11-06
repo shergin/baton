@@ -19,7 +19,7 @@ struct RepositoryScreen: View {
     var repository: RepositoryQuery
 
     var body: some View {
-        PhaseView(phase: repository.phase, retry: repository.retry) { data in
+        PhaseView(phase: $repository.phase, retry: $repository.retry) { data in
             switch data.repository {
             case .failure(let errors):
                 ContentUnavailableView("Could not load the repository", systemImage: "questionmark.folder", description: Text(errors.description))

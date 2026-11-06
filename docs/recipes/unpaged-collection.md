@@ -206,13 +206,13 @@ struct ListScreen: View {
     var list: ListQuery
 
     var body: some View {
-        switch list.phase {
+        switch $list.phase {
         case .loading:
             ProgressView()
         case .ready(let data):
             Shelves(data: data)
                 .safeAreaInset(edge: .top) {
-                    if list.fetch.failure?.error is Outage { OutageNote() }
+                    if $list.fetch.failure?.error is Outage { OutageNote() }
                 }
         case .failed(.fetch(.transport(is Outage))):
             OutageNote()

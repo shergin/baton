@@ -445,37 +445,16 @@ impl Naming for SwiftNaming {
             Kind::Instance,
             "the operation's `variables`",
         )];
-        if operation.kind != OperationKind::Mutation {
-            after.push(Declared::new(
-                "resolution",
-                Kind::Instance,
-                "the operation's `resolution`",
-            ));
-        }
-        // A property the value declares takes the place of one a protocol
-        // gives it, or stands beside it: `isStale` would read the variable
-        // where a view meant the handle's state, silently when the two have
-        // one type, and `hashValue` would make a read of either ambiguous.
-        // Swift tells a property from a method by the call, so variables
-        // named `refetch` or `retry` compile beside a query's `refetch()`
-        // and `retry()`.
+        // A property the value declares stands beside the one `Hashable`
+        // gives it, and `hashValue` would make a read of either ambiguous.
+        // The value's live side is read through the storage's projection,
+        // not through the value, so `phase`, `isStale` and their kin are
+        // ordinary names for a variable.
         after.push(Declared::new(
             "hashValue",
             Kind::Instance,
             "the `hashValue` every operation value has",
         ));
-        let given: &[&str] = match operation.kind {
-            OperationKind::Query => &["phase", "isRefreshing", "isStale"],
-            OperationKind::Subscription => &["subscription"],
-            OperationKind::Mutation => &[],
-        };
-        for name in given {
-            after.push(Declared::new(
-                *name,
-                Kind::Instance,
-                format!("the `{name}` every {} value has", operation.kind),
-            ));
-        }
         for name in ["name", "document", "text", "plan"] {
             after.push(Declared::new(
                 name,

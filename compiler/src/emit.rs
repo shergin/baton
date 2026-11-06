@@ -50,7 +50,7 @@ const HEADER: &str =
 /// of its format, so code of another format fails to compile at that line
 /// and the marker says which side is behind. A change to what generated
 /// code names in the runtime raises it, here and in the runtime together.
-pub const FORMAT: u32 = 22;
+pub const FORMAT: u32 = 23;
 
 /// The Swift target: the printers that write a program decided in Swift's
 /// names.

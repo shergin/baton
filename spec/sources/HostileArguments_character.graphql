@@ -132,9 +132,6 @@ fragment HostileArguments_character on Character
   Op: {type: "Boolean", defaultValue: true},
   variable: {type: "Boolean", defaultValue: true},
   payload: {type: "Boolean", defaultValue: true},
-  # What the runtime's protocols give a generated type.
-  retry: {type: "Boolean", defaultValue: true},
-  subscription: {type: "Boolean", defaultValue: true},
   # The shared enums.
   AbstractSlots: {type: "Boolean", defaultValue: true},
   schemaDigest: {type: "Boolean", defaultValue: true},
@@ -222,9 +219,6 @@ fragment HostileArguments_character on Character
   ... @include(if: $hash) { name } ... @include(if: $commit) { name }
   ... @include(if: $callAsFunction) { name } ... @include(if: $Op) { name }
   ... @include(if: $variable) { name } ... @include(if: $payload) { name }
-  # What the runtime's protocols give a generated type.
-  ... @include(if: $retry) { name }
-  ... @include(if: $subscription) { name }
   # The shared enums.
   ... @include(if: $AbstractSlots) { name } ... @include(if: $schemaDigest) { name }
   ... @include(if: $format) { name } ... @include(if: $transient) { name }

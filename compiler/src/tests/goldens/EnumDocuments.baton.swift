@@ -6,7 +6,6 @@ import Foundation
 nonisolated public struct TestCharactersWithStatus: Baton.Query {
     public var status: Status
     public var `any`: [Status]?
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(status: Status, `any`: [Status]? = nil) {
         self.status = status
@@ -56,7 +55,6 @@ nonisolated public struct TestCharactersWithStatus: Baton.Query {
 /// Operation value for `query TestEpisodeStatus`.
 nonisolated public struct TestEpisodeStatus: Baton.Query {
     public var id: String
-    @_spi(Generated) public var resolution: Baton.Resolution<Baton.OperationHandle<Self>> = .unresolved
 
     public init(id: String) {
         self.id = id

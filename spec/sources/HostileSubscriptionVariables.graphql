@@ -35,8 +35,6 @@ subscription HostileSubscriptionVariables(
   $errorBehavior: Boolean!, $throwsOnFieldError: Boolean!, $bubbles: Boolean!,
   $hasIncremental: Boolean!, $cacheExpiration: Boolean!, $Action: Boolean!, $OptimisticResponse: Boolean!, $hash: Boolean!,
   $commit: Boolean!, $callAsFunction: Boolean!, $Op: Boolean!, $variable: Boolean!, $payload: Boolean!,
-  # What the runtime's protocols give a generated type.
-  $phase: Boolean!, $isRefreshing: Boolean!, $isStale: Boolean!, $retry: Boolean!,
   # The shared enums.
   $Sites: Boolean!, $AbstractSlots: Boolean!, $schemaDigest: Boolean!, $format: Boolean!, $transient: Boolean!,
   # The modules, and what the generated code spells from the standard library.
@@ -116,9 +114,6 @@ subscription HostileSubscriptionVariables(
       ... @include(if: $OptimisticResponse) { cursor } ... @include(if: $hash) { cursor }
       ... @include(if: $commit) { cursor } ... @include(if: $callAsFunction) { cursor }
       ... @include(if: $Op) { cursor } ... @include(if: $variable) { cursor } ... @include(if: $payload) { cursor }
-      # What the runtime's protocols give a generated type.
-      ... @include(if: $phase) { cursor } ... @include(if: $isRefreshing) { cursor }
-      ... @include(if: $isStale) { cursor } ... @include(if: $retry) { cursor }
       # The shared enums.
       ... @include(if: $Sites) { cursor } ... @include(if: $AbstractSlots) { cursor }
       ... @include(if: $schemaDigest) { cursor } ... @include(if: $format) { cursor } ... @include(if: $transient) { cursor }

@@ -55,7 +55,7 @@ fragment HostileSelections_character on Character {
   ... @alias(as: "Query") { name } ... @alias(as: "Operation") { name }
   ... @alias(as: "RefetchQuery") { name }
   # What an operation value, a mutation's action and its optimistic response declare.
-  ... @alias(as: "variables") { name } ... @alias(as: "resolution") { name }
+  ... @alias(as: "variables") { name }
   ... @alias(as: "name") { name } ... @alias(as: "document") { name }
   ... @alias(as: "text") { name } ... @alias(as: "plan") { name }
   ... @alias(as: "errorBehavior") { name } ... @alias(as: "throwsOnFieldError") { name }
@@ -65,9 +65,7 @@ fragment HostileSelections_character on Character {
   ... @alias(as: "commit") { name } ... @alias(as: "callAsFunction") { name }
   ... @alias(as: "Op") { name } ... @alias(as: "variable") { name } ... @alias(as: "payload") { name }
   # What the runtime's protocols give a generated type.
-  ... @alias(as: "hashValue") { name } ... @alias(as: "phase") { name }
-  ... @alias(as: "isRefreshing") { name } ... @alias(as: "isStale") { name }
-  ... @alias(as: "retry") { name } ... @alias(as: "subscription") { name }
+  ... @alias(as: "hashValue") { name }
   # The shared enums.
   ... @alias(as: "Types") { name } ... @alias(as: "Sites") { name } ... @alias(as: "Guards") { name }
   ... @alias(as: "AbstractSlots") { name } ... @alias(as: "schemaDigest") { name }

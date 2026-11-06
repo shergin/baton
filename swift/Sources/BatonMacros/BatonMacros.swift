@@ -22,7 +22,8 @@ public struct FragmentMacro: PeerMacro {
 
 /// Turns `var name: Op` into a computed property over `_name: OperationStorage<Op>`
 /// with an init accessor, so `init(name: Op)` still exists and `name` reads the
-/// resolved value.
+/// value the parent passed, and adds `$name`, the state the storage resolved
+/// it to, as a property wrapper projects.
 public struct QueryMacro: AccessorMacro, PeerMacro {
     public static func expansion(
         of node: AttributeSyntax,
@@ -40,7 +41,7 @@ public struct QueryMacro: AccessorMacro, PeerMacro {
             """,
             """
             get {
-                _\(raw: name).resolved
+                _\(raw: name).value
             }
             """,
         ]
@@ -52,13 +53,17 @@ public struct QueryMacro: AccessorMacro, PeerMacro {
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
         let (name, type) = try requireTypedProperty(declaration, attribute: node)
-        return ["private var _\(raw: name): Baton.OperationStorage<\(type.trimmed)>"]
+        return [
+            "private var _\(raw: name): Baton.OperationStorage<\(type.trimmed)>",
+            "var $\(raw: name): Baton.QueryState<\(type.trimmed)> { _\(raw: name).state }",
+        ]
     }
 }
 
 /// Turns `var live: NoteAddedSubscription` into a computed property over
 /// `_live: SubscriptionStorage<Op>` with an init accessor, so `init(live:)`
-/// still exists and `live` reads the resolved value.
+/// still exists and `live` reads the value, and adds `$live`, the handle the
+/// storage holds open, nil outside every environment.
 public struct SubscriptionMacro: AccessorMacro, PeerMacro {
     public static func expansion(
         of node: AttributeSyntax,
@@ -75,7 +80,7 @@ public struct SubscriptionMacro: AccessorMacro, PeerMacro {
             """,
             """
             get {
-                _\(raw: name).resolved
+                _\(raw: name).value
             }
             """,
         ]
@@ -87,7 +92,10 @@ public struct SubscriptionMacro: AccessorMacro, PeerMacro {
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
         let (name, type) = try requireTypedProperty(declaration, attribute: node)
-        return ["private var _\(raw: name): Baton.SubscriptionStorage<\(type.trimmed)>"]
+        return [
+            "private var _\(raw: name): Baton.SubscriptionStorage<\(type.trimmed)>",
+            "var $\(raw: name): Baton.SubscriptionHandle<\(type.trimmed)>? { _\(raw: name).state }",
+        ]
     }
 }
 

@@ -5,6 +5,20 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A Swift operation value is a value, and its live side is the macro's
+  projection: `@Query var issues: IssuesQuery` keeps `issues` the value the
+  parent passed, and the body reads `$issues.phase`, `$issues.fetch`,
+  `$issues.isRefreshing`, `$issues.isStale`, `$issues.fetchTime`,
+  `$issues.refetch()` and `$issues.retry()` through a `QueryState`, the
+  twin of Kotlin's; `$live` of a `@Subscription` is the `SubscriptionHandle?`
+  the storage holds open, nil outside every environment. `Resolution` is
+  gone, the `Query` and `Subscription` protocols lose the `resolution`
+  requirement and its trapping default, generated values lose the line and
+  the reserved name, and a value compared by its variables now says the
+  whole truth. Swift format 23: generated code of the format before fails
+  to compile at its marker; rebuild with this release's compiler
+  ([the decision](docs/decisions/the-live-side-is-the-projection.md)).
+
 - The phase's failed case carries a closed set. `Phase.failed(PhaseFailure)`
   in Swift and `Phase.Failed(failure: PhaseFailure)` in Kotlin, with four
   kinds: the fetch's `Failure`, kept whole so its own kind survives to the

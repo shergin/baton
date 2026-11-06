@@ -30,13 +30,10 @@ mutation HostileMutationVariables(
   $Fragment: Boolean!, $Spread: Boolean!, $Owner: Boolean!, $Query: Boolean!,
   $Operation: Boolean!, $RefetchQuery: Boolean!,
   # What an operation value, a mutation's action and its optimistic response declare.
-  $resolution: Boolean!, $name: Boolean!, $document: Boolean!, $text: Boolean!,
+  $name: Boolean!, $document: Boolean!, $text: Boolean!,
   $plan: Boolean!, $errorBehavior: Boolean!, $throwsOnFieldError: Boolean!, $bubbles: Boolean!,
   $hasIncremental: Boolean!, $cacheExpiration: Boolean!, $hash: Boolean!, $commit: Boolean!, $callAsFunction: Boolean!,
   $Op: Boolean!, $variable: Boolean!, $payload: Boolean!,
-  # What the runtime's protocols give a generated type.
-  $phase: Boolean!, $isRefreshing: Boolean!, $isStale: Boolean!, $retry: Boolean!,
-  $subscription: Boolean!,
   # The shared enums.
   $Sites: Boolean!, $AbstractSlots: Boolean!, $schemaDigest: Boolean!, $format: Boolean!, $transient: Boolean!,
   # The modules, and what the generated code spells from the standard library.
@@ -106,17 +103,13 @@ mutation HostileMutationVariables(
       ... @include(if: $Owner) { name } ... @include(if: $Query) { name }
       ... @include(if: $Operation) { name } ... @include(if: $RefetchQuery) { name }
       # What an operation value, a mutation's action and its optimistic response declare.
-      ... @include(if: $resolution) { name } ... @include(if: $name) { name }
+      ... @include(if: $name) { name }
       ... @include(if: $document) { name } ... @include(if: $text) { name }
       ... @include(if: $plan) { name } ... @include(if: $errorBehavior) { name }
       ... @include(if: $throwsOnFieldError) { name } ... @include(if: $bubbles) { name }
       ... @include(if: $hasIncremental) { name } ... @include(if: $cacheExpiration) { name } ... @include(if: $hash) { name }
       ... @include(if: $commit) { name } ... @include(if: $callAsFunction) { name }
       ... @include(if: $Op) { name } ... @include(if: $variable) { name } ... @include(if: $payload) { name }
-      # What the runtime's protocols give a generated type.
-      ... @include(if: $phase) { name } ... @include(if: $isRefreshing) { name }
-      ... @include(if: $isStale) { name } ... @include(if: $retry) { name }
-      ... @include(if: $subscription) { name }
       # The shared enums.
       ... @include(if: $Sites) { name } ... @include(if: $AbstractSlots) { name }
       ... @include(if: $schemaDigest) { name } ... @include(if: $format) { name } ... @include(if: $transient) { name }

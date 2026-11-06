@@ -24,21 +24,19 @@ pub(super) fn operation_text(operation: &OperationValue, shared: &Shared) -> Str
         "Operation value for `{} {}`.",
         operation.kind, operation.name
     ));
-    // Each kind is its own protocol: a query and a subscription value
-    // carry the handle a view resolves them to, a mutation's is called.
-    let (protocol, resolution) = match operation.kind {
-        OperationKind::Mutation => ("Mutation", None),
-        OperationKind::Subscription => ("Subscription", Some("SubscriptionHandle")),
-        OperationKind::Query => ("Query", Some("OperationHandle")),
+    // Each kind is its own protocol: a query and a subscription value are
+    // resolved to a handle by a view's storage, a mutation's is called.
+    let protocol = match operation.kind {
+        OperationKind::Mutation => "Mutation",
+        OperationKind::Subscription => "Subscription",
+        OperationKind::Query => "Query",
     };
     let head = format!(
         "nonisolated public struct {}: {}",
         SwiftType::named(&operation.name),
         SwiftType::runtime(protocol)
     );
-    writer.block(head, |writer| {
-        value_members(writer, operation, resolution, shared)
-    });
+    writer.block(head, |writer| value_members(writer, operation, shared));
     writer.blank();
 
     if operation.kind == OperationKind::Mutation {
@@ -58,24 +56,12 @@ fn error_behavior_case(behavior: OnError) -> &'static str {
 
 /// What an operation value declares: its variables, its static data, its
 /// plan, its root lens and a mutation's builder.
-fn value_members(
-    writer: &mut Writer,
-    operation: &OperationValue,
-    resolution: Option<&str>,
-    shared: &Shared,
-) {
+fn value_members(writer: &mut Writer, operation: &OperationValue, shared: &Shared) {
     for variable in &operation.variables {
         writer.line(format!(
             "public var {}: {}",
             member(&variable.name),
             variable_type(variable)
-        ));
-    }
-    if let Some(handle) = resolution {
-        writer.line(format!(
-            "@_spi(Generated) public var resolution: {}<{}<Self>> = .unresolved",
-            SwiftType::runtime("Resolution"),
-            SwiftType::runtime(handle)
         ));
     }
     writer.blank();
