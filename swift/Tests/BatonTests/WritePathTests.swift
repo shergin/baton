@@ -117,4 +117,83 @@ struct WritePathTests {
         #expect(notifications.fired == 2, "the revival is told too")
         #expect(data.characters?.results?.count == 2)
     }
+
+    @Test("the ingest builds one record per key of its change set, and the commit adopts them and empties the box, the store reading back what the response holds")
+    func theCommitAdoptsTheBuiltRecords() throws {
+        let store = Store()
+        store.log = nil
+        let list = TestList(page: 1)
+        let built = try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(list.variables, in: store.keys))
+        #expect(built.prebuilt.count > 0)
+        #expect(built.prebuilt.count == built.recordKeys.count)
+        store.commit(built)
+        #expect(built.prebuilt.count == 0, "the commit took the records")
+        let roots: Set<String> = [Store.rootKey, Store.mutationRootKey, Store.subscriptionRootKey]
+        #expect(store.count == roots.union(built.recordKeys).count, "a record for every key, beside the roots")
+
+        let data = TestList.Data(anchor: Anchor(record: store.root, variables: list.variables, store: store))
+        let rick = try #require(data.characters?.results?.first)
+        #expect(rick.testRow.name == "Rick Sanchez")
+        #expect(rick.testHeader.origin?.name == "Earth (C-137)")
+        #expect(data.characters?.results?.count == 20)
+    }
+
+    @Test("a record a commit adopts links the records the store already held under the keys it names, not the ones the ingest built for them")
+    func anAdoptedRecordLinksTheStoresRecords() throws {
+        let store = Store()
+        store.log = nil
+        store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: store.keys)))
+        let rick = try #require(store.existing("Character:1"))
+        let morty = try #require(store.existing("Character:2"))
+        #expect(store.existing("Episode:1") == nil)
+
+        // The full page names the characters again and the episodes for the
+        // first time; an episode links the characters.
+        store.commit(try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(Fixture(page: 1).variables, in: store.keys)))
+        #expect(store.existing("Character:1") === rick)
+        let pilot = try #require(store.existing("Episode:1"))
+        guard case .refs(let cast) = pilot.read(Registry.slot(Registry.type("Episode"), "characters")) else {
+            Issue.record("the episode holds no list of characters")
+            return
+        }
+        #expect(cast.count > 2)
+        #expect(cast[0] === rick, "the adopted episode links the store's own record")
+        #expect(cast[1] === morty)
+        // A record the store held links an adopted one through its entries.
+        guard case .ref(let location) = rick.read(Registry.slot(Registry.type("Character"), "location")) else {
+            Issue.record("the character holds no location")
+            return
+        }
+        #expect(location === store.existing("Location:3"))
+    }
+
+    @Test("a record an optimistic layer created is emptied when the layer lifts, and a body that read it through a link is told and reads it as missing")
+    func createdRecordsAreUndone() async throws {
+        let environment = Environment(transport: notesTransport())
+        environment.log = nil
+        let handle = environment.handle(for: TestNotesQuery(id: "1"))
+        let retention = handle.retain()
+        await handle.settle()
+        guard case .ready(let data) = handle.phase, let character = data.character?.testNotes else {
+            Issue.record("the first page did not arrive")
+            return
+        }
+        let store = environment.store
+        #expect(store.existing("Note:n9") == nil)
+
+        let added = TestAddNote(characterId: "1", text: "Appended", connections: [character.notes.connectionID])
+        let layer = store.applyOptimistic(try changes("add-note-n9", added, root: Store.mutationRootKey, in: store))
+        let appended = try #require(character.notes.nodes.last)
+        #expect(appended.text == "Appended", "the layer made the note")
+        let note = try #require(store.existing("Note:n9"))
+
+        let notifications = Notifications()
+        notifications.track { _ = appended.text }
+        store.revertOptimistic(layer)
+        #expect(notifications.fired == 1, "the body that read the created note is told")
+        #expect(appended.text == nil)
+        #expect(note.storedSlots.isEmpty, "the record holds nothing the layer wrote")
+        #expect(character.notes.nodes.map(\.id) == ["n1", "n2"])
+        withExtendedLifetime(retention) {}
+    }
 }

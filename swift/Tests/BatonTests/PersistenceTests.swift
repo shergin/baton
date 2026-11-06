@@ -29,9 +29,10 @@ struct PersistenceTests {
     /// An environment over the image, as a launch of the app makes one. A
     /// test runs its launches one after another, as a device does, and ends
     /// each with `finish`. `url` spells the image's path another way;
-    /// `cacheExpiration` is the store's default.
-    func launch(_ transport: any Transport = SilentTransport(), at url: URL? = nil, version: String = "", sizeLimit: Int = 64 << 20, protection: FileProtectionType? = nil, cacheExpiration: Duration? = nil, releaseBufferSize: Int = 10) -> Environment {
-        let store = Store(persistence: Persistence(url: url ?? image.url, version: version, sizeLimit: sizeLimit, protection: protection), cacheExpiration: cacheExpiration, releaseBufferSize: releaseBufferSize)
+    /// `cacheExpiration` is the store's default; `prefetchBudget` is how
+    /// much of the last launch's rows the image decodes ahead.
+    func launch(_ transport: any Transport = SilentTransport(), at url: URL? = nil, version: String = "", sizeLimit: Int = 64 << 20, protection: FileProtectionType? = nil, cacheExpiration: Duration? = nil, releaseBufferSize: Int = 10, prefetchBudget: Int = 8 << 20) -> Environment {
+        let store = Store(persistence: Persistence(url: url ?? image.url, version: version, sizeLimit: sizeLimit, protection: protection, prefetchBudget: prefetchBudget), cacheExpiration: cacheExpiration, releaseBufferSize: releaseBufferSize)
         store.log = nil
         return Environment(transport: transport, store: store)
     }
@@ -465,17 +466,109 @@ struct PersistenceTests {
         #expect(second.store.hydratedRecords == 2, "the character and its origin, not the list")
     }
 
-    @Test("a lookup the image cannot answer leaves no record behind")
+    @Test("a lookup the image cannot answer binds no record, and the rows the launch's first check adopted are dropped on the next turn, since it reached none")
     func aLookupThatMisses() async throws {
         let first = launch()
         first.store.commit(try Ingest.normalize(fixtureData, plan: TestList.plan.resolve(TestList(page: 1).variables, in: first.store.keys)))
         await finish(first)
 
         let second = launch()
-        let count = second.store.count
+        let roots = second.store.count
         #expect(throws: NotStored.self) { try stored(TestHeaderQuery(id: "999"), in: second) }
         #expect(second.store.existing("Character:999") == nil)
-        #expect(second.store.count == count)
+        #expect(second.store.count > roots, "the first check adopted the rows decoded ahead")
+        await until { second.store.count == roots }
+        #expect(second.store.existing("Character:1") == nil, "no check reached it, so it went with the rest")
+        await finish(second)
+    }
+
+    @Test("a second launch's first check adopts the rows the image decoded ahead: every record it reaches is linked from a decoded row, and the check answers from the image")
+    func theFirstCheckAdoptsTheDecodedRows() async throws {
+        try await seed(launch())
+
+        let second = launch()
+        let lookup = TestHeaderQuery(id: "1")
+        #expect(second.store.check(TestHeaderQuery.plan.resolve(lookup.variables, in: second.store.keys)) == .image)
+        #expect(second.store.hydratedRecords == 2, "the character and its origin")
+        #expect(second.store.linkedFromDecodedRows == second.store.hydratedRecords)
+        let data = try stored(lookup, in: second)
+        #expect(data.character?.testHeader.name == "Rick Sanchez")
+        #expect(data.character?.testHeader.origin?.name == "Earth (C-137)")
+        await finish(second)
+    }
+
+    @Test("what the first check did not reach among the adopted rows is dropped on the next turn: what it read stays, a record a kept one links to stays empty, and one nothing kept links to goes")
+    func theUnreachedDecodedRowsAreDropped() async throws {
+        try await seed(launch())
+
+        let second = launch()
+        let store = second.store
+        _ = try stored(TestHeaderQuery(id: "1"), in: second)
+        // Before a turn passes, the store holds every record decoded ahead.
+        #expect(store.existing("Character:2")?.storedSlots.isEmpty == false)
+        #expect(store.existing("Episode:1")?.storedSlots.isEmpty == false)
+
+        await until { store.existing("Character:2") == nil }
+        #expect(store.existing("Character:1")?.storedSlots.isEmpty == false, "the check read it")
+        #expect(store.existing("Location:1")?.storedSlots.isEmpty == false, "the check read the origin")
+        let location = try #require(store.existing("Location:3"), "the character's location stays, so its link does not dangle")
+        #expect(location.storedSlots.isEmpty, "but empty, as a link's target is before its row is read")
+        let episode = try #require(store.existing("Episode:1"))
+        #expect(episode.storedSlots.isEmpty)
+
+        // The records the check read still answer it.
+        let again = try stored(TestHeaderQuery(id: "1"), in: second)
+        #expect(again.character?.testHeader.name == "Rick Sanchez")
+        #expect(again.character?.testHeader.origin?.name == "Earth (C-137)")
+        await finish(second)
+    }
+
+    @Test("an image with no budget to decode ahead answers the same read from the file, row by row")
+    func noBudgetDecodesNothingAhead() async throws {
+        try await seed(launch())
+
+        let second = launch(prefetchBudget: 0)
+        let data = try stored(TestHeaderQuery(id: "1"), in: second)
+        #expect(data.character?.testHeader.name == "Rick Sanchez")
+        #expect(data.character?.testHeader.origin?.name == "Earth (C-137)")
+        #expect(second.store.linkedFromDecodedRows == 0)
+        #expect(second.store.hydratedRecords == 2)
+        await finish(second)
+    }
+
+    @Test("a store that holds records before its first check does not adopt the decoded rows, and reads the file row by row")
+    func aStoreWithRecordsDoesNotAdopt() async throws {
+        try await seed(launch())
+
+        let second = launch()
+        let other = TestHeaderQuery(id: "5")
+        second.store.commit(try Ingest.normalize(fixture("character-header-5"), plan: TestHeaderQuery.plan.resolve(other.variables, in: second.store.keys)))
+        let data = try stored(TestHeaderQuery(id: "1"), in: second)
+        #expect(data.character?.testHeader.name == "Rick Sanchez")
+        #expect(data.character?.testHeader.origin?.name == "Earth (C-137)")
+        #expect(second.store.linkedFromDecodedRows == 0)
+        #expect(second.store.hydratedRecords == 2)
+        #expect(second.store.existing("Character:2") == nil, "nothing was adopted")
+        await finish(second)
+    }
+
+    @Test("a row reached through the rows decoded ahead is stamped as used, as one read from the file is, so it survives the launch after")
+    func aDecodedRowReachedIsStamped() async throws {
+        try await seed(launch())
+
+        // The second launch reads every row through the decoded table.
+        let second = launch()
+        _ = try stored(Fixture(page: 1), in: second)
+        #expect(second.store.linkedFromDecodedRows > 0)
+        #expect(second.store.linkedFromDecodedRows == second.store.hydratedRecords)
+        await finish(second)
+
+        // A row the second launch had not stamped would be the first
+        // launch's, and gone at the third.
+        let third = launch()
+        let data = try stored(Fixture(page: 1), in: third)
+        #expect(data.characters?.results?.first?.name == "Rick Sanchez")
+        await finish(third)
     }
 
     @Test("data keeps its age across a launch: fresh data is not refetched, expired data is, and an invalidation ages everything")

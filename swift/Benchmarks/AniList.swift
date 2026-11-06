@@ -254,6 +254,7 @@ func aniListBench() async throws {
     let size = ((try? FileManager.default.attributesOfItem(atPath: url.path))?[.size] as? Int) ?? 0
     print("    the image after both chunks, closed: \(size) bytes")
 
+    var linked = (decoded: 0, hydrated: 0)
     func launched(_ flag: String) -> UInt64 {
         let child = Process()
         let output = Pipe()
@@ -263,13 +264,17 @@ func aniListBench() async throws {
         try! child.run()
         child.waitUntilExit()
         let text = String(decoding: output.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
-        guard child.terminationStatus == 0, let elapsed = UInt64(text.trimmingCharacters(in: .whitespacesAndNewlines)) else {
+        let words = text.split(separator: " ").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+        guard child.terminationStatus == 0, words.count == 3, let elapsed = UInt64(words[0]), let decoded = Int(words[1]), let hydrated = Int(words[2]) else {
             fatalError("the launch child failed with status \(child.terminationStatus): \(text)")
         }
+        linked = (decoded, hydrated)
         return elapsed
     }
     await measureEach("a launch: open and hydrate at once, both handles ready", iterations: 15) { launched("--anilist-launch") }
+    print("    records linked from rows decoded ahead, the last run: \(linked.decoded) of \(linked.hydrated)")
     await measureEach("a launch: both handles ready after the image has opened", iterations: 15) { launched("--anilist-launch-opened") }
+    count("records-linked-from-decoded-rows-anilist-launch", linked.decoded, "    records linked from rows decoded ahead: \(linked.decoded) of \(linked.hydrated)")
 }
 
 /// What the child process of the AniList launch bench does: from creating
@@ -280,18 +285,23 @@ func aniListBench() async throws {
 func aniListLaunch(_ path: String, opened: Bool) async {
     var start = DispatchTime.now().uptimeNanoseconds
     let persistence = Persistence(url: URL(fileURLWithPath: path))
+    // The environment is made as an app makes it, right after the image,
+    // so the image decodes ahead for its store; with `opened`, the handles
+    // are made once the open and the decoding are done.
+    let environment = Environment(transport: SilentTransport(), store: Store(persistence: persistence))
+    environment.log = nil
     if opened {
         await persistence.flush()
         start = DispatchTime.now().uptimeNanoseconds
     }
-    let environment = Environment(transport: SilentTransport(), store: Store(persistence: persistence))
-    environment.log = nil
     let handles = aniListChunks.map { environment.handle(for: $0) }
     let retentions = handles.map { $0.retain() }
     let ready = handles.allSatisfy { if case .ready = $0.phase { true } else { false } }
     let elapsed = DispatchTime.now().uptimeNanoseconds - start
     precondition(ready && environment.store.hydratedRecords > 6_000, "the image did not answer both chunks")
-    print(elapsed)
+    // The time, then how many records the checks linked from rows the
+    // image decoded ahead, of those they hydrated.
+    print("\(elapsed) \(environment.store.linkedFromDecodedRows) \(environment.store.hydratedRecords)")
     withExtendedLifetime(retentions) {}
     await persistence.flush()
 }

@@ -5,6 +5,45 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- The ingest builds the records, and the commit adopts them. After a
+  response is normalized, off the main actor, the change set builds one
+  record per key with its values in place, strings made and links bound
+  among the built records; the commit, on the main actor, inserts each
+  record the store lacks as it is, one undo step for the whole record, and
+  merges the entries of the records it has as before. What the store does
+  not adopt is freed off the main actor. The commit of the Rick and Morty
+  page into an empty store falls from 472 to 310 µs on the main actor and
+  its allocations there from 4,897 to 22; the AniList list's two chunks,
+  6,014 records, from 5.3 to 1.3 ms. The ingest, off the main actor,
+  takes the building: the page's from 522 to 935 µs, a chunk's from 1.8
+  to 4.2 ms. A commit of records the store holds is unchanged. Swift.
+
+- The image decodes ahead, off the main actor, the rows the last launch
+  used, as it opens for a store, and makes the records from them, linked
+  among themselves, in key order until `Persistence.prefetchBudget` is
+  spent, eight megabytes of rows by default. The first availability check
+  of a store that holds nothing but its roots adopts those records in one
+  insert each and walks in memory; the records it reaches count as
+  hydrated and have their rows stamped as used, as rows read from the
+  file are, and the root's cells fill its fields as the checks read them.
+  On the next turn of the main actor what no check reached is dropped,
+  a record a kept one links to staying empty as a link's target is
+  before its row is read, so the store holds what the checks would have
+  read from the file. A check that comes while the image is decoding
+  waits for it, as one that comes while it opens waits for the open; a
+  store that holds records already, or a forget pending, reads the file
+  as before. The AniList launch, 6,014 records, falls from
+  18.3 ms on the main actor after the open to 1.7 ms, the Rick and Morty
+  page from 2.0 ms to 0.3. Swift
+  ([the decision](docs/decisions/the-check-and-collection-run-on-the-main-actor.md),
+  amended).
+
+- The collector frees off the main actor: a sweep clears each record it
+  takes out in constant time and hands the records, their arrays and, when
+  it swept more than half the store, the table it made again, to a task
+  that releases them. The pass that keeps none of 50,000 records falls from
+  22 ms to 6 ms of main-actor time. Swift.
+
 - An entity's object a response prints again, byte for byte, under the
   same selection is read by one compare instead of a parse: the ingest
   keeps, per selection, where each entity's object began, how long it ran

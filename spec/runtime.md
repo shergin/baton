@@ -543,13 +543,29 @@ writes the record again. A row that stops making sense is used as far as
 it went. The operation's age comes with its data (section 7). *Held by*
 the oracle's second store; the rules one by one are *unheld*.
 
+**The image may decode ahead, and the first check adopts what it did.**
+An image opened for a store may decode, off the main actor, the rows the
+last launch used, into records linked to one another, and the store's
+first check adopts them whole when memory holds nothing but the roots. A
+record a check reaches reads as a record hydrated from its row, and the
+root's cells are filled as the checks read the fields. Once the turn of
+the checks is over, what no check reached is dropped: a record nothing
+the store keeps links to goes, and one a kept record links to stays
+empty, as a link's target is before its row is read, so no link
+dangles. What a check answers and what the store holds after the drop
+do not depend on whether the image decoded ahead, except that an
+adopted record behind a deferred fragment's link has its data, where a
+row read for the field alone has nothing behind it. *Held by* the
+oracle's second store and the scripts.
+
 **The deferred parts are checked apart.** Whether every deferred part of
 the selection is whole, in memory or in the image. A record read from the
 image holds every cell of its row, a deferred fragment's link among them,
 with nothing behind it: such a field is cleared, so its fragment reads
 absent rather than empty, unless a field outside the deferred part reads
 the same slot. Either way the operation fetches; the rest of it renders
-meanwhile. *Unheld.*
+meanwhile. A record adopted from the rows decoded ahead has the part's
+records behind the link, and the part holds. *Unheld.*
 
 ## 6. The lens reads
 

@@ -591,7 +591,12 @@ lookup's link bound, a link repaired, a cell filled from the image,
 neither. Nothing outside a batch writes a record, edits follow entries,
 and the observed fields that changed are notified when the batch ends. See
 [the contract](../spec/runtime.md#4-the-commit).
-Swift: the commit runs on the main actor.
+Swift: the commit runs on the main actor. The change set carries the
+records it describes, built where the ingest ran, off the main actor,
+with their values in place and their links bound among them; the commit
+adopts each one the store lacks as it is, under one undo step, and merges
+the entries of the ones it has. What it does not adopt is freed off the
+main actor.
 Kotlin: the commit runs on the store's thread, through the environment's main
 dispatcher; the change set and the batch, with its kind, are the runtime's
 internal `ChangeSet` and `Store.Batch`, and the log tells a commit as
@@ -722,7 +727,8 @@ a deletion a crash interrupts. See
 [the accounts recipe](recipes/accounts.md).
 Swift: `Persistence(url:)` or `Persistence(name:)`, handed to
 `Store(persistence:)`; the version is `version`, the protection class
-`Persistence(protection:)`, and the removal `removeAll()`.
+`Persistence(protection:)`, the bytes of rows decoded ahead at the open
+`prefetchBudget`, and the removal `removeAll()`.
 Kotlin: `Persistence(path)` or `Persistence.named(name)`, handed to
 `Store(persistence)`, with `version`, `sizeLimit`, `flush()`, `close()` and
 `removeAll()` as in Swift and no protection class.
@@ -741,6 +747,14 @@ fetched is ready when its handle is made, before the first body. Memory wins
 wherever it holds a value. The operation's age comes with its data; data
 that needed the image and has no fetch time is stale. See
 [the contract](../spec/runtime.md#5-the-availability-check-and-hydration).
+Swift: as the image opens for a store it decodes ahead, off the main
+actor, the rows the last launch used and makes the records from them,
+linked among themselves, until `Persistence.prefetchBudget` is spent; the
+first check of a store holding only its roots adopts them whole and walks
+in memory, counting and stamping the records it reaches; what no check
+reached is dropped on the next turn, so the store holds what the checks
+would have read from the file. A check that comes during the decoding
+waits for it. A store with records in memory reads the file as before.
 
 **Optimistic layer.** *Composition: store, plan, operation value.* Relay's
 optimistic update, applied as a layer that is rebased on each commit.

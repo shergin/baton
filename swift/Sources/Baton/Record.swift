@@ -13,35 +13,42 @@ public final class Record: Observable {
     nonisolated let idOffset: Int32
     /// Whether `@deleteRecord` removed it: links to it read as null and lists
     /// skip it, until a payload names it again.
-    public private(set) var deleted = false
+    nonisolated(unsafe) public private(set) var deleted = false
+    /// Whether the record came from a row the image decoded ahead and no
+    /// walk has reached it yet: the first walk that does counts it as
+    /// hydrated and, when the row was an earlier launch's, has it stamped.
+    nonisolated(unsafe) private(set) var decodedAhead = false
+    nonisolated(unsafe) private(set) var rowStale = false
     /// The number of the request current when the record was deleted, which
     /// a response to an older request does not revive.
     var deletedAt: UInt32 = 0
     /// Whether the record's row in the image has been read, so that the
     /// availability check reads it once.
-    private(set) var hydrated = false
+    nonisolated(unsafe) private(set) var hydrated = false
     /// Whether the collector took the record out of the store. A link that
     /// still holds it is repointed when the image is read.
     private(set) var swept = false
     /// The collection pass that last reached the record, the store's epoch:
     /// a pass marks with a number and keeps no set.
     var mark: UInt32 = 0
-    /// The values of the dense slots, by index. Isolated to the main actor,
-    /// so the dynamic exclusivity check each write would pay is left out.
+    /// The values of the dense slots, by index. The main actor's, so the
+    /// dynamic exclusivity check each write would pay is left out; written
+    /// off it by `fill(values:rendered:errors:)` alone, before the record
+    /// is any actor's.
     @exclusivity(unchecked)
-    private var values: ContiguousArray<Value>
+    nonisolated(unsafe) private var values: ContiguousArray<Value>
     /// The keys numbered apart that were written to the record, as `~index`
     /// in ascending order, and their values beside them. A session renders
     /// a key per cursor and per id, each numbered for the life of the
     /// process; kept apart, it widens only the records it is written to.
-    /// Isolated to the main actor, so no two accesses overlap and the
+    /// The main actor's as `values` is, so no two accesses overlap and the
     /// dynamic exclusivity check each search would pay is left out.
     @exclusivity(unchecked)
-    private var renderedIDs: ContiguousArray<Int32> = []
+    nonisolated(unsafe) private var renderedIDs: ContiguousArray<Int32> = []
     @exclusivity(unchecked)
-    private var renderedValues: ContiguousArray<Value> = []
+    nonisolated(unsafe) private var renderedValues: ContiguousArray<Value> = []
     /// Field errors by slot index; allocated when the first error lands.
-    private var errors: [Int32: FieldError]?
+    nonisolated(unsafe) private var errors: [Int32: FieldError]?
     /// The registrar a tracked read registers with, one per record, made
     /// with it: its layout is its library's, and every spelling that makes
     /// it later, an optional, a box or a flag beside it, was measured to
@@ -50,12 +57,103 @@ public final class Record: Observable {
 
     /// Values are sized by what is written, not by how many storage keys the
     /// type has: a record makes room up to the highest dense slot written to
-    /// it.
-    init(type: TypeID, key: String, idOffset: Int32 = -1) {
+    /// it. Made on any actor: an empty record is nobody's until the store
+    /// holds it, and the ingest and the image make theirs off the main actor.
+    nonisolated init(type: TypeID, key: String, idOffset: Int32 = -1) {
         self.type = type
         self.key = key
         self.idOffset = idOffset
         values = []
+    }
+
+    /// Installs the values a record is made with, off the main actor,
+    /// before the record is any actor's: the ingest builds every record of
+    /// a change set this way, and the commit adopts the ones the store
+    /// lacks in one insert. The rendered keys come as `~index` in ascending
+    /// order with their values beside them. Not for a record the store
+    /// holds: one it does is written on the main actor, through a batch.
+    nonisolated func fill(values: ContiguousArray<Value>, rendered: (ids: ContiguousArray<Int32>, values: ContiguousArray<Value>), errors: [Int32: FieldError]?) {
+        self.values = values
+        renderedIDs = rendered.ids
+        renderedValues = rendered.values
+        self.errors = errors
+    }
+
+    /// Marks the record as made by the image's decoding ahead, off the main
+    /// actor, before the record is any actor's: hydrated when a row was
+    /// decoded for it, and then deleted when the row was and stale when the
+    /// row carried an earlier launch's generation; empty, for a key a link
+    /// named that no row was decoded for.
+    nonisolated func markDecodedAhead(row: Bool, deleted: Bool, stale: Bool) {
+        hydrated = row
+        self.deleted = deleted
+        decodedAhead = true
+        rowStale = stale
+    }
+
+    /// Notes that a walk reached the record: it is the store's now, as a
+    /// record read from its row is. Returns whether the row was stale.
+    func reached() -> Bool {
+        decodedAhead = false
+        return rowStale
+    }
+
+    /// Returns a record decoded ahead that no walk reached to what a link's
+    /// target is before its row is read: empty and not hydrated, so the
+    /// first check that reaches it reads the row from the file.
+    func unload() {
+        values = []
+        renderedIDs = []
+        renderedValues = []
+        errors = nil
+        hydrated = false
+        deleted = false
+        decodedAhead = false
+        rowStale = false
+    }
+
+    /// Points every link to a record in `map` at the record it maps to,
+    /// silently: a record the ingest built links the records it built, and
+    /// the store, holding some of those keys already, keeps its own.
+    func relink(_ map: [ObjectIdentifier: Record]) {
+        @inline(__always) func mapped(_ target: Record) -> Record { map[ObjectIdentifier(target)] ?? target }
+        for index in values.indices {
+            switch values[index] {
+            case .ref(let target):
+                if let other = map[ObjectIdentifier(target)] { values[index] = .ref(other) }
+            case .refs(let targets):
+                if targets.contains(where: { $0.map { map[ObjectIdentifier($0)] != nil } ?? false }) {
+                    values[index] = .refs(ContiguousArray(targets.map { $0.map(mapped) }))
+                }
+            default:
+                continue
+            }
+        }
+        for position in renderedValues.indices {
+            switch renderedValues[position] {
+            case .ref(let target):
+                if let other = map[ObjectIdentifier(target)] { renderedValues[position] = .ref(other) }
+            case .refs(let targets):
+                if targets.contains(where: { $0.map { map[ObjectIdentifier($0)] != nil } ?? false }) {
+                    renderedValues[position] = .refs(ContiguousArray(targets.map { $0.map(mapped) }))
+                }
+            default:
+                continue
+            }
+        }
+    }
+
+    /// Every slot that holds a value, taken once; for a walk that writes
+    /// the slots it is given.
+    var heldSlots: [Slot] {
+        var slots: [Slot] = []
+        forEachValue { slot, _ in slots.append(slot) }
+        return slots
+    }
+
+    /// The slots that carry a field error.
+    var erroredSlots: [Slot] {
+        errors?.keys.map { Slot(type: type, index: $0) } ?? []
     }
 
     /// Whether the record is an entity, keyed `Type:id`.
@@ -357,14 +455,18 @@ public final class Record: Observable {
     /// payload's `__typename` for interface- and union-typed fields.
     @_spi(Generated) public func `is`(_ type: TypeID) -> Bool { self.type == type }
 
-    /// Forgets every value, silently: the record is leaving the store, and
-    /// anything still holding it reads missing data and reports it.
-    func clear() {
-        for index in values.indices { values[index] = .missing }
-        renderedIDs.removeAll()
-        renderedValues.removeAll()
+    /// Forgets every value, silently, in constant time: the record is
+    /// leaving the store, and anything still holding it reads missing data
+    /// and reports it. The arrays come back, for the caller to free where
+    /// freeing costs nothing it minds.
+    func clear() -> (values: ContiguousArray<Value>, rendered: ContiguousArray<Value>) {
+        let taken = (values, renderedValues)
+        values = []
+        renderedIDs = []
+        renderedValues = []
         errors = nil
         swept = true
+        return taken
     }
 
     /// The record and its values at one moment: what a commit hands the

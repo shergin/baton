@@ -88,6 +88,14 @@ package struct ChangeSet: Sendable {
     /// kept one per record and slot. For the counts.
     package internal(set) var skipped = 0
     package internal(set) var entriesBeforeGrouping = 0
+    /// The records the change set describes, one per key in `recordKeys`'
+    /// order, built by `build()` after the grouping with their values
+    /// materialized and their links bound among them: what the commit
+    /// adopts for the keys the store lacks. A box, so the commit can take
+    /// them out of a change set its caller still holds, and the ones it did
+    /// not adopt are freed off the main actor rather than with the change
+    /// set on it. Empty until built, and again once taken.
+    package let prebuilt = PrebuiltRecords()
     var index: [String: Int32] = [:]
     /// The records whose entity key came from one unescaped key field, by
     /// the type and the field's bytes, in front of `index`: an entity a
@@ -187,6 +195,87 @@ package struct ChangeSet: Sendable {
         sorted.removeLast(total - kept)
         entries = sorted
         starts = grouped
+    }
+
+    /// Builds the records, after `group()`: one `Record` per key, filled
+    /// with the values its entries give, strings materialized, lists built,
+    /// links as references to the records built here. Runs where the
+    /// ingest runs, off the main actor; the records are nobody's until the
+    /// commit adopts them, and the ones it does not adopt are freed where
+    /// they were made.
+    mutating func build() {
+        let count = recordKeys.count
+        var records = ContiguousArray<Record>()
+        records.reserveCapacity(count)
+        for index in 0..<count {
+            records.append(Record(type: recordTypes[index], key: recordKeys[index], idOffset: recordIDOffsets[index]))
+        }
+        var hasNull = ContiguousArray<Bool>(repeating: false, count: count)
+        // The field errors are left to the commit, which sets them on an
+        // adopted record as on any other: an error arriving counts as a
+        // change of its slot, and the undo log holds it.
+        var rendered: [(id: Int32, value: Value)] = []
+        for index in 0..<count {
+            let range = Int(starts[index])..<Int(starts[index + 1])
+            var highest: Int32 = -1
+            for position in range where entries[position].slot.index > highest { highest = entries[position].slot.index }
+            var values = ContiguousArray<Value>(repeating: .missing, count: Int(highest) + 1)
+            rendered.removeAll(keepingCapacity: true)
+            for position in range {
+                let entry = entries[position]
+                let value: Value
+                switch entry.value {
+                case .null:
+                    value = .null
+                    hasNull[index] = true
+                case .bool(let bool): value = .bool(bool)
+                case .int(let int): value = .int(int)
+                case .double(let double): value = .double(double)
+                case .string(let start, let end, let escaped): value = .string(string(start, end, escaped: escaped))
+                case .ref(let target): value = .ref(records[Int(target)])
+                case .refs(let start, let listCount):
+                    var list = ContiguousArray<Record?>()
+                    list.reserveCapacity(Int(listCount))
+                    for offset in 0..<Int(listCount) {
+                        let target = refs[Int(start) + offset]
+                        list.append(target < 0 ? nil : records[Int(target)])
+                    }
+                    value = .refs(list)
+                case .list(let start, let listCount):
+                    var list = ContiguousArray<Value>()
+                    list.reserveCapacity(Int(listCount))
+                    for offset in 0..<Int(listCount) {
+                        switch scalars[Int(start) + offset] {
+                        case .null: list.append(.null)
+                        case .bool(let bool): list.append(.bool(bool))
+                        case .int(let int): list.append(.int(int))
+                        case .double(let double): list.append(.double(double))
+                        case .string(let start, let end, let escaped): list.append(.string(string(start, end, escaped: escaped)))
+                        default: list.append(.null)
+                        }
+                    }
+                    value = .list(list)
+                }
+                if entry.slot.index >= 0 {
+                    values[Int(entry.slot.index)] = value
+                } else {
+                    rendered.append((~entry.slot.index, value))
+                }
+            }
+            var renderedIDs = ContiguousArray<Int32>()
+            var renderedValues = ContiguousArray<Value>()
+            if !rendered.isEmpty {
+                rendered.sort { $0.id < $1.id }
+                renderedIDs.reserveCapacity(rendered.count)
+                renderedValues.reserveCapacity(rendered.count)
+                for (id, value) in rendered {
+                    renderedIDs.append(id)
+                    renderedValues.append(value)
+                }
+            }
+            records[index].fill(values: values, rendered: (renderedIDs, renderedValues), errors: nil)
+        }
+        prebuilt.put(records, hasNull: hasNull)
     }
 
     /// The entry of a record's slot, once grouped.
@@ -302,5 +391,34 @@ package struct ChangeSet: Sendable {
                 memcmp(buffer.baseAddress! + Int(start), otherBytes.baseAddress!, length) == 0
             }
         }
+    }
+}
+
+/// The records a change set built, held in a box the commit empties: one
+/// `Record` per key, and whether each holds a null, which a verdict reads.
+/// Shared by the copies of a change set and taken once; the ingest fills
+/// it off the main actor before any copy is handed over.
+package final class PrebuiltRecords: @unchecked Sendable {
+    nonisolated(unsafe) private var records: ContiguousArray<Record> = []
+    nonisolated(unsafe) private var hasNull: ContiguousArray<Bool> = []
+
+    package init() {}
+
+    /// How many records the box holds; for the commit to see whether the
+    /// change set was built, and for the tests.
+    package var count: Int { records.count }
+
+    func put(_ records: ContiguousArray<Record>, hasNull: ContiguousArray<Bool>) {
+        self.records = records
+        self.hasNull = hasNull
+    }
+
+    /// Takes the records out, leaving the box empty.
+    func take() -> (records: ContiguousArray<Record>, hasNull: ContiguousArray<Bool>) {
+        defer {
+            records = []
+            hasNull = []
+        }
+        return (records, hasNull)
     }
 }

@@ -28,7 +28,11 @@ extension Store {
         // is passed, never captured: a variable a closure captures is boxed,
         // and every `inout` pass of it then pays a dynamic exclusivity check.
         var walk = Walk(batch: Batch(.local))
-        defer { _ = finish(walk.batch) }
+        defer {
+            _ = finish(walk.batch)
+            persistence?.used(records: walk.reachedStale, root: walk.reachedStaleRoot)
+        }
+        adoptDecoded()
         if available(selection, at: record, from: nil, &walk) { return walk.met ? .image : .memory }
         guard let persistence else { return .miss }
         let found = persistence.reading(&walk) { disk, walk in
@@ -38,11 +42,95 @@ extension Store {
     }
 
     /// The state of one availability walk: the local batch of what it
-    /// writes, and whether the walk in memory met a record or a root field
-    /// the image filled.
+    /// writes, whether the walk in memory met a record or a root field the
+    /// image filled, and the records and root fields it reached among
+    /// those decoded ahead whose rows were an earlier launch's, for the
+    /// writer to stamp as used.
     struct Walk {
         var batch: Batch
         var met = false
+        var reachedStale: [String] = []
+        var reachedStaleRoot: [String] = []
+    }
+
+    /// Adopts the records the image decoded ahead, when the store holds
+    /// nothing but its roots and no forget is pending that would make a
+    /// decoded row wrong: every record goes into the table in one insert,
+    /// linked already, and the root's decoded cells are kept for the walks
+    /// to fill as they read the fields. A key the decoding numbered that the
+    /// build has since named as a constant has a twin, which the adopted
+    /// records are given as every record is. What the launch's checks do
+    /// not reach is dropped on the next turn of the main actor. With
+    /// records in memory or a forget pending, the decoded records are
+    /// dropped and the check reads the file as before.
+    private func adoptDecoded() {
+        guard let persistence, let (decoded, rootCells) = persistence.takeDecoded() else { return }
+        guard holdsOnlyRoots, nothingForgotten else {
+            var garbage = Garbage()
+            garbage.table = decoded
+            garbage.drop()
+            return
+        }
+        adopt(decoded: decoded)
+        decodedRootCells.reserveCapacity(rootCells.count)
+        for cell in rootCells { decodedRootCells[cell.field] = cell }
+        if !twins.isEmpty {
+            for (rendered, dense) in twins where rendered.index < 0 {
+                if rendered.type == root.type { _ = root.twin(rendered, dense) }
+                for record in decoded.values where record.type == rendered.type { _ = record.twin(rendered, dense) }
+            }
+        }
+        scheduleDropOfUnreached()
+    }
+
+    /// Notes that the walk reached a record decoded ahead: the store's now,
+    /// hydrated in its own count when a row was decoded for it, and stamped
+    /// when that row was stale. A key a link named that no row was decoded
+    /// for is empty, and the walk reads the file for it as for any empty
+    /// record.
+    private func reached(_ record: Record, _ walk: inout Walk) {
+        let stale = record.reached()
+        guard record.hydrated else { return }
+        if stale { walk.reachedStale.append(record.key) }
+        hydratedRecords += 1
+        linkedFromDecodedRows += 1
+        walk.met = true
+    }
+
+    /// Fills the root's fields the walk reads from the cells decoded ahead,
+    /// as a check with the file at hand reads a root field's row: once
+    /// each, through the batch, which notifies the fill when the walk ends.
+    /// The waited fields, the connections' client links and the client
+    /// fields, as the walk with the file at hand reads them.
+    private func fillDecoded(_ variant: ResolvedVariant, _ walk: inout Walk) {
+        fillDecoded(variant.waits, &walk)
+        fillDecoded(variant.clientLinks, &walk)
+        fillDecoded(variant.payloadFields, &walk)
+    }
+
+    private func fillDecoded(_ fields: [ResolvedField], _ walk: inout Walk) {
+        for index in fields.indices {
+            let slot = fields[index].slot
+            guard case .missing = root.peek(slot), let cell = decodedRootCells.removeValue(forKey: keys.text(of: slot)) else { continue }
+            guard root.fill(slot, cell.value, error: cell.error) else { continue }
+            if !twins.isEmpty, let twin = twins[slot] { _ = root.fill(twin, cell.value, error: cell.error) }
+            hydratedRootSlots.insert(slot.index)
+            walk.batch.touched(root, slot, value: .missing, error: nil)
+            walk.met = true
+            if cell.stale { walk.reachedStaleRoot.append(cell.field) }
+        }
+    }
+
+    /// Drops, on the next turn of the main actor, what the launch's checks
+    /// did not reach among the records decoded ahead; the checks of the
+    /// turn the adoption ran in reach what they read first.
+    private func scheduleDropOfUnreached() {
+        guard !dropScheduled else { return }
+        dropScheduled = true
+        Task { @MainActor in
+            self.dropScheduled = false
+            self.dropUnreached()
+        }
     }
 
     /// Whether the parts of an incremental response the check found are
@@ -124,6 +212,7 @@ extension Store {
     /// place, so neither a list nor a field is retained per record.
     private func available(_ variant: ResolvedVariant, at record: Record, from disk: Disk?, _ walk: inout Walk) -> Bool {
         let fields = variant.waits
+        if record.decodedAhead { reached(record, &walk) }
         if disk == nil {
             if record.hydrated {
                 walk.met = true
@@ -131,6 +220,11 @@ extension Store {
                 walk.met = true
             }
         }
+        if record === root, !decodedRootCells.isEmpty { fillDecoded(variant, &walk) }
+        // While the records decoded ahead wait for the drop of what no check
+        // reached, the walk in memory reads them as the walk with the file
+        // at hand reads rows: the records behind a client link among them.
+        let fromImage = disk != nil || dropScheduled
         for index in fields.indices {
             let slot = fields[index].slot
             if let disk, case .missing = record.peek(slot) { hydrate(record, slot, from: disk, &walk.batch) }
@@ -174,27 +268,32 @@ extension Store {
         // A client field is never waited for, but the image holds what a
         // payload wrote: it is hydrated here, and the records behind a client
         // link brought back, without a miss for what no server sends.
-        if let disk {
+        if fromImage {
             for field in variant.payloadFields {
                 let slot = field.slot
-                if case .missing = record.peek(slot) { hydrate(record, slot, from: disk, &walk.batch) }
+                if let disk, case .missing = record.peek(slot) { hydrate(record, slot, from: disk, &walk.batch) }
                 guard case .linked(let child, _, _, _) = field.kind else { continue }
                 switch record.peek(slot) {
                 case .ref(let found):
-                    let target = live(found, disk, &walk.batch)
-                    if target !== found { set(record, slot, .ref(target), &walk.batch) }
+                    var target = found
+                    if let disk {
+                        target = live(found, disk, &walk.batch)
+                        if target !== found { set(record, slot, .ref(target), &walk.batch) }
+                    }
                     if !target.deleted { _ = available(child, at: target, from: disk, &walk) }
                 case .refs(var targets):
-                    var moved = false
-                    for position in targets.indices {
-                        guard let found = targets[position] else { continue }
-                        let target = live(found, disk, &walk.batch)
-                        if target !== found {
-                            targets[position] = target
-                            moved = true
+                    if let disk {
+                        var moved = false
+                        for position in targets.indices {
+                            guard let found = targets[position] else { continue }
+                            let target = live(found, disk, &walk.batch)
+                            if target !== found {
+                                targets[position] = target
+                                moved = true
+                            }
                         }
+                        if moved { set(record, slot, .refs(targets), &walk.batch) }
                     }
-                    if moved { set(record, slot, .refs(targets), &walk.batch) }
                     for case let target? in targets where !target.deleted { _ = available(child, at: target, from: disk, &walk) }
                 default:
                     break

@@ -563,6 +563,57 @@ final class Disk: @unchecked Sendable {
         return .used(records: readRecords, root: readRoot)
     }
 
+    /// Decodes ahead a batch of the rows the last launch used, in key order
+    /// after `after`, their links as the keys they name, with the slots the
+    /// store's keys give them: up to `limit` rows, or fewer at the end. The
+    /// root's cells come in their own batch. Returns the last key read, or
+    /// nil when none was left; a row that cannot be read is left out.
+    func prefetch(after: String?, limit: Int, keys: Keys, row: (String, Int, PrefetchedRow) -> Void) -> String? {
+        guard db != nil else { return nil }
+        var last: String?
+        let sql = "SELECT key, used, row FROM records WHERE used >= \(generation - 1) AND key > ?1 ORDER BY key LIMIT \(limit)"
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK, let statement else { return nil }
+        defer { sqlite3_finalize(statement) }
+        sqlite3_bind_text(statement, 1, after ?? "", -1, copied)
+        while sqlite3_step(statement) == SQLITE_ROW {
+            guard let text = sqlite3_column_text(statement, 0) else { continue }
+            let key = String(cString: text)
+            last = key
+            guard let bytes = sqlite3_column_blob(statement, 2) else { continue }
+            let count = Int(sqlite3_column_bytes(statement, 2))
+            let stale = sqlite3_column_int64(statement, 1) != generation
+            var reader = RowReader(UnsafeRawBufferPointer(start: bytes, count: count))
+            guard let flags = reader.byte(), let typeName = reader.index(), let type = type(typeName) else { continue }
+            let entity = flags & 2 != 0
+            if flags & 1 != 0 {
+                row(key, count, PrefetchedRow(type: type, entity: entity, deleted: true, stale: stale, cells: []))
+                continue
+            }
+            var cells: [PrefetchedCell] = []
+            while !reader.isAtEnd {
+                // A row that stops making sense is used as far as it went.
+                guard let name = reader.index(), let slot = slot(name, on: type, keys), let (value, error) = reader.prefetchedValue(self) else { break }
+                cells.append(PrefetchedCell(slot: slot, value: value, error: error))
+            }
+            row(key, count, PrefetchedRow(type: type, entity: entity, deleted: false, stale: stale, cells: cells))
+        }
+        return last
+    }
+
+    /// Decodes ahead the root's cells the last launch used, each by its
+    /// storage key: the walk that reads the field finds the cell by the
+    /// text of its slot, so the decoding numbers no key of the root's.
+    func prefetchRoot(_ cell: (String, PrefetchedValue, FieldError?, Bool) -> Void) {
+        guard db != nil else { return }
+        try? each("SELECT field, used, cell FROM root WHERE used >= \(generation - 1)") { statement in
+            guard let text = sqlite3_column_text(statement, 0), let bytes = sqlite3_column_blob(statement, 2) else { return }
+            var reader = RowReader(UnsafeRawBufferPointer(start: bytes, count: Int(sqlite3_column_bytes(statement, 2))))
+            guard let (value, error) = reader.prefetchedValue(self) else { return }
+            cell(String(cString: text), value, error, sqlite3_column_int64(statement, 1) != generation)
+        }
+    }
+
     /// Calls `body` with the record's row, if the image has one.
     func record(_ key: String, _ body: (UnsafeRawBufferPointer) -> Void) -> Bool {
         guard let prepared else { return false }

@@ -29,7 +29,7 @@ named by their source set.
 | The handle | `Handle.swift` | `Handle.kt` |
 | The subscription | `Subscription.swift` | `Subscription.kt` |
 | The availability check | `Availability.swift` | `Availability.kt` |
-| Hydration from the image | `Hydration.swift` | `Hydration.kt` |
+| Hydration from the image, and the rows decoded ahead | `Hydration.swift`; the adoption in `Availability.swift`, the decoding in `Persistence.swift` | `Hydration.kt`; nothing is decoded ahead |
 | The environment, the one door | `Environment.swift` | `Environment.kt` |
 | Transports, framing, payloads | `Transport.swift`, `Payload.swift` | `Transport.kt`, `Framing.kt`, `Payload.kt`, `GraphQLTransportWebSocket.kt`, `jvmSharedMain/HttpTransport.kt`, `jvmMain/JdkWebSocketClient.kt` |
 | Delivery of payloads to handles | `Delivery.swift` | `Delivery.kt` |

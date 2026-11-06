@@ -388,6 +388,106 @@ struct RowReader {
     }
 }
 
+/// A row decoded ahead of the check, off the main actor: its cells, each a
+/// slot, a value and an error, with a link as the key, type and kind of
+/// record it names rather than a record, since the records are the main
+/// actor's to make. The check links the cells into a record as it would
+/// fill them from the row.
+struct PrefetchedRow: Sendable {
+    let type: TypeID
+    let entity: Bool
+    let deleted: Bool
+    /// Whether the row carried an older launch's generation, for the
+    /// writer to stamp when a walk reaches the record.
+    let stale: Bool
+    let cells: [PrefetchedCell]
+}
+
+struct PrefetchedCell: Sendable {
+    let slot: Slot
+    let value: PrefetchedValue
+    let error: FieldError?
+}
+
+/// A stored value with its links as what they name.
+enum PrefetchedValue: Sendable {
+    case value(Value)
+    case link(PrefetchedLink?)
+    case links([PrefetchedLink?])
+}
+
+struct PrefetchedLink: Sendable {
+    let key: String
+    let type: TypeID
+    let entity: Bool
+}
+
+extension RowReader {
+    /// A cell's value with its links as keys, or nil for a damaged row.
+    mutating func prefetchedValue(_ disk: Disk) -> (PrefetchedValue, FieldError?)? {
+        guard let tag = byte() else { return nil }
+        let value: PrefetchedValue
+        switch tag & ~RowTag.hasError {
+        case RowTag.null:
+            value = .value(.null)
+        case RowTag.no:
+            value = .value(.bool(false))
+        case RowTag.yes:
+            value = .value(.bool(true))
+        case RowTag.int:
+            guard let raw = varint() else { return nil }
+            value = .value(.int(Int(Int64(bitPattern: (raw >> 1) ^ (0 &- (raw & 1))))))
+        case RowTag.double:
+            guard let bits = fixed64() else { return nil }
+            value = .value(.double(Double(bitPattern: bits)))
+        case RowTag.string:
+            guard let string = string() else { return nil }
+            value = .value(.string(string))
+        case RowTag.ref:
+            guard let link = prefetchedLink(disk) else { return nil }
+            value = .link(link)
+        case RowTag.refs:
+            guard let count = varint(), count <= UInt64(remaining) else { return nil }
+            var links: [PrefetchedLink?] = []
+            links.reserveCapacity(Int(count))
+            for _ in 0..<Int(count) {
+                guard let link = prefetchedLink(disk) else { return nil }
+                links.append(link)
+            }
+            value = .links(links)
+        case RowTag.list:
+            guard let count = varint(), count <= UInt64(remaining) else { return nil }
+            var items = ContiguousArray<Value>()
+            items.reserveCapacity(Int(count))
+            for _ in 0..<Int(count) {
+                guard let item = scalar() else { return nil }
+                items.append(item)
+            }
+            value = .value(.list(items))
+        default:
+            return nil
+        }
+        guard tag & RowTag.hasError != 0 else { return (value, nil) }
+        guard let message = string(), let path = string(), let extensions = string() else { return nil }
+        var parsed: Variable?
+        if !extensions.isEmpty {
+            guard let value = try? Ingest.variable(Data(extensions.utf8)) else { return nil }
+            parsed = value
+        }
+        return (value, FieldError(message: message, path: path, extensions: parsed))
+    }
+
+    /// A stored link as what it names; the inner nil is a null entry of a
+    /// list, the outer one a row that could not be read.
+    private mutating func prefetchedLink(_ disk: Disk) -> PrefetchedLink?? {
+        guard let head = varint() else { return nil }
+        if head == 0 { return .some(nil) }
+        guard head >= 2, head >> 1 <= UInt64(Int32.max) + 1 else { return nil }
+        guard let type = disk.type(Int(head >> 1) - 1), let key = string() else { return nil }
+        return .some(PrefetchedLink(key: key, type: type, entity: head & 1 != 0))
+    }
+}
+
 extension Value {
     /// Whether the value links a record of a transient type, which the image
     /// never names.

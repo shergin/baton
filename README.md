@@ -318,15 +318,16 @@ notification handler calls the same environment, with no view involved:
 - **Cached data in the first frame.** Reads are synchronous on the main
   actor; a handle resolves against the store before the first body runs, and
   after a launch the store reads what that handle needs from its image on
-  disk. Decoding and normalizing a response and the image's writes run off
-  it; the check and garbage collection stay on it, each under a third of a
-  frame on the benchmark machine, and an optimistic response is normalized
-  on it, so its layer shows in the turn of the call.
+  disk. Decoding and normalizing a response, building its records, the
+  image's writes and its decoding of the last launch's rows run off it;
+  the check, the commit and garbage collection stay on it, each under a
+  third of a frame on the benchmark machine, and an optimistic response
+  is normalized on it, so its layer shows in the turn of the call.
 - **Only changed views re-render.** Records are observable objects; a body
   that read `user.name` is invalidated when that field of that record changes
   and at no other time. An unchanged refetch of the benchmark fixture costs
   the main actor under 200 µs and no view; committing all 899 records costs
-  about a millisecond.
+  it a third of a millisecond.
 - **Honest data.** Nullability is what the schema says; `@required` and
   `@catch` work as in Relay, in Swift's terms (an optional lens, a `Result`,
   a `get throws`); field errors survive caching; staleness is a phase a view
@@ -474,7 +475,8 @@ emitted, or about 12 ms to a first render with the write deferred and
 Also measured: an optimistic write shows at once and the whole cycle costs
 0.4 ms; forty-two pages of scrolling plateau near five megabytes, since
 the store releases what no view holds; a launch with the image already
-open reads the page back in 1.78 ms before any request; end to end on the
+open, which decoded the last launch's rows ahead, reads the page back in
+0.3 ms before any request; end to end on the
 Pixel 9, the sample shows its list 255 ms after a cold launch with an
 empty store and 238 ms after one over its image, where the Apollo Kotlin
 twin takes 327 ms and 281 ms; on the JVM, the Kotlin runtime ingests the

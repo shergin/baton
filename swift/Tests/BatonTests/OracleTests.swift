@@ -76,14 +76,6 @@ struct OracleCase: Sendable, CustomTestStringConvertible {
         return parts.count == 1 ? first : try Oracle.merging(Array(parts.dropFirst()), into: first)
     }
 
-    /// The response without its deferred parts: the first part with every
-    /// streamed item placed, what the image answers a check with.
-    func streamedResponse() throws -> Data {
-        let parts = parts
-        guard let first = parts.first else { throw OracleError(description: "\(entry.name) lists no response") }
-        return parts.count == 1 ? first : try Oracle.merging(Array(parts.dropFirst()), into: first, deferred: false)
-    }
-
     /// Commits the responses into a store: one response directly, the parts
     /// of an incremental response through a fetch, as an app receives them.
     @MainActor func commit(_ operation: OracleOperation, into store: Store) async throws {
@@ -135,12 +127,14 @@ struct OracleTests {
                 #expect(answered == .miss, "the image keeps the transient records off, so the plan misses")
             } else {
                 if oracle.entry.complete { #expect(answered == .image, "the image answers the plan") }
-                // The check passes over deferred fields, so the image answers
-                // an incremental response's initial part, and its operation
-                // fetches. A streamed list is no deferred field: the check
-                // walks it, and the image answers every item the stream placed.
-                let initial = oracle.parts.count == 1 ? expected : try Oracle.leaves(of: oracle.streamedResponse(), plan: secondPlan)
-                expectSame(Oracle.leaves(of: second.root, plan: secondPlan), initial, "from the image")
+                // The check passes over deferred fields, but the rows the
+                // last launch used are decoded ahead and adopted with their
+                // links: the records behind a deferred fragment's link hold
+                // their data, so the second store reads every leaf of the
+                // whole response, deferred parts and streamed items alike,
+                // in the turn of the check, before what no check reached is
+                // dropped.
+                expectSame(Oracle.leaves(of: second.root, plan: secondPlan), expected, "from the image")
             }
         }
 
@@ -310,9 +304,8 @@ extension Oracle {
     /// deferred part's data merges into the object its path names; a
     /// streamed list's items are placed in the list, at the index Relay's
     /// shape and the June 2023 shape name, or after the last item for the
-    /// 2024 shape, whose items arrive in order. Without `deferred`, the
-    /// deferred parts are left out and the streamed items alone placed.
-    static func merging(_ later: [Data], into first: Data, deferred: Bool = true) throws -> Data {
+    /// 2024 shape, whose items arrive in order.
+    static func merging(_ later: [Data], into first: Data) throws -> Data {
         guard var tree = try JSONSerialization.jsonObject(with: first) as? [String: Any] else {
             throw OracleError(description: "the first part is not an object")
         }
@@ -353,7 +346,6 @@ extension Oracle {
                     tree["data"] = try placed(tree["data"] as Any, segments(path.dropLast()), last, data)
                     continue
                 }
-                guard deferred else { continue }
                 tree["data"] = try merged(tree["data"] as Any, segments(path), data)
             }
         }

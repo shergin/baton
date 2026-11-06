@@ -795,7 +795,14 @@ func persistenceBench(data: Data, edited: Data, variables: Variables) async {
 
     var empty = Store(persistence: persistence)
     var emptyChanges = changes(for: empty)
-    measure("commit into an empty store, image on (899 records)", iterations: 20, setup: { empty = Store(persistence: persistence); emptyChanges = changes(for: empty) }) {
+    // A store made over the image has it decode the last launch's rows
+    // ahead, off the main actor; the setup waits for that, so the body is
+    // the commit alone and its count is the commit's own allocations.
+    measure("commit into an empty store, image on (899 records)", iterations: 20, setup: {
+        empty = Store(persistence: persistence)
+        while !persistence.isDecodedAhead { usleep(100) }
+        emptyChanges = changes(for: empty)
+    }) {
         empty.commit(emptyChanges)
     }
     await persistence.flush()
@@ -875,20 +882,43 @@ func persistenceBench(data: Data, edited: Data, variables: Variables) async {
     // The image closed above is done with: a closed image takes no more
     // reads. The next image on the file is a launch that reads what the
     // last one wrote.
+    // The rows read from the file, a row at a time on the main actor, with
+    // the image's decoding ahead off: the store is made in the setup and
+    // let go in the next one, so the row times the check and the rows it
+    // reads, not the store's deinit.
+    let unassisted = Persistence(url: url, prefetchBudget: 0)
+    var cold = Store(persistence: unassisted)
+    measure("hydration: the check reads 898 rows from the file, nothing decoded ahead", iterations: 20, setup: { cold = Store(persistence: unassisted) }) {
+        precondition(checks(cold))
+    }
+    measure("the same, per record", iterations: 20, ops: 898, setup: { cold = Store(persistence: unassisted) }) {
+        precondition(checks(cold))
+    }
+    await unassisted.close()
+    // With the decoding ahead: a check the moment the store is made waits
+    // for the decoding and adopts its records; one that comes after the
+    // decoding adopts them at once, which is what a launch pays on the main
+    // actor when its first body comes after the open. The second setup
+    // waits by polling, so the row is one `measure` can profile.
     let reopened = Persistence(url: url)
-    // The store is made in the setup and let go in the next one, so the row
-    // times the check and the rows it reads, not the store's deinit.
-    var cold = Store(persistence: reopened)
-    measure("hydration: the check reads 898 rows into an empty store", iterations: 20, setup: { cold = Store(persistence: reopened) }) {
-        precondition(checks(cold))
+    var waiting = Store(persistence: reopened)
+    measure("hydration: the check the moment the store is made, waiting for the decoding", iterations: 20, setup: { waiting = Store(persistence: reopened) }) {
+        precondition(checks(waiting))
     }
-    measure("the same, per record", iterations: 20, ops: 898, setup: { cold = Store(persistence: reopened) }) {
-        precondition(checks(cold))
+    var decoded = Store(persistence: reopened)
+    measure("hydration: the check after the image decoded the rows ahead", iterations: 20, setup: {
+        decoded = Store(persistence: reopened)
+        while !reopened.isDecodedAhead { usleep(200) }
+    }) {
+        precondition(checks(decoded))
     }
+    count("records-adopted-from-decoded-rows", decoded.linkedFromDecodedRows, "    records adopted from decoded rows: \(decoded.linkedFromDecodedRows) of \(decoded.hydratedRecords)")
     let hydrated = Store(persistence: reopened)
     let hydratedPlan = plan(for: hydrated)
     precondition(hydrated.check(hydratedPlan) != .miss)
-    measure("the check once the records are in memory", iterations: 50, gate: "check-hydrated") {
+    // Not gated on its allocations: the image may still be decoding ahead
+    // for a store a row above made, on its own thread, while this runs.
+    measure("the check once the records are in memory", iterations: 50) {
         precondition(hydrated.check(hydratedPlan) != .miss)
     }
     // The engine's floor under hydration: the same 898 rows stepped by key

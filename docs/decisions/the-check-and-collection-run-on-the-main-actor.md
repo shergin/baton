@@ -67,3 +67,40 @@ price of a first frame with data instead of a loading one.
   above is the trigger.
 - Hydration on another actor with a ready that arrives later: a warm launch
   would show a loading frame, which is what Baton exists to remove.
+
+## Added 2026-11-06: what the main actor does is deciding, not building
+
+The decision stands: the check, hydration, the commit and collection run
+on the main actor. What moved is the building. The evidence that moved it
+is the AniList list of 1,000 entries and 6,014 records, recorded in
+`BENCHMARKS.md` on 2026-10-18 and profiled on 2026-11-06: hydrating it at
+a launch took the main actor 18.1 ms on an M1 Pro and committing it from a
+response 5.3 ms, and the profile put the time on decoding rows, making
+records, materializing strings and making registrars, none of it a
+decision. Three mechanisms keep the decision and take the building off
+the actor, each measured in `BENCHMARKS.md` under its date:
+
+- The ingest builds the change set's records where it runs, off the main
+  actor; the commit adopts the ones the store lacks in one insert each
+  and merges the rest as before. The commit still runs on the main actor,
+  as one atomic batch.
+- The image decodes ahead, off the main actor and as it opens, the rows
+  the last launch used, and makes the records from them, linked among
+  themselves; the first check of a store that holds only its roots adopts
+  them in one insert each and walks in memory, where before it read and
+  decoded a row at a time, and what no check reached is dropped on the
+  next turn, so the store holds what the checks would have read. A check
+  that comes while the image is decoding
+  waits for the decoding, as the check of a launch that asks before the
+  open waits for the open, which this record accepts above; the wait is
+  bounded by the budget and shorter than the reads it replaces. The
+  "preload off the main actor" set aside above waited for a measurement
+  on a device; the measurement that moved it is the Mac's, at a size the
+  fixture of 898 rows did not reach, and the device lane owed in the
+  planning notes will say what it is on a phone.
+- The sweep clears a record in constant time and frees the records, their
+  arrays and a table made again off the main actor; deciding what dies
+  stays where the decision put it.
+
+What would reopen the decision itself is unchanged: a pass or a hydration
+over a frame on an iPhone 12-class device.

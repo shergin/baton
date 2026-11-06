@@ -30,6 +30,116 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, the main actor decides and does not build — 2026-11-06
+
+Revision: the working tree on top of `4578e70`, against `4578e70` itself
+built in a worktree. Three mechanisms, one amendment to
+[the decision](docs/decisions/the-check-and-collection-run-on-the-main-actor.md):
+the ingest builds the change set's records off the main actor and the
+commit adopts the ones the store lacks (`ChangeSet.build`, `Store.apply`);
+the image decodes the last launch's rows ahead as it opens, into records
+linked among themselves, and the first check of a store holding only its
+roots adopts them, what no check reached being dropped on the next turn
+(`Persistence.prefetchBudget`, `Store.adopt(decoded:)`,
+`Store.dropUnreached`); and the sweep clears a record in constant time
+and frees the records, their arrays and a table made again on a detached
+task (`Garbage`). Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2
+(25F84), Xcode 26.6, Swift 6.3.3, release build, the compiler built by
+`scripts/build-compiler.sh`. `BATON_COMPILER=local swift build -c release
+--product BatonBenchmarks`, then `.build/release/BatonBenchmarks --only
+commit,collection,persistence,anilist`, three runs of each binary one
+after another, and `--only ingest` three runs of the change against the
+three runs of `4578e70` in the entry below; best of the runs, the median
+of the medians in parentheses, and beside a row the allocations one run
+of its body makes. The runs before ran at a load average of 3.1 to 4.2
+with nothing else building; the runs after at 4.9 falling to 4.4, a test
+run of the suite having just ended, and the persistence section once
+more at 5.6, after the image-on commit's setup was made to wait for the
+decoding ahead, whose allocations on its own thread the row had counted.
+
+### The ingest builds the records, the commit adopts them
+
+| Measurement | `4578e70` | allocations | The change | allocations |
+|---|---|---|---|---|
+| Response bytes into a change set, the fixture's 686,254 bytes, off the main actor | 522 µs (529) | 67 | 935 µs (999) | 4,955 |
+| Commit of the fixture into an empty store, 899 records | 472 µs (491) | 4,897 | 310 µs (365) | 22 |
+| The same payload again, nothing changes | 113 µs (114) | 2 | 114 µs (115) | 2 |
+| One field changed, 20 rows observing their name | 116 µs (119) | 7 | 116 µs (120) | 7 |
+| Commit of the fixture into an empty store, image on | 562 µs (624) | 4,920 | 417 µs (462) | 49 |
+| Write-behind of that commit, off the main actor | 1.67 ms (2.06) | | 1.69 ms (2.01) | |
+| Ingest of an AniList chunk of 500 entries, per chunk, off the main actor | 1.82 ms (1.88) | 3,918 | 4.23 ms (4.60) | 45,188 |
+| Commit of both AniList chunks into an empty store, 6,014 records | 5.30 ms (5.53) | 41,293 | 1.32 ms (1.49) | 47 |
+| Write-behind of both chunks, off the main actor | 5.76 ms (9.80) | | 7.52 ms (14.09) | |
+| The AniList reading, untracked, the whole list | 897 µs (921) | 29 | 898 µs (932) | 29 |
+
+The main actor's share of a response falls by a third for the fixture
+and by three quarters for the AniList chunks, and the allocations it
+makes from thousands to tens: the records, their arrays and their strings
+are made in the ingest, which takes what the commit gave up and more. The
+fixture's ingest goes from 522 to 935 µs and a chunk's from 1.8 to
+4.2 ms, so the ingest and the commit together cost a quarter more for the
+fixture and a tenth more for AniList, off the main actor. The build is a
+second pass over the entries the cursor wrote, each materialized once
+more; the entries stay, since a record the store holds is merged from
+them as before, and the same payload again reads them. Folding the build
+into the cursor's writes is the cut that would take the extra back. A
+commit of records the store holds does not move, and the reads do not
+move. The write-behind rows are off the main actor and noisy; the second
+session's medians show its load.
+
+### The image decodes ahead, the first check adopts
+
+| Measurement | `4578e70` | allocations | The change | allocations |
+|---|---|---|---|---|
+| Hydration: the check reads the fixture's 898 rows from the file (after: `prefetchBudget: 0`) | 1.67 ms (1.72) | 6,839 | 1.57 ms (1.62) | 6,839 |
+| The check the moment the store is made, waiting for the decoding | | | 1.31 ms (1.59) | 7,849 |
+| The check after the image decoded the rows ahead | | | 213 µs (280) | 35 |
+| The check once the records are in memory | 277 µs (280) | 0 | 134 µs (135) | 0 |
+| A launch of the fixture: hydrate after the image has opened, a new process | 2.02 ms (2.12) | | 277 µs (335) | |
+| A launch of the fixture: open and hydrate at once, a new process | 4.44 ms (5.26) | | 5.49 ms (6.01) | |
+| AniList launch: both handles ready after the image has opened | 18.28 ms (19.26) | | 1.68 ms (2.26) | |
+| AniList launch: open and hydrate at once, both handles ready | 22.35 ms (23.59) | | 16.36 ms (18.65) | |
+| Records the check took from the decoded rows, of those it reached | | | 898 of 898; 6,011 of 6,011 | |
+
+The check that comes after the open reads nothing from the file: the
+AniList launch falls from 18.3 to 1.7 ms on the main actor and the
+fixture's from 2.0 ms to 0.3. The check that comes the moment the store
+is made waits for the decoding of the whole table, 1.3 ms for the fixture
+against the 1.6 ms it took reading the rows itself, and the launch at
+once, one process start and the open with the check a fifth of it, does
+not move for the fixture, 4.4 to 5.5 ms at the higher load, while the
+AniList launch at once falls from 22 to 16 ms. The 7,849 allocations of
+the waiting check are the decoding's own, on its thread. The check once
+the records are in memory halves, 277 to 134 µs, with the walk unchanged:
+the records it walks are the decoding's, made one after another in key
+order with their arrays sized once, where the hydration before made each
+as the walk reached it and grew its arrays a slot at a time; the profile
+is not taken, and the layout is the one difference the row sees. The
+counts `records-adopted-from-decoded-rows` (898) and
+`records-linked-from-decoded-rows-anilist-launch` (6,011) hold the
+mechanism; `allocations-check-hydrated` went with the row it gated, which
+now reads the file by name.
+
+### The sweep frees off the main actor
+
+| Measurement | `4578e70` | The change |
+|---|---|---|
+| A pass that keeps none of 50,000 records, a release buffer of zero | 22.40 ms (27.62) | 6.00 ms (7.22) |
+| A pass over one root reaching 50,004 records | 1.59 ms (1.69) | 972 µs (1.00) |
+| A pass over 301 roots, 50,304 records | 1.62 ms (1.72) | 996 µs (1.08) |
+| A pass over 300 roots reaching one record each | 23 µs (24) | 21 µs (22) |
+
+The pass that sweeps everything falls from 22 to 6 ms of main-actor
+time: each record is cleared in constant time and the records, their
+arrays and the table made again go to a detached task. The passes that
+sweep nothing fall as well, 1.6 to 1.0 ms, which the sweep does not
+explain: their records come from responses through the ingest, and are
+the ingest's records adopted whole, laid out as the check's are above;
+the profile is not taken. In `benchmarks/counts.txt`:
+`allocations-ingest-fixture` 67 to 4,955, `allocations-commit-fixture`
+4,897 to 22, `allocations-ingest-anilist` 3,918 to 45,188,
+`allocations-commit-anilist` 41,293 to 47.
+
 ## Unreleased, an entity printed again, read by one compare — 2026-11-06
 
 Revision: the working tree on top of `13399c9`, against `13399c9` itself,

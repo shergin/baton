@@ -144,6 +144,7 @@ package enum Ingest {
             var cursor = Cursor(base: buffer.baseAddress!, count: buffer.count, changes: ChangeSet(bytes: bytes))
             cursor.complete = complete
             try cursor.run(root: plan, rootKey: rootKey)
+            cursor.changes.build()
             return FirstPart(changes: cursor.changes, pending: cursor.pending, hasNext: cursor.hasNext)
         }
     }
@@ -197,6 +198,7 @@ package enum Ingest {
                 cursor.rawErrors = part.errors
                 cursor.resolveErrors(root: part.plan, rootID: object, below: part.path)
             }
+            cursor.changes.build()
             return cursor.changes
         }
     }

@@ -169,6 +169,39 @@ struct LifetimeTests {
         withExtendedLifetime(page1Retention) {}
     }
 
+    @Test("a pass that sweeps more than half the records makes the table again from the survivors: the three roots and a retained operation's records stay, and the retained operation still reads")
+    func aPassThatSweepsMostRecordsKeepsTheRoots() async throws {
+        let environment = Environment(transport: transport(), store: Store(releaseBufferSize: 0))
+        let store = environment.store
+
+        let lookup = environment.handle(for: TestHeaderQuery(id: "5"))
+        let lookupRetention = lookup.retain()
+        await lookup.settle()
+        let afterLookup = store.count
+
+        // A page of other characters, released with an empty buffer.
+        let page = environment.handle(for: TestList(page: 2))
+        let pageRetention = page.retain()
+        await page.settle()
+        let before = store.count
+        _ = consume pageRetention
+
+        let swept = store.collect()
+        #expect(swept * 2 > before, "the pass swept more than half the records")
+        #expect(store.count == afterLookup)
+        #expect(store.count == before - swept)
+        #expect(store.existing(Store.rootKey) === store.root)
+        #expect(store.existing(Store.mutationRootKey) === store.mutationRoot)
+        #expect(store.existing(Store.subscriptionRootKey) === store.subscriptionRoot)
+        #expect(store.existing("Character:5") != nil)
+        #expect(store.existing("Character:200001") == nil)
+
+        guard case .ready(let data) = lookup.phase else { Issue.record("the retained lookup stays ready, got \(lookup.phase)"); return }
+        #expect(data.character?.testHeader.name == "Jerry Smith")
+        #expect(data.character?.testHeader.origin?.name == "Earth (Replacement Dimension)")
+        withExtendedLifetime(lookupRetention) {}
+    }
+
     @Test("a collected lookup by id takes its entry out of the root, a retained one keeps it, and the collected field reads as missing data")
     func collectionPrunesTheRootsLookups() async throws {
         final class Misses: @unchecked Sendable { var reads: [String] = [] }

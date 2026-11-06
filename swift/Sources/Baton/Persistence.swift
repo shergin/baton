@@ -33,6 +33,14 @@ public final class Persistence: Sendable {
     /// opened while the device is locked: the writer keeps its work for the
     /// next try, and a read meanwhile misses.
     public let protection: FileProtectionType?
+    /// How many bytes of rows the image decodes ahead, off the main actor,
+    /// once it has opened for a store: the rows the last launch used, in
+    /// key order, until the budget is spent, made into records linked among
+    /// themselves. The first availability check of a store that holds
+    /// nothing but its roots adopts them, and what no check reached is
+    /// dropped on the next turn; what the budget did not reach is read from
+    /// the file as before. Zero decodes nothing ahead.
+    public let prefetchBudget: Int
 
     /// One thing the main actor asked the writer to do, in order.
     enum Work: Sendable {
@@ -73,7 +81,45 @@ public final class Persistence: Sendable {
         /// Whether the writer is held: the work waits in the queue until it is
         /// let go. For the tests.
         var held = false
+        /// The store's keys a prefetch was asked with and not yet run.
+        var prefetch: Keys?
+        /// Whether the writer is decoding ahead now.
+        var decoding = false
+        /// How many checks wait for the decoding to end.
+        var decodeWaiters = 0
     }
+
+    /// The records made from the rows decoded ahead for the store, by key,
+    /// linked among themselves and hydrated, and the root's cells by slot:
+    /// what the store's first check adopts whole. Dropped once adopted, at
+    /// the first commit's write when no check adopted it, at a removal and
+    /// at the close.
+    private struct Prefetched: Sendable {
+        var records: [String: Record] = [:]
+        var root: [DecodedRootCell] = []
+        /// Whether the decoding has run for the store that asked.
+        var decoded = false
+    }
+
+    /// A root field the image decoded ahead: its slot, its value with the
+    /// links among the decoded records, and whether the row was an earlier
+    /// launch's.
+    struct DecodedRootCell: Sendable {
+        let field: String
+        let value: Value
+        let error: FieldError?
+        let stale: Bool
+    }
+
+    private let prefetched = Mutex(Prefetched())
+    /// Held for the whole of a decoding, batches and all, so a drain that
+    /// follows one, a flush among them, waits for it to end: what was
+    /// asked of the image is then done when the flush returns.
+    private let decoding = Mutex<Void>(())
+    /// Signalled once per waiter when a decoding ends or a request is
+    /// dropped: a check that comes while the image decodes ahead waits for
+    /// the decoding, as one that comes while it opens waits for the open.
+    private let decoded = DispatchSemaphore(value: 0)
 
     /// When each operation last committed a response, by the wall clock.
     private struct Ages: Sendable {
@@ -100,11 +146,12 @@ public final class Persistence: Sendable {
     /// An image in the file at `url`; its directory is created when missing.
     /// The file is opened at once, off the caller's thread, and made with
     /// `protection` when there is none.
-    public init(url: URL, version: String = "", sizeLimit: Int = 64 << 20, protection: FileProtectionType? = nil) {
+    public init(url: URL, version: String = "", sizeLimit: Int = 64 << 20, protection: FileProtectionType? = nil, prefetchBudget: Int = 8 << 20) {
         self.url = url
         self.version = version
         self.sizeLimit = sizeLimit
         self.protection = protection
+        self.prefetchBudget = prefetchBudget
         let path = Persistence.canonicalPath(of: url)
         disk = Mutex(Disk(path: path, version: version, sizeLimit: sizeLimit, protection: protection))
         ready = Atomic(FileManager.default.fileExists(atPath: path))
@@ -140,14 +187,14 @@ public final class Persistence: Sendable {
     /// every process of the user, so the identifier keeps two apps that both
     /// name their image `"Main"` apart; a process without one, a tool or a
     /// test runner, is kept apart by its name.
-    public convenience init(name: String, version: String = "", sizeLimit: Int = 64 << 20, protection: FileProtectionType? = nil) {
+    public convenience init(name: String, version: String = "", sizeLimit: Int = 64 << 20, protection: FileProtectionType? = nil, prefetchBudget: Int = 8 << 20) {
         let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
         let owner = Bundle.main.bundleIdentifier ?? ProcessInfo.processInfo.processName
         let url = caches
             .appendingPathComponent(owner, isDirectory: true)
             .appendingPathComponent("Baton", isDirectory: true)
             .appendingPathComponent(name + ".sqlite")
-        self.init(url: url, version: version, sizeLimit: sizeLimit, protection: protection)
+        self.init(url: url, version: version, sizeLimit: sizeLimit, protection: protection, prefetchBudget: prefetchBudget)
     }
 
     /// Waits until everything committed so far is in the file: for tests, and
@@ -165,6 +212,9 @@ public final class Persistence: Sendable {
     /// sooner.
     public func close() async {
         await Task.detached(priority: .userInitiated) {
+            self.pending.withLock { $0.prefetch = nil }
+            self.prefetched.withLock { $0 = Prefetched() }
+            self.releaseDecodeWaiters()
             self.disk.withLock { disk in
                 let work = self.take()
                 // Work the file cannot take by the close is lost: the store
@@ -195,8 +245,163 @@ public final class Persistence: Sendable {
         pending.withLock { pending in
             pending.work.removeAll()
             pending.forgets = 0
+            pending.prefetch = nil
         }
+        prefetched.withLock { $0 = Prefetched() }
+        releaseDecodeWaiters()
         disk.withLock { $0.erase() }
+    }
+
+    // MARK: Decoding ahead
+
+    /// Asks the writer to decode ahead, for the store whose keys number the
+    /// slots, once the file is open: what the store does when it is made
+    /// over the image.
+    func prefetch(for keys: Keys) {
+        guard prefetchBudget > 0 else { return }
+        // Rows decoded for another store are numbered by its keys: a new
+        // store starts the table over.
+        prefetched.withLock { $0 = Prefetched() }
+        let start = pending.withLock { pending in
+            pending.prefetch = keys
+            if pending.scheduled || pending.held { return false }
+            pending.scheduled = true
+            return true
+        }
+        if start { Task.detached(priority: .userInitiated) { self.drain() } }
+    }
+
+    /// Whether the decoding the store asked for has run to its end; for
+    /// the tests and the benchmarks, which wait for it.
+    package var isDecodedAhead: Bool { prefetched.withLock { $0.decoded } }
+
+    /// The records decoded ahead and the root's cells, taken once, for a
+    /// check to adopt; nil when no decoding was asked for, or once taken. A
+    /// decoding asked for and not yet done is waited for: the launch that
+    /// asks the store the moment the image exists waits for the open
+    /// today, and the decoding is the rest of that same wait, bounded by
+    /// the budget.
+    func takeDecoded() -> (records: [String: Record], root: [DecodedRootCell])? {
+        let waits = pending.withLock { pending in
+            guard pending.prefetch != nil || pending.decoding else { return false }
+            pending.decodeWaiters += 1
+            return true
+        }
+        if waits { decoded.wait() }
+        return prefetched.withLock { prefetched in
+            guard prefetched.decoded else { return nil }
+            defer { prefetched = Prefetched() }
+            return (prefetched.records, prefetched.root)
+        }
+    }
+
+    /// Lets the checks waiting for a decoding go: it ended, or its request
+    /// was dropped.
+    private func releaseDecodeWaiters() {
+        let waiters = pending.withLock { pending in
+            defer { pending.decodeWaiters = 0 }
+            return pending.decodeWaiters
+        }
+        for _ in 0..<waiters { decoded.signal() }
+    }
+
+    /// Stamps rows a check reached among the records decoded ahead, as
+    /// rows it read from the file are stamped: those that carried an
+    /// earlier launch's generation.
+    func used(records: [String], root: [String]) {
+        if !records.isEmpty || !root.isEmpty { enqueue(.used(records: records, root: root)) }
+    }
+
+    /// Decodes the rows ahead, a batch at a time under the lock, so a check
+    /// that needs the file between batches waits for one batch and not for
+    /// the whole decoding, then makes the records from them off the main
+    /// actor, linked among themselves; a key a link names that no row was
+    /// decoded for is an empty record the check reads from the file. A
+    /// check that runs before the decoding ends reads the file as before.
+    private func decodeAhead(_ keys: Keys) {
+        var after: String?
+        var bytes = 0
+        var rows: [String: PrefetchedRow] = [:]
+        var rootCells: [(String, PrefetchedValue, FieldError?, Bool)] = []
+        disk.withLock { disk in
+            guard opened(disk) else { return }
+            disk.prefetchRoot { rootCells.append(($0, $1, $2, $3)) }
+        }
+        while bytes < prefetchBudget {
+            let last: String? = disk.withLock { disk in
+                guard opened(disk) else { return nil }
+                return disk.prefetch(after: after, limit: 256, keys: keys) { key, size, row in
+                    bytes += size
+                    rows[key] = row
+                }
+            }
+            guard let last else { break }
+            after = last
+        }
+        // The records, each made and filled before any is adopted: a link
+        // names the record of its key here, or an empty one for a key no
+        // row was decoded for.
+        var records: [String: Record] = [:]
+        records.reserveCapacity(rows.count)
+        for (key, row) in rows {
+            records[key] = Record(type: row.type, key: key, idOffset: row.entity ? Record.idOffset(ofType: row.type.name) : -1)
+        }
+        func target(_ link: PrefetchedLink) -> Record {
+            if let record = records[link.key] { return record }
+            let record = Record(type: link.type, key: link.key, idOffset: link.entity ? Record.idOffset(ofType: link.type.name) : -1)
+            record.markDecodedAhead(row: false, deleted: false, stale: false)
+            records[link.key] = record
+            return record
+        }
+        func value(_ decoded: PrefetchedValue) -> Value {
+            switch decoded {
+            case .value(let scalar): return scalar
+            case .link(let link): return link.map { .ref(target($0)) } ?? .null
+            case .links(let links): return .refs(ContiguousArray(links.map { $0.map(target) }))
+            }
+        }
+        var rendered: [(id: Int32, value: Value)] = []
+        for (key, row) in rows {
+            let record = records[key]!
+            if row.deleted {
+                record.markDecodedAhead(row: true, deleted: true, stale: row.stale)
+                continue
+            }
+            var highest: Int32 = -1
+            for cell in row.cells where cell.slot.index > highest { highest = cell.slot.index }
+            var values = ContiguousArray<Value>(repeating: .missing, count: Int(highest) + 1)
+            var errors: [Int32: FieldError]?
+            rendered.removeAll(keepingCapacity: true)
+            for cell in row.cells {
+                let filled = value(cell.value)
+                if cell.slot.index >= 0 {
+                    values[Int(cell.slot.index)] = filled
+                } else {
+                    rendered.append((~cell.slot.index, filled))
+                }
+                if let error = cell.error {
+                    if errors == nil { errors = [:] }
+                    errors?[cell.slot.index] = error
+                }
+            }
+            var renderedIDs = ContiguousArray<Int32>()
+            var renderedValues = ContiguousArray<Value>()
+            if !rendered.isEmpty {
+                rendered.sort { $0.id < $1.id }
+                for (id, filled) in rendered {
+                    renderedIDs.append(id)
+                    renderedValues.append(filled)
+                }
+            }
+            record.fill(values: values, rendered: (renderedIDs, renderedValues), errors: errors)
+            record.markDecodedAhead(row: true, deleted: false, stale: row.stale)
+        }
+        let root = rootCells.map { DecodedRootCell(field: $0.0, value: value($0.1), error: $0.2, stale: $0.3) }
+        prefetched.withLock { prefetched in
+            prefetched.records = records
+            prefetched.root = root
+            prefetched.decoded = true
+        }
     }
 
     // MARK: From the main actor
@@ -456,8 +661,27 @@ public final class Persistence: Sendable {
 
     /// Opens the file if needed and writes everything queued, in one
     /// transaction. Work the file cannot take now, locked or full, waits for
-    /// the next drain; an image that runs without a file drops it.
+    /// the next drain; an image that runs without a file drops it. A
+    /// prefetch the store asked for runs after the queued work, in batches
+    /// of its own under the lock; the first write that follows a decoding
+    /// drops what the checks did not take.
     private func drain() {
+        drainWork()
+        decoding.withLock { _ in
+            guard let keys = pending.withLock({ pending in
+                defer {
+                    if pending.prefetch != nil { pending.decoding = true }
+                    pending.prefetch = nil
+                }
+                return pending.prefetch
+            }) else { return }
+            decodeAhead(keys)
+            pending.withLock { $0.decoding = false }
+            releaseDecodeWaiters()
+        }
+    }
+
+    private func drainWork() {
         disk.withLock { disk in
             let work = take()
             // Forgetting the names of freed slots needs no file: it is done
@@ -481,6 +705,15 @@ public final class Persistence: Sendable {
             }
             if !work.isEmpty { log.withLock { $0?(.imageWritten(batches: work.count)) } }
             finished(work)
+            // The launch's checks have run by the time a response commits:
+            // what they did not take goes with that write, here, off the
+            // main actor. A stamp of rows used or dated drops nothing, since
+            // the checks write those between themselves.
+            if work.contains(where: { if case .commit = $0 { return true } else { return false } }) {
+                prefetched.withLock { prefetched in
+                    if prefetched.decoded { prefetched = Prefetched() }
+                }
+            }
         }
     }
 

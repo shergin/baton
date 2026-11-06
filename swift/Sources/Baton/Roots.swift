@@ -294,6 +294,41 @@ extension Store {
 
 }
 
+/// What the main actor took out of the store and does not free there: the
+/// records a sweep removed, with the arrays they held, records the ingest
+/// built or the image decoded ahead that the store did not adopt, and a
+/// table made again, released on a detached task. A swept record is cleared before it goes, so a holder
+/// reads missing and nothing on the main actor can reach the arrays; a
+/// record has no isolated deinit, so its last release runs no isolated
+/// code.
+struct Garbage: Sendable {
+    private var records: [Record] = []
+    private var arrays: [ContiguousArray<Value>] = []
+    var table: [String: Record]?
+
+    /// Takes a record out of the store: cleared here, freed later.
+    @MainActor
+    mutating func take(_ record: Record) {
+        let (values, rendered) = record.clear()
+        if !values.isEmpty { arrays.append(values) }
+        if !rendered.isEmpty { arrays.append(rendered) }
+        records.append(record)
+    }
+
+    /// Takes a record the store never held, as the ingest built it.
+    mutating func take(unheld record: Record) {
+        records.append(record)
+    }
+
+    var isEmpty: Bool { records.isEmpty && arrays.isEmpty && table == nil }
+
+    /// Frees what was taken, off the main actor.
+    func drop() {
+        if isEmpty { return }
+        Task.detached(priority: .utility) { _ = self }
+    }
+}
+
 /// What keeps an operation's records alive: the token `retain()` returns,
 /// whose end releases. A view's storage holds one for the view's life; a
 /// model or a view controller holds one in a property and lets it go with

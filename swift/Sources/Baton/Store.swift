@@ -100,13 +100,22 @@ public final class Store {
     /// Whether the batch in progress moved or dropped a link, which may have
     /// orphaned what the link reached: a pass follows the batch.
     private var linkDropped = false
-    /// How many records have been filled from the image; for tests and
-    /// benchmarks.
+    /// How many records have been filled from the image, and how many of
+    /// them from rows the image decoded ahead; for tests and benchmarks.
     package internal(set) var hydratedRecords = 0
+    package internal(set) var linkedFromDecodedRows = 0
     /// The root's fields the image filled, by slot index. The image stores
     /// the root a row per field and the root is never marked hydrated, so
     /// these tell the walk in memory which of its fields came from there.
     var hydratedRootSlots: Set<Int32> = []
+    /// The root's cells the image decoded ahead, by storage key. The walk
+    /// fills one into the root as it reads the field, as a check with the
+    /// file at hand reads a root field's row; the cells no check read are
+    /// dropped with the records no check reached.
+    var decodedRootCells: [String: Persistence.DecodedRootCell] = [:]
+    /// Whether the drop of what the launch's checks did not reach among the
+    /// records decoded ahead is scheduled.
+    var dropScheduled = false
     /// Whether the batch in progress changed a field error, a null, a link,
     /// or whether a record is deleted: what `@throwOnFieldError` and
     /// bubbling `@required` read, so the roots' verdicts are settled again.
@@ -122,6 +131,9 @@ public final class Store {
         records[Store.rootKey] = root
         records[Store.mutationRootKey] = mutationRoot
         records[Store.subscriptionRootKey] = subscriptionRoot
+        // The image decodes ahead the rows the last launch used, numbered by
+        // this store's keys, for the first checks to link.
+        persistence?.prefetch(for: keys)
         #if DEBUG
         log = { event in
             if let line = event.debugDescription { print(line) }
@@ -140,16 +152,19 @@ public final class Store {
         releaseBuffer.removeAll()
         completedMutations.removeAll()
         optimisticLayers.removeAll()
-        for record in records.values { record.clear() }
+        var garbage = Garbage()
+        for record in records.values { garbage.take(record) }
+        garbage.table = records
         records = [Store.rootKey: root, Store.mutationRootKey: mutationRoot, Store.subscriptionRootKey: subscriptionRoot]
         placeholders.removeAll()
         log = nil
+        garbage.drop()
     }
 
     /// A store dropped without an end clears its records, so that records
     /// which link to each other are freed with it: the net, not the end.
     isolated deinit {
-        for record in records.values { record.clear() }
+        for record in records.values { _ = record.clear() }
     }
 
     /// Marks everything fetched so far as stale, in memory and in the image;
@@ -191,6 +206,22 @@ public final class Store {
     }
 
     package var count: Int { records.count }
+
+    /// Whether the store holds nothing but its three roots: a launch's
+    /// state before any check or response.
+    var holdsOnlyRoots: Bool { records.count == 3 }
+
+    /// Whether nothing waits that the image was told to forget.
+    var nothingForgotten: Bool { forgotten.isEmpty }
+
+    /// Takes the records the image decoded ahead into the table, one insert
+    /// each; they are linked already. The three roots stay the store's own.
+    func adopt(decoded: [String: Record]) {
+        records.reserveCapacity(records.count + decoded.count)
+        for (key, record) in decoded where key != Store.rootKey && key != Store.mutationRootKey && key != Store.subscriptionRootKey {
+            records[key] = record
+        }
+    }
 
     package func existing(_ key: String) -> Record? { records[key] }
 
@@ -247,6 +278,7 @@ public final class Store {
 
         /// The rendered keys the layer writes and its undo restores: kept
         /// while the layer is applied.
+        @MainActor
         func slots(into slots: inout Set<Slot>) {
             for entry in changes.entries where entry.slot.index < 0 { slots.insert(entry.slot) }
             for entry in changes.fieldErrors where entry.slot.index < 0 { slots.insert(entry.slot) }
@@ -254,6 +286,7 @@ public final class Store {
                 switch step {
                 case .slot(_, let slot, _) where slot.index < 0: slots.insert(slot)
                 case .error(_, let slot, _) where slot.index < 0: slots.insert(slot)
+                case .created(let record): record.renderedSlots(into: &slots)
                 default: continue
                 }
             }
@@ -266,6 +299,10 @@ public final class Store {
         case slot(Record, Slot, Value)
         case error(Record, Slot, FieldError?)
         case deletion(Record, was: Bool)
+        /// A record the batch made, adopted whole from the change set that
+        /// built it: one fact, where a step per slot would be the same fact
+        /// as many times.
+        case created(Record)
     }
 
     /// A slot of one record, for sets of slots.
@@ -537,7 +574,7 @@ public final class Store {
                 } else {
                     add(record)
                 }
-            case .deletion(let record, _):
+            case .deletion(let record, _), .created(let record):
                 add(record)
             }
         }
@@ -584,6 +621,19 @@ public final class Store {
                     setError(record, slot, error, &batch)
                 case .deletion(let record, let was):
                     setDeleted(record, was, &batch)
+                case .created(let record):
+                    // A record the layer made forgets every slot it holds:
+                    // what it held is what the layer wrote, and a body that
+                    // read it is told. The slots are taken first, since a
+                    // key numbered apart leaves with its entry.
+                    for slot in record.heldSlots {
+                        let error = record.peekError(slot)
+                        if let previous = record.writeSilently(slot, .missing) {
+                            batch.touched(record, slot, value: previous, error: error)
+                            noteNulls(previous, .missing)
+                        }
+                    }
+                    for slot in record.erroredSlots { setOwnError(record, slot, nil, &batch) }
                 }
             }
         }
@@ -747,10 +797,59 @@ public final class Store {
         let needed = records.count + changes.recordKeys.count
         if records.capacity < needed { records.reserveCapacity(needed) }
         var created = [Bool](repeating: false, count: changes.recordKeys.count)
+        // The records the ingest built, values and links in place, are
+        // adopted for the keys the store lacks: one insert and one undo
+        // step each, no entry written. With twins pending every record takes
+        // the entries, which write both slots of a pair. The box is emptied
+        // either way, so what is not adopted is freed off the main actor.
+        let prebuilt = changes.prebuilt.count == changes.recordKeys.count ? changes.prebuilt.take() : nil
+        let adopts = twins.isEmpty && prebuilt != nil
+        var found = false
+        var adopted = false
         for index in 0..<changes.recordKeys.count {
-            let found = record(key: changes.recordKeys[index], type: changes.recordTypes[index], idOffset: changes.recordIDOffsets[index]) as (record: Record, created: Bool)
-            objects.append(found.record)
-            created[index] = found.created
+            let key = changes.recordKeys[index]
+            if let existing = records[key] {
+                // A key names one type: an entity's starts with it, and a path
+                // key under an interface or union ends with it.
+                assert(existing.type == changes.recordTypes[index], "\(key) is a \(existing.type.name), not a \(changes.recordTypes[index].name)")
+                // A record decoded ahead that a response writes is the
+                // store's, as one a check reached is.
+                if existing.decodedAhead { _ = existing.reached() }
+                objects.append(existing)
+                found = true
+                continue
+            }
+            created[index] = true
+            if adopts, let prebuilt {
+                let record = prebuilt.records[index]
+                records[key] = record
+                objects.append(record)
+                adopted = true
+                batch.record(.created(record))
+                // A null the record brings settles a verdict, as one written
+                // through an entry would.
+                if prebuilt.hasNull[index] { nullsOrErrorsChanged = true }
+            } else {
+                let record = Record(type: changes.recordTypes[index], key: key, idOffset: changes.recordIDOffsets[index])
+                records[key] = record
+                objects.append(record)
+            }
+        }
+        if let prebuilt {
+            // The records built for keys the store had link the built
+            // records, not the store's: the adopted records point at the
+            // store's instead. The unadopted go to be freed off the main
+            // actor.
+            var garbage = Garbage()
+            if adopts, found, adopted {
+                var map: [ObjectIdentifier: Record] = [:]
+                for index in 0..<objects.count where !created[index] {
+                    map[ObjectIdentifier(prebuilt.records[index])] = objects[index]
+                }
+                for index in 0..<objects.count where created[index] { objects[index].relink(map) }
+            }
+            for index in 0..<objects.count where !created[index] || !adopts { garbage.take(unheld: prebuilt.records[index]) }
+            garbage.drop()
         }
 
         // Slots this change set carries an error for keep it below rather
@@ -762,6 +861,8 @@ public final class Store {
 
         for index in 0..<objects.count {
             let record = objects[index]
+            // An adopted record holds its values already.
+            if created[index], adopts { continue }
             // A response issued before the record was deleted does not revive
             // it: its entries for the record are not written.
             if record.deleted, let issued, issued <= record.deletedAt { continue }
@@ -961,29 +1062,86 @@ public final class Store {
     }
 
     /// Removes every record the pass did not mark (the roots stay), clears
-    /// their slots so cycles break, and drops the roots' links to them.
-    /// Returns how many records were removed.
+    /// their slots so cycles break, and drops the roots' links to them. The
+    /// main actor decides what dies and makes it unreadable; what it took
+    /// out is freed off it. When a pass sweeps more than half the records,
+    /// the table is made again from the survivors rather than emptied a
+    /// key at a time. Returns how many records were removed.
     @discardableResult
     func sweep() -> Int {
-        // The keys first, then the removals: removing from the dictionary
-        // while iterating it copies the whole dictionary at the first one.
-        var unreachable: [String] = []
-        for (key, record) in records
-        where key != Store.rootKey && key != Store.mutationRootKey && key != Store.subscriptionRootKey && record.mark != epoch {
-            unreachable.append(key)
-        }
+        var garbage = Garbage()
         var swept = 0
-        for key in unreachable {
-            guard let record = records.removeValue(forKey: key) else { continue }
-            record.clear()
-            swept += 1
+        @inline(__always) func stays(_ key: String, _ record: Record) -> Bool {
+            record.mark == epoch || key == Store.rootKey || key == Store.mutationRootKey || key == Store.subscriptionRootKey
+        }
+        var unreachable = 0
+        for (key, record) in records where !stays(key, record) { unreachable += 1 }
+        if unreachable * 2 > records.count {
+            var kept: [String: Record] = [:]
+            kept.reserveCapacity(records.count - unreachable)
+            for (key, record) in records {
+                if stays(key, record) {
+                    kept[key] = record
+                } else {
+                    garbage.take(record)
+                }
+            }
+            garbage.table = records
+            records = kept
+            swept = unreachable
+        } else if unreachable > 0 {
+            // The keys first, then the removals: removing from the table
+            // while iterating it would copy the table at the first one.
+            var keys: [String] = []
+            keys.reserveCapacity(unreachable)
+            for (key, record) in records where !stays(key, record) { keys.append(key) }
+            for key in keys {
+                guard let record = records.removeValue(forKey: key) else { continue }
+                garbage.take(record)
+                swept += 1
+            }
         }
         if swept > 0 {
             root.prune()
             mutationRoot.prune()
             subscriptionRoot.prune()
         }
+        garbage.drop()
         return swept
+    }
+
+    /// Leaves the store as the checks would have left it reading the file:
+    /// a record decoded ahead that no check reached and no response wrote
+    /// is dropped, as a row no check read was never in memory; one that a
+    /// record the store keeps links to stays, empty, as a link's target is
+    /// before its row is read, so no link dangles; the root's cells no check
+    /// read go with them.
+    func dropUnreached() {
+        decodedRootCells.removeAll()
+        epoch &+= 1
+        if epoch == 0 { epoch = 1 }
+        var unloaded: [Record] = []
+        for record in records.values where !record.decodedAhead {
+            record.mark = epoch
+            record.forEachValue { _, value in
+                switch value {
+                case .ref(let target):
+                    if target.decodedAhead, target.mark != epoch {
+                        target.mark = epoch
+                        unloaded.append(target)
+                    }
+                case .refs(let targets):
+                    for case let target? in targets where target.decodedAhead && target.mark != epoch {
+                        target.mark = epoch
+                        unloaded.append(target)
+                    }
+                default:
+                    break
+                }
+            }
+        }
+        for record in unloaded { record.unload() }
+        sweep()
     }
 
     /// Frees the numbers of rendered keys nothing can name any more: no live
