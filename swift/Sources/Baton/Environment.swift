@@ -35,7 +35,7 @@ public final class Environment {
     public var isActive = true {
         didSet {
             guard isActive != oldValue, !ended else { return }
-            for handle in handles.values where handle.retainCount > 0 {
+            for case let handle as any StreamingHandle in handles.values where handle.retainCount > 0 {
                 if isActive { handle.resume() } else { handle.park() }
             }
         }
@@ -99,7 +99,7 @@ public final class Environment {
     public func invalidate() {
         guard !ended else { return }
         store.invalidate()
-        for handle in handles.values where handle.retainCount > 0 {
+        for case let handle as any FetchingHandle in handles.values where handle.retainCount > 0 {
             handle.refetchIfStale()
         }
     }
@@ -130,7 +130,7 @@ public final class Environment {
     /// does.
     public func revalidate() {
         guard !ended else { return }
-        for handle in handles.values where handle.retainCount > 0 {
+        for case let handle as any FetchingHandle in handles.values where handle.retainCount > 0 {
             handle.revalidate()
         }
     }
@@ -146,7 +146,7 @@ public final class Environment {
             store.log?(.unexpected(type: record.type.name, field: store.storageKey(of: slot)))
             return
         }
-        handles[root.key]?.fetchForHeal()
+        (handles[root.key] as? any FetchingHandle)?.fetchForHeal()
     }
 
     private func request<Op: Operation>(_ operation: Op.Type, variables: Variables) -> Request {
@@ -161,16 +161,16 @@ public final class Environment {
     }
 
     /// Fetches an operation and commits the response; the handle, if any,
-    /// follows. `firstPart` runs after the first part of a deferred response
-    /// commits, so a view renders before the rest arrives. An operation with
-    /// `@throwOnFieldError` throws the field errors its handle fails on; any
-    /// other operation's field errors are read where a view reads them, from
-    /// the data, and logged as `fieldError` events, so a fetch has one
-    /// convention for errors, the handle's.
-    public func fetch<Op: Query>(_ operation: Op, firstPart: (() -> Void)? = nil) async throws {
+    /// follows, and renders a deferred response's first part when it
+    /// commits. An operation with `@throwOnFieldError` throws the field
+    /// errors its handle fails on; any other operation's field errors are
+    /// read where a view reads them, from the data, and logged as
+    /// `fieldError` events, so a fetch has one convention for errors, the
+    /// handle's.
+    public func fetch<Op: Query>(_ operation: Op) async throws {
         guard !ended else { throw EnvironmentError.gone }
         guard !Op.isClientOnly else { throw EnvironmentError.clientOnly }
-        let committed = try await fetch(Op.self, variables: operation.variables, resolved: Op.plan.resolve(operation.variables, in: store.keys), firstPart: firstPart.map { firstPart in { _ in firstPart() } })
+        let committed = try await fetch(Op.self, variables: operation.variables, resolved: Op.plan.resolve(operation.variables, in: store.keys), firstPart: nil)
         guard Op.throwsOnFieldError else { return }
         // The handle's reading: the operation's own selection, where an error
         // inside a spread is the fragment's to weigh, and the errors the

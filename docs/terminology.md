@@ -823,11 +823,17 @@ until a log is set, since common Kotlin has no build configuration of its own.
 **Schema.** *Concept: schema.* GraphQL: the SDL.
 Here: a checked-in file, named in `baton.json`, with the
 [identity](#store) configured beside it; the compiler has no introspection
-command, and the file is downloaded by the app's own tooling. One schema
-family per process: the registry numbers types and slots by name for the
-whole process, so two environments over one schema share them, and two
-schemas in one process must not give two types one name
-([the decision](decisions/slots-are-numbered-by-the-process.md)).
+command, and the file is downloaded by the app's own tooling. The registry
+numbers types and slots by name for the whole process, so two environments
+over one schema share them
+([the decision](decisions/slots-are-numbered-by-the-process.md)). Two
+schemas in one process may share type names: the numbers are per name and
+each store holds its own records, so the one hazard is an interface or
+union of one name whose members' names the two schemas agree on but whose
+memberships they do not, since the membership tables merge what both say.
+Scoping the registry by the schema's digest, which the shared file carries
+as `Types.schemaDigest`, is the change an app over two such backends would
+ask for.
 
 **Client schema extension, client field.** *Concept: schema.* Relay:
 `schemaExtensions`, files that give server types client fields or declare
@@ -1039,7 +1045,8 @@ fragments, its text and its lens; every fragment with its name, type
 condition, source, the operations that reach it, its definition as the
 author wrote it, printed before the transforms, and its lens. A lens is
 listed as the target's language reads it: each accessor's name, the
-response key it reads, and its shape, whether it reads absent, a `@catch`
+response key it reads, the schema coordinate of the field it reads,
+`Type.field`, and its shape, whether it reads absent, a `@catch`
 result, a throwing read or a list, and the nested lens it reads; see
 [the lens decision](decisions/the-report-holds-each-lens.md). Deterministic, by name, with
 sources relative to the working directory, so the diff of two builds'
@@ -1091,7 +1098,10 @@ missing: the view's environment, the lens's, the one that made a handle and
 is gone, the subscription transport, or anything to send, for a client-only
 operation. A view outside every environment
 gets no handle and no store stands in for the missing one: its value reads
-as failed, and a mutation action in it throws the same error. See
+as failed, and a mutation action in it throws the same error. Its
+`isActive` is the app's input, the scene in the foreground, set by the app
+and read by the streams alone, which it parks and resumes; a stream's
+`isActive` is the stream's own state, connecting or open. See
 [the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch).
 Swift: injected through SwiftUI's environment as `\.baton`; the error is
 `EnvironmentError`, and the view's case is `notInjected`.

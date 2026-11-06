@@ -36,6 +36,13 @@ are expected and listed without apology.
   An input without `@oneOf` is the struct or data class it was. The plan's
   `inputs` entry is now an object with `fields` and `one_of`
   ([the decision](docs/decisions/a-oneof-input-reads-as-an-enum.md)).
+- The report names the schema coordinate of the field each accessor reads,
+  `coordinate: "Type.field"`, beside its key, the schema's field name under
+  an alias; a spread, an inline fragment under `@alias` and a type
+  condition have none. The compiler's own message for a connection field it
+  cannot find names the field the same way.
+- `Environment.fetch(_:)` in Swift no longer takes `firstPart`: rendering a
+  deferred response's first part is the handle's, which it still does.
 
 - A Swift operation value is a value, and its live side is the macro's
   projection: `@Query var issues: IssuesQuery` keeps `issues` the value the

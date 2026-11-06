@@ -3,7 +3,8 @@ import Observation
 
 /// Type-erased view of a handle, for the environment's bookkeeping. A
 /// handle is the main actor's, so it is `Sendable` as a value an operation
-/// value carries.
+/// value carries. What only one kind does is asked of that kind alone,
+/// through `FetchingHandle` and `StreamingHandle`.
 @MainActor
 protocol AnyOperationHandle: AnyObject, Sendable {
     /// The operation's name and variables, as the image names it.
@@ -14,18 +15,29 @@ protocol AnyOperationHandle: AnyObject, Sendable {
     /// One holder fewer: a retention ended, of a holder whose policy allowed
     /// the network or not.
     func release(allowingNetwork: Bool)
+    /// The environment ended: what the handle shows says so, and nothing is
+    /// fetched again.
+    func end()
+    func cancel()
+}
+
+/// A handle with a fetch the environment may ask for again: a query's.
+@MainActor
+protocol FetchingHandle: AnyOperationHandle {
     func refetchIfStale()
     /// Fetches again when the data is stale or the last fetch failed, if a
     /// holder allows the network.
     func revalidate()
     /// Fetches again for a heal, unless a fetch is in flight.
     func fetchForHeal()
-    /// The environment ended: what the handle shows says so, and nothing is
-    /// fetched again.
-    func end()
-    func cancel()
-    /// The environment went inactive: a stream closes while its handle stays
-    /// retained; a query reads nothing of it.
+}
+
+/// A handle with a stream the environment's activity closes and opens: a
+/// subscription's.
+@MainActor
+protocol StreamingHandle: AnyOperationHandle {
+    /// The environment went inactive: the stream closes while the handle
+    /// stays retained.
     func park()
     /// The environment is active again: a parked stream opens again.
     func resume()
@@ -38,7 +50,7 @@ protocol AnyOperationHandle: AnyObject, Sendable {
 /// operation values.
 @MainActor
 @Observable
-public final class OperationHandle<Op: Query>: AnyOperationHandle, Store.Judge {
+public final class OperationHandle<Op: Query>: FetchingHandle, Store.Judge {
     public let operation: Op
     /// The last fetch, as a value: idle, in flight, or failed with its
     /// failure and when it failed. A fetch that fails behind data leaves the
@@ -363,10 +375,6 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle, Store.Judge {
     func fetchForHeal() {
         if root.allowsNetwork { fetchUnlessInFlight() }
     }
-
-    /// A query reads nothing of the environment's activity.
-    func park() {}
-    func resume() {}
 
     func cancel() {
         task?.cancel()

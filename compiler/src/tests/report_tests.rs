@@ -489,3 +489,42 @@ fn a_report_of_the_plan_alone_has_no_lenses_and_the_json_leaves_them_out() {
         serde_json::json!("character")
     );
 }
+
+#[test]
+fn a_field_s_accessor_names_its_schema_coordinate_and_a_spread_or_a_condition_none() {
+    let report = reported_with_lenses(&compiled(&[
+        "query Coordinates { node(id: \"1\") { \
+         ...Identified \
+         ... on Character { title: name home: origin { name } } } }",
+        "fragment Identified on Node { id }",
+    ]));
+    let lens = operation(&report, "Coordinates")
+        .lens
+        .as_ref()
+        .expect("a lens");
+    let node = accessor(lens, "node");
+    assert_eq!(node.coordinate.as_deref(), Some("Query.node"));
+    let node = nested(node);
+    let spread = node
+        .accessors
+        .iter()
+        .find(|accessor| accessor.read == ReadKind::Spread)
+        .expect("the spread has an accessor");
+    assert_eq!(spread.fragment.as_deref(), Some("Identified"));
+    assert!(spread.coordinate.is_none());
+    let condition = node
+        .accessors
+        .iter()
+        .find(|accessor| accessor.read == ReadKind::Condition)
+        .expect("the type condition has an accessor");
+    assert!(condition.coordinate.is_none());
+    let character = nested(condition);
+    assert_eq!(
+        accessor(character, "title").coordinate.as_deref(),
+        Some("Character.name"),
+        "an aliased field's coordinate names the schema field"
+    );
+    let home = accessor(character, "home");
+    assert_eq!(home.read, ReadKind::Linked);
+    assert_eq!(home.coordinate.as_deref(), Some("Character.origin"));
+}

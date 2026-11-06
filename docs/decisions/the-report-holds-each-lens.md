@@ -26,7 +26,11 @@ without parsing generated code.
 fragment its lens. A lens is its GraphQL type and its accessors in order;
 an accessor is its name as the target's language spells it unescaped, the
 response key it reads (none for a spread or a type condition, which read
-their parent's object), what it reads (`scalar`, `linked`, `spread`,
+their parent's object), the schema coordinate of the field it reads,
+`Type.field`, the specification's own spelling, the schema's field name
+under an alias (added 2026-11-06; none for a spread, an inline fragment
+under `@alias` or a type condition), what it reads
+(`scalar`, `linked`, `spread`,
 `aliased`, `condition`), and its shape: `optional` when it may read absent,
 `caught` with whether the result's value may be absent, `throws`, `list`
 with whether an element may be absent, the fragment a spread reads, the

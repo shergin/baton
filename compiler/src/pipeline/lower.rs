@@ -885,7 +885,10 @@ impl Lowering<'_> {
             })
             .unwrap_or_else(|| {
                 self.internal(
-                    &format!("a connection Relay validated has no `{field}`"),
+                    &format!(
+                        "a connection Relay validated has no `{}.{field}`",
+                        self.schema.get_type_name(parent).lookup()
+                    ),
                     location,
                 );
                 String::new()

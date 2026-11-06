@@ -10,7 +10,9 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
-use crate::decide::{LinkedForm, Program, Read, ReaderPlan, ScalarForm, SpreadForm, TypeTest};
+use crate::decide::{
+    LinkedForm, Program, Read, ReaderPlan, ScalarForm, SlotRef, SpreadForm, TypeTest,
+};
 use crate::pipeline::{FragmentPlan, OperationKind, Plan, SelectionPlan, TypePlan};
 
 #[derive(Debug, serde::Serialize)]
@@ -90,6 +92,11 @@ pub struct AccessorReport {
     /// condition, which read their parent's object.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub key: Option<String>,
+    /// The schema coordinate of the field it reads, `Type.field`, the
+    /// schema's name under an alias; none for a spread, an inline fragment
+    /// under `@alias` or a type condition.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub coordinate: Option<String>,
     pub read: ReadKind,
     /// Whether it may read absent: a nullable field, a selection under
     /// `@include` or `@skip`, a type condition, a spread something must hold
@@ -236,6 +243,11 @@ pub fn with_lenses(report: &mut Report, program: &Program) {
     }
 }
 
+/// The schema coordinate of the field `slot` stores, `Type.field`.
+fn coordinate(slot: &SlotRef) -> String {
+    format!("{}.{}", slot.type_name, slot.field)
+}
+
 /// A lens and the lenses nested in it, by the shapes the emitters print:
 /// guards make an accessor optional, `@catch` makes it a result, and the
 /// throwing forms make its read throw. A mapped scalar converts at the
@@ -255,6 +267,7 @@ fn lens_report(lens: &ReaderPlan) -> LensReport {
             let mut report = AccessorReport {
                 name: accessor.name.clone(),
                 key: accessor.key.clone(),
+                coordinate: None,
                 read: ReadKind::Scalar,
                 optional: guarded,
                 caught: None,
@@ -266,6 +279,7 @@ fn lens_report(lens: &ReaderPlan) -> LensReport {
             };
             match &accessor.read {
                 Read::Scalar(read) => {
+                    report.coordinate = Some(coordinate(&read.slot.slot));
                     report.list = read.shape.list.map(|list| ListReport {
                         optional_elements: !list.non_null,
                     });
@@ -283,6 +297,7 @@ fn lens_report(lens: &ReaderPlan) -> LensReport {
                 }
                 Read::Linked(read) => {
                     report.read = ReadKind::Linked;
+                    report.coordinate = Some(coordinate(&read.slot.slot));
                     report.lens = nested(&read.lens);
                     let list = Some(ListReport {
                         optional_elements: false,

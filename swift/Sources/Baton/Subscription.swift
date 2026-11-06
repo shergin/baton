@@ -51,7 +51,7 @@ package enum SubscriptionBackoff {
 /// and committed, so its entities merge and its edge directives apply.
 @MainActor
 @Observable
-public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
+public final class SubscriptionHandle<Op: Subscription>: StreamingHandle {
     public let operation: Op
     /// How many events have been committed.
     public private(set) var events = 0
@@ -246,12 +246,6 @@ public final class SubscriptionHandle<Op: Subscription>: AnyOperationHandle {
         cancel()
         environment?.didEnd(self)
     }
-
-    func refetchIfStale() {}
-
-    func revalidate() {}
-
-    func fetchForHeal() {}
 
     /// The environment ended: the stream closes and says so.
     func end() {
