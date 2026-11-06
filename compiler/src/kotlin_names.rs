@@ -144,7 +144,7 @@ pub const STANDARD_LIBRARY_FUNCTIONS: [&str; 7] = [
 /// its place: a lens nested in an operation sees the members of the
 /// operation's companion, an action's body those of the action it extends,
 /// and a mutation's body its own `OptimisticResponse`.
-pub const MEMBER_NAMES: [(&str, &str); 30] = [
+pub const MEMBER_NAMES: [(&str, &str); 31] = [
     ("anchor", "the `anchor` every lens has"),
     ("recordID", "the `recordID` every lens has"),
     ("equals", "the `equals` every class has"),
@@ -170,6 +170,7 @@ pub const MEMBER_NAMES: [(&str, &str); 30] = [
     ("throwsOnFieldError", "the operation's `throwsOnFieldError`"),
     ("bubbles", "the operation's `bubbles`"),
     ("hasIncremental", "the operation's `hasIncremental`"),
+    ("isClientOnly", "the operation's `isClientOnly`"),
     ("errorBehavior", "the operation's `errorBehavior`"),
     (
         "cacheExpirationSeconds",

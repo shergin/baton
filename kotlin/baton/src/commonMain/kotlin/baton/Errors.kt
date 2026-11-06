@@ -57,6 +57,9 @@ sealed class EnvironmentError(override val message: String) : Exception() {
 
     /** A subscription with no subscription transport. */
     data object NoSubscriptionTransport : EnvironmentError("the environment has no subscription transport")
+
+    /** A client-only operation asked to fetch: it selects client fields alone, so there is nothing to send. */
+    data object ClientOnly : EnvironmentError("the operation selects client fields alone, so there is nothing to send")
 }
 
 /** A response whose `errors` carry no path that lands on a field: the request as a whole failed. */

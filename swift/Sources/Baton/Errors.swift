@@ -88,6 +88,9 @@ public enum EnvironmentError: Error, Equatable, Sendable, CustomStringConvertibl
     case gone
     /// A subscription ran in an environment made without `subscriptions:`.
     case noSubscriptionTransport
+    /// A client-only operation asked to fetch: it selects client fields
+    /// alone, so there is nothing to send.
+    case clientOnly
 
     public var description: String {
         switch self {
@@ -95,6 +98,7 @@ public enum EnvironmentError: Error, Equatable, Sendable, CustomStringConvertibl
         case .outsideEnvironment: "the lens was read outside an environment's store, so it cannot fetch"
         case .gone: "the environment is gone or has ended, so nothing can be fetched"
         case .noSubscriptionTransport: "no subscription transport: pass `subscriptions:` to the environment"
+        case .clientOnly: "the operation selects client fields alone, so there is nothing to send"
         }
     }
 

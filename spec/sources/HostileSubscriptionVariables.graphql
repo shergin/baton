@@ -33,7 +33,7 @@ subscription HostileSubscriptionVariables(
   # What an operation value, a mutation's action and its optimistic response declare.
   $name: Boolean!, $document: Boolean!, $text: Boolean!, $plan: Boolean!,
   $errorBehavior: Boolean!, $throwsOnFieldError: Boolean!, $bubbles: Boolean!,
-  $hasIncremental: Boolean!, $cacheExpiration: Boolean!, $Action: Boolean!, $OptimisticResponse: Boolean!, $hash: Boolean!,
+  $hasIncremental: Boolean!, $isClientOnly: Boolean!, $cacheExpiration: Boolean!, $Action: Boolean!, $OptimisticResponse: Boolean!, $hash: Boolean!,
   $commit: Boolean!, $callAsFunction: Boolean!, $Op: Boolean!, $variable: Boolean!, $payload: Boolean!,
   # The shared enums.
   $Sites: Boolean!, $AbstractSlots: Boolean!, $schemaDigest: Boolean!, $format: Boolean!, $transient: Boolean!,
@@ -110,7 +110,7 @@ subscription HostileSubscriptionVariables(
       ... @include(if: $text) { cursor } ... @include(if: $plan) { cursor }
       ... @include(if: $errorBehavior) { cursor }
       ... @include(if: $throwsOnFieldError) { cursor } ... @include(if: $bubbles) { cursor }
-      ... @include(if: $hasIncremental) { cursor } ... @include(if: $cacheExpiration) { cursor } ... @include(if: $Action) { cursor }
+      ... @include(if: $hasIncremental) { cursor } ... @include(if: $isClientOnly) { cursor } ... @include(if: $cacheExpiration) { cursor } ... @include(if: $Action) { cursor }
       ... @include(if: $OptimisticResponse) { cursor } ... @include(if: $hash) { cursor }
       ... @include(if: $commit) { cursor } ... @include(if: $callAsFunction) { cursor }
       ... @include(if: $Op) { cursor } ... @include(if: $variable) { cursor } ... @include(if: $payload) { cursor }

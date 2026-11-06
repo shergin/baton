@@ -169,6 +169,7 @@ public final class Environment {
     /// convention for errors, the handle's.
     public func fetch<Op: Query>(_ operation: Op, firstPart: (() -> Void)? = nil) async throws {
         guard !ended else { throw EnvironmentError.gone }
+        guard !Op.isClientOnly else { throw EnvironmentError.clientOnly }
         let committed = try await fetch(Op.self, variables: operation.variables, resolved: Op.plan.resolve(operation.variables, in: store.keys), firstPart: firstPart.map { firstPart in { _ in firstPart() } })
         guard Op.throwsOnFieldError else { return }
         // The handle's reading: the operation's own selection, where an error
@@ -292,6 +293,7 @@ public final class Environment {
     /// waits in the release buffer if nothing retains it.
     func fetch<Op: Query>(_ operation: Op.Type, variables: Variables) async throws {
         guard !ended else { throw EnvironmentError.gone }
+        guard !Op.isClientOnly else { throw EnvironmentError.clientOnly }
         _ = try await fetch(operation, variables: variables, resolved: Op.plan.resolve(variables, in: store.keys), firstPart: nil)
     }
 

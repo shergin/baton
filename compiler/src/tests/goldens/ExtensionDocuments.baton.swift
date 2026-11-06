@@ -2,6 +2,63 @@
 import Foundation
 @_spi(Generated) import Baton
 
+/// Operation value for `query TestClientDrafts`.
+nonisolated public struct TestClientDrafts: Baton.Query {
+
+    public init() {
+    }
+
+    public static let name = "TestClientDrafts"
+    public static let document: Baton.Document = .text(#"query TestClientDrafts{drafts{id,text,about{id,name}}}"#)
+    @_spi(Generated) public static let isClientOnly = true
+
+    public var variables: Baton.Variables {
+        Baton.Variables([:])
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        true
+    }
+
+    public func hash(into hasher: inout Hasher) {
+    }
+
+    @_spi(Generated) public static let plan = Baton.Plan(root: selection0, transient: Types.transient)
+    private static let selection0: Baton.Selection = Baton.Selection(type: Types.Query, key: [], abstract: false, fields: [
+        .linked("drafts", key: .fixed(Slots.Query.drafts), plural: true, client: true, selection: selection1),
+    ])
+    private static let selection1: Baton.Selection = Baton.Selection(type: Types.Draft, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Draft.id), kind: .string, list: false, client: true),
+        .scalar("text", key: .fixed(Slots.Draft.text), kind: .string, list: false, client: true),
+        .linked("about", key: .fixed(Slots.Draft.about), plural: false, client: true, selection: selection2),
+    ])
+    private static let selection2: Baton.Selection = Baton.Selection(type: Types.Character, key: ["id"], abstract: false, fields: [
+        .scalar("id", key: .fixed(Slots.Character.id), kind: .string, list: false, client: true),
+        .scalar("name", key: .fixed(Slots.Character.name), kind: .string, list: false, client: true),
+    ])
+
+    nonisolated public struct Data: Baton.Lens {
+        @_spi(Generated) public let anchor: Baton.Anchor
+        @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+        @MainActor public var drafts: Baton.List<Drafts>? { anchor.list(Slots.Query.drafts) }
+
+        nonisolated public struct Drafts: Baton.Lens {
+            @_spi(Generated) public let anchor: Baton.Anchor
+            @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+            @MainActor public var id: String? { anchor.string(Slots.Draft.id) }
+            @MainActor public var text: String? { anchor.string(Slots.Draft.text) }
+            @MainActor public var about: About? { anchor.linked(Slots.Draft.about).map(About.init(anchor:)) }
+
+            nonisolated public struct About: Baton.Lens {
+                @_spi(Generated) public let anchor: Baton.Anchor
+                @_spi(Generated) public init(anchor: Baton.Anchor) { self.anchor = anchor }
+                @MainActor public var id: String? { anchor.string(Slots.Character.id) }
+                @MainActor public var name: String? { anchor.string(Slots.Character.name) }
+            }
+        }
+    }
+}
+
 /// Operation value for `query TestDrafts`.
 nonisolated public struct TestDrafts: Baton.Query {
 

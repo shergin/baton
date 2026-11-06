@@ -171,24 +171,83 @@ fn a_non_null_client_field_is_refused_at_its_line_in_the_extension() {
 }
 
 #[test]
-fn an_operation_of_client_fields_alone_is_refused_at_its_name() {
+fn a_query_of_client_fields_alone_is_client_only_and_keeps_its_fields_in_its_text() {
     let (sdl, path) = schema();
-    let text = "query OnlyDrafts { drafts { id text } }";
-    let diagnostics = compile(&sdl, &path, &[extension()], &[document(text)], &config())
-        .err()
-        .expect("an operation of client fields alone does not compile");
-    let messages: Vec<String> = diagnostics
-        .iter()
-        .map(|diagnostic| diagnostic.message().to_string())
-        .collect();
+    let text = "query OnlyDrafts {\n  drafts {\n    id\n    text\n  }\n}";
+    let mut config: Config =
+        serde_json::from_str(r#"{"persistConfig": {"file": "persisted.json"}}"#)
+            .expect("the configuration parses");
+    config.path = PathBuf::from("baton.json");
+    let plan = compile(&sdl, &path, &[extension()], &[document(text)], &config)
+        .unwrap_or_else(|errors| panic!("{errors:?}"))
+        .plan;
+    let operation = &plan.operations[0];
+    assert!(operation.client_only);
     assert_eq!(
-        messages,
-        vec![
-            "`OnlyDrafts` selects client fields only; a server answers one field at least, so select a server field beside them"
-        ]
+        operation.text, "query OnlyDrafts{drafts{id,text}}",
+        "the text is the author's document, printed compact"
     );
-    let span = diagnostics[0].location().span();
-    assert_eq!(&text[span.start as usize..span.end as usize], "OnlyDrafts");
+    assert_eq!(
+        operation.id, None,
+        "a client-only query is never registered"
+    );
+    assert_eq!(
+        crate::persisted_documents(&plan),
+        "{}\n",
+        "the persisted documents file leaves it out"
+    );
+    let report = serde_json::to_value(crate::report::report(&plan, Path::new("/nowhere")))
+        .expect("the report serializes");
+    assert_eq!(report["operations"][0]["clientOnly"], true);
+
+    let server = compiled(&[extension()], DRAFTS);
+    assert!(!server.operations[0].client_only);
+    let report = serde_json::to_value(crate::report::report(&server, Path::new("/nowhere")))
+        .expect("the report serializes");
+    assert!(
+        report["operations"][0].get("clientOnly").is_none(),
+        "the report says `clientOnly` only of a client-only query"
+    );
+}
+
+#[test]
+fn a_mutation_or_a_subscription_of_client_fields_alone_is_refused_at_its_name() {
+    let (sdl, path) = schema();
+    // The test target's extension has no client field on either root, so
+    // this test adds one to each.
+    let roots = (
+        "extend type Mutation {\n  saveDraft: Draft\n}\nextend type Subscription {\n  draftSaved: Draft\n}\n".to_string(),
+        "roots.graphql".to_string(),
+    );
+    for (text, kind) in [
+        ("mutation OnlyDrafts { saveDraft { id text } }", "mutation"),
+        (
+            "subscription OnlyDrafts { draftSaved { id text } }",
+            "subscription",
+        ),
+    ] {
+        let diagnostics = compile(
+            &sdl,
+            &path,
+            &[extension(), roots.clone()],
+            &[document(text)],
+            &config(),
+        )
+        .err()
+        .unwrap_or_else(|| panic!("a {kind} of client fields alone does not compile"));
+        let messages: Vec<String> = diagnostics
+            .iter()
+            .map(|diagnostic| diagnostic.message().to_string())
+            .collect();
+        assert_eq!(
+            messages,
+            vec![format!(
+                "`OnlyDrafts` selects client fields only; a {kind} is the server's to answer, so select a server field beside them"
+            )]
+        );
+        let span = diagnostics[0].location().span();
+        assert_eq!(&text[span.start as usize..span.end as usize], "OnlyDrafts");
+    }
 }
 
 #[test]

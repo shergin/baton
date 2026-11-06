@@ -109,6 +109,7 @@ struct OracleOperation: Sendable {
         "TestSetStatuses": { _ in OracleOperation(TestSetStatuses(), reads: setStatusesReads, spellings: setStatusesSpellings) },
         "TestPinnedCharacter": { try OracleOperation(TestPinnedCharacter(id: $0.string("id")), reads: pinnedCharacterReads) },
         "TestDrafts": { _ in OracleOperation(TestDrafts(), reads: draftsReads) },
+        "TestClientDrafts": { _ in OracleOperation(TestClientDrafts(), reads: clientDraftsReads) },
         "TestSecrets": { try OracleOperation(TestSecrets(code: $0.string("code")), reads: secretsReads) },
         "TestCharacterSecret": { _ in OracleOperation(TestCharacterSecret(), reads: characterSecretReads) },
         "TestRootNotesQuery": { _ in OracleOperation(TestRootNotesQuery(), reads: rootNotesReads) },
@@ -429,6 +430,17 @@ extension OracleOperation {
         "drafts.1.about": { $0.drafts?.element(1)?.about.map { _ in .object([:]) } ?? .null },
         "character.id": { $0.character?.id.manifestValue ?? .null },
         "character.name": { $0.character?.name.manifestValue ?? .null },
+    ]
+
+    /// The client-only query's drafts, which the store holds only once a
+    /// payload committed by hand writes them.
+    static let clientDraftsReads: [String: @MainActor @Sendable (TestClientDrafts.Data) -> Manifest.Value] = [
+        "drafts": { $0.drafts.map { _ in .object([:]) } ?? .null },
+        "drafts.0.id": { $0.drafts?.element(0)?.id.manifestValue ?? .null },
+        "drafts.0.text": { $0.drafts?.element(0)?.text.manifestValue ?? .null },
+        "drafts.0.about.name": { $0.drafts?.element(0)?.about?.name.manifestValue ?? .null },
+        "drafts.1.text": { $0.drafts?.element(1)?.text.manifestValue ?? .null },
+        "drafts.1.about": { $0.drafts?.element(1)?.about.map { _ in .object([:]) } ?? .null },
     ]
 
     /// The transient root field's records beside a character; memory reads

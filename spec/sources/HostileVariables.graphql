@@ -25,7 +25,7 @@ query HostileVariables(
   $Owner: ID!, $Query: ID!, $Operation: ID!, $RefetchQuery: ID!,
   # What an operation value, a mutation's action and its optimistic response declare.
   $name: ID!, $document: ID!, $text: ID!, $plan: ID!, $errorBehavior: ID!,
-  $throwsOnFieldError: ID!, $bubbles: ID!, $hasIncremental: ID!, $cacheExpiration: ID!, $Action: ID!,
+  $throwsOnFieldError: ID!, $bubbles: ID!, $hasIncremental: ID!, $isClientOnly: ID!, $cacheExpiration: ID!, $Action: ID!,
   $OptimisticResponse: ID!, $hash: ID!, $commit: ID!, $callAsFunction: ID!, $Op: ID!,
   $variable: ID!, $payload: ID!,
   # The shared enums.
@@ -54,7 +54,7 @@ query HostileVariables(
     $selfValue, $values, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery,
     # What an operation value, a mutation's action and its optimistic response declare.
     $name, $document, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles,
-    $hasIncremental, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $payload,
+    $hasIncremental, $isClientOnly, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $payload,
     # The shared enums.
     $Sites, $Guards, $AbstractSlots, $schemaDigest, $format, $transient,
     # The modules, and what the generated code spells from the standard library.

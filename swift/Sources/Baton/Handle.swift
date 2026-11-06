@@ -168,9 +168,10 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle, Store.Judge {
     /// document, or the store's default when it states none. A handle that
     /// is loading, or failed with no data behind the failure, has nothing to
     /// go stale; one failed on field errors or a `@required` null has its
-    /// data in the store, and it ages as ready data does.
+    /// data in the store, and it ages as ready data does. A client-only
+    /// operation has no network to be stale against.
     public var isStale: Bool {
-        guard showsData else { return false }
+        guard showsData, !Op.isClientOnly else { return false }
         if root.fetchEpoch < store.invalidationEpoch { return true }
         guard let expiration = Op.cacheExpiration ?? store.cacheExpiration else { return false }
         // Data with no known age is stale wherever an expiration applies: the
@@ -180,8 +181,10 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle, Store.Judge {
     }
 
     /// Applies a policy on attach: renders what the store allows, fetches
-    /// when the policy asks for it.
-    func apply(_ policy: FetchPolicy) {
+    /// when the policy asks for it. A client-only operation attaches as
+    /// `storeOnly` whatever is asked, since it has no wire.
+    func apply(_ asked: FetchPolicy) {
+        let policy: FetchPolicy = Op.isClientOnly ? .storeOnly : asked
         lastPolicy = policy
         // A preload's fetch is the first attach's: in flight, or done with
         // data that is still fresh, it is not made again. A parked handle
@@ -237,6 +240,8 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle, Store.Judge {
     }
 
     private func start() {
+        // A client-only operation starts no fetch: there is nothing to send.
+        guard !Op.isClientOnly else { return }
         task?.cancel()
         // A fetch started by hand on a `storeOnly` handle supersedes what the
         // attach found missing: the network answers now.
@@ -301,8 +306,10 @@ public final class OperationHandle<Op: Query>: AnyOperationHandle, Store.Judge {
     /// Fetches again and waits for the result; the data stays visible
     /// meanwhile, and the failure the phase would show is thrown in its
     /// place, with its kind. A refetch that a later fetch superseded returns
-    /// without one.
+    /// without one. A client-only operation has nothing to send, and throws
+    /// so.
     public func refetch() async throws(PhaseFailure) {
+        if Op.isClientOnly { throw .fetch(.environment(.clientOnly)) }
         start()
         if let failure = await task?.value { throw failure }
     }

@@ -839,13 +839,20 @@ nullable, since no server promises it; it is written by a
 else, read by a lens like any field, left out of the text and the id a
 server receives, and neither waited for by the availability check nor
 healed: the registry marks a client slot, so a lens reads it as absent until
-a payload writes it and reports nothing missing. An operation of client
-fields alone is refused, since a server answers one field at least. The
-plan marks each client field, the origin a walk reads beside the server's
-and a `@defer` label's; the check hydrates client fields from the image
-without waiting for them. Client records live and reach the image as any
-record does. Baton computes none: no resolvers. See
-[the contract](../spec/runtime.md#2-the-plan) and
+a payload writes it and reports nothing missing. A query of client fields
+alone is client-only, Relay's `useClientQuery`: it compiles, its text is
+the author's selection printed compact, client fields and all, it takes no
+persisted id, and it is never sent.
+Its handle attaches as `storeOnly` whatever policy the view asks, is never
+stale, and fetches for no attach, invalidation or revalidation; `refetch`
+and `Environment.fetch` throw the environment error's `clientOnly` kind,
+and a commit payload writes it. A mutation or a subscription of client
+fields alone is refused, since the one is sent by definition and the other
+is the server's stream. The plan marks each client field, the origin a
+walk reads beside the server's and a `@defer` label's; the check hydrates
+client fields from the image without waiting for them. Client records live
+and reach the image as any record does. Baton computes none: no resolvers.
+See [the contract](../spec/runtime.md#2-the-plan) and
 [the decision](decisions/client-data-is-described-and-committed.md).
 
 **Custom scalar, mapped scalar.** *Composition: schema, lens.* GraphQL: a
@@ -1070,7 +1077,8 @@ plus configuration. Chosen over "client" (Apollo's word) by
 Here the same, injected through the UI framework's environment. A request
 with nothing to send it fails with an environment error, which says what is
 missing: the view's environment, the lens's, the one that made a handle and
-is gone, or the subscription transport. A view outside every environment
+is gone, the subscription transport, or anything to send, for a client-only
+operation. A view outside every environment
 gets no handle and no store stands in for the missing one: its value reads
 as failed, and a mutation action in it throws the same error. See
 [the contract](../spec/runtime.md#8-the-handle-policies-phase-fetch).

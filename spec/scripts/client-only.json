@@ -1,0 +1,71 @@
+{
+  "name": "client-only",
+  "expiration": 60,
+  "steps": [
+    {
+      "attach": {"operation": "TestClientDrafts", "policy": "networkOnly", "as": "asked"},
+      "phase": {"handle": "asked", "phase": "ready", "isRefreshing": false, "isStale": false},
+      "fetch": {"handle": "asked", "fetch": "idle"},
+      "reads": [{"handle": "asked", "path": "drafts", "value": null}],
+      "events": [],
+      "sent": []
+    },
+    {
+      "attach": {"operation": "TestClientDrafts", "as": "drafts"},
+      "phase": {"handle": "drafts", "phase": "ready", "isRefreshing": false, "isStale": false},
+      "fetch": {"handle": "drafts", "fetch": "idle"},
+      "reads": [{"handle": "drafts", "path": "drafts", "value": null}],
+      "events": [],
+      "sent": []
+    },
+    {
+      "payload": {"operation": "TestClientDrafts", "response": "tests/client-drafts.json"},
+      "records": "scripts/client-only.store.json",
+      "reads": [
+        {"handle": "drafts", "path": "drafts.0.id", "value": "d1"},
+        {"handle": "drafts", "path": "drafts.0.text", "value": "Ask about the citadel"},
+        {"handle": "drafts", "path": "drafts.0.about.name", "value": "Rick Sanchez"},
+        {"handle": "drafts", "path": "drafts.1.text", "value": "Plumbus care"},
+        {"handle": "drafts", "path": "drafts.1.about", "value": null}
+      ],
+      "phase": {"handle": "drafts", "phase": "ready", "isStale": false},
+      "fetch": {"handle": "drafts", "fetch": "idle"},
+      "sent": []
+    },
+    {
+      "payload": {"operation": "TestClientDrafts", "response": "tests/client-drafts-edited.json"},
+      "notified": [{"record": "Draft:d1", "field": "text"}],
+      "reads": [{"handle": "asked", "path": "drafts.0.text", "value": "Ask about the citadel twice"}],
+      "sent": []
+    },
+    {
+      "advance": {"seconds": 120},
+      "phase": {"handle": "drafts", "phase": "ready", "isStale": false},
+      "fetch": {"handle": "drafts", "fetch": "idle"},
+      "events": [],
+      "sent": []
+    },
+    {
+      "invalidate": {},
+      "phase": {"handle": "drafts", "phase": "ready", "isRefreshing": false, "isStale": false},
+      "fetch": {"handle": "drafts", "fetch": "idle"},
+      "events": [],
+      "sent": []
+    },
+    {
+      "revalidate": {},
+      "fetch": {"handle": "drafts", "fetch": "idle"},
+      "events": [],
+      "sent": []
+    },
+    {
+      "refetch": {"handle": "drafts", "response": "tests/client-drafts.json"},
+      "error": "environment",
+      "phase": {"handle": "drafts", "phase": "ready", "isRefreshing": false},
+      "fetch": {"handle": "drafts", "fetch": "idle"},
+      "reads": [{"handle": "drafts", "path": "drafts.0.text", "value": "Ask about the citadel twice"}],
+      "events": [],
+      "sent": []
+    }
+  ]
+}

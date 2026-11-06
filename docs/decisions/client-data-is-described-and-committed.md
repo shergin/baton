@@ -114,3 +114,45 @@ receives would select nothing, and a server answers one field at least, so
 a client-only type such as a list of drafts is read beside a server field.
 A payload committed for every tick of a stream is still unbenched; the door
 is not yet recommended for one.
+
+## A client-only operation, 2026-11-05
+
+Supersedes the second sentence of the section above: an operation of
+client fields alone compiles. The refusal's reason, that a server answers
+one field at least, holds for an operation that is sent, and a client-only
+operation is never sent. Relay has the word: `useClientQuery`, a query of
+client fields alone, executed against the store and never sent to the
+network, and `loadClientQuery` since v20. Baton had every part, client
+fields written through the door, a handle whose attach never fetches, the
+image carrying client records, and refused the composition. The adopter's
+evidence came from the other side of the line: an adopter's app keeps snoozes,
+offsets and marks per media in a local state beside the store and
+persists it by hand, a second store for per-entity facts a client field
+describes exactly.
+
+- A query whose fields are all the client's compiles. The compiler marks
+  it client-only; its document is the text the author wrote, printed with
+  its client fields from the program before Relay's text transforms, since
+  those leave nothing of it to send; it takes no persisted id and is left
+  out of the persisted documents file; the report says so.
+- Its handle attaches as `storeOnly` whatever policy the view asks. The
+  availability check waits for no client field, so the operation is present
+  at once and its fields read absent until a payload writes them; nothing is
+  stale, since there is no network to be stale against. No fetch is ever
+  made for it: not by an attach, an invalidation, a revalidation or a heal.
+  `refetch()` throws the fetch's environment kind, a new case,
+  `clientOnly`: the operation selects client fields alone, so there is
+  nothing to send; `Environment.fetch` throws the same.
+- `commitPayload` writes it, as it writes every client field, and the
+  image keeps its records as any record's.
+- A mutation or a subscription of client fields alone stays refused: a
+  mutation is sent by definition, and a subscription is a server's stream.
+  A local write is a payload committed for a query that selects the
+  fields, as before.
+
+Not chosen: a document with no text, which would give `Request` a third
+kind of document for a request that is never made; an implicit `storeOnly`
+spelled by the view, which would let a `networkOnly` attach of a
+client-only operation fetch nothing and say nothing; and keeping the
+refusal, which sends per-entity state out of the store, where the first
+section of this record says it belongs.

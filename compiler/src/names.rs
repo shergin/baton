@@ -468,6 +468,7 @@ impl Naming for SwiftNaming {
             ("throwsOnFieldError", operation.throws_on_field_error),
             ("bubbles", operation.bubbles),
             ("hasIncremental", operation.has_incremental),
+            ("isClientOnly", operation.client_only),
         ];
         for (name, declared) in flags {
             if declared {

@@ -21,6 +21,72 @@ import baton.StorageKey
 import baton.Variable
 import baton.Variables
 
+/** Operation value for `query TestClientDrafts`. */
+@Immutable
+class TestClientDrafts : QueryOperation<TestClientDrafts.Data> {
+    override val variables: Variables
+        get() = Variables.none
+    override val type: OperationType<Data> get() = Companion
+
+    override fun equals(other: Any?): Boolean = other is TestClientDrafts
+    override fun hashCode(): Int = 0
+
+    companion object : QueryType<TestClientDrafts, TestClientDrafts.Data> {
+        override val name = "TestClientDrafts"
+        override val document: Document = Document.Text("query TestClientDrafts{drafts{id,text,about{id,name}}}")
+        override val kind = OperationKind.QUERY
+        override val isClientOnly = true
+        override val plan: Plan by lazy { Plan(root = `TestClientDrafts-plan`.selection0, transient = Types.transient) }
+
+        override fun data(anchor: Anchor): Data = Data(anchor)
+    }
+
+    @Stable
+    class Data(override val anchor: Anchor) : Lens {
+        val drafts: List<Drafts>? get() = anchor.list(Slots.Query.drafts, ::Drafts)
+        override fun equals(other: Any?): Boolean = other is TestClientDrafts.Data && other.anchor == anchor
+        override fun hashCode(): Int = anchor.hashCode()
+
+        @Stable
+        class Drafts(override val anchor: Anchor) : Lens {
+            val id: String? get() = anchor.string(Slots.Draft.id)
+            val text: String? get() = anchor.string(Slots.Draft.text)
+            val about: About? get() = anchor.linked(Slots.Draft.about)?.let(::About)
+            override fun equals(other: Any?): Boolean = other is TestClientDrafts.Data.Drafts && other.anchor == anchor
+            override fun hashCode(): Int = anchor.hashCode()
+
+            @Stable
+            class About(override val anchor: Anchor) : Lens {
+                val id: String? get() = anchor.string(Slots.Character.id)
+                val name: String? get() = anchor.string(Slots.Character.name)
+                override fun equals(other: Any?): Boolean = other is TestClientDrafts.Data.Drafts.About && other.anchor == anchor
+                override fun hashCode(): Int = anchor.hashCode()
+            }
+        }
+    }
+}
+
+private object `TestClientDrafts-plan` {
+    val selection0: Selection by lazy {
+        Selection(type = Types.Query, key = listOf(), isAbstract = false, fields = listOf(
+            PlanField.linked("drafts", key = StorageKey.Fixed(Slots.Query.drafts), plural = true, client = true, selection = selection1),
+        ))
+    }
+    val selection1: Selection by lazy {
+        Selection(type = Types.Draft, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Draft.id), kind = ScalarKind.STRING, list = false, client = true),
+            PlanField.scalar("text", key = StorageKey.Fixed(Slots.Draft.text), kind = ScalarKind.STRING, list = false, client = true),
+            PlanField.linked("about", key = StorageKey.Fixed(Slots.Draft.about), plural = false, client = true, selection = selection2),
+        ))
+    }
+    val selection2: Selection by lazy {
+        Selection(type = Types.Character, key = listOf("id"), isAbstract = false, fields = listOf(
+            PlanField.scalar("id", key = StorageKey.Fixed(Slots.Character.id), kind = ScalarKind.STRING, list = false, client = true),
+            PlanField.scalar("name", key = StorageKey.Fixed(Slots.Character.name), kind = ScalarKind.STRING, list = false, client = true),
+        ))
+    }
+}
+
 /** Operation value for `query TestDrafts`. */
 @Immutable
 class TestDrafts : QueryOperation<TestDrafts.Data> {

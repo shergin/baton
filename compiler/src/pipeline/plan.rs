@@ -150,6 +150,11 @@ pub struct OperationPlan {
     /// it reads as stale; none takes the store's default.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cache_expiration: Option<f64>,
+    /// A query of client fields alone: never sent, read from the store and
+    /// written by a payload committed by hand; its text is the document as
+    /// the author wrote it, and it has no id.
+    #[serde(skip_serializing_if = "is_false")]
+    pub client_only: bool,
     /// `@deletes(type:id:)`: the records a mutation deletes, each named by
     /// its type and the variable its key is passed as.
     #[serde(skip_serializing_if = "Vec::is_empty")]

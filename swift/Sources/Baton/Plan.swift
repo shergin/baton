@@ -97,7 +97,11 @@ public enum Format21 {}
 public enum Format22 {}
 
 @_spi(Generated)
+@available(*, unavailable, message: "this generated code is of format 23 and the runtime reads format 24: an operation of client fields alone is client-only, attached from the store and never sent; rebuild with the compiler of this release")
 public enum Format23 {}
+
+@_spi(Generated)
+public enum Format24 {}
 
 /// An operation's normalization plan, emitted by the compiler as static data:
 /// what the response contains and where each value is stored.

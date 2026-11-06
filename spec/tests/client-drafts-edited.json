@@ -1,0 +1,19 @@
+{
+  "data": {
+    "drafts": [
+      {
+        "id": "d1",
+        "text": "Ask about the citadel twice",
+        "about": {
+          "id": "1",
+          "name": "Rick Sanchez"
+        }
+      },
+      {
+        "id": "d2",
+        "text": "Plumbus care",
+        "about": null
+      }
+    ]
+  }
+}

@@ -1583,6 +1583,69 @@
       }
     },
     {
+      "name": "TestClientDrafts",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/ExtensionDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "query TestClientDrafts{drafts{id,text,about{id,name}}}",
+      "clientOnly": true,
+      "lens": {
+        "type": "Query",
+        "accessors": [
+          {
+            "name": "drafts",
+            "key": "drafts",
+            "read": "linked",
+            "optional": true,
+            "list": {
+              "optionalElements": false
+            },
+            "lens": {
+              "type": "Draft",
+              "accessors": [
+                {
+                  "name": "id",
+                  "key": "id",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "text",
+                  "key": "text",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "about",
+                  "key": "about",
+                  "read": "linked",
+                  "optional": true,
+                  "lens": {
+                    "type": "Character",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "name",
+                        "key": "name",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "TestCollidingErrors",
       "kind": "query",
       "source": "swift/Tests/BatonTests/ReaderDocuments.swift",

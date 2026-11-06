@@ -34,8 +34,12 @@ pub struct OperationReport {
     pub variables: Vec<VariableReport>,
     /// Every fragment the operation reaches, directly or through another.
     pub fragments: Vec<String>,
-    /// The text the operation is sent as, or registered under its id.
+    /// The text the operation is sent as, or registered under its id; a
+    /// client-only query's is the document as the author wrote it.
     pub text: String,
+    /// A query of client fields alone, never sent.
+    #[serde(skip_serializing_if = "is_false")]
+    pub client_only: bool,
     /// The lens its data reads through, once the program is decided.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub lens: Option<LensReport>,
@@ -175,6 +179,7 @@ pub fn report(plan: &Plan, root: &Path) -> Report {
                 .map(|fragments| fragments.iter().cloned().collect())
                 .unwrap_or_default(),
             text: operation.text.clone(),
+            client_only: operation.client_only,
             lens: None,
         })
         .collect();

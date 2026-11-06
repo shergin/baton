@@ -3013,6 +3013,7 @@
     "scripts/streams.json",
     "scripts/deletes.json",
     "scripts/deletes-image.json",
-    "scripts/ordering.json"
+    "scripts/ordering.json",
+    "scripts/client-only.json"
   ]
 }

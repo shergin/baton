@@ -36,6 +36,8 @@ pub struct OperationValue {
     pub throws_on_field_error: bool,
     pub bubbles: bool,
     pub has_incremental: bool,
+    /// A query of client fields alone, never sent.
+    pub client_only: bool,
     pub normalization: NormalizationSelection,
     pub data: ReaderPlan,
     pub optimistic: Option<BuilderPlan>,
@@ -160,6 +162,7 @@ pub(super) fn operation(
         throws_on_field_error: operation.throws_on_field_error,
         bubbles: operation.bubbles,
         has_incremental: operation.has_incremental,
+        client_only: operation.client_only,
         normalization,
         data,
         optimistic,

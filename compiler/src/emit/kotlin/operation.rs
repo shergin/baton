@@ -298,6 +298,7 @@ fn companion(writer: &mut Writer, operation: &OperationValue, shared: &Shared, p
             ("throwsOnFieldError", operation.throws_on_field_error),
             ("bubbles", operation.bubbles),
             ("hasIncremental", operation.has_incremental),
+            ("isClientOnly", operation.client_only),
         ];
         for (flag, set) in flags {
             if set {

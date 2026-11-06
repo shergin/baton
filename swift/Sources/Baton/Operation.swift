@@ -38,6 +38,10 @@ public protocol Operation: Hashable, Sendable {
     /// Whether the response may arrive in parts: a deferred fragment or a
     /// streamed list in it.
     @_spi(Generated) static var hasIncremental: Bool { get }
+    /// Whether the operation selects client fields alone, so it is never
+    /// sent: its handle attaches as `storeOnly`, and a payload committed by
+    /// hand writes it.
+    @_spi(Generated) static var isClientOnly: Bool { get }
     /// The `onError` value `baton.json` names, sent with every request.
     @_spi(Generated) static var errorBehavior: ErrorBehavior? { get }
     /// `@cacheExpiration(seconds:)`: how old the operation's data may be
@@ -92,6 +96,7 @@ extension Operation {
     @_spi(Generated) public static var throwsOnFieldError: Bool { false }
     @_spi(Generated) public static var bubbles: Bool { false }
     @_spi(Generated) public static var hasIncremental: Bool { false }
+    @_spi(Generated) public static var isClientOnly: Bool { false }
     @_spi(Generated) public static var errorBehavior: ErrorBehavior? { nil }
     @_spi(Generated) public static var cacheExpiration: Duration? { nil }
 }

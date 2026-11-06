@@ -1,6 +1,8 @@
 package baton
 
 import baton.spec.Slots
+import baton.spec.TestClientDrafts
+import baton.spec.TestDrafts
 import baton.spec.TestHeaderQuery
 import baton.spec.TestList
 import baton.spec.TestRename
@@ -31,6 +33,8 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /** The environment's rules the scripts do not hold, over the operations generated from `spec/sources`. */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -323,6 +327,98 @@ class EnvironmentTests {
         val recorded = RecordedTransport()
         recorded.send(request)
         assertEquals(1, recorded.requestCount)
+    }
+
+    @Test
+    fun `the generated operation type says it is client-only of a query of client fields alone, and of no other`() {
+        assertTrue(TestClientDrafts.isClientOnly)
+        assertFalse(TestDrafts.isClientOnly, "a server field beside the client list makes it the server's to answer")
+        assertFalse(TestHeaderQuery.isClientOnly)
+        assertEquals(Document.Text("query TestClientDrafts{drafts{id,text,about{id,name}}}"), TestClientDrafts.document)
+    }
+
+    @Test
+    fun `a client-only query attaches as STORE_ONLY whatever policy is asked, present at once with its fields absent, and sends nothing`() = runTest {
+        for (policy in FetchPolicy.entries) {
+            val transport = RecordedTransport()
+            val environment = environment(transport)
+            val handle = environment.handle(TestClientDrafts(), policy)
+            val hold = handle.retain()
+            runCurrent()
+            assertNull(assertIs<Phase.Ready<TestClientDrafts.Data>>(handle.phase, "$policy").data.drafts, "no payload wrote the drafts yet")
+            assertEquals(Fetch.Idle, handle.fetch, "$policy")
+            assertFalse(handle.isRefreshing)
+            handle.retry()
+            runCurrent()
+            assertEquals(0, transport.requestCount, "a client-only query has nothing to send under $policy")
+            hold.release()
+            environment.end()
+        }
+    }
+
+    @Test
+    fun `a client-only handle is never stale, past the store's expiration and after an invalidation, and neither fetches`() = runTest {
+        val transport = RecordedTransport()
+        val dispatcher = StandardTestDispatcher(testScheduler)
+        val environment = Environment(transport, null, Store(cacheExpiration = Duration.ZERO), dispatcher, dispatcher)
+        val handle = environment.handle(TestClientDrafts())
+        val hold = handle.retain()
+        runCurrent()
+        assertFalse(handle.isStale, "before any payload, though data of no known age is stale under an expiration")
+        environment.commitPayload(TestClientDrafts(), Payload(Spec.bytes("tests/client-drafts.json")))
+        environment.store.clockOffset += 60.seconds
+        assertFalse(handle.isStale, "past an expiration of zero")
+        environment.invalidate()
+        runCurrent()
+        assertFalse(handle.isStale, "after an invalidation")
+        environment.revalidate()
+        runCurrent()
+        assertEquals(Fetch.Idle, handle.fetch)
+        assertEquals(0, transport.requestCount)
+        hold.release()
+        environment.end()
+    }
+
+    @Test
+    fun `a client-only handle's refetch throws the fetch's environment kind, client-only, and sends nothing`() = runTest {
+        val transport = RecordedTransport()
+        val environment = environment(transport)
+        val handle = environment.handle(TestClientDrafts())
+        val hold = handle.retain()
+        runCurrent()
+        assertSame(EnvironmentError.ClientOnly, environmentError(assertFailsWith<PhaseFailure> { handle.refetch() }))
+        assertEquals(Fetch.Idle, handle.fetch)
+        assertIs<Phase.Ready<*>>(handle.phase, "the phase stays ready")
+        assertEquals(0, transport.requestCount)
+        hold.release()
+        environment.end()
+    }
+
+    @Test
+    fun `the environment's fetch of a client-only query throws client-only and sends nothing`() = runTest {
+        val transport = RecordedTransport()
+        val environment = environment(transport)
+        assertFailsWith<EnvironmentError.ClientOnly> { environment.fetch(TestClientDrafts()) }
+        assertEquals(0, transport.requestCount)
+        environment.end()
+    }
+
+    @Test
+    fun `a payload committed by hand writes a client-only query's fields and its lens reads them`() = runTest {
+        val environment = environment(RecordedTransport())
+        val handle = environment.handle(TestClientDrafts())
+        val hold = handle.retain()
+        runCurrent()
+        environment.commitPayload(TestClientDrafts(), Payload(Spec.bytes("tests/client-drafts.json")))
+        val drafts = assertNotNull(assertIs<Phase.Ready<TestClientDrafts.Data>>(handle.phase).data.drafts)
+        assertEquals(2, drafts.size)
+        assertEquals("Ask about the citadel", drafts[0].text)
+        assertEquals("Rick Sanchez", drafts[0].about?.name)
+        assertNull(drafts[1].about)
+        environment.commitPayload(TestClientDrafts(), Payload(Spec.bytes("tests/client-drafts-edited.json")))
+        assertEquals("Ask about the citadel twice", drafts[0].text, "the lens reads the record, so the second payload shows through it")
+        hold.release()
+        environment.end()
     }
 }
 

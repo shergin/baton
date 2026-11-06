@@ -148,12 +148,14 @@ class OperationHandle<Data : Lens> internal constructor(
      */
     val isStale: Boolean
         get() {
-            if (!showsData) return false
+            // A client-only operation has no network to be stale against.
+            if (!showsData || type.isClientOnly) return false
             return store.isStale(root, type.cacheExpirationSeconds?.seconds)
         }
 
-    /** Applies a policy on attach: shows what the store allows, fetches when the policy asks for it. */
-    internal fun apply(policy: FetchPolicy) {
+    /** Applies a policy on attach: shows what the store allows, fetches when the policy asks for it. A client-only operation attaches as `STORE_ONLY` whatever is asked, since it has no wire. */
+    internal fun apply(asked: FetchPolicy) {
+        val policy = if (type.isClientOnly) FetchPolicy.STORE_ONLY else asked
         lastPolicy = policy
         // A preload's fetch is the first attach's: in flight, or done with
         // data that is still fresh, it is not made again.
@@ -199,8 +201,9 @@ class OperationHandle<Data : Lens> internal constructor(
         start()
     }
 
-    /** Starts a fetch, superseding the one in flight. */
+    /** Starts a fetch, superseding the one in flight. A client-only operation starts none: there is nothing to send. */
     private fun start() {
+        if (type.isClientOnly) return
         job?.let { superseded ->
             job = null
             superseded.cancel()
@@ -268,6 +271,7 @@ class OperationHandle<Data : Lens> internal constructor(
      */
     suspend fun refetch() {
         if (ended || environment.ended) throw PhaseFailure.Fetch(Failure.Environment(EnvironmentError.Gone))
+        if (type.isClientOnly) throw PhaseFailure.Fetch(Failure.Environment(EnvironmentError.ClientOnly))
         start()
         val current = job ?: return
         current.join()

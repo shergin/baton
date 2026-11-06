@@ -52,6 +52,8 @@ interface OperationType<Data : Lens> {
     val bubbles: Boolean get() = false
     /** Whether the response may arrive in parts: a deferred fragment or a streamed list in it. */
     val hasIncremental: Boolean get() = false
+    /** Whether the operation selects client fields alone, so it is never sent: its handle attaches as `STORE_ONLY`, and a payload committed by hand writes it. */
+    val isClientOnly: Boolean get() = false
     val errorBehavior: ErrorBehavior? get() = null
     val cacheExpirationSeconds: Double? get() = null
 

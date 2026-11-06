@@ -32,7 +32,7 @@ mutation HostileMutationVariables(
   # What an operation value, a mutation's action and its optimistic response declare.
   $name: Boolean!, $document: Boolean!, $text: Boolean!,
   $plan: Boolean!, $errorBehavior: Boolean!, $throwsOnFieldError: Boolean!, $bubbles: Boolean!,
-  $hasIncremental: Boolean!, $cacheExpiration: Boolean!, $hash: Boolean!, $commit: Boolean!, $callAsFunction: Boolean!,
+  $hasIncremental: Boolean!, $isClientOnly: Boolean!, $cacheExpiration: Boolean!, $hash: Boolean!, $commit: Boolean!, $callAsFunction: Boolean!,
   $Op: Boolean!, $variable: Boolean!, $payload: Boolean!,
   # The shared enums.
   $Sites: Boolean!, $AbstractSlots: Boolean!, $schemaDigest: Boolean!, $format: Boolean!, $transient: Boolean!,
@@ -107,7 +107,7 @@ mutation HostileMutationVariables(
       ... @include(if: $document) { name } ... @include(if: $text) { name }
       ... @include(if: $plan) { name } ... @include(if: $errorBehavior) { name }
       ... @include(if: $throwsOnFieldError) { name } ... @include(if: $bubbles) { name }
-      ... @include(if: $hasIncremental) { name } ... @include(if: $cacheExpiration) { name } ... @include(if: $hash) { name }
+      ... @include(if: $hasIncremental) { name } ... @include(if: $isClientOnly) { name } ... @include(if: $cacheExpiration) { name } ... @include(if: $hash) { name }
       ... @include(if: $commit) { name } ... @include(if: $callAsFunction) { name }
       ... @include(if: $Op) { name } ... @include(if: $variable) { name } ... @include(if: $payload) { name }
       # The shared enums.

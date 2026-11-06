@@ -399,40 +399,46 @@ impl Lowering<'_> {
                 );
                 Vec::new()
             });
-        let text = self
-            .programs
-            .operation_text
-            .operation(operation.name.item)
-            .map(|text_operation| {
-                // Compact: the text is a wire format that every request
-                // carries, and a server's size limit is met by the deep
-                // documents that indentation grows the most.
-                print_full_operation(
-                    &self.programs.operation_text,
-                    text_operation,
-                    PrinterOptions {
-                        compact: true,
-                        ..PrinterOptions::default()
-                    },
-                )
-            })
-            .unwrap_or_else(|| {
-                // Relay's text transforms leave the client fields out and drop
-                // an operation left with none: one of client fields alone
-                // would ask a server for nothing.
-                self.diagnostics.borrow_mut().push(Diagnostic::error(
-                    format!(
-                        "`{}` selects client fields only; a server answers one field at least, so select a server field beside them",
-                        operation.name.item
-                    ),
-                    operation.name.location,
-                ));
-                String::new()
-            })
-            // Trimmed once, here: the id is the hash of the very text the
-            // app holds and sends.
-            .trim_end()
-            .to_string();
+        // Compact: the text is a wire format that every request carries, and
+        // a server's size limit is met by the deep documents that
+        // indentation grows the most.
+        let compact = PrinterOptions {
+            compact: true,
+            ..PrinterOptions::default()
+        };
+        let text_operation = self.programs.operation_text.operation(operation.name.item);
+        // Relay's text transforms leave the client fields out and drop an
+        // operation left with none: one of client fields alone. Such a query
+        // is client-only, never sent, read from the store and written by a
+        // payload committed by hand, and its document is the text the author
+        // wrote. A mutation or a subscription of client fields alone is
+        // refused, since each is the server's to answer.
+        let client_only = text_operation.is_none();
+        let text = match text_operation {
+            Some(text_operation) => {
+                print_full_operation(&self.programs.operation_text, text_operation, compact)
+            }
+            None => {
+                if operation.kind != SyntaxOperationKind::Query {
+                    self.diagnostics.borrow_mut().push(Diagnostic::error(
+                        format!(
+                            "`{}` selects client fields only; a {} is the server's to answer, so select a server field beside them",
+                            operation.name.item, operation.kind
+                        ),
+                        operation.name.location,
+                    ));
+                }
+                self.programs
+                    .source
+                    .operation(operation.name.item)
+                    .map(|source| print_full_operation(&self.programs.source, source, compact))
+                    .unwrap_or_default()
+            }
+        }
+        // Trimmed once, here: the id is the hash of the very text the app
+        // holds and sends.
+        .trim_end()
+        .to_string();
         let mut normalization = self.selections(
             &operation.selections,
             operation.type_,
@@ -475,12 +481,15 @@ impl Lowering<'_> {
             },
             root_type,
             variables: self.variables(&operation.variable_definitions),
+            // A client-only query is never sent, so no server registers it.
             id: self
                 .config
                 .persist_config
                 .as_ref()
+                .filter(|_| !client_only)
                 .map(|persist| persist.algorithm.id(&text)),
             text,
+            client_only,
             throws_on_field_error: operation
                 .directives
                 .named(directive_name("throwOnFieldError"))

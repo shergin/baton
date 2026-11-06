@@ -17,6 +17,17 @@ are expected and listed without apology.
   ordered: two operations that write one field still let the last arrival
   win. Both runtimes; held by the script `ordering`
   ([the decision](docs/decisions/a-late-response-yields.md)).
+- A query of client fields alone compiles, as Relay's `useClientQuery`
+  does. The compiler marks it client-only (`isClientOnly` on the operation
+  type, Swift format 24, Kotlin format 7): its text is the author's
+  selection printed compact, it takes no persisted id, and it is never
+  sent. Its handle
+  attaches as `storeOnly` whatever policy the view asks, is never stale and
+  fetches for nothing; `refetch` and `Environment.fetch` throw the new
+  environment error `clientOnly`; `commitPayload` writes it. A mutation or
+  a subscription of client fields alone stays refused, now with a message
+  that says why. Held by the script `client-only`
+  ([the decision](docs/decisions/client-data-is-described-and-committed.md#a-client-only-operation-2026-11-05)).
 
 - A Swift operation value is a value, and its live side is the macro's
   projection: `@Query var issues: IssuesQuery` keeps `issues` the value the

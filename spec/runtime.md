@@ -212,8 +212,12 @@ no timer is armed. *Held by* script `ages`.
 is printed compact, with Relay's printer's own option (no newline,
 indentation or optional space, a comma between items, strings as they
 are), the fragments it reaches after it, and that one text is sent, hashed
-and kept in the persisted file. An operation of client fields alone is
-refused, since a server answers one field at least. A spread inside an
+and kept in the persisted file. A query of client fields alone is
+client-only: it compiles, marked so; its text is the one the author wrote,
+printed compact from the program before the transforms that would leave
+nothing of it; it takes no persisted id and is left out of the persisted
+file. A mutation or a subscription of client fields alone is refused, since
+the one is sent by definition and the other is the server's stream. A spread inside an
 inline fragment on an abstract selection carries `@alias`, Relay's rule.
 Under `onError: NULL` a field the schema types non-null is typed by its
 semantic nullability: non-optional under `@throwOnFieldError` and inside
@@ -764,10 +768,15 @@ under a root no completed stream dated), when the data is stale, or when
 the last response carried errors no field holds; `storeAndNetwork` and
 `networkOnly` fetch, and `networkOnly` shows loading until its own response
 if nobody shows the handle yet. One fetch is in flight per handle at a
-time. *Held by* script `phase`, the fetch of stale data by script `ages`,
+time. A client-only operation attaches as `storeOnly` whatever is asked: it
+is present at once, since the check waits for no client field, its fields
+read absent until a payload writes them, it is never stale, and no attach,
+invalidation or revalidation fetches for it; `refetch` throws the fetch's
+environment kind, client-only, and `Environment.fetch` throws the same.
+*Held by* script `phase`, the fetch of stale data by script `ages`,
 and the fetch for a streamed list under an undated root by script
-`streams`; the fetches for deferred parts not held and for errors no field
-holds are *unheld*.
+`streams`, and the client-only attach by script `client-only`; the fetches
+for deferred parts not held and for errors no field holds are *unheld*.
 
 **The fetch is a value beside the phase.** Idle, in flight, or failed with
 the failure and when it failed. A fetch that fails behind data leaves the
@@ -782,7 +791,8 @@ leaves the handle's state to whoever superseded it. *Held by* script
 **A failure says its kind.** The transport's, carrying what the transport
 threw unchanged; a request error, the server's errors with no data; a
 malformed response the plan could not read; the environment's, when
-nothing could send the request. A field error is not a kind. *Held by*
+nothing could send the request, a client-only operation's refetch among
+them. A field error is not a kind. *Held by*
 scripts `phase` and `end`; the log names the kind, held by script
 `events`.
 

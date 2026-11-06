@@ -193,4 +193,133 @@ struct ExtensionTests {
             Issue.record("the check waits for a client field once it is resolved on the record's concrete type")
         }
     }
+
+    // MARK: A client-only query
+
+    @Test("the generated operation type says it is client-only of a query of client fields alone, and of no other")
+    func theGeneratedTypeSaysWhetherItIsClientOnly() {
+        #expect(TestClientDrafts.isClientOnly)
+        #expect(!TestDrafts.isClientOnly, "a server field beside the client list makes it the server's to answer")
+        #expect(!TestPinnedCharacter.isClientOnly)
+        #expect(TestClientDrafts.text == "query TestClientDrafts{drafts{id,text,about{id,name}}}", "its text is the document the author wrote")
+    }
+
+    @Test("a client-only query attaches as storeOnly whatever policy is asked: present at once, its fields absent, and nothing sent", arguments: [FetchPolicy.storeOrNetwork, .storeAndNetwork, .networkOnly, .storeOnly])
+    func aClientOnlyQueryAttachesAsStoreOnly(_ policy: FetchPolicy) async throws {
+        let transport = RecordedTransport()
+        let environment = Environment(transport: transport)
+        environment.log = nil
+        let handle = environment.handle(for: TestClientDrafts(), fetchPolicy: policy)
+        let retention = handle.retain()
+        await handle.settle()
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("expected .ready at once, got \(handle.phase)")
+            return
+        }
+        #expect(data.drafts == nil, "no payload wrote the drafts yet")
+        guard case .idle = handle.fetch else {
+            Issue.record("expected an idle fetch, got \(handle.fetch)")
+            return
+        }
+        #expect(!handle.isRefreshing)
+        handle.retry()
+        await handle.settle()
+        #expect(transport.requestCount == 0, "a client-only query has nothing to send")
+        _ = retention
+    }
+
+    @Test("a client-only handle is never stale, past the store's expiration and after an invalidation, and neither fetches")
+    func aClientOnlyHandleIsNeverStale() async throws {
+        let transport = RecordedTransport()
+        let environment = Environment(transport: transport, store: Store(cacheExpiration: .zero))
+        environment.log = nil
+        let handle = environment.handle(for: TestClientDrafts())
+        let retention = handle.retain()
+        #expect(!handle.isStale, "before any payload, though data of no known age is stale under an expiration")
+        try await environment.commitPayload(TestClientDrafts(), Payload(fixture("client-drafts")))
+        environment.store.clockOffset += .seconds(60)
+        #expect(!handle.isStale, "past an expiration of zero")
+        environment.invalidate()
+        await handle.settle()
+        #expect(!handle.isStale, "after an invalidation")
+        environment.revalidate()
+        await handle.settle()
+        guard case .idle = handle.fetch else {
+            Issue.record("expected an idle fetch, got \(handle.fetch)")
+            return
+        }
+        #expect(transport.requestCount == 0)
+        _ = retention
+    }
+
+    @Test("a client-only handle's refetch throws the fetch's environment kind, client-only, and sends nothing")
+    func aClientOnlyRefetchThrows() async throws {
+        let transport = RecordedTransport()
+        let environment = Environment(transport: transport)
+        environment.log = nil
+        let handle = environment.handle(for: TestClientDrafts())
+        let retention = handle.retain()
+        do {
+            try await handle.refetch()
+            Issue.record("the refetch threw nothing")
+        } catch {
+            guard case .fetch(.environment(.clientOnly)) = error else {
+                Issue.record("expected the environment kind, client-only, got \(error)")
+                return
+            }
+        }
+        guard case .idle = handle.fetch else {
+            Issue.record("expected an idle fetch, got \(handle.fetch)")
+            return
+        }
+        guard case .ready = handle.phase else {
+            Issue.record("expected the phase to stay ready, got \(handle.phase)")
+            return
+        }
+        #expect(transport.requestCount == 0)
+        _ = retention
+    }
+
+    @Test("the environment's fetch of a client-only query throws client-only and sends nothing")
+    func theEnvironmentFetchOfAClientOnlyQueryThrows() async throws {
+        let transport = RecordedTransport()
+        let environment = Environment(transport: transport)
+        environment.log = nil
+        await #expect(throws: EnvironmentError.clientOnly) {
+            try await environment.fetch(TestClientDrafts())
+        }
+        #expect(transport.requestCount == 0)
+    }
+
+    @Test("a payload committed by hand writes a client-only query's fields, its lens reads them, and the body that read the list re-evaluates")
+    func aPayloadWritesAClientOnlyQuery() async throws {
+        let environment = Environment(transport: RecordedTransport())
+        environment.log = nil
+        let handle = environment.handle(for: TestClientDrafts())
+        let retention = handle.retain()
+        guard case .ready(let before) = handle.phase else {
+            Issue.record("expected .ready, got \(handle.phase)")
+            return
+        }
+        let list = Counter()
+        withObservationTracking { _ = before.drafts } onChange: { list.fired += 1 }
+        try await environment.commitPayload(TestClientDrafts(), Payload(fixture("client-drafts")))
+        #expect(list.fired == 1)
+        guard case .ready(let data) = handle.phase else {
+            Issue.record("expected .ready, got \(handle.phase)")
+            return
+        }
+        let drafts = try #require(data.drafts)
+        #expect(drafts.count == 2)
+        #expect(drafts.element(0)?.text == "Ask about the citadel")
+        #expect(drafts.element(0)?.about?.name == "Rick Sanchez")
+        #expect(drafts.element(1)?.about == nil)
+
+        let text = Counter()
+        withObservationTracking { _ = drafts.element(0)?.text } onChange: { text.fired += 1 }
+        try await environment.commitPayload(TestClientDrafts(), Payload(fixture("client-drafts-edited")))
+        #expect(text.fired == 1)
+        #expect(drafts.element(0)?.text == "Ask about the citadel twice")
+        _ = retention
+    }
 }

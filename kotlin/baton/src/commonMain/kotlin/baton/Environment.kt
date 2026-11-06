@@ -216,6 +216,7 @@ class Environment(
         withContext(mainDispatcher) {
             if (ended) throw EnvironmentError.Gone
             val type = operation.type
+            if (type.isClientOnly) throw EnvironmentError.ClientOnly
             val committed = fetch(type, operation.variables, store.resolve(type.plan, operation.variables), null)
             if (!type.throwsOnFieldError || ended) return@withContext
             // The handle's reading: the operation's own selection and the errors no field holds, read once and healed nowhere.
@@ -233,6 +234,7 @@ class Environment(
      */
     internal suspend fun fetch(type: OperationType<*>, variables: Variables) {
         if (ended) throw EnvironmentError.Gone
+        if (type.isClientOnly) throw EnvironmentError.ClientOnly
         fetch(type, variables, store.resolve(type.plan, variables), null)
     }
 

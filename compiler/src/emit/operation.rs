@@ -108,6 +108,7 @@ fn value_members(writer: &mut Writer, operation: &OperationValue, shared: &Share
         ("throwsOnFieldError", operation.throws_on_field_error),
         ("bubbles", operation.bubbles),
         ("hasIncremental", operation.has_incremental),
+        ("isClientOnly", operation.client_only),
     ];
     for (flag, set) in flags {
         if set {
