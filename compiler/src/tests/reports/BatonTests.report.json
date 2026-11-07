@@ -714,6 +714,225 @@
       }
     },
     {
+      "name": "TestAppendCastNodes",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/RepeatDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "name",
+          "type": "String!"
+        },
+        {
+          "name": "connections",
+          "type": "[ID!]!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestAppendCastNodes($id:ID!,$name:String!){rename(id:$id,name:$name){character{id,episode{id,name,air_date,episode,characters{id}}}}}",
+      "lens": {
+        "type": "Mutation",
+        "accessors": [
+          {
+            "name": "rename",
+            "key": "rename",
+            "coordinate": "Mutation.rename",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "FavoritePayload",
+              "accessors": [
+                {
+                  "name": "character",
+                  "key": "character",
+                  "coordinate": "FavoritePayload.character",
+                  "read": "linked",
+                  "optional": true,
+                  "lens": {
+                    "type": "Character",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "coordinate": "Character.id",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "episode",
+                        "key": "episode",
+                        "coordinate": "Character.episode",
+                        "read": "linked",
+                        "list": {
+                          "optionalElements": false
+                        },
+                        "lens": {
+                          "type": "Episode",
+                          "accessors": [
+                            {
+                              "name": "id",
+                              "key": "id",
+                              "coordinate": "Episode.id",
+                              "read": "scalar",
+                              "optional": true
+                            },
+                            {
+                              "name": "name",
+                              "key": "name",
+                              "coordinate": "Episode.name",
+                              "read": "scalar",
+                              "optional": true
+                            },
+                            {
+                              "name": "air_date",
+                              "key": "air_date",
+                              "coordinate": "Episode.air_date",
+                              "read": "scalar",
+                              "optional": true
+                            },
+                            {
+                              "name": "episode",
+                              "key": "episode",
+                              "coordinate": "Episode.episode",
+                              "read": "scalar",
+                              "optional": true
+                            },
+                            {
+                              "name": "characters",
+                              "key": "characters",
+                              "coordinate": "Episode.characters",
+                              "read": "linked",
+                              "list": {
+                                "optionalElements": false
+                              },
+                              "lens": {
+                                "type": "Character",
+                                "accessors": [
+                                  {
+                                    "name": "id",
+                                    "key": "id",
+                                    "coordinate": "Character.id",
+                                    "read": "scalar",
+                                    "optional": true
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestAppendEpisodeNodes",
+      "kind": "mutation",
+      "source": "swift/Tests/BatonTests/RepeatDocuments.swift",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        },
+        {
+          "name": "name",
+          "type": "String!"
+        },
+        {
+          "name": "connections",
+          "type": "[ID!]!"
+        }
+      ],
+      "fragments": [],
+      "text": "mutation TestAppendEpisodeNodes($id:ID!,$name:String!){rename(id:$id,name:$name){character{id,episode{id,name,air_date,episode}}}}",
+      "lens": {
+        "type": "Mutation",
+        "accessors": [
+          {
+            "name": "rename",
+            "key": "rename",
+            "coordinate": "Mutation.rename",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "FavoritePayload",
+              "accessors": [
+                {
+                  "name": "character",
+                  "key": "character",
+                  "coordinate": "FavoritePayload.character",
+                  "read": "linked",
+                  "optional": true,
+                  "lens": {
+                    "type": "Character",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "coordinate": "Character.id",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "episode",
+                        "key": "episode",
+                        "coordinate": "Character.episode",
+                        "read": "linked",
+                        "list": {
+                          "optionalElements": false
+                        },
+                        "lens": {
+                          "type": "Episode",
+                          "accessors": [
+                            {
+                              "name": "id",
+                              "key": "id",
+                              "coordinate": "Episode.id",
+                              "read": "scalar",
+                              "optional": true
+                            },
+                            {
+                              "name": "name",
+                              "key": "name",
+                              "coordinate": "Episode.name",
+                              "read": "scalar",
+                              "optional": true
+                            },
+                            {
+                              "name": "air_date",
+                              "key": "air_date",
+                              "coordinate": "Episode.air_date",
+                              "read": "scalar",
+                              "optional": true
+                            },
+                            {
+                              "name": "episode",
+                              "key": "episode",
+                              "coordinate": "Episode.episode",
+                              "read": "scalar",
+                              "optional": true
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "TestAssetNameQuery",
       "kind": "query",
       "source": "swift/Tests/BatonTests/IdentityDocuments.swift",
@@ -5868,6 +6087,330 @@
                               "coordinate": "Location.name",
                               "read": "scalar",
                               "optional": true
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestRepeatedCharacters",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/RepeatDocuments.swift",
+      "variables": [
+        {
+          "name": "page",
+          "type": "Int"
+        }
+      ],
+      "fragments": [],
+      "text": "query TestRepeatedCharacters($page:Int){characters(page:$page){results{id,name,status}}}",
+      "lens": {
+        "type": "Query",
+        "accessors": [
+          {
+            "name": "characters",
+            "key": "characters",
+            "coordinate": "Query.characters",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "Characters",
+              "accessors": [
+                {
+                  "name": "results",
+                  "key": "results",
+                  "coordinate": "Characters.results",
+                  "read": "linked",
+                  "optional": true,
+                  "list": {
+                    "optionalElements": false
+                  },
+                  "lens": {
+                    "type": "Character",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "coordinate": "Character.id",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "name",
+                        "key": "name",
+                        "coordinate": "Character.name",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "status",
+                        "key": "status",
+                        "coordinate": "Character.status",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestRepeatedConnectionNotes",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/RepeatDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "query TestRepeatedConnectionNotes{characters(page:1){results{id,notes(first:1){edges{node{id,text,__typename},cursor},pageInfo{endCursor,hasNextPage}}}}}",
+      "lens": {
+        "type": "Query",
+        "accessors": [
+          {
+            "name": "characters",
+            "key": "characters",
+            "coordinate": "Query.characters",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "Characters",
+              "accessors": [
+                {
+                  "name": "results",
+                  "key": "results",
+                  "coordinate": "Characters.results",
+                  "read": "linked",
+                  "optional": true,
+                  "list": {
+                    "optionalElements": false
+                  },
+                  "lens": {
+                    "type": "Character",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "coordinate": "Character.id",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "notes",
+                        "key": "notes",
+                        "coordinate": "Character.__TestRepeatedConnectionNotes_notes_connection",
+                        "read": "linked",
+                        "lens": {
+                          "type": "NoteConnection",
+                          "accessors": [
+                            {
+                              "name": "edges",
+                              "key": "edges",
+                              "coordinate": "NoteConnection.edges",
+                              "read": "linked",
+                              "optional": true,
+                              "list": {
+                                "optionalElements": false
+                              },
+                              "lens": {
+                                "type": "NoteEdge",
+                                "accessors": [
+                                  {
+                                    "name": "node",
+                                    "key": "node",
+                                    "coordinate": "NoteEdge.node",
+                                    "read": "linked",
+                                    "optional": true,
+                                    "lens": {
+                                      "type": "Note",
+                                      "accessors": [
+                                        {
+                                          "name": "id",
+                                          "key": "id",
+                                          "coordinate": "Note.id",
+                                          "read": "scalar",
+                                          "optional": true
+                                        },
+                                        {
+                                          "name": "text",
+                                          "key": "text",
+                                          "coordinate": "Note.text",
+                                          "read": "scalar",
+                                          "optional": true
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "name": "cursor",
+                                    "key": "cursor",
+                                    "coordinate": "NoteEdge.cursor",
+                                    "read": "scalar"
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "name": "pageInfo",
+                              "key": "pageInfo",
+                              "coordinate": "NoteConnection.pageInfo",
+                              "read": "linked",
+                              "lens": {
+                                "type": "PageInfo",
+                                "accessors": [
+                                  {
+                                    "name": "endCursor",
+                                    "key": "endCursor",
+                                    "coordinate": "PageInfo.endCursor",
+                                    "read": "scalar",
+                                    "optional": true
+                                  },
+                                  {
+                                    "name": "hasNextPage",
+                                    "key": "hasNextPage",
+                                    "coordinate": "PageInfo.hasNextPage",
+                                    "read": "scalar"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestRepeatedPlainNotes",
+      "kind": "query",
+      "source": "swift/Tests/BatonTests/RepeatDocuments.swift",
+      "variables": [],
+      "fragments": [],
+      "text": "query TestRepeatedPlainNotes{characters(page:1){results{id,notes(first:1){edges{cursor,node{id,text}},pageInfo{endCursor,hasNextPage}}}}}",
+      "lens": {
+        "type": "Query",
+        "accessors": [
+          {
+            "name": "characters",
+            "key": "characters",
+            "coordinate": "Query.characters",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "Characters",
+              "accessors": [
+                {
+                  "name": "results",
+                  "key": "results",
+                  "coordinate": "Characters.results",
+                  "read": "linked",
+                  "optional": true,
+                  "list": {
+                    "optionalElements": false
+                  },
+                  "lens": {
+                    "type": "Character",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "coordinate": "Character.id",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "notes",
+                        "key": "notes",
+                        "coordinate": "Character.notes",
+                        "read": "linked",
+                        "lens": {
+                          "type": "NoteConnection",
+                          "accessors": [
+                            {
+                              "name": "edges",
+                              "key": "edges",
+                              "coordinate": "NoteConnection.edges",
+                              "read": "linked",
+                              "optional": true,
+                              "list": {
+                                "optionalElements": false
+                              },
+                              "lens": {
+                                "type": "NoteEdge",
+                                "accessors": [
+                                  {
+                                    "name": "cursor",
+                                    "key": "cursor",
+                                    "coordinate": "NoteEdge.cursor",
+                                    "read": "scalar"
+                                  },
+                                  {
+                                    "name": "node",
+                                    "key": "node",
+                                    "coordinate": "NoteEdge.node",
+                                    "read": "linked",
+                                    "optional": true,
+                                    "lens": {
+                                      "type": "Note",
+                                      "accessors": [
+                                        {
+                                          "name": "id",
+                                          "key": "id",
+                                          "coordinate": "Note.id",
+                                          "read": "scalar",
+                                          "optional": true
+                                        },
+                                        {
+                                          "name": "text",
+                                          "key": "text",
+                                          "coordinate": "Note.text",
+                                          "read": "scalar",
+                                          "optional": true
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "name": "pageInfo",
+                              "key": "pageInfo",
+                              "coordinate": "NoteConnection.pageInfo",
+                              "read": "linked",
+                              "lens": {
+                                "type": "PageInfo",
+                                "accessors": [
+                                  {
+                                    "name": "endCursor",
+                                    "key": "endCursor",
+                                    "coordinate": "PageInfo.endCursor",
+                                    "read": "scalar",
+                                    "optional": true
+                                  },
+                                  {
+                                    "name": "hasNextPage",
+                                    "key": "hasNextPage",
+                                    "coordinate": "PageInfo.hasNextPage",
+                                    "read": "scalar"
+                                  }
+                                ]
+                              }
                             }
                           ]
                         }
