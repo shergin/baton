@@ -62,6 +62,12 @@ package struct ChangeSet: Sendable {
     /// by its path: the store makes the record from it and asks nothing of
     /// the registry.
     package internal(set) var recordIDOffsets: ContiguousArray<Int32> = []
+    /// The pass of the walk at which entries last named each record: the
+    /// cursor counts a pass per object closed and per span whose entries
+    /// it appended again, and a span closed at a pass stands while no
+    /// record its entries name was written at a later one. Zero until
+    /// written.
+    var recordWrittenAt: ContiguousArray<Int32> = []
     /// What the response said of types the plan did not list: that records
     /// of the type are members of the condition. The store learns them.
     package internal(set) var memberships: [(type: TypeID, condition: TypeID)] = []
@@ -120,6 +126,7 @@ package struct ChangeSet: Sendable {
         recordTypes.reserveCapacity(records)
         recordIsEntity.reserveCapacity(records)
         recordIDOffsets.reserveCapacity(records)
+        recordWrittenAt.reserveCapacity(records)
         entries.reserveCapacity(bytes.count / 24 + 8)
         refs.reserveCapacity(bytes.count / 128 + 4)
     }
@@ -316,6 +323,7 @@ package struct ChangeSet: Sendable {
         recordTypes.append(type)
         recordIsEntity.append(idOffset >= 0)
         recordIDOffsets.append(idOffset)
+        recordWrittenAt.append(0)
         index[key] = id
         return id
     }

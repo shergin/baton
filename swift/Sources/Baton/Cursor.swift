@@ -41,14 +41,21 @@ extension Ingest {
         /// record it settled as and the entries its parse appended, by the
         /// selection and a hash of the object's first bytes. A later object
         /// under that selection whose bytes equal a span's is the entity
-        /// printed again: it takes the record, the first printing's entries
-        /// are appended again in its place, and the walk moves past it; the
-        /// change set is the one a parse would make, so the last printing
-        /// of a record still wins. Open addressing at half load; one span
-        /// per key, the first, so a key many objects share costs a missed
-        /// skip and never a wrong one.
+        /// printed again: it takes the record and the walk moves past it.
+        /// The first printing's entries are appended again in its place
+        /// when a later printing wrote one of the records they name since,
+        /// so that the change set is the one a parse would make and the
+        /// last printing of a record still wins; when none did, they stand
+        /// last for every record already and nothing is appended. Open
+        /// addressing at half load; one span per key, the first, so a key
+        /// many objects share costs a missed skip and never a wrong one.
         var spans: ContiguousArray<Span>
         var spanCount = 0
+        /// The passes of the walk: one per object closed and per span whose
+        /// entries were appended again, in order. A span closed at a pass
+        /// stands while no record its entries name was written at a later
+        /// one; the change set keeps the pass each record was written at.
+        var pass: Int32 = 0
 
         struct Span {
             var hash: UInt64
@@ -60,8 +67,10 @@ extension Ingest {
             /// The entries the printing's parse appended, the subtree's too.
             var entriesStart: Int32
             var entriesEnd: Int32
+            /// The pass at which the object closed.
+            var closedAt: Int32
 
-            static let empty = Span(hash: 0, selection: nil, start: 0, length: 0, record: -1, entriesStart: 0, entriesEnd: 0)
+            static let empty = Span(hash: 0, selection: nil, start: 0, length: 0, record: -1, entriesStart: 0, entriesEnd: 0, closedAt: 0)
         }
 
         init(base: UnsafePointer<UInt8>, count: Int, changes: ChangeSet) {
@@ -100,9 +109,10 @@ extension Ingest {
 
         /// The record of the object at `opening` when its bytes equal those
         /// of the object remembered under the selection and the hash, the
-        /// first printing's entries appended again and the walk moved past
-        /// the bytes; nil when none is remembered or the bytes differ, where
-        /// the compare stopped at the first byte that did.
+        /// first printing's entries appended again where they no longer
+        /// stand last and the walk moved past the bytes; nil when none is
+        /// remembered or the bytes differ, where the compare stopped at the
+        /// first byte that did.
         @inline(__always)
         mutating func repeated(_ plan: ResolvedSelection, _ hash: UInt64, at opening: Int) -> Int32? {
             let identity = ObjectIdentifier(plan)
@@ -114,16 +124,40 @@ extension Ingest {
                 if span.hash == hash, selection == identity {
                     let length = Int(span.length)
                     guard opening + length <= count, memcmp(base + opening, base + Int(span.start), length) == 0 else { return nil }
-                    // One entry at a time: a slice of the array appended to
-                    // itself would copy the whole array first.
-                    for index in Int(span.entriesStart)..<Int(span.entriesEnd) {
-                        changes.entries.append(changes.entries[index])
+                    if !stands(span) {
+                        // One entry at a time: a slice of the array appended to
+                        // itself would copy the whole array first.
+                        pass += 1
+                        for index in Int(span.entriesStart)..<Int(span.entriesEnd) {
+                            let entry = changes.entries[index]
+                            changes.entries.append(entry)
+                            changes.recordWrittenAt[Int(entry.record)] = pass
+                        }
                     }
                     position = opening + length
                     return span.record
                 }
                 slot = (slot + 1) & mask
             }
+        }
+
+        /// Whether the span's entries stand last for every record they name,
+        /// none having been written since the span closed, so that appending
+        /// them again would change nothing the grouping keeps.
+        @inline(__always)
+        func stands(_ span: Span) -> Bool {
+            for index in Int(span.entriesStart)..<Int(span.entriesEnd)
+            where changes.recordWrittenAt[Int(changes.entries[index].record)] > span.closedAt {
+                return false
+            }
+            return true
+        }
+
+        /// Closes a pass of the walk in which entries named the record.
+        @inline(__always)
+        mutating func wrote(_ record: Int32) {
+            pass += 1
+            changes.recordWrittenAt[Int(record)] = pass
         }
 
         /// Remembers the entity's object just read, with the entries its
@@ -138,7 +172,7 @@ extension Ingest {
                 if spans[slot].hash == hash, selection == identity { return }
                 slot = (slot + 1) & mask
             }
-            spans[slot] = Span(hash: hash, selection: identity, start: Int32(start), length: Int32(end - start), record: record, entriesStart: Int32(entriesFrom), entriesEnd: Int32(changes.entries.count))
+            spans[slot] = Span(hash: hash, selection: identity, start: Int32(start), length: Int32(end - start), record: record, entriesStart: Int32(entriesFrom), entriesEnd: Int32(changes.entries.count), closedAt: pass)
             spanCount += 1
         }
 
@@ -482,6 +516,7 @@ extension Ingest {
             for (_, slot, value) in extra[depth] {
                 changes.entries.append(ChangeSet.Entry(record: record, slot: slot, value: value))
             }
+            wrote(record)
             // Only an entity is remembered: an object keyed by its path is
             // another record under another parent.
             if skippable, changes.recordIsEntity[Int(record)] {

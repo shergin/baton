@@ -18,14 +18,14 @@ struct RepeatTests {
         return Data((#"{"data":{"characters":{"results":["# + rick + "," + morty + "," + rick + "]}}}").utf8)
     }()
 
-    @Test("the recorded page takes 652 objects by comparing and appends their first printings' entries again, 20,572 before grouping")
+    @Test("the recorded page takes 652 objects by comparing and appends a first printing's entries again only where a later printing wrote one of its records since, 4,096 entries before grouping")
     func theRecordedPageTakesItsRepeatsByComparing() throws {
         let store = Store()
         store.log = nil
         let operation = Fixture(page: 1)
         let changes = try Ingest.normalize(fixtureData, plan: Fixture.plan.resolve(operation.variables, in: store.keys))
         #expect(changes.skipped == 652)
-        #expect(changes.entriesBeforeGrouping == 20572)
+        #expect(changes.entriesBeforeGrouping == 4096)
     }
 
     @Test("a printing whose members come in another order is read whole and settles as the one record")
@@ -73,6 +73,94 @@ struct RepeatTests {
         let rick = try #require(store.existing("Character:1"))
         #expect(rick.read(Registry.slot(rick.type, "name")) == .string("Rick Sanchez of Earth, Dimension C-137"))
         #expect(rick.read(Registry.slot(rick.type, "status")) == .string("Alive"))
+    }
+
+    @Test("an entity printed three times, the third equal to the first byte for byte, appends the first printing's entries again")
+    func aRepeatAfterADifferentPrintingAppendsItsEntriesAgain() throws {
+        let first = #"{"id":"1","name":"Rick Sanchez of Earth, Dimension C-137","status":"Alive"}"#
+        let second = #"{"id":"1","name":"Rick Prime of an Earth no portal reaches","status":"Dead"}"#
+        let response = Data((#"{"data":{"characters":{"results":["# + first + "," + second + "," + first + "]}}}").utf8)
+        let store = Store()
+        store.log = nil
+        let operation = TestRepeatedCharacters(page: 1)
+        let changes = try Ingest.normalize(response, plan: TestRepeatedCharacters.plan.resolve(operation.variables, in: store.keys))
+        #expect(changes.skipped == 1)
+        // The root's two entries and Rick's three stand after grouping;
+        // before it, the second printing's three and the first's three
+        // appended again in the third's place.
+        #expect(changes.entries.count == 5)
+        #expect(changes.entriesBeforeGrouping == 11)
+    }
+
+    /// A page of notes for each of two characters, each holding note `n5`,
+    /// whose text in Morty's page is `mortysText`; Rick's printing comes
+    /// again after Morty's, byte for byte. The text runs past the 64 bytes
+    /// the ingest hashes, so a note's printing is found by its bytes alone.
+    static func nestedNotes(mortysText: String) -> Data {
+        func page(_ id: String, _ text: String) -> String {
+            #"{"id":""# + id + #"","notes":{"edges":[{"cursor":"c1","node":{"__typename":"Note","id":"n5","text":""# + text + #""}}],"pageInfo":{"endCursor":"c1","hasNextPage":false}}}"#
+        }
+        let rick = page("1", ricksText)
+        return Data((#"{"data":{"characters":{"results":["# + rick + "," + page("2", mortysText) + "," + rick + "]}}}").utf8)
+    }
+
+    static let ricksText = "Wubba lubba dub dub, said in a garage in Dimension C-137"
+
+    @Test("an entity printed again whose records no later printing wrote appends nothing and reads as before")
+    func aRepeatWhoseRecordsNobodyWroteAppendsNothing() throws {
+        let store = Store()
+        store.log = nil
+        let operation = TestRepeatedPlainNotes()
+        let changes = try Ingest.normalize(Self.repeatedNotes, plan: TestRepeatedPlainNotes.plan.resolve(operation.variables, in: store.keys))
+        #expect(changes.skipped == 1)
+        #expect(changes.entriesBeforeGrouping == changes.entries.count)
+        store.commit(changes)
+        let note = try #require(store.existing("Note:n5"))
+        #expect(note.read(Registry.slot(note.type, "text")) == .string("Aw geez"))
+        let list = try #require(store.existing("client:root:characters(page:1)"))
+        guard case .refs(let refs) = list.read(Registry.slot(list.type, "results")) else {
+            Issue.record("the results hold no list")
+            return
+        }
+        #expect(refs.map { $0?.key } == ["Character:1", "Character:2", "Character:1"])
+    }
+
+    @Test("an entity printed again after a child entity of its subtree was printed elsewhere with other values reads the child's values from the last printing")
+    func aRepeatAfterItsChildWasWrittenElsewhereAppendsItsEntriesAgain() throws {
+        let store = Store()
+        store.log = nil
+        let operation = TestRepeatedPlainNotes()
+        let response = Self.nestedNotes(mortysText: "Aw geez Rick, that is not what the note said in the garage at all")
+        let changes = try Ingest.normalize(response, plan: TestRepeatedPlainNotes.plan.resolve(operation.variables, in: store.keys))
+        // Rick's repeat is taken by comparing, and the note Morty's page
+        // wrote since makes it append Rick's entries again, so the note
+        // reads Rick's text and not Morty's.
+        // The root's two entries, Rick's ten and Morty's eight beside the
+        // note stand after grouping; before it, Morty's two for the note and
+        // Rick's ten appended again in the third printing's place.
+        #expect(changes.skipped == 1)
+        #expect(changes.entries.count == 20)
+        #expect(changes.entriesBeforeGrouping == 32)
+        store.commit(changes)
+        let note = try #require(store.existing("Note:n5"))
+        #expect(note.read(Registry.slot(note.type, "text")) == .string(Self.ricksText))
+    }
+
+    @Test("an entity printed again after a child entity of its subtree was printed elsewhere byte for byte appends nothing")
+    func aRepeatAfterItsChildWasPrintedAgainAppendsNothing() throws {
+        let store = Store()
+        store.log = nil
+        let operation = TestRepeatedPlainNotes()
+        let response = Self.nestedNotes(mortysText: Self.ricksText)
+        let changes = try Ingest.normalize(response, plan: TestRepeatedPlainNotes.plan.resolve(operation.variables, in: store.keys))
+        // The note in Morty's page and Rick's repeat are each taken by
+        // comparing; the note's repeat leaves its record's printing as it
+        // was, so Rick's entries still stand last.
+        #expect(changes.skipped == 2)
+        #expect(changes.entriesBeforeGrouping == changes.entries.count)
+        store.commit(changes)
+        let note = try #require(store.existing("Note:n5"))
+        #expect(note.read(Registry.slot(note.type, "text")) == .string(Self.ricksText))
     }
 
     @Test("an entity printed again under a selection with a connection below it is read whole")
