@@ -30,6 +30,63 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, a repeated span appends nothing where its entries stand — 2026-11-06
+
+Revision: the working tree on top of `7ce2144`, against `7ce2144` built
+in the same tree with the cursor from the clean one. A profile of the
+fixture's ingest row (`scripts/profile-bench.sh "response bytes" --only
+ingest`) put `ChangeSet.group()` at 13 % of the row, about 120 µs: the
+counting sort over the 20,572 entries the repeated-subtree compare
+appends, where a parse without it makes 3,106, which the entry of 0.20.0
+below had priced at about 30 µs. Now the walk counts a pass per object
+closed and per span whose entries it appends again, each record of the
+change set carries the pass at which entries last named it
+(`ChangeSet.recordWrittenAt`), each span the pass at which it closed, and
+a repeat appends its span's entries again only when a record they name
+was written at a later pass (`Cursor.stands`); otherwise they stand last
+for every record already, the grouping keeps the same values, and nothing
+is appended. The same mechanism is in the Kotlin cursor. Machine: Apple
+M1 Pro (MacBook Pro), macOS 26.5.2 (25F84), Xcode 26.6, Swift 6.3.3,
+release build, the compiler built by `scripts/build-compiler.sh`.
+`BATON_COMPILER=local swift build -c release --product BatonBenchmarks`
+of each tree, then `BatonBenchmarks --only ingest,commit,anilist`, three
+runs of each binary one after another, alternating; best of the runs,
+the median of the medians in parentheses, and beside a row the
+allocations one run of its body makes. The load average stood at 2.7
+before the runs and 3.9 after them.
+
+| Measurement | `7ce2144` | allocations | The change | allocations |
+|---|---|---|---|---|
+| Response bytes into a change set, the fixture's 686,254 bytes, off the main actor | 875 µs (932) | 4,957 | 763 µs (825) | 4,958 |
+| Commit of the fixture into an empty store, 899 records | 98.6 µs (106) | 21 | 98.1 µs (106) | 21 |
+| The same payload again, nothing changes | 113 µs (115) | 2 | 114 µs (119) | 2 |
+| One field changed, 20 rows observing their name | 116 µs (120) | 7 | 116 µs (117) | 7 |
+| Ingest of an AniList chunk of 500 entries, per chunk, off the main actor | 4.24 ms (4.45) | 45,192 | 4.29 ms (4.47) | 45,198 |
+| Commit of both AniList chunks into an empty store, 6,014 records | 1.06 ms (1.12) | 45 | 1.06 ms (1.16) | 45 |
+| The AniList reading, untracked, the whole list | 905 µs (919) | 29 | 900 µs (943) | 29 |
+| Entries before grouping, the fixture; objects taken by compare | 20,572; 652 | | 4,096; 652 | |
+
+The fixture's ingest falls by an eighth, 875 to 763 µs best in every one
+of three rounds on the way to this mechanism, and the entries it groups
+from 20,572 to 4,096 with the 652 objects taken by compare unchanged: the
+re-appends that remain are episode spans whose cast names a character
+printed again at the root level after the span was first read, which the
+passes rightly catch. The AniList chunk, whose thousand entity spans a
+chunk never repeat and whose objects are mostly keyed by their path, pays
+a pass per object closed: 1 % on best, the ranges of the two binaries
+overlapping. A first cut of the mechanism had collected, at each span's
+close, the records its entries name with the printing that last wrote
+each, and cost that chunk 3.8 % for lists nothing read; the pass counter
+replaced it, and the table of passes then moved from the cursor, where it
+grew inside the walk's hottest function, into the change set beside the
+record's key. The commit rows and the reads do not move. The launch and
+observed-reading rows of the AniList section moved both ways by up to a
+sixth as the load rose through the runs, each binary's three runs
+spreading as far, and were flat in the round before on the same
+mechanism. In `benchmarks/counts.txt`, `entries-before-grouping` 20,572
+to 4,096, `allocations-ingest-fixture` 4,957 to 4,958 and
+`allocations-ingest-anilist` 45,192 to 45,198.
+
 ## Unreleased, the commit relinks only what a built record links — 2026-11-06
 
 Revision: the working tree on top of `4e6977c` (0.20.0), against `4e6977c`

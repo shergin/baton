@@ -264,10 +264,12 @@ response prints again under the same selection, byte for byte, normalizes
 to the record its first printing produced: the ingest keeps, per
 selection, where each entity's object began, how long it ran and the
 entries its reading appended, and at a later object under that selection
-compares the bytes once; when they are equal it takes the record, appends
-the first printing's entries again in the later printing's place and
-passes over the bytes, so the change set is the one a full reading would
-make and the last printing of a record still wins (section 4). A
+compares the bytes once; when they are equal it takes the record and
+passes over the bytes, and appends the first printing's entries again in
+the later printing's place when a later printing wrote one of the records
+they name since, so the change set is the one a full reading would make
+and the last printing of a record still wins (section 4); when none did,
+those entries stand last for every record already and none is appended. A
 printing that differs by a byte is read as any object is. A selection below which a field carries a
 connection, a paged list, an edge directive or a stream is read whole
 each time, since those record an edit per printing; so is an object at a

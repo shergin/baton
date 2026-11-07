@@ -78,6 +78,14 @@ internal class ChangeSet(val bytes: ByteArray) {
     val recordTypes = ArrayList<TypeID>(bytes.size / 512 + 4)
     /** Where each record's id starts in its key, or -1 for a record keyed by its path. */
     val recordIDOffsets = ArrayList<Int>(bytes.size / 512 + 4)
+    /**
+     * The pass of the walk at which entries last named each record: the
+     * cursor counts a pass per object closed and per span whose entries it
+     * appended again, and a span closed at a pass stands while no record
+     * its entries name was written at a later one. Zero until written.
+     */
+    var recordWrittenAt = IntArray(bytes.size / 512 + 4)
+        private set
     private val index = HashMap<String, Int>(bytes.size / 512 + 4)
 
     /**
@@ -139,6 +147,7 @@ internal class ChangeSet(val bytes: ByteArray) {
         recordKeys.add(key)
         recordTypes.add(type)
         recordIDOffsets.add(idOffset)
+        if (id == recordWrittenAt.size) recordWrittenAt = recordWrittenAt.copyOf(maxOf(16, id * 2))
         index[key] = id
         return id
     }
@@ -199,11 +208,18 @@ internal class ChangeSet(val bytes: ByteArray) {
         }
     }
 
-    /** Appends the entries from [start] until [end] again, in their order: what a repeated printing emits. */
-    fun replayEntries(start: Int, end: Int) {
+    /** Appends the entries from [start] until [end] again, in their order, what a repeated printing emits, and notes that the records they name were written at [pass]. */
+    fun replayEntries(start: Int, end: Int, pass: Int) {
         for (position in start until end) {
-            addEntry(entryRecords[position], entrySlots[position], values.kinds[position], values.first[position], values.second[position])
+            val record = entryRecords[position]
+            addEntry(record, entrySlots[position], values.kinds[position], values.first[position], values.second[position])
+            recordWrittenAt[record] = pass
         }
+    }
+
+    /** Notes that entries named the record at [pass]. */
+    fun wrote(record: Int, pass: Int) {
+        recordWrittenAt[record] = pass
     }
 
     fun addEntry(record: Int, slotIndex: Int, kind: Byte, first: Long, second: Int) {

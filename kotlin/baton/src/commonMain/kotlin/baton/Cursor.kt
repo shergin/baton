@@ -25,11 +25,13 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
      * settled as and the entries its parse appended, by the selection and a
      * hash of the object's first bytes. A later object under that selection
      * whose bytes equal a span's is the entity printed again: it takes the
-     * record, the first printing's entries are appended again in its place,
-     * and the walk moves past it; the change set is the one a parse would
-     * make, so the last printing of a record still wins. Open addressing at
-     * half load, one span per key, the first, so a key many objects share
-     * costs a missed skip and never a wrong one.
+     * record and the walk moves past it. The first printing's entries are
+     * appended again in its place when a later printing wrote one of the
+     * records they name since, so that the change set is the one a parse
+     * would make and the last printing of a record still wins; when none
+     * did, they stand last for every record already and nothing is
+     * appended. Open addressing at half load, one span per key, the first,
+     * so a key many objects share costs a missed skip and never a wrong one.
      */
     private var spanHashes = LongArray(spanCapacity(bytes.size / 512 + 4))
     private var spanSelections = arrayOfNulls<ResolvedSelection>(spanHashes.size)
@@ -38,7 +40,17 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
     private var spanRecords = IntArray(spanHashes.size)
     private var spanEntriesStarts = IntArray(spanHashes.size)
     private var spanEntriesEnds = IntArray(spanHashes.size)
+    /** The pass at which each span's object closed. */
+    private var spanClosedAt = IntArray(spanHashes.size)
     private var spanCount = 0
+
+    /**
+     * The passes of the walk: one per object closed and per span whose
+     * entries were appended again, in order. A span closed at a pass stands
+     * while no record its entries name was written at a later one; the
+     * change set keeps the pass each record was written at.
+     */
+    private var pass = 0
 
     /** The value the last scalar read gave, in the raw encoding. */
     private var valueKind: Byte = Raw.NULL
@@ -402,6 +414,7 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
         for (position in 0 until frame.extraSlots.size) {
             changes.addEntry(record, frame.extraSlots.values[position], frame.extraValues.kinds[position], frame.extraValues.first[position], frame.extraValues.second[position])
         }
+        wrote(record)
         // Only an entity is remembered: an object keyed by its path is another record under another parent.
         if (skippable && changes.recordIDOffsets[record] >= 0) remember(plan, prefix, opening, scanner.position, record, entriesBefore)
         return record
@@ -433,8 +446,8 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
     /**
      * The record of the object at [opening] when its bytes equal those of the
      * object remembered under the selection and the hash, the first printing's
-     * entries appended again and the walk moved past the bytes; -1 when none
-     * is remembered or the bytes differ.
+     * entries appended again where they no longer stand last and the walk
+     * moved past the bytes; -1 when none is remembered or the bytes differ.
      */
     private fun repeated(plan: ResolvedSelection, hash: Long, opening: Int): Int {
         val mask = spanHashes.size - 1
@@ -444,12 +457,36 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
             if (spanHashes[slot] == hash && selection === plan) {
                 val length = spanLengths[slot]
                 if (opening + length > bytes.size || !bytes.regionsEqual(opening, spanStarts[slot], length)) return -1
-                changes.replayEntries(spanEntriesStarts[slot], spanEntriesEnds[slot])
+                if (!stands(slot)) {
+                    pass += 1
+                    changes.replayEntries(spanEntriesStarts[slot], spanEntriesEnds[slot], pass)
+                }
                 scanner.position = opening + length
                 return spanRecords[slot]
             }
             slot = (slot + 1) and mask
         }
+    }
+
+    /**
+     * Whether the span's entries stand last for every record they name, none
+     * having been written since the span closed, so that appending them
+     * again would change nothing the grouping keeps.
+     */
+    private fun stands(slot: Int): Boolean {
+        val closedAt = spanClosedAt[slot]
+        val entryRecords = changes.entryRecords
+        val writtenAt = changes.recordWrittenAt
+        for (index in spanEntriesStarts[slot] until spanEntriesEnds[slot]) {
+            if (writtenAt[entryRecords[index]] > closedAt) return false
+        }
+        return true
+    }
+
+    /** Closes a pass of the walk in which entries named the record. */
+    private fun wrote(record: Int) {
+        pass += 1
+        changes.wrote(record, pass)
     }
 
     /** Remembers the entity's object just read, with the entries its parse appended from [entriesFrom] on, unless the key already has a span. */
@@ -469,6 +506,7 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
         spanRecords[slot] = record
         spanEntriesStarts[slot] = entriesFrom
         spanEntriesEnds[slot] = changes.entryCount
+        spanClosedAt[slot] = pass
         spanCount += 1
     }
 
@@ -480,6 +518,7 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
         val oldRecords = spanRecords
         val oldEntriesStarts = spanEntriesStarts
         val oldEntriesEnds = spanEntriesEnds
+        val oldClosedAt = spanClosedAt
         spanHashes = LongArray(oldHashes.size * 2)
         spanSelections = arrayOfNulls(spanHashes.size)
         spanStarts = IntArray(spanHashes.size)
@@ -487,6 +526,7 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
         spanRecords = IntArray(spanHashes.size)
         spanEntriesStarts = IntArray(spanHashes.size)
         spanEntriesEnds = IntArray(spanHashes.size)
+        spanClosedAt = IntArray(spanHashes.size)
         val mask = spanHashes.size - 1
         for (old in oldHashes.indices) {
             val selection = oldSelections[old] ?: continue
@@ -499,6 +539,7 @@ internal class Cursor(bytes: ByteArray, val changes: ChangeSet, private val comp
             spanRecords[slot] = oldRecords[old]
             spanEntriesStarts[slot] = oldEntriesStarts[old]
             spanEntriesEnds[slot] = oldEntriesEnds[old]
+            spanClosedAt[slot] = oldClosedAt[old]
         }
     }
 

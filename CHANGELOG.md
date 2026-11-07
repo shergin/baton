@@ -15,6 +15,18 @@ are expected and listed without apology.
   empty store falls from 312 to 100 µs on the main actor, the AniList
   list's two chunks from 1.34 to 1.05 ms. Swift.
 
+- An entity's object printed again, byte for byte, has its first
+  printing's entries appended again only where they no longer stand. The
+  walk counts a pass per object closed and per span appended again; each
+  record carries the pass at which entries last named it and each span
+  the pass at which it closed, and a repeat appends the span's entries
+  again only when a record they name was written since, so the change
+  set is still the one a full reading would make and the last printing
+  of a record still wins; otherwise nothing is appended. The Rick and
+  Morty page groups 4,096 entries where it grouped 20,572, and its
+  ingest, off the main actor, falls from 875 to 763 µs; a list that
+  prints each entity once pays about 1 % for the passes. Both runtimes.
+
 ## 0.20.0 (Borodinsky) — 2026-11-06
 
 - The ingest builds the records, and the commit adopts them. After a
