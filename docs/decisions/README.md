@@ -74,3 +74,5 @@ principle, the proof belongs here.
 - [An operation value is a value; its live side is the storage's projection](the-live-side-is-the-projection.md)
 - [A late response yields to a newer deletion and to a newer response of its root](a-late-response-yields.md)
 - [A `@oneOf` input reads as an enum](a-oneof-input-reads-as-an-enum.md)
+- [The schema is what the transport answers](the-schema-is-what-the-transport-answers.md)
+- [A raw response is asked for with `@raw_response_type`](a-raw-response-is-asked-for.md)

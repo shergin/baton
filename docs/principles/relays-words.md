@@ -35,8 +35,8 @@ and `@paged(key:page:)`
 Connection handling is Relay's, the fetch policies are Relay's four, and
 the glossary terms are Relay's: operation, fragment, record, store,
 environment, retain, release buffer. Configuration keeps Relay's key names,
-in `baton.json`: `schema` today, and `schemaExtensions`, `customScalarTypes`
-and `persistConfig` as each is built. `relay.config.json` itself is not
+in `baton.json`: `schema` or `schemaDir`, `schemaExtensions`,
+`customScalarTypes` and `persistConfig`. `relay.config.json` itself is not
 read.
 
 What Baton does not port is named in the vision: snapshots and seen-record
@@ -77,6 +77,6 @@ These are understood by the compiler and honored by the runtime:
 `@alias`, `@appendEdge`, `@prependEdge`, `@appendNode`, `@prependNode`,
 `@deleteEdge`, `@deleteRecord`, `@include`, `@skip`, `@required`, `@catch`,
 `@throwOnFieldError`, `@semanticNonNull` (schema), `@defer`, `@stream`,
-`@stream_connection`, `@inline`; and Baton's own `@cacheExpiration`,
-`@deletes` and `@paged`.
+`@stream_connection`, `@inline`, `@raw_response_type`; and Baton's own
+`@cacheExpiration`, `@deletes` and `@paged`.
 This section may rot. The rest must not.

@@ -1,0 +1,4 @@
+query Pulse {
+  hello
+  pulse
+}

@@ -8,6 +8,7 @@ use super::*;
 use crate::documents::Document;
 use crate::naming::{LanguageNaming, NameError};
 use crate::pipeline;
+use support::one_file;
 
 /// The names `text`, one operation compiled against the test schema, would
 /// declare twice in `naming`'s generated code.
@@ -25,9 +26,7 @@ fn clashes(text: &str, naming: &LanguageNaming) -> Vec<String> {
         embedded: None,
     };
     let compiled = pipeline::compile(
-        &schema,
-        &schema_path.to_string_lossy(),
-        &[],
+        &one_file(&schema, &schema_path.to_string_lossy()),
         &[document],
         &Config::default(),
     )
@@ -106,6 +105,11 @@ fn a_schema_type_named_like_what_the_package_keeps_takes_a_suffix() {
     assert_eq!(enum_type_name("Status"), "Status");
     assert_eq!(enum_type_name("Plan"), "PlanEnum");
     assert_eq!(enum_type_name("String"), "StringEnum");
+    assert_eq!(
+        enum_type_name("OptimisticResponse"),
+        "OptimisticResponseEnum"
+    );
+    assert_eq!(enum_type_name("RawResponse"), "RawResponseEnum");
     assert_eq!(input_type_name("Types"), "TypesInput");
     assert_eq!(input_type_name("FilterCharacter"), "FilterCharacter");
 }
@@ -152,3 +156,10 @@ fn no_kind_of_operation_has_a_resolution_for_a_variable_to_clash_with() {
         );
     }
 }
+
+#[path = "support.rs"]
+#[allow(
+    clippy::duplicate_mod,
+    reason = "no test module is the whole crate's, so each that needs the helpers includes them"
+)]
+mod support;

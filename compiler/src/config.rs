@@ -245,9 +245,17 @@ pub struct KotlinConfig {
 #[derive(Debug, Clone, Default, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
-    /// Path of the schema SDL, relative to the configuration file.
+    /// Path of the schema SDL, relative to the configuration file: what the
+    /// transport answers, in one file.
     #[serde(default)]
     pub schema: String,
+    /// Relay's `schemaDir`, in place of `schema`: a directory whose
+    /// `.graphql` files, in name order, are the schema together. A second
+    /// backend the app's transport answers for, a socket of another
+    /// protocol or a REST endpoint, declares its fields in a file of its
+    /// own there, beside the server's.
+    #[serde(rename = "schemaDir", default)]
+    pub schema_dir: Option<String>,
     #[serde(default)]
     pub lookups: Vec<Lookup>,
     /// The fields that key a record of each type.
@@ -332,12 +340,21 @@ impl Config {
         Ok(config)
     }
 
-    /// The schema path resolved against the configuration file's directory.
-    pub fn schema_path(&self, config_path: &Path) -> PathBuf {
-        config_path
-            .parent()
-            .map(|directory| directory.join(&self.schema))
-            .unwrap_or_else(|| PathBuf::from(&self.schema))
+    /// The schema's file or directory, resolved against the configuration
+    /// file's directory: `schema` or `schemaDir`, whichever the
+    /// configuration names; none when it names neither or both.
+    pub fn schema_path(&self, config_path: &Path) -> Option<PathBuf> {
+        let named = match (self.schema.as_str(), self.schema_dir.as_deref()) {
+            ("", Some(directory)) => directory,
+            (file, None) if !file.is_empty() => file,
+            _ => return None,
+        };
+        Some(
+            config_path
+                .parent()
+                .map(|directory| directory.join(named))
+                .unwrap_or_else(|| PathBuf::from(named)),
+        )
     }
 
     /// The Swift type each mapped custom scalar reads as, by the scalar's

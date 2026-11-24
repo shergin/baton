@@ -172,6 +172,14 @@ const INLINE_FRAGMENT_NAME: &str = "an inline fragment's name";
 const VALUE_SPREAD_NAME: &str = "the name of an inline fragment a value spreads";
 const QUERY_VALUE_SPREADS: &str = "the name of an inline fragment a query spreads in every form";
 const VALUE_SPREADS: &str = "the name of an inline fragment a value spreads in every form";
+const RAW_QUERY_VARIABLE: &str = "a variable of a query with a raw response";
+const RAW_SUBSCRIPTION_VARIABLE: &str = "a variable of a subscription with a raw response";
+const RAW_ROOT: &str = "a root field of a raw response";
+const RAW_SCALAR: &str = "a scalar field of a raw response";
+const RAW_LINKED: &str = "a linked field of a raw response";
+const RAW_QUERY_SPREAD: &str = "the name of a fragment a query with a raw response spreads";
+const RAW_SUBSCRIPTION_SPREAD: &str =
+    "the name of a fragment a subscription with a raw response spreads";
 
 /// A position a document's name can take, and what the compiler makes of a
 /// hostile name there.
@@ -179,9 +187,10 @@ struct Position {
     name: &'static str,
     /// The names the corpus gives the position. None for the name of a
     /// fragment or an operation, a class of the package, which the corpus
-    /// holds once, and for a connection's key: the names such a position
-    /// accepts are proved accepted here, and a class's compiled by the
-    /// sweep.
+    /// holds once, for a connection's key, and for a field or a variable of
+    /// an operation that asks for its raw response, which the corpus does
+    /// not hold: the names such a position accepts are proved accepted
+    /// here, and a class's compiled by the sweep.
     corpus: Option<fn(&Plan) -> Vec<String>>,
     /// A document with `HOSTILE` where the name goes.
     probe: &'static str,
@@ -232,6 +241,9 @@ const TYPE: (&str, &str) = ("type", "the operation's `type`");
 const DATA: (&str, &str) = ("Data", "the operation's root lens `Data`");
 const OPTIMISTIC_RESPONSE: (&str, &str) =
     ("OptimisticResponse", "the mutation's `OptimisticResponse`");
+const RAW_RESPONSE: (&str, &str) = ("RawResponse", "the operation's `RawResponse`");
+const RAW_VARIABLE: (&str, &str) = ("variable", "the raw response's `variable`");
+const RAW_PAYLOAD: (&str, &str) = ("payload", "the raw response's `payload`");
 const OPERATION_COMPANION: (&str, &str) =
     ("Companion", "the operation's companion object `Companion`");
 
@@ -315,6 +327,17 @@ fn positions() -> Vec<Position> {
         at,
         what: "the variable `$HOSTILE`",
         remedy: "rename the variable",
+        refused: owned(&refused),
+    };
+    // A field or a variable of an operation that asks for its raw
+    // response, whose names the corpus does not hold.
+    let raw = |name, probe, at, what, remedy, refused: Vec<(&str, &str)>| Position {
+        name,
+        corpus: None,
+        probe,
+        at,
+        what,
+        remedy,
         refused: owned(&refused),
     };
     // A fragment's or an operation's name, which the package's top level
@@ -590,6 +613,62 @@ fn positions() -> Vec<Position> {
             "the fragment `HOSTILE`",
             "rename the fragment",
             &[SITES, GUARDS],
+        ),
+        raw(
+            RAW_QUERY_VARIABLE,
+            "query Probe($HOSTILE: ID!) @raw_response_type @throwOnFieldError { charactersByIds(ids: [$HOSTILE]) { id } }",
+            "$HOSTILE",
+            "the variable `$HOSTILE`",
+            "rename the variable",
+            [&OPERATION[..], &[RAW_RESPONSE]].concat(),
+        ),
+        raw(
+            RAW_SUBSCRIPTION_VARIABLE,
+            r#"subscription Probe($HOSTILE: Boolean!) @raw_response_type { noteAdded(characterId: "1") @catch { noteEdge { node { id } ... @include(if: $HOSTILE) { cursor } } } }"#,
+            "$HOSTILE",
+            "the variable `$HOSTILE`",
+            "rename the variable",
+            [&OPERATION[..], &[RAW_RESPONSE]].concat(),
+        ),
+        raw(
+            RAW_ROOT,
+            r#"query Probe @raw_response_type { HOSTILE: character(id: 1) { id } }"#,
+            "HOSTILE:",
+            "the field `HOSTILE`",
+            "choose another alias",
+            lens(&[SLOTS, RAW_VARIABLE, RAW_PAYLOAD]),
+        ),
+        raw(
+            RAW_SCALAR,
+            r#"query Probe @raw_response_type { character(id: 1) { HOSTILE: name } }"#,
+            "HOSTILE:",
+            "the field `HOSTILE`",
+            "choose another alias",
+            lens(&[SLOTS, RAW_VARIABLE]),
+        ),
+        raw(
+            RAW_LINKED,
+            r#"subscription Probe @raw_response_type { noteAdded(characterId: "1") { HOSTILE: noteEdge { cursor } } }"#,
+            "HOSTILE:",
+            "the field `HOSTILE`",
+            "choose another alias",
+            lens(&[SLOTS, RAW_VARIABLE]),
+        ),
+        named(
+            RAW_QUERY_SPREAD,
+            "fragment HOSTILE on Character { name } query Probe @raw_response_type { character(id: 1) { ...HOSTILE } }",
+            HOSTILE,
+            "the fragment `HOSTILE`",
+            "rename the fragment",
+            &[RAW_RESPONSE],
+        ),
+        named(
+            RAW_SUBSCRIPTION_SPREAD,
+            r#"fragment HOSTILE on NoteEdge { cursor } subscription Probe @raw_response_type { noteAdded(characterId: "1") { noteEdge { ...HOSTILE } } }"#,
+            HOSTILE,
+            "the fragment `HOSTILE`",
+            "rename the fragment",
+            &[RAW_RESPONSE],
         ),
     ]
 }
@@ -1023,8 +1102,6 @@ fn hostile_names() -> Vec<(String, &'static str)> {
 fn compile(text: &str) -> Result<emit::Output, Vec<String>> {
     let config = super::kotlin_tests_config();
     let config_path = super::repository().join("swift/Tests/BatonTests/baton.json");
-    let schema_path = config.schema_path(&config_path);
-    let schema = std::fs::read_to_string(&schema_path).expect("the test schema is readable");
     let documents = [Document {
         path: PathBuf::from(PROBE),
         index: 0,
@@ -1032,14 +1109,8 @@ fn compile(text: &str) -> Result<emit::Output, Vec<String>> {
         text: text.to_string(),
         embedded: None,
     }];
-    let extensions = super::schema_extensions(&config, &config_path);
-    let plan = match pipeline::compile(
-        &schema,
-        &schema_path.to_string_lossy(),
-        &extensions,
-        &documents,
-        &config,
-    ) {
+    let sources = super::schema_sources(&config, &config_path);
+    let plan = match pipeline::compile(&sources, &documents, &config) {
         Ok(compiled) => compiled.plan,
         Err(errors) => {
             return Err(errors

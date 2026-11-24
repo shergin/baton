@@ -1,0 +1,5 @@
+# The feed's field, extending the server's `Query`. The file sorts before
+# the server's, which defines the type it extends.
+extend type Query {
+  pulse: Int
+}

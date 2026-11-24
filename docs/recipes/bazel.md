@@ -83,7 +83,12 @@ swift_library(
 - **One action, every input declared:** the sources, the configuration,
   the schema, the extensions, and the compiler, so remote execution and
   caching work. `--schema` is passed explicitly, so the schema may be
-  another rule's output. The configuration's `schemaExtensions` resolve
+  another rule's output. `schema` takes one file, or a target of
+  several, such as a `filegroup` over a `glob` of the directory a
+  configuration's `schemaDir` names, and passes each file as its own
+  `--schema`, in the target's order. The files are a set: their order
+  and their names change neither the schema nor its digest, so the
+  digest is the one the other builds write. The configuration's `schemaExtensions` resolve
   relative to the configuration, as they do under the SwiftPM plugin,
   since the sandbox holds every declared input at its path. List the
   files in `schema_extensions` and leave the configuration as it is.
@@ -154,7 +159,9 @@ screens from `examples/RickAndMorty` and
 `scripts/check-bazel.sh` builds that example in the sandbox, over the
 compiler built in the checkout. The script copies the output into
 `Generated/` and runs the check test. Then it edits one file and runs
-the test again. CI's `bazel` job is that script. The example compiles
+the test again. It also builds and checks
+`bazel/examples/rickandmorty/several`, whose schema is a filegroup of two
+files, the extension's file first. CI's `bazel` job is that script. The example compiles
 nothing: the generated Swift is what the SwiftPM plugin writes for the
 same sources, and the package's own build compiles it.
 

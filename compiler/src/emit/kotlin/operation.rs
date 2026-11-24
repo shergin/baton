@@ -78,9 +78,9 @@ pub(super) fn operation_text(operation: &OperationValue, lenses: &Lenses) -> Str
             &operation.data,
             &format!("{class}.{}", escape(&operation.data.name)),
         );
-        if let Some(optimistic) = &operation.optimistic {
+        if let Some(response) = &operation.response {
             writer.blank();
-            builder(writer, optimistic, converters);
+            builder(writer, response, converters);
         }
     });
     writer.blank();

@@ -217,7 +217,10 @@ client-only: it compiles, marked so; its text is the one the author wrote,
 printed compact from the program before the transforms that would leave
 nothing of it; it takes no persisted id and is left out of the persisted
 file. A mutation or a subscription of client fields alone is refused, since
-the one is sent by definition and the other is the server's stream. A spread inside an
+the one is sent by definition and the other is the server's stream. A field
+another backend answers through the app's transport is declared in the
+schema, not in the client schema extensions: it is a server field, sent,
+waited for and healed. A spread inside an
 inline fragment on an abstract selection carries `@alias`, Relay's rule.
 Under `onError: NULL` a field the schema types non-null is typed by its
 semantic nullability: non-optional under `@throwOnFieldError` and inside

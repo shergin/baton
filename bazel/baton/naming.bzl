@@ -52,8 +52,8 @@ SOURCE_ATTRS = {
         mandatory = True,
     ),
     "schema": attr.label(
-        doc = "The schema SDL, passed as `--schema`, so it may be a build's own output.",
-        allow_single_file = True,
+        doc = "The schema SDL, passed as `--schema`, so it may be a build's own output: one file, or a target of several, each passed in turn, for a schema `schemaDir` keeps in files.",
+        allow_files = True,
         mandatory = True,
     ),
     "schema_extensions": attr.label_list(

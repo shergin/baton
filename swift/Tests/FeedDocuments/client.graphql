@@ -1,0 +1,7 @@
+# What the app keeps of its own: the quotes its service commits, in one
+# payload per interval, through one client-only query whose root is one
+# list. The field is transient, so its cell never reaches the image, while
+# the quotes it links are the server's records and do.
+extend type Query {
+  liveQuotes: [Quote]
+}

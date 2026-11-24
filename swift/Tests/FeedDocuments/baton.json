@@ -1,0 +1,6 @@
+{
+  "schemaDir": "schema",
+  "schemaExtensions": ["client.graphql"],
+  "identity": { "default": ["id"] },
+  "transient": { "fields": ["Query.liveQuotes"] }
+}

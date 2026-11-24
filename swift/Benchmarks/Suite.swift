@@ -534,6 +534,9 @@ func run() async throws {
     try await section("anilist", "two chunks of a MediaListCollection recorded from AniList, 1,000 entries") {
         try await aniListBench()
     }
+    try await section("stream", "ticks of a feed that is not GraphQL, through commitPayload and through a subscription") {
+        try await streamBench(data: data)
+    }
     try await section("floors", "the platform's own costs beside the rows above") {
         try floorsBench()
     }

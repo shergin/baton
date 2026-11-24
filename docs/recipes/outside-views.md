@@ -104,7 +104,13 @@ operation's shape, a socket's tick, a payload built by hand, goes through
 edge directives apply and the image is written. A mutation's generated
 `OptimisticResponse` renders a `Payload` too, so a service that knows a
 write's outcome commits it typed, `commitPayload(mutation, response.payload)`,
-rather than as a JSON string.
+rather than as a JSON string. A query or a subscription that carries
+`@raw_response_type` nests the same builder, `RawResponse`, so a service
+that turns another protocol's messages into a query's response commits
+them typed as well, and the build tells it when the selection changes.
+Data from a backend that is not the server, and whether a service or the
+app's transport carries it, is
+[a backend that is not GraphQL](another-backend.md).
 
 ## Why no `fetchQuery` returns data
 

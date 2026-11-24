@@ -156,3 +156,63 @@ spelled by the view, which would let a `networkOnly` attach of a
 client-only operation fetch nothing and say nothing; and keeping the
 refusal, which sends per-entity state out of the store, where the first
 section of this record says it belongs.
+
+## Another backend is schema, 2026-11-23
+
+This record stands, and its line is drawn: a client field is what no
+transport is asked for. A second backend the app's own transport answers,
+a socket of another protocol or a REST endpoint, is not client data. Its
+fields are declared in a file of the schema, which may `extend` a type
+there and keep the fields the server's, and are sent, waited for and
+healed like any server field. The refusal of a mutation or a subscription
+of client fields alone stands, and its message says where such a field
+belongs. [The schema is what the transport answers](the-schema-is-what-the-transport-answers.md)
+is the record.
+
+## A stream's ticks, measured, 2026-11-23
+
+Supersedes the Evidence's last item, that a payload committed for every
+tick of a stream is not measured yet, and the last sentence of "Settled by
+the build", that the door is not yet recommended for one. It is measured,
+and recommended in a paced shape.
+
+[The bench entry of 2026-11-23](../../BENCHMARKS.md#unreleased-a-feeds-ticks-through-the-two-doors--2026-11-23)
+measured the Swift runtime on an Apple M1 Pro: ticks of two scalar fields
+committed through `commitPayload` one call a tick and through a
+subscription the app's transport answers, at 1 to 1,000 ticks a second
+over 1, 10 and 100 keys, sustained for ten seconds with an image attached
+and 21 readers, beside bursts of 1,000 and one payload of 100 keys. The
+Kotlin runtime was not benched.
+
+- Delivery kept up in every run: the last tick committed within 7.1 ms of
+  its send through either door, and the image's writer emptied its queue
+  within 7.3 ms of the last tick.
+- The limit is the main thread's share of each frame. It crosses a tenth
+  of a frame per frame, 100 ms/s, at 1,000 ticks a second, through
+  `commitPayload` over 1 key and over 100 and through the subscription
+  over every key count; at 100 ticks a second the highest is 79 ms/s.
+- The cost is per commit far more than per value: a tick costs the main
+  thread 13 µs called back to back and 89 µs or more at a sustained rate,
+  and one payload carrying 100 keys 176 µs.
+- The shape recommended for a service: decode off the main actor, keep
+  the newest pending value per key, and once per interval commit one
+  payload through a client-only query over a client list field of the
+  server's type, its root field transient. At 1,000 ticks a second over
+  100 keys it cost the main thread 10.9 to 55.6 ms/s at 30 and 60 commits
+  a second, against 548.1 for a commit per tick in the same run, and wrote
+  a tenth of the bytes. [A fast stream, paced](../recipes/stream.md) is
+  the recipe.
+- Two costs come of the store's collection, a mark of the store on the
+  main actor. A root per key that nothing holds is pushed out of the
+  release buffer by every tick past ten keys, and a collection follows:
+  over 100 keys, 405.4 ms/s at 1,000 ticks a second against 89.0 with
+  every root held. A commit that drops a link schedules a collection too,
+  so a paced list carrying only the keys that ticked costs one a commit;
+  listing every known key keeps the list growing and runs none, 32.2
+  against 10.9 ms/s at 30 commits a second. How eagerly the store
+  collects is its own schedule, set by a bench; these costs describe
+  today's schedule, not the contract.
+- No batching API was added: no `commitPayloads`, and the runtime merges
+  or drops no tick. A merge would have to know that a newer value for a
+  key supersedes an older one, which only the app knows, and one payload
+  per interval already costs what the bench shows.

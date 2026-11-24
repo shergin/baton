@@ -16,6 +16,10 @@
 //!   a synthetic corpus three times, deciding and printing it each time, and
 //!   prints the warm timings of every phase, the front end's and the two
 //!   after it.
+//!
+//! `--schema` names a schema file or a directory of `.graphql` files, in place
+//! of the configuration's `schema` or `schemaDir`, and may repeat: the files
+//! together are the schema, in the order given.
 
 mod config;
 mod decide;
@@ -173,11 +177,15 @@ enum DriverError {
 }
 
 /// Parsed command-line options: `--name value` pairs, flags, repeated
-/// `--emit`, and the remaining positional paths.
+/// `--emit` and `--schema`, and the remaining positional paths.
 struct Options {
     values: BTreeMap<String, String>,
     flags: BTreeSet<String>,
     emits: Vec<(PathBuf, PathBuf)>,
+    /// The schema's files or directories, in the order given, in place of
+    /// the configuration's: a build system that declares each input names
+    /// each file.
+    schemas: Vec<PathBuf>,
     paths: Vec<PathBuf>,
 }
 
@@ -195,6 +203,7 @@ fn parse_options(
         values: BTreeMap::new(),
         flags: BTreeSet::new(),
         emits: Vec::new(),
+        schemas: Vec::new(),
         paths: Vec::new(),
     };
     let mut iterator = arguments.iter();
@@ -226,6 +235,8 @@ fn parse_options(
                 options
                     .emits
                     .push((PathBuf::from(source), PathBuf::from(output)));
+            } else if name == "schema" {
+                options.schemas.push(PathBuf::from(value));
             } else {
                 options.values.insert(name.to_string(), value.clone());
             }
@@ -236,14 +247,11 @@ fn parse_options(
     Ok(options)
 }
 
-/// The schema SDL and its path, from `--schema`, or from the `schema` entry of
-/// the `--config` file. The config also carries the lookups.
-/// The schema's text and path, the texts and paths of the configuration's
-/// schema extensions, and the configuration.
+/// The schema's files, from every `--schema`, or from the `schema` or
+/// `schemaDir` entry of the `--config` file, the files of the
+/// configuration's schema extensions, and the configuration.
 struct SchemaSources {
-    sdl: String,
-    path: String,
-    extensions: Vec<(String, String)>,
+    files: pipeline::SchemaSources,
     config: Config,
 }
 
@@ -252,21 +260,46 @@ fn read_schema(options: &Options) -> Result<SchemaSources, DriverError> {
         Some(path) => Config::load(Path::new(path))?,
         None => Config::default(),
     };
-    let path =
-        match (options.values.get("schema"), options.values.get("config")) {
-            (Some(schema), _) => PathBuf::from(schema),
-            (None, Some(config_path)) if !config.schema.is_empty() => {
-                config.schema_path(Path::new(config_path))
+    let named = !config.schema.is_empty() || config.schema_dir.is_some();
+    let paths = match (options.schemas.is_empty(), options.values.get("config")) {
+        (false, _) => options.schemas.clone(),
+        (true, Some(config_path)) if named => {
+            let path = config
+                .schema_path(Path::new(config_path))
+                .ok_or_else(|| {
+                    DriverError::Usage(format!(
+                        "{config_path} names both `schema` and `schemaDir`: the schema is one file or one directory of files"
+                    ))
+                })?;
+            // `schemaDir` names a directory and nothing else, so a file
+            // there is a mistake the configuration is told about, not a
+            // schema of one file.
+            if config.schema_dir.is_some() && !path.is_dir() {
+                return Err(DriverError::Usage(format!(
+                    "`schemaDir` names {}, which is not a directory; a schema of one file is named by `schema`",
+                    path.display()
+                )));
             }
-            _ => return Err(DriverError::Usage(
-                "`--schema <file>` or `--config <baton.json>` with a `schema` entry is required"
+            vec![path]
+        }
+        _ => {
+            return Err(DriverError::Usage(
+                "`--schema <file or directory>` or `--config <baton.json>` with a `schema` or `schemaDir` entry is required"
                     .to_string(),
-            )),
-        };
-    let sdl = std::fs::read_to_string(&path).map_err(|source| DriverError::Read {
-        path: path.display().to_string(),
-        source,
-    })?;
+            ));
+        }
+    };
+    let mut schema = Vec::new();
+    for path in &paths {
+        let mut files = read_files(path)?;
+        if files.is_empty() {
+            return Err(DriverError::Usage(format!(
+                "{} holds no `.graphql` file: the schema is the files of that directory",
+                path.display()
+            )));
+        }
+        schema.append(&mut files);
+    }
     let base = options
         .values
         .get("config")
@@ -276,25 +309,32 @@ fn read_schema(options: &Options) -> Result<SchemaSources, DriverError> {
         .unwrap_or_default();
     let mut extensions = Vec::new();
     for entry in &config.schema_extensions {
-        for file in extension_files(&base.join(entry))? {
-            let text = std::fs::read_to_string(&file).map_err(|source| DriverError::Read {
-                path: file.display().to_string(),
-                source,
-            })?;
-            extensions.push((text, file.to_string_lossy().into_owned()));
-        }
+        extensions.append(&mut read_files(&base.join(entry))?);
     }
     Ok(SchemaSources {
-        sdl,
-        path: path.to_string_lossy().into_owned(),
-        extensions,
+        files: pipeline::SchemaSources { schema, extensions },
         config,
     })
 }
 
-/// The files a `schemaExtensions` entry names: the file itself, or the
-/// `.graphql` files of a directory, in name order.
-fn extension_files(path: &Path) -> Result<Vec<PathBuf>, DriverError> {
+/// Reads the files a path names: the file itself, or the `.graphql` files
+/// of a directory, in name order.
+fn read_files(path: &Path) -> Result<Vec<pipeline::SchemaFile>, DriverError> {
+    graphql_files(path)?
+        .into_iter()
+        .map(|file| {
+            let text = std::fs::read_to_string(&file).map_err(|source| DriverError::Read {
+                path: file.display().to_string(),
+                source,
+            })?;
+            Ok(pipeline::SchemaFile::new(text, file.to_string_lossy()))
+        })
+        .collect()
+}
+
+/// The files a schema's or a `schemaExtensions` entry's path names: the
+/// file itself, or the `.graphql` files of a directory, in name order.
+fn graphql_files(path: &Path) -> Result<Vec<PathBuf>, DriverError> {
     if !path.is_dir() {
         return Ok(vec![path.to_path_buf()]);
     }
@@ -333,7 +373,7 @@ fn plan(arguments: &[String]) -> Result<(), DriverError> {
     let language = language_of(&options)?;
     let mut sources = read_schema(&options)?;
     sources.config.language = language;
-    let (sdl, schema_path, config) = (&sources.sdl, &sources.path, &sources.config);
+    let config = &sources.config;
     let (documents, errors) = documents::collect(&options.paths);
     for error in &errors {
         eprintln!("{error}");
@@ -341,14 +381,14 @@ fn plan(arguments: &[String]) -> Result<(), DriverError> {
     if !errors.is_empty() {
         return Err(DriverError::Reported);
     }
-    match pipeline::compile(sdl, schema_path, &sources.extensions, &documents, config) {
+    match pipeline::compile(&sources.files, &documents, config) {
         Ok(compiled) => {
             println!("{}", serde_json::to_string_pretty(&compiled.plan)?);
             report_timings(&compiled.timings, documents.len());
             Ok(())
         }
         Err(diagnostics) => {
-            let known = with_schema(&documents, schema_path, sdl);
+            let known = with_schema(&documents, &sources.files);
             for diagnostic in &diagnostics {
                 eprintln!("{}", diagnostics::render(diagnostic, &known));
             }
@@ -379,17 +419,11 @@ fn compile_documents(options: &Options) -> Result<Compilation, DriverError> {
     for error in &errors {
         eprintln!("{error}");
     }
-    let compiled = pipeline::compile(
-        &sources.sdl,
-        &sources.path,
-        &sources.extensions,
-        &documents,
-        &sources.config,
-    );
+    let compiled = pipeline::compile(&sources.files, &documents, &sources.config);
     let plan = match compiled {
         Ok(compiled) => compiled.plan,
         Err(diagnostics) => {
-            let known = with_schema(&documents, &sources.path, &sources.sdl);
+            let known = with_schema(&documents, &sources.files);
             for diagnostic in &diagnostics {
                 eprintln!("{}", diagnostics::render(diagnostic, &known));
             }
@@ -859,10 +893,13 @@ fn check_targets(
     Ok(())
 }
 
-/// The documents a diagnostic may point into: the sources and the schema.
-fn with_schema(documents: &[Document], schema_path: &str, sdl: &str) -> Vec<Document> {
+/// The documents a diagnostic may point into: the sources, the schema's
+/// files and its client extensions.
+fn with_schema(documents: &[Document], schema: &pipeline::SchemaSources) -> Vec<Document> {
     let mut known = documents.to_vec();
-    known.push(Document::schema(schema_path, sdl));
+    for file in schema.schema.iter().chain(&schema.extensions) {
+        known.push(Document::schema(&file.path, &file.text));
+    }
     known
 }
 
@@ -898,7 +935,7 @@ fn bench(arguments: &[String]) -> Result<(), DriverError> {
     let language = language_of(&options)?;
     let mut sources = read_schema(&options)?;
     sources.config.language = language;
-    let (sdl, schema_path, config) = (&sources.sdl, &sources.path, &sources.config);
+    let config = &sources.config;
     let count: usize = options
         .values
         .get("fragments")
@@ -912,7 +949,7 @@ fn bench(arguments: &[String]) -> Result<(), DriverError> {
     let documents = synthetic_corpus(count);
     let mut last = None;
     for round in 0..3 {
-        match pipeline::compile(sdl, schema_path, &sources.extensions, &documents, config) {
+        match pipeline::compile(&sources.files, &documents, config) {
             Ok(compiled) => {
                 eprintln!(
                     "round {round}: {} fragments, {} operations",

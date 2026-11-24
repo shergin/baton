@@ -10,13 +10,14 @@ use crate::naming::NameError;
 fn emitted_against(sdl: &str, text: &str) -> Result<crate::emit::Output, Vec<String>> {
     let mut config: Config = serde_json::from_str("{}").expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
-    let compiled =
-        compile(sdl, "schema.graphql", &[], &[document(text)], &config).map_err(|errors| {
+    let compiled = compile(&one_file(sdl, "schema.graphql"), &[document(text)], &config).map_err(
+        |errors| {
             errors
                 .iter()
                 .map(|error| error.message().to_string())
                 .collect::<Vec<_>>()
-        })?;
+        },
+    )?;
     crate::emit::swift(&compiled.plan, &config).map_err(|errors| {
         errors
             .iter()

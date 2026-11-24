@@ -26,6 +26,8 @@ in Kotlin, and each "not this" below links its reason.
 | `RelayEnvironmentProvider` | `.environment(\.baton, environment)` | `CompositionLocalProvider(LocalBaton provides environment)` |
 | `Environment` with `Network.create(fetch, subscribe)` | `Environment(transport:subscriptions:)`; a transport has one verb, `send`, yielding a stream of payloads | `Environment(transport, subscriptions)`; `send` returns a `Flow` of payloads |
 | `persistConfig` and `persisted-queries.json` | `persistConfig` in `baton.json`; an operation carries its id, the file is written by the build | The same; the Gradle task's `persisted` property places the file |
+| `schema` or `schemaDir` in the configuration | The same keys in `baton.json`: one file, or a directory of `.graphql` files read in name order; an `extend` in a schema file adds server fields, and a backend other than the server is a file of its own there ([why](../decisions/the-schema-is-what-the-transport-answers.md)) | The same; the Gradle task declares the directory's files as inputs |
+| `@raw_response_type` | The same directive on a query or a subscription: the value nests `RawResponse`, a typed builder of the response whose `payload` `commitPayload` takes ([why](../decisions/a-raw-response-is-asked-for.md)); on a mutation it adds nothing, since `OptimisticResponse` is that builder | The same; `RawResponse` is a class per selection set whose parameters default to null |
 | `commitPayload(operationDescriptor, payload)` | `environment.commitPayload(Q(...), Payload(data))` | `environment.commitPayload(Q(...), Payload(bytes))`, a `suspend` function |
 | `RecordSource` persisted by hand | `Persistence(name:version:)`: an image on disk the launch renders from | `Persistence.named(name, version = ...)` or `Persistence(path)`, handed to `Store(persistence)`; on Android under the app's `cacheDir` |
 | `environment.getStore().invalidateStore()` | `environment.invalidate()`; `revalidate()` refetches what is stale when the app returns | The same |
@@ -60,12 +62,17 @@ in Kotlin, and each "not this" below links its reason.
 - **Client fields are described and committed**, through `schemaExtensions`
   and `commitPayload`, and there are no resolvers and no
   `commitLocalUpdate`.
+- **Live data from another backend is schema, not a live resolver.** A
+  socket of another protocol is declared in a schema file and answered by
+  the app's own transport, as a subscription a view holds; or a service
+  that keeps the socket commits its payloads
+  ([a backend that is not GraphQL](another-backend.md)).
 
 ## Not ported, and why
 
 | Relay | Why not | What reopens it |
 |---|---|---|
-| Resolvers, live resolvers, `commitLocalUpdate`, `@updatable`, `@assignable` | A second way to write and logic in the store; a payload for an operation says every write | A write no payload for an operation can say |
+| Resolvers, live resolvers, `commitLocalUpdate`, `@updatable`, `@assignable` | A second way to write and logic in the store; a payload for an operation says every write, and live data from another backend is a subscription the app's transport answers | A write no payload for an operation can say |
 | `@module`, `@match` | Code splitting is a bundler's concern | none |
 | Reader snapshots, `seenRecords`, store subscriptions | Observation and Compose's snapshot state do what they do, per field | none |
 | Suspense, the missed-update epoch | Reads are synchronous; the heal refetches | none |

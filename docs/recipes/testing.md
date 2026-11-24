@@ -36,14 +36,17 @@ committed, so the preview draws from the fixture through the same lenses.
 network. The payload may carry part of what the operation selects, and
 what it leaves out reads as missing, as a partial response would.
 
-A recorded fixture is one source of a payload; a mutation's typed
-optimistic response is the other. The generated `OptimisticResponse`
-renders a `Payload`, its `payload`, so a preview or a test commits what a
-write would show through the same door, typed against the operation's
-shape instead of written as JSON by hand:
-`commitPayload(mutation, response.payload)`. There is no third builder: a
-query's payload is a recorded response, and a mutation's is its
-optimistic response or a recorded one.
+A recorded fixture is one source of a payload; a typed builder is the
+other. A mutation's generated `OptimisticResponse` renders a `Payload`,
+its `payload`, so a preview or a test commits what a write would show
+through the same door, typed against the operation's shape instead of
+written as JSON by hand: `commitPayload(mutation, response.payload)`. A
+query or a subscription has the same builder when it asks for it with
+Relay's `@raw_response_type`: its value nests `RawResponse`, and
+`commitPayload(query, response.payload)` commits it. Without the
+directive, a query's payload is a recorded response. A builder writes
+values and never a null, so a fixture that nulls a field is written as
+JSON ([the decision](../decisions/a-raw-response-is-asked-for.md)).
 
 In Kotlin, `commitPayload` is a suspend function that runs on the
 environment's main dispatcher, whatever thread calls it. `Payload` wraps

@@ -1,0 +1,9 @@
+# The paced shape of the stream section: a service commits every pending
+# tick in one payload per interval through one client-only query whose root
+# field is a client list of the server's own type. `liveCharacters` is
+# transient in `baton.json`; `liveCharactersImaged`, its twin, is not, for
+# the row that measures what the root's cell costs the image.
+extend type Query {
+  liveCharacters: [Character]
+  liveCharactersImaged: [Character]
+}

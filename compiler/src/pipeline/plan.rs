@@ -167,6 +167,11 @@ pub struct OperationPlan {
     /// the author wrote it, and it has no id.
     #[serde(skip_serializing_if = "is_false")]
     pub client_only: bool,
+    /// Relay's `@raw_response_type`: the operation's value nests a typed
+    /// builder of its response, as a mutation's always does for its
+    /// optimistic response.
+    #[serde(skip_serializing_if = "is_false")]
+    pub raw_response: bool,
     /// `@deletes(type:id:)`: the records a mutation deletes, each named by
     /// its type and the variable its key is passed as.
     #[serde(skip_serializing_if = "Vec::is_empty")]

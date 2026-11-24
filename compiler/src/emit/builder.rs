@@ -1,4 +1,5 @@
-//! A mutation's optimistic-response builders.
+//! An operation's response builders: a mutation's optimistic response, and
+//! the raw response of a query or a subscription that asks for one.
 //!
 //! A builder names the runtime's module only in types, where Swift looks up
 //! types alone: a payload field named `Baton` is a property that hides the
@@ -10,14 +11,24 @@
 
 use super::swift::{SwiftType, member, parameter, scalar_type, swift_literal};
 use super::writer::Writer;
-use crate::decide::{BuilderPlan, BuilderValue};
+use crate::decide::{BuilderPlan, BuilderValue, ResponseKind};
 
-/// Writes an optimistic-response builder and those nested in it.
+/// What a builder's doc comment says it is, in either language.
+pub(in crate::emit) fn summary(kind: ResponseKind) -> &'static str {
+    match kind {
+        ResponseKind::Optimistic => {
+            "A partial response to show before the server answers; absent fields leave the store untouched."
+        }
+        ResponseKind::Raw => {
+            "A response to the operation, written by hand: what `commitPayload` takes, or a transport of the app's own yields; absent fields leave the store untouched."
+        }
+    }
+}
+
+/// Writes a response builder and those nested in it.
 pub(super) fn builder(writer: &mut Writer, builder: &BuilderPlan) {
     let variable = SwiftType::runtime("Variable");
-    writer.doc(
-        "A partial response to show before the server answers; absent fields leave the store untouched.",
-    );
+    writer.doc(summary(builder.kind));
     writer.block(
         format!(
             "nonisolated public struct {}: Sendable",

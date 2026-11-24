@@ -213,3 +213,246 @@ fn a_configuration_that_spells_on_error_abort_is_refused_with_a_message_naming_h
         assert!(message.contains(word), "{message}");
     }
 }
+
+// Where the schema is read from.
+
+/// The options `plan` reads from `texts`.
+fn plan_options(texts: &[&str]) -> Options {
+    parse_options("plan", &arguments(texts), &["schema", "config", "language"])
+        .unwrap_or_else(|error| panic!("{error}"))
+}
+
+/// The schema's files `read_schema` reads for `texts`, each as its path's
+/// file name and its text, or the usage error it refuses them with.
+fn schema_read(texts: &[&str]) -> Result<Vec<(String, String)>, String> {
+    match read_schema(&plan_options(texts)) {
+        Ok(sources) => Ok(sources
+            .files
+            .schema
+            .iter()
+            .map(|file| {
+                let name = Path::new(&file.path)
+                    .file_name()
+                    .expect("a schema file has a name")
+                    .to_string_lossy()
+                    .into_owned();
+                (name, file.text.clone())
+            })
+            .collect()),
+        Err(DriverError::Usage(message)) => Err(message),
+        Err(other) => panic!("the schema is refused only as a usage error: {other}"),
+    }
+}
+
+/// Writes each of `files`, named relative to `directory`, with its name as
+/// its text.
+fn write_files(directory: &Scratch, files: &[&str]) {
+    for name in files {
+        let path = directory.join(name);
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent).expect("the directory is created");
+        }
+        std::fs::write(&path, name).expect("the file is written");
+    }
+}
+
+fn read(names: &[&str]) -> Result<Vec<(String, String)>, String> {
+    Ok(names
+        .iter()
+        .map(|name| {
+            let file = Path::new(name)
+                .file_name()
+                .expect("a name has a file name")
+                .to_string_lossy()
+                .into_owned();
+            (file, name.to_string())
+        })
+        .collect())
+}
+
+#[test]
+fn schema_dir_names_a_directory_whose_graphql_files_in_name_order_are_the_schema() {
+    let directory = Scratch::new("schema-dir");
+    write_files(
+        &directory,
+        &["schema/b.graphql", "schema/a.graphql", "schema/notes.txt"],
+    );
+    let config = directory.join("baton.json");
+    std::fs::write(&config, r#"{"schemaDir": "schema"}"#).expect("the configuration is written");
+    assert_eq!(
+        schema_read(&["--config", &config.to_string_lossy()]),
+        read(&["schema/a.graphql", "schema/b.graphql"])
+    );
+}
+
+#[test]
+fn a_configuration_naming_both_schema_and_schema_dir_is_a_usage_error() {
+    let directory = Scratch::new("schema-both");
+    write_files(&directory, &["schema.graphql", "schema/a.graphql"]);
+    let config = directory.join("baton.json");
+    std::fs::write(
+        &config,
+        r#"{"schema": "schema.graphql", "schemaDir": "schema"}"#,
+    )
+    .expect("the configuration is written");
+    let config = config.to_string_lossy();
+    assert_eq!(
+        schema_read(&["--config", &config]),
+        Err(format!(
+            "{config} names both `schema` and `schemaDir`: the schema is one file or one directory of files"
+        ))
+    );
+}
+
+#[test]
+fn schema_dir_naming_a_file_is_a_usage_error() {
+    let directory = Scratch::new("schema-dir-file");
+    write_files(&directory, &["schema.graphql"]);
+    let config = directory.join("baton.json");
+    std::fs::write(&config, r#"{"schemaDir": "schema.graphql"}"#)
+        .expect("the configuration is written");
+    assert_eq!(
+        schema_read(&["--config", &config.to_string_lossy()]),
+        Err(format!(
+            "`schemaDir` names {}, which is not a directory; a schema of one file is named by `schema`",
+            directory.join("schema.graphql").display()
+        ))
+    );
+}
+
+#[test]
+fn a_schema_directory_without_a_graphql_file_is_a_usage_error() {
+    let directory = Scratch::new("schema-dir-empty");
+    write_files(&directory, &["schema/notes.txt"]);
+    let config = directory.join("baton.json");
+    std::fs::write(&config, r#"{"schemaDir": "schema"}"#).expect("the configuration is written");
+    let expected = Err(format!(
+        "{} holds no `.graphql` file: the schema is the files of that directory",
+        directory.join("schema").display()
+    ));
+    assert_eq!(
+        schema_read(&["--config", &config.to_string_lossy()]),
+        expected
+    );
+    assert_eq!(
+        schema_read(&["--schema", &directory.join("schema").to_string_lossy()]),
+        expected,
+        "`--schema` naming the directory is refused alike"
+    );
+}
+
+#[test]
+fn a_repeated_schema_option_reads_its_files_and_directories_in_the_order_given() {
+    let directory = Scratch::new("schema-repeated");
+    write_files(
+        &directory,
+        &[
+            "server.graphql",
+            "feeds/b.graphql",
+            "feeds/a.graphql",
+            "rest.graphql",
+        ],
+    );
+    let path = |name: &str| directory.join(name).to_string_lossy().into_owned();
+    assert_eq!(
+        schema_read(&[
+            "--schema",
+            &path("rest.graphql"),
+            "--schema",
+            &path("server.graphql"),
+        ]),
+        read(&["rest.graphql", "server.graphql"]),
+        "the files are the schema in the order the options name them"
+    );
+    assert_eq!(
+        schema_read(&[
+            "--schema",
+            &path("server.graphql"),
+            "--schema",
+            &path("feeds"),
+            "--schema",
+            &path("rest.graphql"),
+        ]),
+        read(&[
+            "server.graphql",
+            "feeds/a.graphql",
+            "feeds/b.graphql",
+            "rest.graphql"
+        ]),
+        "a directory gives its files in name order where it is named"
+    );
+}
+
+#[test]
+fn the_schema_option_takes_the_place_of_the_configuration_s_schema() {
+    let directory = Scratch::new("schema-override");
+    write_files(&directory, &["configured.graphql", "named.graphql"]);
+    let config = directory.join("baton.json");
+    std::fs::write(
+        &config,
+        r#"{"schema": "configured.graphql", "schemaExtensions": []}"#,
+    )
+    .expect("the configuration is written");
+    let config = config.to_string_lossy();
+    assert_eq!(
+        schema_read(&["--config", &config]),
+        read(&["configured.graphql"])
+    );
+    assert_eq!(
+        schema_read(&[
+            "--config",
+            &config,
+            "--schema",
+            &directory.join("named.graphql").to_string_lossy(),
+        ]),
+        read(&["named.graphql"])
+    );
+}
+
+#[test]
+fn a_diagnostic_in_a_second_schema_file_or_an_extension_file_renders_at_its_line_and_column() {
+    let directory = Scratch::new("schema-positions");
+    let server = "type Query {\n  name: String\n}\n";
+    let second = "# A second backend.\n\nextend input Missing {\n  rank: Int\n}\n";
+    let extension = "# The app's own fields.\n\nextend type Query {\n  draft: String!\n}\n";
+    std::fs::create_dir_all(directory.join("schema")).expect("the directory is created");
+    std::fs::write(directory.join("schema/server.graphql"), server).expect("the schema is written");
+    std::fs::write(directory.join("extension.graphql"), extension)
+        .expect("the extension is written");
+    let config = directory.join("baton.json");
+    std::fs::write(
+        &config,
+        r#"{"schemaDir": "schema", "schemaExtensions": ["extension.graphql"]}"#,
+    )
+    .expect("the configuration is written");
+    let rendered = |options: &[&str]| -> Vec<String> {
+        let sources = read_schema(&plan_options(options)).unwrap_or_else(|error| panic!("{error}"));
+        let diagnostics = pipeline::compile(&sources.files, &[], &sources.config)
+            .err()
+            .expect("the schema does not compile");
+        let known = with_schema(&[], &sources.files);
+        diagnostics
+            .iter()
+            .map(|diagnostic| diagnostics::render(diagnostic, &known).to_string())
+            .collect()
+    };
+    let schema_directory = Scratch::new("schema-positions-schema");
+    std::fs::write(schema_directory.join("a.graphql"), server).expect("the schema is written");
+    std::fs::write(schema_directory.join("b.graphql"), second).expect("the schema is written");
+    assert_eq!(
+        rendered(&["--schema", &schema_directory.0.to_string_lossy()]),
+        vec![format!(
+            "{}:3:14: error: `extend input` is not built: Relay's front end has no code for it, so write what it adds in the definition it extends",
+            schema_directory.join("b.graphql").display()
+        )],
+        "the second schema file's line and column"
+    );
+    assert_eq!(
+        rendered(&["--config", &config.to_string_lossy()]),
+        vec![format!(
+            "{}:4:3: error: the client field `Query.draft` is non-null: a client field is nullable, since no server promises it",
+            directory.join("extension.graphql").display()
+        )],
+        "the extension file's line and column"
+    );
+}

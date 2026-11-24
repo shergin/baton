@@ -110,7 +110,7 @@ pub fn type_constant(name: &str) -> String {
 /// of the same name would hide from every file: the shared enums, the
 /// modules, Swift's keywords and what the generated code spells from the
 /// standard library.
-pub const MODULE_RESERVED_NAMES: [&str; 15] = [
+pub const MODULE_RESERVED_NAMES: [&str; 16] = [
     "Swift",
     "Foundation",
     "Baton",
@@ -128,6 +128,7 @@ pub const MODULE_RESERVED_NAMES: [&str; 15] = [
     "Data",
     "Action",
     "OptimisticResponse",
+    "RawResponse",
 ];
 
 /// A schema enum's Swift type, declared at the module's top level: its own
@@ -365,6 +366,7 @@ impl Naming for SwiftNaming {
             Spelled::Data => "Data",
             Spelled::Action => "Action",
             Spelled::OptimisticResponse => "OptimisticResponse",
+            Spelled::RawResponse => "RawResponse",
         }
     }
 
@@ -380,6 +382,7 @@ impl Naming for SwiftNaming {
             Spelled::OwnType => format!("Swift's keyword `{name}`"),
             Spelled::Data => format!("the operation's root lens `{name}`"),
             Spelled::Action | Spelled::OptimisticResponse => format!("the mutation's `{name}`"),
+            Spelled::RawResponse => format!("the operation's `{name}`"),
         }
     }
 
@@ -479,16 +482,19 @@ impl Naming for SwiftNaming {
                 ));
             }
         }
-        for spelled in self.value_types(operation.kind) {
+        for spelled in self.value_types(operation) {
             after.push(Declared::spelled(self, spelled));
         }
         ValueNames { before, after }
     }
 
-    fn value_types(&self, kind: OperationKind) -> Vec<Spelled> {
-        match kind {
+    fn value_types(&self, operation: &OperationPlan) -> Vec<Spelled> {
+        match operation.kind {
             OperationKind::Mutation => {
                 vec![Spelled::Data, Spelled::Action, Spelled::OptimisticResponse]
+            }
+            OperationKind::Query | OperationKind::Subscription if operation.raw_response => {
+                vec![Spelled::Data, Spelled::RawResponse]
             }
             OperationKind::Query | OperationKind::Subscription => vec![Spelled::Data],
         }

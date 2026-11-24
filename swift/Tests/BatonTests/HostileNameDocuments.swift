@@ -48,7 +48,7 @@ struct HostileNameDocuments {
           # What an operation value, a mutation's action and its optimistic response declare.
           variables: name name: name document: name text: name plan: name
           errorBehavior: name throwsOnFieldError: name bubbles: name hasIncremental: name isClientOnly: name cacheExpiration: name Data: name
-          Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name Op: name
+          Action: name OptimisticResponse: name RawResponse: name hash: name commit: name callAsFunction: name Op: name
           variable: name payload: name
           # What the runtime's protocols give a generated type.
           hashValue: name
@@ -104,7 +104,7 @@ struct HostileNameDocuments {
           document: origin { id } text: origin { id } plan: origin { id }
           errorBehavior: origin { id } throwsOnFieldError: origin { id } bubbles: origin { id }
           hasIncremental: origin { id } isClientOnly: origin { id } cacheExpiration: origin { id } Data: origin { id } Action: origin { id }
-          OptimisticResponse: origin { id } hash: origin { id } commit: origin { id }
+          OptimisticResponse: origin { id } RawResponse: origin { id } hash: origin { id } commit: origin { id }
           callAsFunction: origin { id } Op: origin { id } variable: origin { id } payload: origin { id }
           # What the runtime's protocols give a generated type.
           hashValue: origin { id }
@@ -185,7 +185,7 @@ struct HostileNameDocuments {
           ... @alias(as: "errorBehavior") { name } ... @alias(as: "throwsOnFieldError") { name }
           ... @alias(as: "bubbles") { name } ... @alias(as: "hasIncremental") { name } ... @alias(as: "isClientOnly") { name } ... @alias(as: "cacheExpiration") { name }
           ... @alias(as: "Data") { name } ... @alias(as: "Action") { name }
-          ... @alias(as: "OptimisticResponse") { name } ... @alias(as: "hash") { name }
+          ... @alias(as: "OptimisticResponse") { name } ... @alias(as: "RawResponse") { name } ... @alias(as: "hash") { name }
           ... @alias(as: "commit") { name } ... @alias(as: "callAsFunction") { name }
           ... @alias(as: "Op") { name } ... @alias(as: "variable") { name } ... @alias(as: "payload") { name }
           # What the runtime's protocols give a generated type.
@@ -341,6 +341,7 @@ struct HostileNameDocuments {
           ... @alias(as: "Data") { ...HostileSpreadTarget_character }
           ... @alias(as: "Action") { ...HostileSpreadTarget_character }
           ... @alias(as: "OptimisticResponse") { ...HostileSpreadTarget_character }
+          ... @alias(as: "RawResponse") { ...HostileSpreadTarget_character }
           ... @alias(as: "hash") { ...HostileSpreadTarget_character }
           ... @alias(as: "commit") { ...HostileSpreadTarget_character }
           ... @alias(as: "callAsFunction") { ...HostileSpreadTarget_character }
@@ -432,7 +433,7 @@ struct HostileNameDocuments {
           # What an operation value, a mutation's action and its optimistic response declare.
           variables: name name: name document: name text: name plan: name
           errorBehavior: name throwsOnFieldError: name bubbles: name hasIncremental: name isClientOnly: name cacheExpiration: name Data: name
-          Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name Op: name
+          Action: name OptimisticResponse: name RawResponse: name hash: name commit: name callAsFunction: name Op: name
           variable: name payload: name
           # What the runtime's protocols give a generated type.
           hashValue: name
@@ -491,7 +492,7 @@ struct HostileNameDocuments {
             variables: totalCount name: totalCount document: totalCount
             text: totalCount plan: totalCount errorBehavior: totalCount throwsOnFieldError: totalCount
             bubbles: totalCount hasIncremental: totalCount isClientOnly: totalCount cacheExpiration: totalCount Data: totalCount Action: totalCount
-            OptimisticResponse: totalCount hash: totalCount commit: totalCount
+            OptimisticResponse: totalCount RawResponse: totalCount hash: totalCount commit: totalCount
             callAsFunction: totalCount Op: totalCount variable: totalCount payload: totalCount
             # What the runtime's protocols give a generated type.
             hashValue: totalCount
@@ -566,7 +567,7 @@ struct HostileNameDocuments {
             # What an operation value, a mutation's action and its optimistic response declare.
             variables: name name: name document: name text: name plan: name
             errorBehavior: name throwsOnFieldError: name bubbles: name hasIncremental: name isClientOnly: name cacheExpiration: name Data: name
-            Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name Op: name
+            Action: name OptimisticResponse: name RawResponse: name hash: name commit: name callAsFunction: name Op: name
             variable: name payload: name
             # What the runtime's protocols give a generated type.
             hashValue: name
@@ -607,7 +608,7 @@ struct HostileNameDocuments {
           RefetchQuery: id
           # What an operation value, a mutation's action and its optimistic response declare.
           variables: id name: id document: id text: id plan: id errorBehavior: id
-          throwsOnFieldError: id bubbles: id hasIncremental: id isClientOnly: id cacheExpiration: id Data: id Action: id OptimisticResponse: id
+          throwsOnFieldError: id bubbles: id hasIncremental: id isClientOnly: id cacheExpiration: id Data: id Action: id OptimisticResponse: id RawResponse: id
           hash: id commit: id callAsFunction: id Op: id variable: id payload: id
           # What the runtime's protocols give a generated type.
           hashValue: id
@@ -653,7 +654,7 @@ struct HostileNameDocuments {
           # What an operation value, a mutation's action and its optimistic response declare.
           $name: ID!, $document: ID!, $text: ID!, $plan: ID!, $errorBehavior: ID!,
           $throwsOnFieldError: ID!, $bubbles: ID!, $hasIncremental: ID!, $isClientOnly: ID!, $cacheExpiration: ID!, $Action: ID!,
-          $OptimisticResponse: ID!, $hash: ID!, $commit: ID!, $callAsFunction: ID!, $Op: ID!,
+          $OptimisticResponse: ID!, $RawResponse: ID!, $hash: ID!, $commit: ID!, $callAsFunction: ID!, $Op: ID!,
           $variable: ID!, $payload: ID!,
           # The shared enums.
           $Sites: ID!, $Guards: ID!, $AbstractSlots: ID!, $schemaDigest: ID!, $format: ID!, $transient: ID!,
@@ -681,7 +682,7 @@ struct HostileNameDocuments {
             $selfValue, $values, $Fragment, $Spread, $Owner, $Query, $Operation, $RefetchQuery,
             # What an operation value, a mutation's action and its optimistic response declare.
             $name, $document, $text, $plan, $errorBehavior, $throwsOnFieldError, $bubbles,
-            $hasIncremental, $isClientOnly, $cacheExpiration, $Action, $OptimisticResponse, $hash, $commit, $callAsFunction, $Op, $variable, $payload,
+            $hasIncremental, $isClientOnly, $cacheExpiration, $Action, $OptimisticResponse, $RawResponse, $hash, $commit, $callAsFunction, $Op, $variable, $payload,
             # The shared enums.
             $Sites, $Guards, $AbstractSlots, $schemaDigest, $format, $transient,
             # The modules, and what the generated code spells from the standard library.
@@ -730,7 +731,7 @@ struct HostileNameDocuments {
           # What an operation value, a mutation's action and its optimistic response declare.
           $name: Boolean!, $document: Boolean!, $text: Boolean!,
           $plan: Boolean!, $errorBehavior: Boolean!, $throwsOnFieldError: Boolean!, $bubbles: Boolean!,
-          $hasIncremental: Boolean!, $isClientOnly: Boolean!, $cacheExpiration: Boolean!, $hash: Boolean!, $commit: Boolean!, $callAsFunction: Boolean!,
+          $hasIncremental: Boolean!, $isClientOnly: Boolean!, $cacheExpiration: Boolean!, $RawResponse: Boolean!, $hash: Boolean!, $commit: Boolean!, $callAsFunction: Boolean!,
           $Op: Boolean!, $variable: Boolean!, $payload: Boolean!,
           # The shared enums.
           $Sites: Boolean!, $AbstractSlots: Boolean!, $schemaDigest: Boolean!, $format: Boolean!, $transient: Boolean!,
@@ -805,7 +806,7 @@ struct HostileNameDocuments {
               ... @include(if: $document) { name } ... @include(if: $text) { name }
               ... @include(if: $plan) { name } ... @include(if: $errorBehavior) { name }
               ... @include(if: $throwsOnFieldError) { name } ... @include(if: $bubbles) { name }
-              ... @include(if: $hasIncremental) { name } ... @include(if: $isClientOnly) { name } ... @include(if: $cacheExpiration) { name } ... @include(if: $hash) { name }
+              ... @include(if: $hasIncremental) { name } ... @include(if: $isClientOnly) { name } ... @include(if: $cacheExpiration) { name } ... @include(if: $RawResponse) { name } ... @include(if: $hash) { name }
               ... @include(if: $commit) { name } ... @include(if: $callAsFunction) { name }
               ... @include(if: $Op) { name } ... @include(if: $variable) { name } ... @include(if: $payload) { name }
               # The shared enums.
@@ -871,7 +872,7 @@ struct HostileNameDocuments {
           # What an operation value, a mutation's action and its optimistic response declare.
           $name: Boolean!, $document: Boolean!, $text: Boolean!, $plan: Boolean!,
           $errorBehavior: Boolean!, $throwsOnFieldError: Boolean!, $bubbles: Boolean!,
-          $hasIncremental: Boolean!, $isClientOnly: Boolean!, $cacheExpiration: Boolean!, $Action: Boolean!, $OptimisticResponse: Boolean!, $hash: Boolean!,
+          $hasIncremental: Boolean!, $isClientOnly: Boolean!, $cacheExpiration: Boolean!, $Action: Boolean!, $OptimisticResponse: Boolean!, $RawResponse: Boolean!, $hash: Boolean!,
           $commit: Boolean!, $callAsFunction: Boolean!, $Op: Boolean!, $variable: Boolean!, $payload: Boolean!,
           # The shared enums.
           $Sites: Boolean!, $AbstractSlots: Boolean!, $schemaDigest: Boolean!, $format: Boolean!, $transient: Boolean!,
@@ -949,7 +950,7 @@ struct HostileNameDocuments {
               ... @include(if: $errorBehavior) { cursor }
               ... @include(if: $throwsOnFieldError) { cursor } ... @include(if: $bubbles) { cursor }
               ... @include(if: $hasIncremental) { cursor } ... @include(if: $isClientOnly) { cursor } ... @include(if: $cacheExpiration) { cursor } ... @include(if: $Action) { cursor }
-              ... @include(if: $OptimisticResponse) { cursor } ... @include(if: $hash) { cursor }
+              ... @include(if: $OptimisticResponse) { cursor } ... @include(if: $RawResponse) { cursor } ... @include(if: $hash) { cursor }
               ... @include(if: $commit) { cursor } ... @include(if: $callAsFunction) { cursor }
               ... @include(if: $Op) { cursor } ... @include(if: $variable) { cursor } ... @include(if: $payload) { cursor }
               # The shared enums.
@@ -1099,6 +1100,7 @@ struct HostileNameDocuments {
           cacheExpiration: {type: "Boolean", defaultValue: true},
           Action: {type: "Boolean", defaultValue: true},
           OptimisticResponse: {type: "Boolean", defaultValue: true},
+          RawResponse: {type: "Boolean", defaultValue: true},
           hash: {type: "Boolean", defaultValue: true},
           commit: {type: "Boolean", defaultValue: true},
           callAsFunction: {type: "Boolean", defaultValue: true},
@@ -1188,7 +1190,7 @@ struct HostileNameDocuments {
           ... @include(if: $text) { name } ... @include(if: $plan) { name }
           ... @include(if: $errorBehavior) { name } ... @include(if: $throwsOnFieldError) { name }
           ... @include(if: $bubbles) { name } ... @include(if: $hasIncremental) { name } ... @include(if: $isClientOnly) { name } ... @include(if: $cacheExpiration) { name }
-          ... @include(if: $Action) { name } ... @include(if: $OptimisticResponse) { name }
+          ... @include(if: $Action) { name } ... @include(if: $OptimisticResponse) { name } ... @include(if: $RawResponse) { name }
           ... @include(if: $hash) { name } ... @include(if: $commit) { name }
           ... @include(if: $callAsFunction) { name } ... @include(if: $Op) { name }
           ... @include(if: $variable) { name } ... @include(if: $payload) { name }
@@ -1238,7 +1240,7 @@ struct HostileNameDocuments {
               # What an operation value, a mutation's action and its optimistic response declare.
               variables: name name: name document: name text: name plan: name
               errorBehavior: name throwsOnFieldError: name bubbles: name hasIncremental: name isClientOnly: name cacheExpiration: name Data: name
-              Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name
+              Action: name OptimisticResponse: name RawResponse: name hash: name commit: name callAsFunction: name
               Op: name payload: name
               # What the runtime's protocols give a generated type.
               hashValue: name
@@ -1287,7 +1289,7 @@ struct HostileNameDocuments {
             variables: note { id } name: note { id } document: note { id }
             text: note { id } plan: note { id } errorBehavior: note { id }
             throwsOnFieldError: note { id } bubbles: note { id } hasIncremental: note { id } isClientOnly: note { id } cacheExpiration: note { id }
-            Data: note { id } Action: note { id } OptimisticResponse: note { id } hash: note { id }
+            Data: note { id } Action: note { id } OptimisticResponse: note { id } RawResponse: note { id } hash: note { id }
             commit: note { id } callAsFunction: note { id } Op: note { id } payload: note { id }
             # What the runtime's protocols give a generated type.
             hashValue: note { id }
@@ -1334,7 +1336,7 @@ struct HostileNameDocuments {
           # What an operation value, a mutation's action and its optimistic response declare.
           variables: name name: name document: name text: name plan: name
           errorBehavior: name throwsOnFieldError: name bubbles: name hasIncremental: name isClientOnly: name cacheExpiration: name Data: name
-          Action: name OptimisticResponse: name hash: name commit: name callAsFunction: name Op: name
+          Action: name OptimisticResponse: name RawResponse: name hash: name commit: name callAsFunction: name Op: name
           variable: name payload: name
           # What the runtime's protocols give a generated type.
           hashValue: name
@@ -1390,7 +1392,7 @@ struct HostileNameDocuments {
           document: origin { id } text: origin { id } plan: origin { id }
           errorBehavior: origin { id } throwsOnFieldError: origin { id } bubbles: origin { id }
           hasIncremental: origin { id } isClientOnly: origin { id } cacheExpiration: origin { id } Data: origin { id } Action: origin { id }
-          OptimisticResponse: origin { id } hash: origin { id } commit: origin { id }
+          OptimisticResponse: origin { id } RawResponse: origin { id } hash: origin { id } commit: origin { id }
           callAsFunction: origin { id } Op: origin { id } variable: origin { id } payload: origin { id }
           # What the runtime's protocols give a generated type.
           hashValue: origin { id }
@@ -1448,7 +1450,7 @@ struct HostileNameDocuments {
           document: episode { id } text: episode { id } plan: episode { id }
           errorBehavior: episode { id } throwsOnFieldError: episode { id } bubbles: episode { id }
           hasIncremental: episode { id } isClientOnly: episode { id } cacheExpiration: episode { id } Data: episode { id } Action: episode { id }
-          OptimisticResponse: episode { id } hash: episode { id } commit: episode { id }
+          OptimisticResponse: episode { id } RawResponse: episode { id } hash: episode { id } commit: episode { id }
           callAsFunction: episode { id } Op: episode { id } variable: episode { id } payload: episode { id }
           # What the runtime's protocols give a generated type.
           hashValue: episode { id }
@@ -1599,6 +1601,7 @@ struct HostileNameDocuments {
           ... @alias(as: "Data") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "Action") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "OptimisticResponse") { ...HostileInlineSpreadTarget_character }
+          ... @alias(as: "RawResponse") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "hash") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "commit") { ...HostileInlineSpreadTarget_character }
           ... @alias(as: "callAsFunction") { ...HostileInlineSpreadTarget_character }

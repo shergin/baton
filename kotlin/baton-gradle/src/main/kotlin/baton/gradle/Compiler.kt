@@ -80,11 +80,12 @@ object Bundle {
 
 /** `baton.json` as the plugin reads it: the files it names beside itself, to declare as inputs. */
 object Configuration {
-    /** The schema and the schema extensions, each relative to the configuration's directory; an extension may be a directory. */
+    /** The schema, a file or the directory `schemaDir` names, and the schema extensions, each relative to the configuration's directory; an extension may be a directory. */
     fun files(text: String, directory: File): List<File> {
         val json = JsonSlurper().parseText(text) as? Map<*, *> ?: throw GradleException("baton.json is not an object")
         val files = mutableListOf<File>()
         (json["schema"] as? String)?.let { files += directory.resolve(it) }
+        (json["schemaDir"] as? String)?.let { files += directory.resolve(it) }
         for (entry in (json["schemaExtensions"] as? List<*>).orEmpty()) {
             (entry as? String)?.let { files += directory.resolve(it) }
         }

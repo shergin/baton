@@ -68,6 +68,17 @@ val generateAniListKotlin = tasks.register<BatonGenerate>("generateAniListKotlin
     hosts.from(layout.projectDirectory.file("src/jvmTest/kotlin/baton/anilist/AniListDocuments.kt"))
 }
 
+// The documents of an app whose schema is two files under `schemaDir`, the
+// GraphQL server's and the feed's, a backend of another protocol the app's
+// own transport answers for: the host `FeedDocuments.kt` beside the feed
+// tests, with the configuration and the schema directory beside it, as the
+// Swift target `FeedDocuments` compiles its own.
+val generateFeedKotlin = tasks.register<BatonGenerate>("generateFeedKotlin") {
+    description = "Generates the Kotlin of the feed documents with batonc."
+    configuration.set(layout.projectDirectory.file("src/jvmTest/kotlin/baton/feed/baton.json"))
+    hosts.from(layout.projectDirectory.file("src/jvmTest/kotlin/baton/feed/FeedDocuments.kt"))
+}
+
 kotlin {
     jvm()
     // The JDK the artifacts are compiled with, on the JVM and on Android: the
@@ -150,6 +161,7 @@ kotlin {
             kotlin.srcDir(generateRelayKotlin.flatMap { it.outputDirectory })
             kotlin.srcDir(generateFateKotlin.flatMap { it.outputDirectory })
             kotlin.srcDir(generateAniListKotlin.flatMap { it.outputDirectory })
+            kotlin.srcDir(generateFeedKotlin.flatMap { it.outputDirectory })
             dependencies {
                 // The harness walks a `reads` row over a generated lens by its
                 // properties' Kotlin names.
@@ -170,18 +182,20 @@ kotlin {
 }
 
 // The registry numbers types by name for the whole process, one schema family
-// per process, and the test compilation holds four schemas that give one
+// per process, and the test compilation holds five schemas that give one
 // name to different types: Relay's test schema, fate's and AniList's all
-// declare a `User`, and AniList's and the specification's a `Character`. So
-// each harness runs in a JVM of its own, from the one
-// compilation: the specification's cases and scripts in `jvmTest`, Relay's in
-// `jvmRelayTest`, fate's in `jvmFateTest` and AniList's in `jvmAniListTest`,
-// by the package each lives in.
+// declare a `User`, AniList's and the specification's a `Character`, and the
+// feed's and the specification's a `Quote`. So each harness runs in a JVM of
+// its own, from the one compilation: the specification's cases and scripts in
+// `jvmTest`, Relay's in `jvmRelayTest`, fate's in `jvmFateTest`, AniList's in
+// `jvmAniListTest` and the feed's in `jvmFeedTest`, by the package each lives
+// in.
 val jvmTest = tasks.named<Test>("jvmTest") {
     filter {
         excludeTestsMatching("baton.relay.*")
         excludeTestsMatching("baton.fate.*")
         excludeTestsMatching("baton.anilist.*")
+        excludeTestsMatching("baton.feed.*")
     }
 }
 
@@ -198,8 +212,9 @@ fun harness(name: String, packageName: String, what: String) = tasks.register<Te
 val jvmRelayTest = harness("jvmRelayTest", "baton.relay", "the cases and scripts of spec/relay")
 val jvmFateTest = harness("jvmFateTest", "baton.fate", "the responses recorded under spec/fate")
 val jvmAniListTest = harness("jvmAniListTest", "baton.anilist", "the list recorded under spec/anilist")
+val jvmFeedTest = harness("jvmFeedTest", "baton.feed", "a transport of the app's own over the feed's schema file")
 
-tasks.named("check") { dependsOn(jvmRelayTest, jvmFateTest, jvmAniListTest) }
+tasks.named("check") { dependsOn(jvmRelayTest, jvmFateTest, jvmAniListTest, jvmFeedTest) }
 
 // `gradle :baton:runAniListBench`: the bench of the list recorded under
 // `spec/anilist/` on the JVM the build runs on, the Kotlin twin of the

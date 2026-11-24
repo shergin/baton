@@ -11,7 +11,7 @@
 //! guards. The runtime settles the guards once per set of variables and the
 //! variant once per record, then walks plain lists: nothing tests a type
 //! condition or a condition per field. A lens becomes a `ReaderPlan`
-//! (`reader`), an operation an `OperationValue` with its optimistic
+//! (`reader`), an operation an `OperationValue` with its response
 //! builders (`operation`).
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -33,7 +33,9 @@ pub use lens::{
     Primitive, Read, ReaderPlan, RefetchMembers, SatisfiedCheck, ScalarForm, ScalarRead,
     ScalarShape, SlotAccess, SpreadForm, SpreadGuard, SpreadRead, TypeTest,
 };
-pub use operation::{BuilderPlan, BuilderValue, OperationValue, VariableBase, VariableValue};
+pub use operation::{
+    BuilderPlan, BuilderValue, OperationValue, ResponseKind, VariableBase, VariableValue,
+};
 pub use selections::SelectionTable;
 
 use crate::naming::{LanguageNaming, NameError, Naming, Position, Reserved, Written};

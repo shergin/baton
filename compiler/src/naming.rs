@@ -19,7 +19,7 @@ use std::collections::{BTreeSet, HashMap};
 use crate::config::{Config, Language};
 use crate::kotlin_names::KotlinNaming;
 use crate::names::SwiftNaming;
-use crate::pipeline::{OperationKind, OperationPlan, Origin};
+use crate::pipeline::{OperationPlan, Origin};
 
 /// What the decide pass asks of the language it decides names for: how a
 /// document's name becomes an identifier, which names a nested type may not
@@ -84,9 +84,9 @@ pub trait Naming {
     /// plan and root lens read through.
     fn value_names(&self, operation: &OperationPlan, spelled: &BTreeSet<Spelled>) -> ValueNames;
 
-    /// The types an operation's value of `kind` nests, which a fragment its
-    /// lenses spread may not be named.
-    fn value_types(&self, kind: OperationKind) -> Vec<Spelled>;
+    /// The types `operation`'s value nests, which a fragment its lenses
+    /// spread may not be named.
+    fn value_types(&self, operation: &OperationPlan) -> Vec<Spelled>;
 
     /// What every lens declares beside its fields, each with what a message
     /// calls it.
@@ -158,7 +158,7 @@ pub struct ValueNames {
 pub enum Position {
     /// A lens nested in a lens.
     Lens,
-    /// An optimistic-response builder nested in a builder.
+    /// A response builder nested in a builder.
     Builder,
 }
 
@@ -187,6 +187,9 @@ pub enum Spelled {
     Action,
     /// A mutation's optimistic-response builder.
     OptimisticResponse,
+    /// The raw-response builder a query or a subscription asks for with
+    /// `@raw_response_type`.
+    RawResponse,
 }
 
 /// How a declaration's name meets the others of its scope. Instance

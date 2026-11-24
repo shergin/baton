@@ -140,6 +140,25 @@ let package = Package(
             path: "swift/Tests/BatonAniListTests",
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
+        // The documents of an app whose schema is two files under
+        // `schemaDir`, the GraphQL server's and the feed's, a backend of
+        // another protocol the app's own transport answers for, with a
+        // client list in `schemaExtensions`, and the tests that prove that
+        // transport and the paced commit end to end.
+        .target(
+            name: "FeedDocuments",
+            dependencies: ["Baton"],
+            path: "swift/Tests/FeedDocuments",
+            exclude: ["baton.json", "schema", "client.graphql"],
+            swiftSettings: [.swiftLanguageMode(.v6)],
+            plugins: ["BatonPlugin"]
+        ),
+        .testTarget(
+            name: "BatonFeedTests",
+            dependencies: ["FeedDocuments", "Baton", "BatonTesting"],
+            path: "swift/Tests/BatonFeedTests",
+            swiftSettings: [.swiftLanguageMode(.v6)]
+        ),
         // The emitter's goldens, compiled as an app compiles them with the
         // Xcode template's default of main-actor isolation and the upcoming
         // concurrency features a new app turns on: generated code states its
@@ -230,7 +249,7 @@ let package = Package(
             name: "BatonBench",
             dependencies: ["AniListDocuments", "Baton", "BatonTesting", "BatonSpec"],
             path: "swift/Benchmarks",
-            exclude: ["baton.json"],
+            exclude: ["baton.json", "live.graphql"],
             swiftSettings: [.swiftLanguageMode(.v6)],
             plugins: ["BatonPlugin"]
         ),

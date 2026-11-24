@@ -9,6 +9,7 @@ A target's configuration is `baton.json`, beside the target or at the package ro
 | key | what |
 |---|---|
 | `schema` | the SDL file, relative to the configuration |
+| `schemaDir` | Relay's: in place of `schema`, a directory whose `.graphql` files, in name order, are the schema together, the server's SDL and the fields another backend answers through the app's own transport |
 | `schemaExtensions` | client schema extensions: files of `.graphql` that give server types client fields |
 | `identity` | the key fields per type, `id` by default; a `default` list and `types` entries, interfaces included |
 | `lookups` | root fields answered from the store by id before the network |

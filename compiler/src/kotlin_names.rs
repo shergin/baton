@@ -143,8 +143,9 @@ pub const STANDARD_LIBRARY_FUNCTIONS: [&str; 7] = [
 /// member, a local or a nested type of the class's name would be read in
 /// its place: a lens nested in an operation sees the members of the
 /// operation's companion, an action's body those of the action it extends,
-/// and a mutation's body its own `OptimisticResponse`.
-pub const MEMBER_NAMES: [(&str, &str); 31] = [
+/// a mutation's body its own `OptimisticResponse`, and a query's or a
+/// subscription's the `RawResponse` it asked for.
+pub const MEMBER_NAMES: [(&str, &str); 32] = [
     ("anchor", "the `anchor` every lens has"),
     ("recordID", "the `recordID` every lens has"),
     ("equals", "the `equals` every class has"),
@@ -179,6 +180,7 @@ pub const MEMBER_NAMES: [(&str, &str); 31] = [
     ("data", "the operation's `data`"),
     ("Data", "the operation's root lens `Data`"),
     ("OptimisticResponse", "the mutation's `OptimisticResponse`"),
+    ("RawResponse", "the operation's `RawResponse`"),
     ("invoke", "the mutation action's `invoke`"),
     ("bound", "the local `bound` of a spread's binding"),
     ("errors", "the local `errors` of a check"),
@@ -458,6 +460,7 @@ impl Naming for KotlinNaming {
             Spelled::Data => "Data",
             Spelled::Action => "Action",
             Spelled::OptimisticResponse => "OptimisticResponse",
+            Spelled::RawResponse => "RawResponse",
         }
     }
 
@@ -473,6 +476,7 @@ impl Naming for KotlinNaming {
             Spelled::OwnType => format!("the companion object `{name}`"),
             Spelled::Data => format!("the operation's root lens `{name}`"),
             Spelled::Action | Spelled::OptimisticResponse => format!("the mutation's `{name}`"),
+            Spelled::RawResponse => format!("the operation's `{name}`"),
         }
     }
 
@@ -550,7 +554,7 @@ impl Naming for KotlinNaming {
                 format!("the `{name}` every class has"),
             ));
         }
-        for spelled in self.value_types(operation.kind) {
+        for spelled in self.value_types(operation) {
             after.push(Declared::spelled(self, spelled));
         }
         after.push(Declared::new(
@@ -564,9 +568,12 @@ impl Naming for KotlinNaming {
         }
     }
 
-    fn value_types(&self, kind: OperationKind) -> Vec<Spelled> {
-        match kind {
+    fn value_types(&self, operation: &OperationPlan) -> Vec<Spelled> {
+        match operation.kind {
             OperationKind::Mutation => vec![Spelled::Data, Spelled::OptimisticResponse],
+            OperationKind::Query | OperationKind::Subscription if operation.raw_response => {
+                vec![Spelled::Data, Spelled::RawResponse]
+            }
             OperationKind::Query | OperationKind::Subscription => vec![Spelled::Data],
         }
     }

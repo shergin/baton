@@ -5,6 +5,83 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A recipe for a fast stream that is not GraphQL,
+  [a fast stream, paced](docs/recipes/stream.md), and the bench behind it
+  in `BENCHMARKS.md`: ticks through `commitPayload` and through a
+  subscription at 1 to 1,000 a second over 1, 10 and 100 keys. Delivery
+  kept up; the main thread's share crosses a tenth of a frame at 1,000
+  ticks a second. A service keeps the newest value per key and commits
+  them once per interval in one payload, through a client-only query
+  over a client list of the server's type whose root field is transient:
+  at 1,000 ticks a second over 100 keys, 10.9 to 55.6 ms of the main
+  thread a second against 548.1 for a commit per tick, on an M1 Pro. The
+  client-data decision records the measurement. No runtime change.
+
+- The schema may be several files. Relay's `schemaDir` in `baton.json`,
+  in place of `schema`, names a directory whose `.graphql` files, in name
+  order, are the schema together; a configuration that names both, or a
+  `schemaDir` that is not a directory, is an error. `batonc`'s `--schema`
+  may repeat and may name a directory, the files of every one in the
+  order given. The files are a set: every definition is built before
+  every extension, so their order does not matter, and the schema's
+  digest, which versions the image, is the same for the same files in
+  any order and under any names; a schema of one file keeps the digest
+  it had. The SwiftPM plugin and the Gradle plugin declare the
+  directory's files as inputs. A second backend the app's own transport
+  answers for, a socket of another protocol or a REST endpoint, declares
+  its fields in a file of its own there: they are server fields, sent,
+  waited for and healed like any other
+  ([the decision](docs/decisions/the-schema-is-what-the-transport-answers.md),
+  [the recipe](docs/recipes/another-backend.md)). Both runtimes.
+
+- An `extend` in a file of the schema adds the server's fields. Where a
+  file is listed now says whose its fields are: a schema file's are the
+  server's, whatever keyword declares them, and only a file under
+  `schemaExtensions` declares client fields. The driver builds every
+  definition before every extension, so an extension may come before its
+  type. Relay's builder had marked every field of an `extend` as a client
+  field and refused an extension before its type. **A schema that already
+  used `extend` in its own SDL**, a modular server schema that extends
+  `Query` per module, compiled those fields as client fields, left out of
+  the text a server receives and never waited for, or failed on a non-null
+  one; they now compile as what their author meant, so the text and the
+  persisted id of each operation that selects them change. Both runtimes.
+
+- `extend schema`, `extend input` and `extend scalar` are errors at their
+  line, in a schema file or an extension, with a message that says to
+  write what they add in the definition they extend. Relay's front end has
+  no code for them and stopped the compiler at a `todo!`.
+
+- The refusal of a mutation or a subscription of client fields alone says
+  where a field another backend answers belongs: in the schema, not in
+  `schemaExtensions`.
+
+- Relay's `@raw_response_type` on a query or a subscription nests
+  `RawResponse` in the operation's value: the builder a mutation's
+  `OptimisticResponse` is, one type per selection set, every field an
+  optional parameter, an absent field left out, `payload` rendering the
+  bytes the door takes. `commitPayload(operation, response.payload)`
+  commits it, and a transport of the app's own yields
+  `response.payload.bytes`, so an adapter from another protocol is typed
+  against the operation's shape. It cannot write a null; a response that
+  nulls a field is written as JSON. On a mutation the directive is
+  accepted and adds nothing. No runtime type and no format number
+  changed ([the decision](docs/decisions/a-raw-response-is-asked-for.md)).
+  Both runtimes.
+
+- `RawResponse` is a name the generated code keeps. In Swift a schema
+  enum named `RawResponse` is generated as `RawResponseEnum`, and an input
+  object as `RawResponseInput`, as `OptimisticResponse` already was. In
+  Kotlin `RawResponse` joined the member names a generated declaration may
+  not take: a fragment or an operation of the name is an error at its
+  name, an enum or an input object of the name takes the suffix the
+  package's kept names take, and a `@oneOf` case of the name, from a
+  field `rawResponse`, takes an underscore.
+
+- The Bazel rule's `schema` attribute takes one file or a target of
+  several, and passes each as its own `--schema`, for a schema
+  `schemaDir` keeps in files.
+
 - The commit relinks only what a built record links. The ingest notes,
   per record it builds, whether a built record links it and whether it
   holds a link; the commit maps the records it found among the linked

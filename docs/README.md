@@ -56,7 +56,12 @@ What to read when.
   one request, grouped on the client and carried by the image.
   [fields a server nulls by path](recipes/fields-by-path.md) is what a list
   fragment selects. [a `Json` scalar](recipes/json-scalar.md) is a value
-  with no type of its own, read as a type of the app's. The rest arrive
+  with no type of its own, read as a type of the app's.
+  [a backend that is not GraphQL](recipes/another-backend.md) is a socket
+  of another protocol or a REST endpoint in the store, through the app's
+  transport or a service. [a fast stream, paced](recipes/stream.md) is
+  a feed over many keys committed in one payload per interval, with what
+  a tick costs. The rest arrive
   with the releases that make them true.
 - **What did a decision open up?** [openings/](openings/) is written as the
   project ships. There are none yet.

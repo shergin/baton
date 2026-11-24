@@ -12,7 +12,7 @@ def _baton_generate_impl(ctx):
     args = ctx.actions.args()
     args.add("generate")
     args.add("--config", ctx.file.config)
-    args.add("--schema", ctx.file.schema)
+    args.add_all(ctx.files.schema, before_each = "--schema")
     args.add("--language", ctx.attr.language)
     shared = ctx.actions.declare_file(directory + "/" + language.shared)
     args.add("--shared", shared)
@@ -34,7 +34,7 @@ def _baton_generate_impl(ctx):
         progress_message = "Baton: compile GraphQL in %{label}",
         executable = batonc,
         arguments = [args],
-        inputs = ctx.files.srcs + [ctx.file.config, ctx.file.schema] + ctx.files.schema_extensions,
+        inputs = ctx.files.srcs + [ctx.file.config] + ctx.files.schema + ctx.files.schema_extensions,
         outputs = sources + [shared, report] + persisted,
     )
     return [

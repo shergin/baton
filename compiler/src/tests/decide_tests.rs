@@ -9,6 +9,7 @@ use crate::config::Config;
 use crate::documents::Document;
 use crate::names::SwiftNaming;
 use crate::pipeline::{self, TypeKind, TypePlan};
+use support::one_file;
 
 /// The normalization of the one operation in `text`.
 fn decided(text: &str) -> NormalizationSelection {
@@ -25,9 +26,7 @@ fn decided(text: &str) -> NormalizationSelection {
         embedded: None,
     };
     let compiled = pipeline::compile(
-        &schema,
-        &schema_path.to_string_lossy(),
-        &[],
+        &one_file(&schema, &schema_path.to_string_lossy()),
         &[document],
         &Config::default(),
     )
@@ -651,9 +650,7 @@ fn mapped_fragment(text: &str, name: &str) -> ReaderPlan {
     .expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
     let compiled = pipeline::compile(
-        &schema,
-        &schema_path.to_string_lossy(),
-        &[],
+        &one_file(&schema, &schema_path.to_string_lossy()),
         &[document],
         &config,
     )
@@ -754,9 +751,7 @@ fn fragment_lenses(text: &str) -> BTreeMap<String, ReaderPlan> {
         embedded: None,
     };
     let compiled = pipeline::compile(
-        &schema,
-        &schema_path.to_string_lossy(),
-        &[],
+        &one_file(&schema, &schema_path.to_string_lossy()),
         &[document],
         &Config::default(),
     )
@@ -887,3 +882,10 @@ fn a_caught_spread_inside_a_value_is_left_out_of_the_value_s_errors() {
         "the caught spread catches its own errors"
     );
 }
+
+#[path = "support.rs"]
+#[allow(
+    clippy::duplicate_mod,
+    reason = "no test module is the whole crate's, so each that needs the helpers includes them"
+)]
+mod support;

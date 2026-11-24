@@ -606,18 +606,20 @@ internal `ChangeSet` and `Store.Batch`, and the log tells a commit as
 `commitPayload`; GraphQL calls the whole a response. The response is the
 oracle, and this is the thing a response is.
 Here: bytes in a response's shape, the one thing the door from outside the
-store takes: a server's response, an optimistic response the generated
-builders render, a payload committed by hand. A payload keeps a scalar's
-text as written. See
+store takes: a server's response, an optimistic response or a
+[raw response](#store) the generated builders render, a payload committed
+by hand, a payload a transport of the app's own yields. A payload keeps a
+scalar's text as written. See
 [the contract](../spec/runtime.md#3-the-ingest-a-response-to-a-change-set)
 and [the decision](decisions/a-payload-is-bytes-in-a-responses-shape.md).
-Swift: `Payload`, over `Data`, with `init(json:)`; `commitPayload` and
-`mutate(_:optimistic:)` take one, and a mutation's `OptimisticResponse`
-builder renders one as `payload`.
-Kotlin: `Payload`, over a `ByteArray`, with a constructor from a JSON
-`String`, equal by its bytes; `commitPayload` and `mutate(operation,
-optimistic)` take one, and a mutation's `OptimisticResponse` renders one as
-`payload`.
+Swift: `Payload`, over `Data`, its `bytes`, with `init(json:)`;
+`commitPayload` and `mutate(_:optimistic:)` take one, and a mutation's
+`OptimisticResponse` builder and an operation's `RawResponse` render one
+as `payload`.
+Kotlin: `Payload`, over a `ByteArray`, its `bytes`, with a constructor from
+a JSON `String`, equal by its bytes; `commitPayload` and `mutate(operation,
+optimistic)` take one, and a mutation's `OptimisticResponse` and an
+operation's `RawResponse` render one as `payload`.
 
 **Commit payload.** *Composition: store, plan, operation value,
 environment.* Relay: `commitPayload`, writing a response for an operation
@@ -625,9 +627,13 @@ that some other road delivered.
 Here: a commit payload runs the operation's plan over a payload in a
 response's shape, with the ingest, the commit and the image a fetch has,
 through the same door: the one way for data from outside the transport, a
-REST response, a socket's tick, a preview's fixture, a test's seed. A
+REST response, a socket's tick, a preview's fixture, a test's seed, typed
+when the operation asks for its [raw response](#store). A
 payload may carry part of what the operation selects, and it alone writes
-[client fields](#compiler). See
+[client fields](#compiler). Data a backend other than the server sends
+reaches the store this way from a service that keeps its own connection;
+when a view holds the stream, the app's transport answers the operation
+instead ([the recipe](recipes/another-backend.md)). See
 [the contract](../spec/runtime.md#3-the-ingest-a-response-to-a-change-set)
 and [the decision](decisions/client-data-is-described-and-committed.md).
 Swift: `Environment.commitPayload(operation, payload)`.
@@ -773,6 +779,28 @@ commits. The store stages a netted batch's writes and writes into a cell
 only the value that differs at the batch's end, since a Compose state
 written and written back still tells its readers.
 
+**Raw response.** *Composition: operation value, plan.* Relay:
+`@raw_response_type`, a type of the response itself, for the places a
+response is written by hand.
+Here: on a query or a subscription, the directive nests a typed builder
+of the operation's response in its value, the builder an optimistic
+response is: one type per selection set, every field optional, an absent
+field left out, rendering a [payload](#store). A commit payload takes it,
+and a transport of the app's own yields its bytes, so an adapter from
+another protocol is typed against the operation's shape and breaks at the
+build when the selection changes. It is asked for per operation, since
+most operations never need one; on a mutation the directive adds nothing,
+since the optimistic response is that builder. It writes values and
+cannot write a null: a field that must be null is a payload written as
+JSON. See [the decision](decisions/a-raw-response-is-asked-for.md).
+Swift: `RawResponse`, nested in the operation's value, whose `payload` is
+a `Payload`: `commitPayload(operation, response.payload)`, or
+`response.payload.bytes` from a transport's `send`.
+Kotlin: `RawResponse`, a class nested in the operation's class per
+selection set whose constructor parameters all default to null; its
+`payload` is a `Payload`, and `payload.bytes` is what a transport's `send`
+emits.
+
 **Mutation root.** *Concept: record.*
 Here: the record mutation payloads hang off, `client:root:mutation`, beside
 the query root. Entities inside a payload merge into their own records as
@@ -834,10 +862,29 @@ until a log is set, since common Kotlin has no build configuration of its own.
 
 ## Compiler
 
-**Schema.** *Concept: schema.* GraphQL: the SDL.
-Here: a checked-in file, named in `baton.json`, with the
-[identity](#store) configured beside it; the compiler has no introspection
-command, and the file is downloaded by the app's own tooling. The registry
+**Schema.** *Concept: schema.* GraphQL: the SDL. Relay: `schema`, one
+file, or `schemaDir`, a directory of them.
+Here: what the transport answers, checked in, with the
+[identity](#store) configured beside it: one file named by `schema` in
+`baton.json`, or the `.graphql` files of the directory `schemaDir` names,
+read together in name order; the compiler has no introspection command,
+and the server's file is downloaded by the app's own tooling. A second
+backend the app's own [transport](#runtime) answers for, a socket of
+another protocol or a REST endpoint, is more schema: a file of its own
+beside the server's, whose fields are sent, waited for and healed like
+any server field. Where a file is listed says whose its fields are: a
+schema file may `extend` a type, the extension may come before the type
+in name order, and the fields it adds are the server's, as the GraphQL
+specification reads an extension one service makes of another.
+`extend schema`, `extend input` and `extend scalar` are errors at their
+line, since Relay's front end has no code for them. The files are a set:
+every definition is built before every extension, so their order does
+not matter, and the schema's digest, which versions the image, is the
+same for the same files in any order and under any names, the compiler
+sorting their texts before hashing; a schema of one file keeps the digest
+it had. See
+[the decision](decisions/the-schema-is-what-the-transport-answers.md).
+The registry
 numbers types and slots by name for the whole process, so two environments
 over one schema share them
 ([the decision](decisions/slots-are-numbered-by-the-process.md)). Two
@@ -853,7 +900,10 @@ ask for.
 `schemaExtensions`, files that give server types client fields or declare
 types the server does not have.
 Here the same key in `baton.json`, files or directories of `.graphql` beside
-it, read with the schema and folded into its digest. A client field is
+it, read with the schema and folded into its digest: what the client adds,
+written by a commit payload and asked of no transport. A field another
+backend answers through the app's transport is not a client field, and is
+declared in the [schema](#compiler). A client field is
 nullable, since no server promises it; it is written by a
 [commit payload](#store) for an operation that selects it and by nothing
 else, read by a lens like any field, left out of the text and the id a
@@ -868,7 +918,8 @@ stale, and fetches for no attach, invalidation or revalidation; `refetch`
 and `Environment.fetch` throw the environment error's `clientOnly` kind,
 and a commit payload writes it. A mutation or a subscription of client
 fields alone is refused, since the one is sent by definition and the other
-is the server's stream. The plan marks each client field, the origin a
+is the server's stream; the message says that a field another backend
+answers belongs in the schema. The plan marks each client field, the origin a
 walk reads beside the server's and a `@defer` label's; the check hydrates
 client fields from the image without waiting for them. Client records live
 and reach the image as any record does. Baton computes none: no resolvers.
@@ -1196,7 +1247,13 @@ transport's error is. What a production endpoint needs beyond the built-in
 transports, one replay of an authorization challenge, a bounded retry with
 backoff, a deadline across the attempts, is a wrapper over the one verb the
 app owns, not a library type; [the exchange recipe](recipes/exchange.md)
-walks through the one the GitHub sample sends through. See
+walks through the one the GitHub sample sends through. An app's own
+transport may also answer for another backend, a socket of another
+protocol or a REST endpoint, whose fields the [schema](#compiler)
+declares: it routes by the request's operation name, answers those
+operations itself with payloads in the response's shape, and sends the
+rest to the server's transport; one operation is answered by one
+transport ([the recipe](recipes/another-backend.md)). See
 [the contract](../spec/runtime.md#10-the-environment-and-the-wire).
 Swift: the `Transport` protocol, whose verb is `send` and whose `payload`
 reads the one payload; the request is a `Request`, the encoding an

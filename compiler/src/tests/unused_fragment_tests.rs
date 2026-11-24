@@ -10,6 +10,7 @@ use crate::documents::Position;
 use crate::pipeline::compile;
 
 use super::*;
+use support::one_file;
 
 /// The test schema's text and path.
 fn schema() -> (String, String) {
@@ -46,7 +47,7 @@ fn warnings(texts: &[(&str, Position, &str)]) -> Vec<Rendered> {
     let mut config: Config = serde_json::from_str("{}").expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
     let documents = documents(texts);
-    let plan = compile(&sdl, &path, &[], &documents, &config)
+    let plan = compile(&one_file(&sdl, &path), &documents, &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"))
         .plan;
     unused_fragments(&documents, &plan)
@@ -162,3 +163,10 @@ fn a_refetchable_fragment_nothing_else_spreads_is_reached_by_its_refetch_query()
     )]);
     assert!(warnings.is_empty(), "{warnings:?}");
 }
+
+#[path = "support.rs"]
+#[allow(
+    clippy::duplicate_mod,
+    reason = "no test module is the whole crate's, so each that needs the helpers includes them"
+)]
+mod support;

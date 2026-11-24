@@ -1,0 +1,6 @@
+# What the app's own feed answers, over a socket of another protocol: the
+# ticks of a quote. The file sorts before the server's, which defines the
+# type it extends.
+extend type Subscription {
+  quoteChanged(symbol: ID!): Quote!
+}

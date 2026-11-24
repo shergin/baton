@@ -21,10 +21,13 @@ use crate::documents::Marker;
 /// names the records it deletes, the second
 /// (`docs/decisions/a-mutation-names-the-record-it-deletes.md`), and a list
 /// field says it is paged by number, the third
-/// (`docs/decisions/a-paged-list-merges-its-pages-by-number.md`).
-const QUERY: &[&str] = &["throwOnFieldError", "cacheExpiration"];
-const MUTATION: &[&str] = &["throwOnFieldError", "deletes"];
-const SUBSCRIPTION: &[&str] = &["throwOnFieldError"];
+/// (`docs/decisions/a-paged-list-merges-its-pages-by-number.md`). Every
+/// operation takes Relay's `@raw_response_type`, which asks for the typed
+/// builder of its response
+/// (`docs/decisions/a-raw-response-is-asked-for.md`).
+const QUERY: &[&str] = &["throwOnFieldError", "cacheExpiration", "raw_response_type"];
+const MUTATION: &[&str] = &["throwOnFieldError", "deletes", "raw_response_type"];
+const SUBSCRIPTION: &[&str] = &["throwOnFieldError", "raw_response_type"];
 const FRAGMENT: &[&str] = &[
     "argumentDefinitions",
     "refetchable",

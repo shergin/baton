@@ -45,24 +45,26 @@ fn reports() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("src/tests/reports")
 }
 
-/// The texts and paths of the configuration's client schema extensions, read
-/// as `batonc` reads them: each entry beside the configuration, a file or a
-/// directory of `.graphql` files.
-fn schema_extensions(config: &Config, config_path: &Path) -> Vec<(String, String)> {
+/// The schema's files and the client schema extensions of the
+/// configuration at `config_path`, read as `batonc` reads them: each beside
+/// the configuration, a file or a directory of `.graphql` files.
+fn schema_sources(config: &Config, config_path: &Path) -> pipeline::SchemaSources {
+    let schema_path = config
+        .schema_path(config_path)
+        .expect("the configuration names its schema");
     let base = config_path
         .parent()
         .expect("the configuration sits in a directory");
-    config
-        .schema_extensions
-        .iter()
-        .flat_map(|entry| {
-            crate::extension_files(&base.join(entry)).expect("the extension is readable")
-        })
-        .map(|file| {
-            let text = std::fs::read_to_string(&file).expect("the extension is readable");
-            (text, file.to_string_lossy().into_owned())
-        })
-        .collect()
+    pipeline::SchemaSources {
+        schema: crate::read_files(&schema_path).expect("the schema is readable"),
+        extensions: config
+            .schema_extensions
+            .iter()
+            .flat_map(|entry| {
+                crate::read_files(&base.join(entry)).expect("the extension is readable")
+            })
+            .collect(),
+    }
 }
 
 /// The configuration of the Swift test target.
@@ -71,21 +73,34 @@ fn swift_tests_config() -> Config {
     Config::load(&config_path).expect("the test target has a baton.json")
 }
 
+/// The operations that ask for their raw response, compiled beside the
+/// Swift test target's sources: their builders are goldens of both
+/// emitters, which nothing in the Swift test target reads.
+const RAW_RESPONSE: &str = "compiler/src/tests/hosts/RawResponseDocuments.graphql";
+
 /// The plan of the Swift test target, its sources named from the
 /// repository's root as `batonc plan` run there names them.
 fn compile_swift_tests() -> Plan {
     compile_sources(&[]).0
 }
 
+/// The plan the Swift goldens are written from: the Swift test target's and
+/// the raw responses' beside it.
+fn compile_swift_goldens() -> Plan {
+    compile_sources(&[repository().join(RAW_RESPONSE)]).0
+}
+
 /// The Kotlin host whose value is too wide for a constructor that reads
 /// every field in place.
 const WIDE_VALUE: &str = "compiler/src/tests/hosts/WideValueDocuments.kt";
 
-/// The plan of the Swift test target's sources, the Kotlin hostile-name
-/// corpus and the wide value, which the Kotlin target writes into the
-/// package each host declares; with that package, by its source.
+/// The plan of the Swift test target's sources, the raw responses, the
+/// Kotlin hostile-name corpus and the wide value, which the Kotlin target
+/// writes into the package each host declares; with that package, by its
+/// source.
 fn compile_kotlin_tests() -> (Plan, BTreeMap<String, Option<String>>) {
     compile_sources(&[
+        repository().join(RAW_RESPONSE),
         repository().join(kotlin_hostile_names::CORPUS),
         repository().join(WIDE_VALUE),
     ])
@@ -104,8 +119,6 @@ fn compile_sources(hosts: &[PathBuf]) -> (Plan, BTreeMap<String, Option<String>>
 fn compile_target(target: &Path, hosts: &[PathBuf]) -> (Plan, BTreeMap<String, Option<String>>) {
     let config_path = target.join("baton.json");
     let config = Config::load(&config_path).expect("the target has a baton.json");
-    let schema_path = config.schema_path(&config_path);
-    let schema = std::fs::read_to_string(&schema_path).expect("the test schema is readable");
     let mut sources: Vec<PathBuf> = std::fs::read_dir(target)
         .expect("the target is readable")
         .filter_map(|entry| entry.ok().map(|entry| entry.path()))
@@ -119,15 +132,8 @@ fn compile_target(target: &Path, hosts: &[PathBuf]) -> (Plan, BTreeMap<String, O
 
     let (documents, errors) = documents::collect(&sources);
     assert!(errors.is_empty(), "{errors:?}");
-    let extensions = schema_extensions(&config, &config_path);
-    let compiled = pipeline::compile(
-        &schema,
-        &schema_path.to_string_lossy(),
-        &extensions,
-        &documents,
-        &config,
-    )
-    .unwrap_or_else(|errors| {
+    let sources = schema_sources(&config, &config_path);
+    let compiled = pipeline::compile(&sources, &documents, &config).unwrap_or_else(|errors| {
         let rendered: Vec<String> = errors
             .iter()
             .map(|error| diagnostics::render(error, &documents).to_string())
@@ -177,10 +183,10 @@ fn golden_name(source: &str, extension: &str) -> String {
     format!("{stem}{extension}")
 }
 
-/// Compiles the Swift test target and returns the generated files by output
-/// name, the shared file among them.
+/// Compiles the Swift test target and the raw responses beside it and
+/// returns the generated files by output name, the shared file among them.
 fn emit_swift_tests() -> BTreeMap<String, String> {
-    let plan = compile_swift_tests();
+    let plan = compile_swift_goldens();
     let output = swift(&plan, &swift_tests_config()).unwrap_or_else(|duplicates| {
         let messages: Vec<String> = duplicates.iter().map(ToString::to_string).collect();
         panic!(
@@ -197,13 +203,13 @@ fn emit_swift_tests() -> BTreeMap<String, String> {
     files
 }
 
-/// The plan of the Swift test target as `batonc plan` prints it, one file's
-/// documents to a golden. The hostile-name corpus has none: the plan holds
+/// The plan of the Swift test target and the raw responses as `batonc plan`
+/// prints it, one file's documents to a golden. The hostile-name corpus has none: the plan holds
 /// a name as a string, so its documents add no shape to the lowering, and
 /// their plan, an entry for every name in every position, would outweigh
 /// every other plan golden together.
 fn plan_swift_tests() -> BTreeMap<String, String> {
-    let mut plan = compile_swift_tests();
+    let mut plan = compile_swift_goldens();
     plan.fragments
         .retain(|fragment| fragment.source != hostile_names::CORPUS);
     plan.operations
@@ -364,12 +370,13 @@ fn check_goldens(directory: PathBuf, emitted: &BTreeMap<String, String>, extensi
     );
 }
 
-/// The report of the Swift test target as `generate --report` writes it
+/// The report of the Swift test target and the raw responses as
+/// `generate --report` writes it
 /// from the repository's root. The hostile-name corpus is left out for the
 /// reason the plan goldens leave it out: its names are the sweep's and add
 /// no shape.
 fn report_swift_tests() -> BTreeMap<String, String> {
-    let mut plan = compile_swift_tests();
+    let mut plan = compile_swift_goldens();
     plan.fragments
         .retain(|fragment| fragment.source != hostile_names::CORPUS);
     plan.operations
@@ -698,7 +705,7 @@ fn check_hideable_names(lens: &crate::decide::ReaderPlan) {
 #[test]
 fn the_names_a_lens_is_decided_to_spell_that_a_member_could_hide_are_the_ones_its_text_spells() {
     let program = crate::decide::program(
-        &compile_swift_tests(),
+        &compile_swift_goldens(),
         &SwiftNaming::new(&swift_tests_config()).into(),
     )
     .unwrap_or_else(|errors| panic!("the test documents emit: {errors:?}"));
@@ -715,8 +722,6 @@ fn the_names_a_lens_is_decided_to_spell_that_a_member_could_hide_are_the_ones_it
 fn emitted(text: &str) -> String {
     let config_path = repository().join("swift/Tests/BatonTests/baton.json");
     let config = Config::load(&config_path).expect("the test target has a baton.json");
-    let schema_path = config.schema_path(&config_path);
-    let schema = std::fs::read_to_string(&schema_path).expect("the test schema is readable");
     let documents = [crate::documents::Document {
         path: PathBuf::from("Probe.graphql"),
         index: 0,
@@ -724,15 +729,9 @@ fn emitted(text: &str) -> String {
         text: text.to_string(),
         embedded: None,
     }];
-    let extensions = schema_extensions(&config, &config_path);
-    let compiled = pipeline::compile(
-        &schema,
-        &schema_path.to_string_lossy(),
-        &extensions,
-        &documents,
-        &config,
-    )
-    .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
+    let sources = schema_sources(&config, &config_path);
+    let compiled = pipeline::compile(&sources, &documents, &config)
+        .unwrap_or_else(|errors| panic!("the document does not compile: {errors:?}"));
     let output = swift(&compiled.plan, &config)
         .unwrap_or_else(|errors| panic!("the document declares names twice: {errors:?}"));
     let mut swift: String = output.files.values().cloned().collect();
@@ -888,3 +887,6 @@ mod kotlin_hostile_names;
 
 #[path = "spec_sources_tests.rs"]
 mod spec_sources;
+
+#[path = "raw_response_tests.rs"]
+mod raw_response;

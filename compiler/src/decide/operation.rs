@@ -1,5 +1,6 @@
 //! The operation half of the decide pass: an operation value's variables and
-//! the names it declares, and a mutation's optimistic-response builders.
+//! the names it declares, and its response builders: a mutation's optimistic
+//! response, and the raw response a query or a subscription asks for.
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -15,7 +16,8 @@ use crate::pipeline::{
 };
 
 /// An operation's value type: its variables, its static data, its plan, its
-/// root lens and, for a mutation, its optimistic-response builder.
+/// root lens and its response builder, a mutation's `OptimisticResponse`
+/// or the `RawResponse` of a query or a subscription that asks for one.
 #[derive(Debug, Clone, PartialEq)]
 pub struct OperationValue {
     pub name: String,
@@ -40,7 +42,7 @@ pub struct OperationValue {
     pub client_only: bool,
     pub normalization: NormalizationSelection,
     pub data: ReaderPlan,
-    pub optimistic: Option<BuilderPlan>,
+    pub response: Option<BuilderPlan>,
 }
 
 /// A variable as the value's stored property and initializer parameter.
@@ -59,10 +61,50 @@ pub struct VariableValue {
     pub local: String,
 }
 
+/// What a response builder is for. A mutation's is its guess of the answer,
+/// shown until the server's arrives; a raw response, Relay's word, is the
+/// response itself written by hand, for the door or for a transport of the
+/// app's own. The two are one builder: a payload in a response's shape.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ResponseKind {
+    Optimistic,
+    Raw,
+}
+
+impl ResponseKind {
+    /// The builder an operation's value nests: a mutation's always, a
+    /// query's or a subscription's under `@raw_response_type`, which on a
+    /// mutation asks for what it already has.
+    fn of(operation: &OperationPlan) -> Option<ResponseKind> {
+        match operation.kind {
+            OperationKind::Mutation => Some(ResponseKind::Optimistic),
+            OperationKind::Query | OperationKind::Subscription => {
+                operation.raw_response.then_some(ResponseKind::Raw)
+            }
+        }
+    }
+
+    fn spelled(self) -> Spelled {
+        match self {
+            ResponseKind::Optimistic => Spelled::OptimisticResponse,
+            ResponseKind::Raw => Spelled::RawResponse,
+        }
+    }
+
+    /// What a message calls the response.
+    fn what(self) -> &'static str {
+        match self {
+            ResponseKind::Optimistic => "the optimistic response",
+            ResponseKind::Raw => "the raw response",
+        }
+    }
+}
+
 /// A builder of a partial response: one struct per selection set, every
 /// field optional, rendering to JSON.
 #[derive(Debug, Clone, PartialEq)]
 pub struct BuilderPlan {
+    pub kind: ResponseKind,
     pub name: String,
     pub fields: Vec<BuilderField>,
     /// The local `variable` collects the fields in, named past the locals
@@ -136,10 +178,11 @@ pub(super) fn operation(
     let naming = readers.naming;
     duplicates.extend(operation_scope(operation, &data, &normalization, naming));
     duplicates.extend(nested_types(operation, &data, fragments, naming));
-    let optimistic = (operation.kind == OperationKind::Mutation).then(|| {
-        let name = naming.spelling(Spelled::OptimisticResponse);
+    let response = ResponseKind::of(operation).map(|kind| {
+        let name = naming.spelling(kind.spelled());
         let path = format!("{}.{name}", operation.name);
         builder(
+            kind,
             &path,
             name,
             &normalization,
@@ -165,7 +208,7 @@ pub(super) fn operation(
         client_only: operation.client_only,
         normalization,
         data,
-        optimistic,
+        response,
     }
 }
 
@@ -209,10 +252,10 @@ fn operation_scope(
 }
 
 /// The clashes of the fragments an operation's lenses spread with the types
-/// its value nests. Inside the value `Data`, and a mutation's `Action` and
-/// `OptimisticResponse`, name its own types, so a spread's accessor would
-/// read a fragment of one of those names as that type; no spelling inside
-/// the value reaches the fragment.
+/// its value nests. Inside the value `Data`, a mutation's `Action` and
+/// `OptimisticResponse`, and a `RawResponse`, name its own types, so a
+/// spread's accessor would read a fragment of one of those names as that
+/// type; no spelling inside the value reaches the fragment.
 fn nested_types(
     operation: &OperationPlan,
     data: &ReaderPlan,
@@ -221,7 +264,7 @@ fn nested_types(
 ) -> Vec<NameError> {
     let none = Reserved::none(naming);
     let mut scope = Scope::new(operation.name.as_str(), &none);
-    for spelled in naming.value_types(operation.kind) {
+    for spelled in naming.value_types(operation) {
         scope.declare_spelled(naming, spelled);
     }
     for name in data.spread_fragments() {
@@ -243,7 +286,9 @@ fn nested_types(
 
 /// The builder named `name` for `selection`, and those nested in it;
 /// `payload` for the response's own, which renders a payload.
+#[allow(clippy::too_many_arguments)]
 fn builder(
+    kind: ResponseKind,
     path: &str,
     name: &str,
     selection: &NormalizationSelection,
@@ -265,13 +310,13 @@ fn builder(
     scope.declare(
         "variable",
         Kind::Instance,
-        "the optimistic response's `variable`",
+        format!("{}'s `variable`", kind.what()),
     );
     if payload {
         scope.declare(
             "payload",
             Kind::Instance,
-            "the optimistic response's `payload`",
+            format!("{}'s `payload`", kind.what()),
         );
     }
     for field in &fields {
@@ -318,6 +363,7 @@ fn builder(
         .into_iter()
         .map(|(name, child)| {
             builder(
+                kind,
                 &format!("{path}.{name}"),
                 &name,
                 child,
@@ -333,6 +379,7 @@ fn builder(
         .map(|field| field.local.as_str())
         .collect();
     BuilderPlan {
+        kind,
         name: name.to_string(),
         collected: numbered("fields", &locals),
         fields: builder_fields,

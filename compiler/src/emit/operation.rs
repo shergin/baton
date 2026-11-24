@@ -1,5 +1,6 @@
-//! Operation values: the variables, the static data, the plan, the root lens
-//! and, for a mutation, the action and its optimistic builder.
+//! Operation values: the variables, the static data, the plan, the root
+//! lens, a mutation's action and optimistic builder, and the raw-response
+//! builder of a query or a subscription that asks for one.
 //!
 //! An operation value names the runtime's module in expressions too, which
 //! is safe here alone: the decide pass refuses a variable named like the
@@ -55,7 +56,7 @@ fn error_behavior_case(behavior: OnError) -> &'static str {
 }
 
 /// What an operation value declares: its variables, its static data, its
-/// plan, its root lens and a mutation's builder.
+/// plan, its root lens and its response builder.
 fn value_members(writer: &mut Writer, operation: &OperationValue, shared: &Shared) {
     for variable in &operation.variables {
         writer.line(format!(
@@ -237,14 +238,16 @@ fn value_members(writer: &mut Writer, operation: &OperationValue, shared: &Share
     // The root lens.
     lens(writer, &operation.data);
 
-    if let Some(optimistic) = &operation.optimistic {
+    if operation.kind == OperationKind::Mutation {
         writer.blank();
         writer.line(format!(
             "public typealias Action = {}<Self>",
             SwiftType::runtime("MutationAction")
         ));
+    }
+    if let Some(response) = &operation.response {
         writer.blank();
-        builder(writer, optimistic);
+        builder(writer, response);
     }
 }
 

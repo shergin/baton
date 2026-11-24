@@ -11,6 +11,7 @@ use crate::config::Config;
 use crate::documents::Document;
 use crate::names::SwiftNaming;
 use crate::pipeline::{self, TypeKind, TypePlan};
+use support::one_file;
 
 /// The line `property` writes when it reads `expression` under `condition`.
 fn one_line(property: Computed, expression: &str, condition: Option<&str>) -> String {
@@ -35,9 +36,7 @@ fn decided_variables(text: &str) -> Vec<VariableValue> {
         embedded: None,
     };
     let compiled = pipeline::compile(
-        &schema,
-        &schema_path.to_string_lossy(),
-        &[],
+        &one_file(&schema, &schema_path.to_string_lossy()),
         &[document],
         &Config::default(),
     )
@@ -490,3 +489,10 @@ fn a_spread_argument_defaults_to_null_only_the_variables_inside_a_list_or_an_obj
         ".object([\"status\": .string(\"Alive\"), \"name\": anchor.variables[\"name\"] ?? .null, \"ids\": .list([anchor.variables[\"id\"] ?? .null])])"
     );
 }
+
+#[path = "support.rs"]
+#[allow(
+    clippy::duplicate_mod,
+    reason = "no test module is the whole crate's, so each that needs the helpers includes them"
+)]
+mod support;

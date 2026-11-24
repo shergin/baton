@@ -21,7 +21,7 @@ fn compiled(config: &str, texts: &[&str]) -> crate::pipeline::plan::Plan {
             ..document(text)
         })
         .collect();
-    compile(&sdl, &path, &[], &documents, &config)
+    compile(&one_file(&sdl, &path), &documents, &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"))
         .plan
 }

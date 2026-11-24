@@ -1,0 +1,55 @@
+# Operations that ask for their raw response with Relay's
+# `@raw_response_type`: a query's, with nested objects, lists, an abstract
+# type and custom scalars, and a subscription's. Their goldens hold the
+# builders a test or an app's own transport writes such a response with.
+
+query RawResponseCharacter($id: ID!) @raw_response_type {
+  character(id: $id) {
+    id
+    name
+    status
+    origin {
+      id
+      name
+    }
+    episode {
+      id
+      name
+      air_date
+    }
+  }
+  search(name: "Rick") {
+    __typename
+    ... on Character {
+      id
+      name
+    }
+    ... on Location {
+      id
+      dimension
+    }
+  }
+  assets {
+    uuid
+    price
+    listedAt
+    page
+    prices
+  }
+}
+
+subscription RawResponseNoteAdded($characterId: ID!) @raw_response_type {
+  noteAdded(characterId: $characterId) {
+    noteEdge {
+      cursor
+      node {
+        id
+        text
+      }
+    }
+    character {
+      id
+      name
+    }
+  }
+}

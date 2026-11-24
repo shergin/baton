@@ -424,7 +424,7 @@ impl Lowering<'_> {
                 if operation.kind != SyntaxOperationKind::Query {
                     self.diagnostics.borrow_mut().push(Diagnostic::error(
                         format!(
-                            "`{}` selects client fields only; a {} is the server's to answer, so select a server field beside them",
+                            "`{}` selects client fields only; a {} is the server's to answer, so select a server field beside them, and declare a field another backend answers in the schema, not in `schemaExtensions`",
                             operation.name.item, operation.kind
                         ),
                         operation.name.location,
@@ -492,6 +492,10 @@ impl Lowering<'_> {
                 .map(|persist| persist.algorithm.id(&text)),
             text,
             client_only,
+            raw_response: operation
+                .directives
+                .named(directive_name("raw_response_type"))
+                .is_some(),
             throws_on_field_error: operation
                 .directives
                 .named(directive_name("throwOnFieldError"))

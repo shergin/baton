@@ -12,7 +12,11 @@ fn refusals(text: &str) -> Vec<(String, u32, u32)> {
     let mut config: Config = serde_json::from_str("{}").expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
     let source = document(text);
-    match compile(&sdl, &path, &[], std::slice::from_ref(&source), &config) {
+    match compile(
+        &one_file(&sdl, &path),
+        std::slice::from_ref(&source),
+        &config,
+    ) {
         Ok(_) => Vec::new(),
         Err(diagnostics) => diagnostics
             .iter()
@@ -34,7 +38,7 @@ fn emitted(text: &str) -> String {
     let (sdl, path) = schema();
     let mut config: Config = serde_json::from_str("{}").expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
-    let compiled = compile(&sdl, &path, &[], &[document(text)], &config)
+    let compiled = compile(&one_file(&sdl, &path), &[document(text)], &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     let output = crate::emit::swift(&compiled.plan, &config).expect("the plan emits");
     output.files.into_values().collect::<Vec<_>>().join("\n")

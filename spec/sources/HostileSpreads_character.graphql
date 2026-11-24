@@ -123,6 +123,7 @@ fragment HostileSpreads_character on Character {
   ... @alias(as: "Data") { ...HostileSpreadTarget_character }
   ... @alias(as: "Action") { ...HostileSpreadTarget_character }
   ... @alias(as: "OptimisticResponse") { ...HostileSpreadTarget_character }
+  ... @alias(as: "RawResponse") { ...HostileSpreadTarget_character }
   ... @alias(as: "hash") { ...HostileSpreadTarget_character }
   ... @alias(as: "commit") { ...HostileSpreadTarget_character }
   ... @alias(as: "callAsFunction") { ...HostileSpreadTarget_character }

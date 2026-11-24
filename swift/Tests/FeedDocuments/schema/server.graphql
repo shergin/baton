@@ -1,0 +1,27 @@
+# What the GraphQL server answers: a quote by its symbol, an alert on one,
+# and the trades it streams itself.
+type Query {
+  quote(symbol: ID!): Quote
+}
+
+type Mutation {
+  setAlert(symbol: ID!, price: Float!): Quote
+}
+
+type Subscription {
+  tradeExecuted(symbol: ID!): Trade
+}
+
+type Quote {
+  id: ID!
+  name: String
+  price: Float
+  updatedAt: String
+  alertPrice: Float
+}
+
+type Trade {
+  id: ID!
+  size: Int
+  quote: Quote
+}

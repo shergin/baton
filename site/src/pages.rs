@@ -316,6 +316,18 @@ pub fn sections(root: &Path) -> Vec<Section> {
                     "docs/recipes/json-scalar.md",
                 ),
                 repo(
+                    "/recipes/another-backend/",
+                    "A backend that is not GraphQL",
+                    "A socket of another protocol or a REST endpoint in the store: a schema file, a raw response, and the app's transport or a service.",
+                    "docs/recipes/another-backend.md",
+                ),
+                repo(
+                    "/recipes/stream/",
+                    "A fast stream, paced",
+                    "A feed over many keys in the store: what a tick costs, the newest value per key, and one payload per interval through a client list.",
+                    "docs/recipes/stream.md",
+                ),
+                repo(
                     "/recipes/porting-from-relay/",
                     "Porting from Relay",
                     "Relay's words beside Baton's, in Swift and in Kotlin; what differs on purpose; what is not ported and why.",

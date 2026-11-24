@@ -111,6 +111,7 @@ fn an_enum_named_like_what_the_module_keeps_or_the_standard_library_takes_enum_a
         "Data",
         "Action",
         "OptimisticResponse",
+        "RawResponse",
     ] {
         assert_eq!(enum_type_name(name), format!("{name}Enum"));
     }

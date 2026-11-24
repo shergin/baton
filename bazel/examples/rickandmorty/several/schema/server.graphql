@@ -1,0 +1,4 @@
+# The server's schema.
+type Query {
+  hello: String
+}

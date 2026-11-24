@@ -8,6 +8,7 @@ use super::*;
 use crate::config::{ConvertedType, HostType, HostTypes, KotlinConfig, Language};
 use crate::documents::Document;
 use crate::pipeline;
+use support::one_file;
 
 /// The configuration of a Kotlin run in the package `app.generated`, with
 /// `Decimal` read as a `java.math.BigDecimal`.
@@ -49,9 +50,7 @@ fn emitted(path: &str, package: Option<&str>, text: &str) -> Output {
     };
     let config = config();
     let compiled = pipeline::compile(
-        &schema,
-        &schema_path.to_string_lossy(),
-        &[],
+        &one_file(&schema, &schema_path.to_string_lossy()),
         &[document],
         &config,
     )
@@ -403,3 +402,10 @@ fn an_enum_value_spelled_like_the_undeclared_case_takes_an_underscore() {
     assert!(text.contains("\"UNDECLARED\" -> UNDECLARED_\n"));
     assert!(text.contains("else -> Undeclared(text)\n"));
 }
+
+#[path = "support.rs"]
+#[allow(
+    clippy::duplicate_mod,
+    reason = "no test module is the whole crate's, so each that needs the helpers includes them"
+)]
+mod support;

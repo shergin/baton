@@ -321,6 +321,339 @@
       }
     },
     {
+      "name": "RawResponseCharacter",
+      "kind": "query",
+      "source": "compiler/src/tests/hosts/RawResponseDocuments.graphql",
+      "variables": [
+        {
+          "name": "id",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "query RawResponseCharacter($id:ID!){character(id:$id){id,name,status,origin{id,name},episode{id,name,air_date}},search(name:\"Rick\"){__typename,...on Character{id,name},...on Location{id,dimension},...on Node{__isNode:__typename,id}},assets{uuid,price,listedAt,page,prices,id}}",
+      "lens": {
+        "type": "Query",
+        "accessors": [
+          {
+            "name": "character",
+            "key": "character",
+            "coordinate": "Query.character",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "Character",
+              "accessors": [
+                {
+                  "name": "id",
+                  "key": "id",
+                  "coordinate": "Character.id",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "name",
+                  "key": "name",
+                  "coordinate": "Character.name",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "status",
+                  "key": "status",
+                  "coordinate": "Character.status",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "origin",
+                  "key": "origin",
+                  "coordinate": "Character.origin",
+                  "read": "linked",
+                  "optional": true,
+                  "lens": {
+                    "type": "Location",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "coordinate": "Location.id",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "name",
+                        "key": "name",
+                        "coordinate": "Location.name",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "episode",
+                  "key": "episode",
+                  "coordinate": "Character.episode",
+                  "read": "linked",
+                  "list": {
+                    "optionalElements": false
+                  },
+                  "lens": {
+                    "type": "Episode",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "coordinate": "Episode.id",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "name",
+                        "key": "name",
+                        "coordinate": "Episode.name",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "air_date",
+                        "key": "air_date",
+                        "coordinate": "Episode.air_date",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "key": "search",
+            "coordinate": "Query.search",
+            "read": "linked",
+            "optional": true,
+            "list": {
+              "optionalElements": false
+            },
+            "lens": {
+              "type": "SearchResult",
+              "accessors": [
+                {
+                  "name": "asCharacter",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "Character"
+                  ],
+                  "lens": {
+                    "type": "Character",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "coordinate": "Character.id",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "name",
+                        "key": "name",
+                        "coordinate": "Character.name",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "asLocation",
+                  "read": "condition",
+                  "optional": true,
+                  "types": [
+                    "Location"
+                  ],
+                  "lens": {
+                    "type": "Location",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "coordinate": "Location.id",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "dimension",
+                        "key": "dimension",
+                        "coordinate": "Location.dimension",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "assets",
+            "key": "assets",
+            "coordinate": "Query.assets",
+            "read": "linked",
+            "optional": true,
+            "list": {
+              "optionalElements": false
+            },
+            "lens": {
+              "type": "Asset",
+              "accessors": [
+                {
+                  "name": "uuid",
+                  "key": "uuid",
+                  "coordinate": "Asset.uuid",
+                  "read": "scalar"
+                },
+                {
+                  "name": "price",
+                  "key": "price",
+                  "coordinate": "Asset.price",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "listedAt",
+                  "key": "listedAt",
+                  "coordinate": "Asset.listedAt",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "page",
+                  "key": "page",
+                  "coordinate": "Asset.page",
+                  "read": "scalar",
+                  "optional": true
+                },
+                {
+                  "name": "prices",
+                  "key": "prices",
+                  "coordinate": "Asset.prices",
+                  "read": "scalar",
+                  "optional": true,
+                  "list": {
+                    "optionalElements": true
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RawResponseNoteAdded",
+      "kind": "subscription",
+      "source": "compiler/src/tests/hosts/RawResponseDocuments.graphql",
+      "variables": [
+        {
+          "name": "characterId",
+          "type": "ID!"
+        }
+      ],
+      "fragments": [],
+      "text": "subscription RawResponseNoteAdded($characterId:ID!){noteAdded(characterId:$characterId){noteEdge{cursor,node{id,text}},character{id,name}}}",
+      "lens": {
+        "type": "Subscription",
+        "accessors": [
+          {
+            "name": "noteAdded",
+            "key": "noteAdded",
+            "coordinate": "Subscription.noteAdded",
+            "read": "linked",
+            "optional": true,
+            "lens": {
+              "type": "NoteAddedPayload",
+              "accessors": [
+                {
+                  "name": "noteEdge",
+                  "key": "noteEdge",
+                  "coordinate": "NoteAddedPayload.noteEdge",
+                  "read": "linked",
+                  "optional": true,
+                  "lens": {
+                    "type": "NoteEdge",
+                    "accessors": [
+                      {
+                        "name": "cursor",
+                        "key": "cursor",
+                        "coordinate": "NoteEdge.cursor",
+                        "read": "scalar"
+                      },
+                      {
+                        "name": "node",
+                        "key": "node",
+                        "coordinate": "NoteEdge.node",
+                        "read": "linked",
+                        "optional": true,
+                        "lens": {
+                          "type": "Note",
+                          "accessors": [
+                            {
+                              "name": "id",
+                              "key": "id",
+                              "coordinate": "Note.id",
+                              "read": "scalar",
+                              "optional": true
+                            },
+                            {
+                              "name": "text",
+                              "key": "text",
+                              "coordinate": "Note.text",
+                              "read": "scalar",
+                              "optional": true
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "character",
+                  "key": "character",
+                  "coordinate": "NoteAddedPayload.character",
+                  "read": "linked",
+                  "optional": true,
+                  "lens": {
+                    "type": "Character",
+                    "accessors": [
+                      {
+                        "name": "id",
+                        "key": "id",
+                        "coordinate": "Character.id",
+                        "read": "scalar",
+                        "optional": true
+                      },
+                      {
+                        "name": "name",
+                        "key": "name",
+                        "coordinate": "Character.name",
+                        "read": "scalar",
+                        "optional": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "TestAddNote",
       "kind": "mutation",
       "source": "swift/Tests/BatonTests/ListDocuments.swift",

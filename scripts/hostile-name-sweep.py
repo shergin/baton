@@ -9,8 +9,12 @@ arguments, under a condition with an alias, under `@defer` and caught under
 an alias, and as one a value spreads in each of those forms but `@defer`.
 Each is a type of the whole module, and one named like a type the target's
 own sources spell would change what they mean, so the corpus cannot hold
-them. A name batonc refuses
-is refused; a name it accepts whose Swift does not type-check is a defect.
+them. Besides those, the positions of a query and a subscription that ask
+for their raw response with `@raw_response_type`, which the corpus does not
+hold: the operation's name, a variable, a root, a scalar and a linked
+field of the response, and the name of a fragment the operation spreads.
+A name batonc refuses is refused; a name it accepts whose Swift does not
+type-check is a defect.
 
 From the repository root, after `scripts/build-compiler.sh` and a debug
 `swift build` of the package (`--build-tests` or `--target Baton`):
@@ -70,6 +74,15 @@ fragment Probe_character on Character @inline @throwOnFieldError @argumentDefini
   ... @alias(as: "caughtValue") @catch { ...HOSTILE }
 }
 query Probe { character(id: 1) { ...Probe_character } }""",
+    "raw-response-query": "query HOSTILE @raw_response_type { character(id: 1) { id name } }",
+    "raw-response-subscription": 'subscription HOSTILE @raw_response_type { noteAdded(characterId: "1") { noteEdge { cursor } } }',
+    "raw-response-query-variable": "query Probe($HOSTILE: ID!) @raw_response_type @throwOnFieldError { charactersByIds(ids: [$HOSTILE]) { id } }",
+    "raw-response-subscription-variable": 'subscription Probe($HOSTILE: Boolean!) @raw_response_type { noteAdded(characterId: "1") @catch { noteEdge { node { id } ... @include(if: $HOSTILE) { cursor } } } }',
+    "raw-response-root": "query Probe @raw_response_type { HOSTILE: character(id: 1) { id } }",
+    "raw-response-scalar": "query Probe @raw_response_type { character(id: 1) { HOSTILE: name } }",
+    "raw-response-linked": 'subscription Probe @raw_response_type { noteAdded(characterId: "1") { HOSTILE: noteEdge { cursor } } }',
+    "raw-response-query-spread": "fragment HOSTILE on Character { name } query Probe @raw_response_type { character(id: 1) { ...HOSTILE } }",
+    "raw-response-subscription-spread": 'fragment HOSTILE on NoteEdge { cursor } subscription Probe @raw_response_type { noteAdded(characterId: "1") { noteEdge { ...HOSTILE } } }',
 }
 
 
@@ -83,13 +96,15 @@ def batonc():
 
 
 def hostile_names():
-    """Every name the corpus's aliased scalar fields hold, and the ones that
-    position refuses besides: close to the tests' own list."""
+    """Every name the corpus's aliased scalar fields hold, the ones that
+    position refuses besides, and the raw response's own name, which a
+    raw response's positions meet: close to the tests' own list."""
     corpus = open(f"{ROOT}/swift/Tests/BatonTests/HostileNameDocuments.swift").read()
     start = corpus.index("fragment HostileScalars_character")
     section = corpus[start:corpus.index('"""', start)]
     names = re.findall(r"(\w+): name\b", section)
-    return names + ["anchor", "recordID", "Slots", "_hostileHidden"]
+    extra = ["anchor", "recordID", "Slots", "RawResponse", "_hostileHidden"]
+    return list(dict.fromkeys(names + extra))
 
 
 def check(job):

@@ -12,6 +12,7 @@ use crate::names::SwiftNaming;
 use crate::pipeline::compile;
 
 use super::*;
+use support::one_file;
 
 /// The test schema's text and path.
 fn schema() -> (String, String) {
@@ -41,7 +42,7 @@ fn compiled_at(config: &str, documents: &[(&str, &str)]) -> Plan {
             embedded: None,
         })
         .collect();
-    compile(&sdl, &path, &[], &documents, &config)
+    compile(&one_file(&sdl, &path), &documents, &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"))
         .plan
 }
@@ -528,3 +529,10 @@ fn a_field_s_accessor_names_its_schema_coordinate_and_a_spread_or_a_condition_no
     assert_eq!(home.read, ReadKind::Linked);
     assert_eq!(home.coordinate.as_deref(), Some("Character.origin"));
 }
+
+#[path = "support.rs"]
+#[allow(
+    clippy::duplicate_mod,
+    reason = "no test module is the whole crate's, so each that needs the helpers includes them"
+)]
+mod support;

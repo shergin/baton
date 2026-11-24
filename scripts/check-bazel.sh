@@ -2,7 +2,9 @@
 # Runs the Bazel example over the compiler built in this checkout, as CI
 # does: the generation target builds in the sandbox, its output is copied
 # into Generated/, the check test passes over it and fails once one file is
-# edited. Needs bazelisk (or bazel) and a built compiler, the one
+# edited. The same over a schema of two files, the second target's, whose
+# feed file extends a type the server's file defines and sorts first. Needs
+# bazelisk (or bazel) and a built compiler, the one
 # BATON_COMPILER names or compiler/target/release/batonc.
 set -eu
 root="$(cd "$(dirname "$0")/.." && pwd)"
@@ -27,4 +29,15 @@ if run test //:screens_check; then
   exit 1
 fi
 rm -rf Generated
-echo "the Bazel example builds, and the check test tells fresh output from stale"
+run build //several:pulse
+rm -rf several/Generated
+mkdir several/Generated
+cp bazel-bin/several/pulse/*.baton.swift several/Generated/
+chmod u+w several/Generated/*
+run test //several:pulse_check
+grep -q 'Slots.Query.pulse' several/Generated/Pulse.graphql.baton.swift || {
+  echo "the source's selection of the extension's field was not generated" >&2
+  exit 1
+}
+rm -rf several/Generated
+echo "the Bazel example builds, over one schema file and over two, and the check test tells fresh output from stale"

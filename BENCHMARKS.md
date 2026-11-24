@@ -30,6 +30,269 @@ Best ingest and best commit of the fixture at each release below.
   <img alt="Ingest and commit, best, from 0.1.0 through 0.6.0" src="benchmarks/charts/read-path.svg">
 </picture>
 
+## Unreleased, a feed's ticks through the two doors — 2026-11-23
+
+Revision: the working tree on top of `7ce2144`, before `0f85afd`, whose
+fourth per-record array adds an allocation or more to every ingest: the
+allocation counts below are that revision's, and `benchmarks/counts.txt`
+gates the counts after it (41, 96 and 563 where this entry says 40, 94
+and 559). The new section `stream`
+(`swift/Benchmarks/Stream.swift`) measures values that arrive over a
+protocol that is not GraphQL, written into records the store holds,
+through `Environment.commitPayload` called once per tick and through a
+subscription whose events a transport of the app's own yields, the
+`BatonFeedTests` shape. A tick names a character the fixture holds
+through its episodes' casts (ids 21 and up) and writes two scalar
+fields, `status` standing for a price and `created` for its time:
+`query BenchTick($id: ID!) @raw_response_type { character(id: $id) { id
+status created } }`, its plural `charactersByIds(ids:)`, the
+subscription `noteAdded(characterId:) { character { id status created }
+}`, the only subscription field of the test schema, and
+`characterBy(by: {id:})`, which the bench's `baton.json` marks
+transient. Every row runs against a store holding the fixture, 901
+records, fetched through a handle the row retains, with 20
+observation-tracked readers of the page's own characters and one of the
+written record. Machine: Apple M1 Pro (MacBook Pro), macOS 26.5.2
+(25F84), Xcode 26.6, Swift 6.3.3, release build, the compiler built by
+`scripts/build-compiler.sh`. `BATON_COMPILER=local swift run -c release
+BatonBenchmarks --only stream --repeat 3`; best of the runs, the median of
+the medians in parentheses, and beside a row the allocations one run of
+its body makes. The machine was not quiet: nothing of Baton was building,
+but a release binary of another project held 1.5 to 1.9 cores throughout
+and a browser about 1.8 more; the load average stood at 5.3 before the
+runs and 4.6 after them. An earlier run of the section under the same
+load, before the floor rows were added, agreed with this one's best to
+within a tenth.
+
+How the rows are measured. "On the main thread" is the main thread's own
+CPU time (`CLOCK_THREAD_CPUTIME_ID`, read on the main actor) across the
+row's body: the main actor's jobs and the dispatch around them, not the
+time it waited. The per-tick rows call the door from the main actor, with
+the payload written before the clock starts. A burst is 1,000 ticks
+handed over at once: through `commitPayload`, a service's loop off the
+main actor awaiting each call in turn; through the subscription, a task
+yielding all of them to the feed, one transport stream and one handle per
+key. Its longest wait is that of a block a thread off the main actor
+posts to the main queue every quarter of a millisecond, the wait a
+frame's work posted then would meet, measured in runs of their own so the
+probes do not count in the main thread's time. A sustained run sends N
+ticks a second for ten seconds from a thread of its own, keys in turn,
+with an image attached; the written record's reader is armed again after
+each change on the main actor's next turn, as a body is. Busy is the main
+thread's CPU time over the run's wall time; lag is the last tick's commit
+after its send; behind is how many earlier ticks had not committed when
+the last was sent; written is the process's logical writes over the run
+(`ri_logical_writes`); flush is from the last send to
+`Persistence.flush()` returning, which is when the writer's queue is
+empty.
+
+### One tick
+
+| Measurement | Best (median) | allocations |
+|---|---|---|
+| A later tick through `commitPayload`, the whole call | 20.7 µs (27.9) | |
+| The same, on the main thread | 13.2 µs (17.4) | |
+| A first tick for a key, a new key each sample, the whole call | 23.0 µs (165) | |
+| The same, on the main thread | 14.4 µs (165) | |
+| A later tick's ingest alone, which the door runs off the main actor | 4.0 µs (4.2) | 40 |
+| A later tick's commit alone, on the main actor | 3.2 µs (7.4) | 12 |
+| A first tick's commit alone | 2.5 µs (3.8) | 13 |
+| A subscription event, from the feed's yield to the commit | 51.3 µs (69.0) | |
+| The same, on the main thread | 30.4 µs (40.1) | |
+| A later tick through `commitPayload`, image attached, the whole call | 21.1 µs (31.4) | |
+| The same, on the main thread | 12.3 µs (21.3) | |
+
+A later tick changes 2 slots and a first tick 3, the root's cell for the
+key besides the two fields; each notifies the written record's reader
+once and none of the 20 others. The first-tick rows run past ten keys,
+so from the eleventh sample on each tick's root, which nobody retains,
+pushes another out of the release buffer.
+
+### The payload before the door, per payload
+
+| Measurement | Best (median) | allocations |
+|---|---|---|
+| `BenchTick.RawResponse(character:).payload`, the generated builder | 2.8 µs (2.9) | 22 |
+| The same bytes as a string literal with interpolation | 403 ns (405) | 4 |
+
+The builder writes an object's keys sorted, so the literal is written in
+that order and the bytes are equal; the literal escapes nothing.
+
+### One payload for 100 keys against 100 payloads
+
+| Measurement | Best (median) |
+|---|---|
+| One payload of `charactersByIds` carrying 100 keys through `commitPayload` | 190 µs (196) |
+| The same, on the main thread | 104 µs (106) |
+| 100 payloads of one key each through `commitPayload`, in sequence | 15.3 ms (16.6) |
+| The same, on the main thread | 15.3 ms (16.5) |
+| 100 payloads of one key each, every key's root retained by a handle | 2.11 ms (2.42) |
+| The same, on the main thread | 1.25 ms (1.49) |
+
+Each sample changes 200 slots and notifies the written record's reader
+once; the 100 payloads with no root retained change 300, the root's cell
+for each key being written again after the collection removed it.
+
+### A burst of 1,000 ticks
+
+| Door, keys | Handover to the last commit | On the main thread | Longest wait, median (worst of 15) |
+|---|---|---|---|
+| `commitPayload`, 1 | 39.8 ms (44.7) | 25.7 ms (28.5) | 65 µs (220) |
+| `commitPayload`, 10 | 32.8 ms (41.6) | 18.1 ms (21.6) | 41 µs (112) |
+| `commitPayload`, 100 | 168 ms (176) | 160 ms (167) | 181 µs (3.45 ms) |
+| `commitPayload`, 100, every key's root retained | 34.4 ms (43.6) | 17.9 ms (22.1) | 49 µs (102) |
+| Subscription, 1 | 46.3 ms (52.1) | 32.2 ms (33.8) | 59 µs (109) |
+| Subscription, 10 | 17.4 ms (21.1) | 16.4 ms (18.8) | 243 µs (1.07 ms) |
+| Subscription, 100 | 15.0 ms (18.1) | 14.1 ms (16.9) | 1.45 ms (2.87 ms) |
+
+Every burst lands 1,000 commits; no door merges ticks.
+
+### Sustained, ten seconds, image attached
+
+Busy is the median of the three runs with their range; lag the median
+with the worst; behind and flush the worst of the three; written the
+median. A tenth of a 60 Hz frame per frame is 100 ms/s, as is a tenth of
+a 120 Hz one.
+
+| Door, rate, keys | Busy, ms/s | Lag | Behind | Written | Flush |
+|---|---|---|---|---|---|
+| `commitPayload`, 1/s, 1 | 0.2 (0.2 to 0.3) | 523 µs (961 µs) | 0 | 0.10 MB, 10.0 KB a tick | 1.5 ms |
+| `commitPayload`, 1/s, 10 | 0.2 (0.2 to 0.2) | 526 µs (7.1 ms) | 0 | 0.11 MB, 10.4 KB a tick | 7.3 ms |
+| `commitPayload`, 1/s, 100 | 0.7 (0.7 to 0.8) | 482 µs (583 µs) | 0 | 0.16 MB, 15.2 KB a tick | 1.5 ms |
+| `commitPayload`, 10/s, 1 | 2.5 (2.2 to 2.6) | 319 µs (404 µs) | 0 | 0.88 MB, 8.6 KB a tick | 652 µs |
+| `commitPayload`, 10/s, 10 | 1.9 (1.6 to 2.0) | 869 µs (1.8 ms) | 0 | 0.87 MB, 8.5 KB a tick | 2.2 ms |
+| `commitPayload`, 10/s, 100 | 8.4 (6.1 to 9.0) | 638 µs (650 µs) | 0 | 1.34 MB, 13.1 KB a tick | 1.6 ms |
+| `commitPayload`, 100/s, 1 | 21.5 (19.6 to 22.6) | 589 µs (722 µs) | 0 | 8.59 MB, 8.4 KB a tick | 1.3 ms |
+| `commitPayload`, 100/s, 10 | 15.8 (15.0 to 16.6) | 316 µs (450 µs) | 0 | 8.59 MB, 8.4 KB a tick | 820 µs |
+| `commitPayload`, 100/s, 100 | 63.8 (58.3 to 79.5) | 591 µs (927 µs) | 0 | 13.4 MB, 13.1 KB a tick | 3.4 ms |
+| `commitPayload`, 1,000/s, 1 | 122.8 (111.6 to 126.2) | 190 µs (2.1 ms) | 4 | 77.0 MB, 7.5 KB a tick | 2.9 ms |
+| `commitPayload`, 1,000/s, 10 | 89.2 (86.8 to 106.2) | 499 µs (548 µs) | 0 | 80.4 MB, 7.9 KB a tick | 2.5 ms |
+| `commitPayload`, 1,000/s, 100 | 405.4 (383.6 to 426.9) | 149 µs (160 µs) | 0 | 126.5 MB, 12.4 KB a tick | 1.9 ms |
+| `commitPayload`, roots retained, 100/s, 100 | 15.9 (13.3 to 16.1) | 379 µs (717 µs) | 0 | 8.96 MB, 8.8 KB a tick | 1.1 ms |
+| `commitPayload`, roots retained, 1,000/s, 100 | 89.0 (82.2 to 94.1) | 356 µs (447 µs) | 0 | 84.6 MB, 8.3 KB a tick | 2.0 ms |
+| `commitPayload`, transient root, 100/s, 1 | 21.8 (21.8 to 25.0) | 1.0 ms (1.1 ms) | 0 | 4.35 MB, 4.3 KB a tick | 2.1 ms |
+| `commitPayload`, transient root, 100/s, 10 | 17.6 (15.1 to 19.1) | 345 µs (463 µs) | 0 | 4.44 MB, 4.3 KB a tick | 741 µs |
+| `commitPayload`, transient root, 100/s, 100 | 79.0 (74.9 to 79.8) | 361 µs (898 µs) | 0 | 4.67 MB, 4.6 KB a tick | 2.3 ms |
+| Subscription, 100/s, 1 | 23.6 (22.6 to 25.0) | 478 µs (645 µs) | 0 | 8.77 MB, 8.6 KB a tick | 1.2 ms |
+| Subscription, 100/s, 10 | 20.5 (18.5 to 21.6) | 343 µs (456 µs) | 0 | 8.72 MB, 8.5 KB a tick | 5.0 ms |
+| Subscription, 100/s, 100 | 20.3 (17.4 to 20.7) | 450 µs (984 µs) | 0 | 9.15 MB, 8.9 KB a tick | 2.5 ms |
+| Subscription, 1,000/s, 1 | 142.3 (121.5 to 154.2) | 418 µs (634 µs) | 0 | 76.2 MB, 7.4 KB a tick | 3.2 ms |
+| Subscription, 1,000/s, 10 | 132.9 (102.8 to 134.8) | 164 µs (274 µs) | 0 | 80.3 MB, 7.8 KB a tick | 5.2 ms |
+| Subscription, 1,000/s, 100 | 120.6 (100.5 to 131.6) | 177 µs (196 µs) | 0 | 81.3 MB, 7.9 KB a tick | 1.3 ms |
+| floor: an empty hop to the main actor, 100/s | 3.6 (3.1 to 3.8) | 94 µs (512 µs) | 0 | | 1.2 ms |
+| floor: an empty hop to the main actor, 1,000/s | 22.9 (22.5 to 25.5) | 424 µs (2.8 ms) | 14 | | 3.7 ms |
+
+Every run committed every tick, one commit a tick. The writer wrote two
+batches a tick, the records and the operation's fetch stamp, one under the
+transient root, in 0.97 to 1.5 of the writer's transactions a commit.
+
+The main thread's share crosses a tenth of a 60 Hz frame per frame, 100
+ms/s, at 1,000 ticks a second: through `commitPayload` over 1 key and 100
+keys, and through the subscription over every key count; over 10 keys
+through `commitPayload` it stands at 89 ms/s, and at 100 a second the
+highest is 79 ms/s, over 100 keys. A tick at a sustained rate costs the
+main thread through `commitPayload` 89 to 405 µs at 1,000/s and 158 to
+638 µs at 100/s, against
+13 µs for a later tick called back to back and 18 to 26 µs a tick in a
+burst; an empty hop to the main actor at the same rates costs 23 to 36
+µs. Over 100 keys with no root retained, each tick's root pushes another
+out of the release buffer and a collection pass over the store follows on
+the main actor: 160 ms for a burst against 17.9 ms with the roots
+retained, 405 ms/s at 1,000/s against 89, and 12.4 to 15.2 KB written a
+tick against 8.3 to 8.8. Delivery kept up in every run: the last tick
+committed within 7.1 ms of its send through either door, no more ticks
+behind than the empty hop's floor, and the writer's queue was empty
+within 7.3 ms of the last tick. A burst's longest wait on the main queue
+is 41 to 181 µs at the median through `commitPayload`, the worst 3.45 ms
+in the 100-key burst with no root retained, and 1.45 ms at the median
+through the subscription over 100 keys, whose ingests finish together and
+whose commits queue back to back. The generated builder costs 2.8 µs and 22 allocations a payload
+against 0.4 µs and 4 for the literal. One payload for 100 keys costs 190
+µs, 104 µs of it on the main thread, against 2.1 ms, 1.25 ms on the main
+thread, for 100 payloads with every root retained and 15.3 ms with none.
+The transient root halves the bytes written a tick at 100 a second, 4.3
+against 8.4 KB, and leaves the main thread's share where it was.
+
+### The paced shape
+
+The shape the docs recommend for a service, measured in a later run of
+the same command, with the two sustained rows it replaces measured again
+beside it. The machine was quieter for this run: nothing of Baton was
+building and no other project's process was busy; the load average stood
+at 2.3 before the runs and 2.0 after them. Ticks are decoded off the main
+actor and offered to a pacer, a locked dictionary holding the newest tick
+of each key; a service's loop off the main actor drains it once per
+interval and commits what it drained in one payload through `query
+BenchLive @raw_response_type { liveCharacters { id status created } }`, a
+client-only query over the client list `liveCharacters: [Character]`
+that `swift/Benchmarks/live.graphql` declares and `baton.json` marks
+transient; `liveCharactersImaged`, its twin, is not transient. Lag is
+each committed value's, from its tick's arrival at the pacer to the
+commit that carried it; a tick a newer tick of its key replaced before the
+drain is never committed. Written is the process's logical writes a
+second of the run.
+
+One commit back to back, from the main actor, with one reader per
+written record and the 20 readers of the page's own characters:
+
+| Keys in the payload | The whole call | On the main thread | Ingest alone | Commit alone, on the main actor |
+|---|---|---|---|---|
+| 1 | 16.9 µs (18.4) | 9.9 µs (10.8) | 3.9 µs (4.0), 40 allocations | 3.0 µs (4.1), 12 allocations |
+| 10 | 40.3 µs (41.0) | 26.1 µs (26.7) | 12.7 µs (12.9), 94 allocations | 19.6 µs (19.9), 46 allocations |
+| 100 | 257 µs (262) | 176 µs (178) | 101 µs (101), 559 allocations | 167 µs (170), 322 allocations |
+
+Each commit changes 2 slots a key and notifies each written record's
+reader once and none of the 20 others; the list carries the same keys in
+the same order every sample, so its cell does not change, and no
+collection runs over the 200 samples of any row.
+
+Sustained, ten seconds, image attached; busy is the median of the three
+runs with their range, lag the median with the worst of the three:
+
+| Rate, keys, commits a second | Busy, ms/s | Lag | Written a second | Collections a run |
+|---|---|---|---|---|
+| `commitPayload` per tick, 1,000/s, 100 | 548.1 (539.9 to 555.7) | 0.13 ms (0.16 ms) | 13.1 MB | |
+| `commitPayload` per tick, roots retained, 1,000/s, 100 | 100.4 (99.4 to 100.8) | 0.28 ms (0.59 ms) | 8.7 MB | |
+| Paced, 1,000/s, 100, 10/s | 11.0 (10.9 to 11.4) | 51.4 ms (105 ms) | 1.04 MB | 85 to 92 of 100 |
+| Paced, 1,000/s, 100, 30/s | 32.2 (32.0 to 32.3) | 17.4 ms (61.8 ms) | 1.21 MB | one a commit |
+| Paced, 1,000/s, 100, 60/s | 55.6 (55.0 to 57.0) | 8.6 ms (29.9 ms) | 1.29 MB | one a commit |
+| Paced, 100/s, 10, 10/s | 5.0 (4.5 to 5.5) | 48.9 ms (99.7 ms) | 0.17 MB | 19 to 36 of 100 |
+| Paced, 100/s, 10, 30/s | 27.9 (27.4 to 28.8) | 15.0 ms (43.3 ms) | 0.28 MB | one a commit |
+| Paced, 100/s, 10, 60/s | 51.2 (50.7 to 51.3) | 7.4 ms (36.1 ms) | 0.33 MB | one a commit |
+| Paced, root not transient, 1,000/s, 100, 30/s | 32.2 (30.9 to 32.9) | 17.4 ms (44.3 ms) | 1.47 MB | one a commit |
+| Paced, every key listed, 1,000/s, 100, 30/s | 10.9 (10.5 to 10.9) | 17.8 ms (54.6 ms) | 1.18 MB | 0 |
+| Paced, every key listed, 1,000/s, 100, 60/s | 15.6 (15.0 to 15.8) | 9.2 ms (33.1 ms) | 1.28 MB | 0 |
+| Paced, every key listed, 100/s, 10, 30/s | 5.3 (5.1 to 5.5) | 15.4 ms (41.0 ms) | 0.28 MB | 0 |
+| Paced, every key listed, 100/s, 10, 60/s | 8.2 (8.2 to 8.5) | 7.5 ms (25.7 ms) | 0.32 MB | 0 |
+
+Every paced run committed on its schedule, 10, 30 and 60 a second
+(59.3 to 59.9 at 60 over 10 keys, where an interval with no tick commits
+nothing), and every tick's key was carried by a commit; at 10 a second
+1.6 % of the ticks over 100 keys and 1.1 % over 10 were replaced in the
+pacer before a drain, and none at 30 or 60. The writer wrote one batch a commit, two with the
+root not transient. The lag of a committed value is half the interval at
+the median and the interval plus the commit at the worst: 51 ms at 10 a
+second, 15 to 17 ms at 30, 7 to 9 ms at 60.
+
+A drain carries the keys that ticked since the last one, so the list it
+commits rarely holds the last list's keys in the last list's order. A
+list that changed other than by growing at either end drops a link, and a
+dropped link schedules a collection, a mark of the store on the main
+actor, as a root pushed out of the release buffer does: one a commit at
+30 and 60 a second, about 0.7 ms of the main thread's each. Listing every
+known key in the order it first ticked, a key that did not tick by its id
+alone, which the raw response leaves untouched, keeps the list growing
+only: no collection runs, and the main thread's share at 1,000 ticks a
+second over 100 keys falls from 32.2 to 10.9 ms/s at 30 commits a second
+and from 55.6 to 15.6 at 60. Against the per-tick door at the same rate,
+548 ms/s with no root retained (405 in the first run, under the other
+project's load) and 100 with every root retained (89), the
+paced shape costs 11 to 56 ms/s as drained and 11 to 16 with every key
+listed, and writes a tenth of the bytes: 1.0 to 1.3 MB a second against
+8.7 to 13.1. With the root field not transient the same run writes 1.47
+MB a second against 1.21, the list's cell written each commit, and costs
+the main thread the same.
+
 ## Unreleased, a repeated span appends nothing where its entries stand — 2026-11-06
 
 Revision: the working tree on top of `7ce2144`, against `7ce2144` built

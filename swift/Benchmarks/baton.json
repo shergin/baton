@@ -1,6 +1,10 @@
 {
   "schema": "../../spec/tests/schema.graphql",
+  "schemaExtensions": ["live.graphql"],
   "customScalarTypes": { "Decimal": "Foundation.Decimal" },
+  "transient": {
+    "fields": ["Query.characterBy", "Query.liveCharacters"]
+  },
   "lookups": [
     { "field": "Query.character", "type": "Character", "argument": "id" },
     { "field": "Query.location", "type": "Location", "argument": "id" },

@@ -61,7 +61,7 @@ fragment HostileSelections_character on Character {
   ... @alias(as: "errorBehavior") { name } ... @alias(as: "throwsOnFieldError") { name }
   ... @alias(as: "bubbles") { name } ... @alias(as: "hasIncremental") { name } ... @alias(as: "isClientOnly") { name } ... @alias(as: "cacheExpiration") { name }
   ... @alias(as: "Data") { name } ... @alias(as: "Action") { name }
-  ... @alias(as: "OptimisticResponse") { name } ... @alias(as: "hash") { name }
+  ... @alias(as: "OptimisticResponse") { name } ... @alias(as: "RawResponse") { name } ... @alias(as: "hash") { name }
   ... @alias(as: "commit") { name } ... @alias(as: "callAsFunction") { name }
   ... @alias(as: "Op") { name } ... @alias(as: "variable") { name } ... @alias(as: "payload") { name }
   # What the runtime's protocols give a generated type.

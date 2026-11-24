@@ -21,9 +21,10 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use common::{ArgumentName, Diagnostic, NoopPerfLogger, SourceLocationKey};
+use common::{ArgumentName, Diagnostic, Location, NoopPerfLogger, SourceLocationKey};
 use graphql_ir::{FragmentDefinitionNameSet, Program};
 use graphql_syntax::OperationKind as SyntaxOperationKind;
+use graphql_syntax::{SchemaDocument, TypeSystemDefinition};
 use intern::Lookup;
 use intern::string_key::Intern;
 use relay_config::{DeferStreamInterface, ProjectConfig};
@@ -33,7 +34,7 @@ use relay_transforms::{
     validate_no_unselectable_selections, validate_relay_directives, validate_static_args,
     validate_unused_fragment_variables, validate_unused_variables,
 };
-use schema::{SDLSchema, Schema, Type};
+use schema::{FieldID, SDLSchema, Schema, Type};
 
 use crate::config::{Config, Language};
 use crate::documents::Document;
@@ -85,30 +86,58 @@ pub struct Compiled {
     pub timings: Timings,
 }
 
+/// A file of the schema or of its client extensions: its text, and the path
+/// a diagnostic names it by.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SchemaFile {
+    pub text: String,
+    pub path: String,
+}
+
+impl SchemaFile {
+    pub fn new(text: impl Into<String>, path: impl Into<String>) -> SchemaFile {
+        SchemaFile {
+            text: text.into(),
+            path: path.into(),
+        }
+    }
+
+    fn key(&self) -> SourceLocationKey {
+        SourceLocationKey::standalone(&self.path)
+    }
+}
+
+/// What the schema is read from. `schema` is the files that describe what
+/// the transport answers, one file or the files of `schemaDir` in name
+/// order: the GraphQL server's SDL and, beside it, the fields another
+/// backend answers through the app's own transport. `extensions` is the
+/// client schema extensions, what no transport is asked for. Where a file is
+/// listed says whose its fields are, whatever keyword declares them.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct SchemaSources {
+    pub schema: Vec<SchemaFile>,
+    pub extensions: Vec<SchemaFile>,
+}
+
+impl SchemaSources {
+    /// The path a diagnostic about the schema as a whole points at: its
+    /// first file's.
+    fn path(&self) -> &str {
+        self.schema.first().map_or("", |file| file.path.as_str())
+    }
+}
+
 /// Compiles a schema and documents to a plan, or returns the front end's
 /// diagnostics. Every phase's duration is recorded.
 pub fn compile(
-    schema_sdl: &str,
-    schema_path: &str,
-    extensions: &[(String, String)],
+    sources: &SchemaSources,
     documents: &[Document],
     config: &Config,
 ) -> Result<Compiled, Vec<Diagnostic>> {
     let mut timings = Timings::default();
 
     let started = Instant::now();
-    // The client schema extensions join Baton's directive as extensions, so
-    // Relay marks their fields as the client's and its text transforms leave
-    // them out of what a server receives.
-    let mut extension_sources: Vec<(&str, SourceLocationKey)> =
-        vec![(BATON_DIRECTIVES, SourceLocationKey::Generated)];
-    for (text, path) in extensions {
-        extension_sources.push((text.as_str(), SourceLocationKey::standalone(path)));
-    }
-    let schema = relay_schema::build_schema_with_extensions_parallel(
-        &[(schema_sdl, SourceLocationKey::standalone(schema_path))],
-        &extension_sources,
-    )?;
+    let schema = build_schema(sources)?;
     let schema = Arc::new(schema);
     timings.schema = started.elapsed();
     let errors = validate_client_fields(&schema);
@@ -128,7 +157,7 @@ pub fn compile(
     if !errors.is_empty() {
         return Err(errors);
     }
-    let root_names = root_names(&schema, schema_path)?;
+    let root_names = root_names(&schema, sources.path())?;
 
     let started = Instant::now();
     let mut definitions = Vec::new();
@@ -193,10 +222,114 @@ pub fn compile(
     let mut plan = lower(&schema, &programs, config, &keys, &deletes)?;
     plan.root_names = root_names;
     plan.transient_types = transient_types;
-    plan.schema_digest = schema_digest(schema_sdl, extensions, &config.identity, &config.transient);
+    plan.schema_digest = schema_digest(sources, &config.identity, &config.transient);
     timings.lower = started.elapsed();
 
     Ok(Compiled { plan, timings })
+}
+
+/// Builds the schema from its files. Relay's builder marks every field an
+/// `extend` declares as the client's, whichever list the file came in, and
+/// refuses an extension written before its type. Here the place decides: a
+/// schema file's definitions are built first, its extensions after them,
+/// and the fields those declare are then marked as the server's, as the
+/// GraphQL specification reads an extension a service makes of another
+/// service. Only a file under `schemaExtensions` declares client fields.
+fn build_schema(sources: &SchemaSources) -> Result<SDLSchema, Vec<Diagnostic>> {
+    let mut server = vec![schema::builtins()?];
+    let mut extending = Vec::new();
+    for file in &sources.schema {
+        let document = parse_schema_file(file)?;
+        let (extensions, definitions): (Vec<_>, Vec<_>) =
+            document.definitions.into_iter().partition(is_extension);
+        server.push(SchemaDocument {
+            location: document.location,
+            definitions,
+        });
+        extending.push(SchemaDocument {
+            location: document.location,
+            definitions: extensions,
+        });
+    }
+    server.append(&mut extending);
+    // The client schema extensions join Baton's directives as extensions, so
+    // Relay marks their fields as the client's and its text transforms leave
+    // them out of what a server receives.
+    let mut client = vec![graphql_syntax::parse_schema_document(
+        BATON_DIRECTIVES,
+        SourceLocationKey::Generated,
+    )?];
+    for file in &sources.extensions {
+        client.push(parse_schema_file(file)?);
+    }
+    let mut schema = relay_schema::build_schema_with_extensions_from_asts(server, client)?;
+    let schema_files: BTreeSet<SourceLocationKey> =
+        sources.schema.iter().map(SchemaFile::key).collect();
+    let extended: Vec<FieldID> = schema
+        .get_objects()
+        .flat_map(|object| object.fields.iter().copied())
+        .chain(
+            schema
+                .get_interfaces()
+                .flat_map(|interface| interface.fields.iter().copied()),
+        )
+        .filter(|id| {
+            let field = schema.field(*id);
+            field.is_extension && schema_files.contains(&field.name.location.source_location())
+        })
+        .collect();
+    for id in extended {
+        let mut field = schema.field(id).clone();
+        field.is_extension = false;
+        schema.replace_field(id, field)?;
+    }
+    Ok(schema)
+}
+
+/// Parses one file of the schema, refusing the three extensions Relay's
+/// builder has no code for, which it would otherwise stop the compiler at.
+fn parse_schema_file(file: &SchemaFile) -> Result<SchemaDocument, Vec<Diagnostic>> {
+    let key = file.key();
+    let document = graphql_syntax::parse_schema_document(&file.text, key)?;
+    let errors: Vec<Diagnostic> = document
+        .definitions
+        .iter()
+        .filter_map(|definition| {
+            let (keyword, span) = match definition {
+                TypeSystemDefinition::SchemaExtension(extension) => ("schema", extension.span),
+                TypeSystemDefinition::InputObjectTypeExtension(extension) => {
+                    ("input", extension.span)
+                }
+                TypeSystemDefinition::ScalarTypeExtension(extension) => ("scalar", extension.span),
+                _ => return None,
+            };
+            Some(Diagnostic::error(
+                format!(
+                    "`extend {keyword}` is not built: Relay's front end has no code for it, so write what it adds in the definition it extends"
+                ),
+                Location::new(key, span),
+            ))
+        })
+        .collect();
+    if errors.is_empty() {
+        Ok(document)
+    } else {
+        Err(errors)
+    }
+}
+
+/// Whether a definition extends a type declared elsewhere.
+fn is_extension(definition: &TypeSystemDefinition) -> bool {
+    matches!(
+        definition,
+        TypeSystemDefinition::ObjectTypeExtension(_)
+            | TypeSystemDefinition::InterfaceTypeExtension(_)
+            | TypeSystemDefinition::EnumTypeExtension(_)
+            | TypeSystemDefinition::UnionTypeExtension(_)
+            | TypeSystemDefinition::InputObjectTypeExtension(_)
+            | TypeSystemDefinition::ScalarTypeExtension(_)
+            | TypeSystemDefinition::SchemaExtension(_)
+    )
 }
 
 /// Relay's defer and stream interface as the schema spells it: the
@@ -231,7 +364,7 @@ fn root_names(
     schema: &SDLSchema,
     schema_path: &str,
 ) -> Result<BTreeMap<String, String>, Vec<Diagnostic>> {
-    let location = common::Location::new(
+    let location = Location::new(
         SourceLocationKey::standalone(schema_path),
         common::Span::new(0, 0),
     );
@@ -287,18 +420,30 @@ fn root_names(
 /// The digest an image is versioned by: the schema's text, its client
 /// extensions, and the identity configuration when it is not the default,
 /// so that records keyed or described another way are a miss and not a
-/// merge of two. Without extensions and with the default identity the
-/// digest is what it was before either could be configured.
+/// merge of two. For a schema of one file, without extensions and with the
+/// default identity, the digest is what it was before any of them could be
+/// configured: the file's own. The client extensions keep the order they
+/// are listed in, as they always had.
 fn schema_digest(
-    schema_sdl: &str,
-    extensions: &[(String, String)],
+    sources: &SchemaSources,
     identity: &crate::config::Identity,
     transient: &crate::config::Transient,
 ) -> String {
-    let mut text = schema_sdl.to_string();
-    for (extension, _) in extensions {
+    // The schema's files are a set: every type is built before any
+    // extension of it, so neither the order the files are given in nor
+    // their names change what the schema is, and neither changes the
+    // digest. One build system lists a directory by name and another in
+    // its target's order, and both describe one image.
+    let mut texts: Vec<&str> = sources
+        .schema
+        .iter()
+        .map(|file| file.text.as_str())
+        .collect();
+    texts.sort_unstable();
+    let mut text = texts.join("\n# schema\n");
+    for extension in &sources.extensions {
         text.push_str("\n# extension\n");
-        text.push_str(extension);
+        text.push_str(&extension.text);
     }
     if !identity.is_default() {
         text.push_str("\n# identity\n");

@@ -20,12 +20,33 @@ batonc validate --config <baton.json> [--language swift|kotlin] <files...>
 batonc print <OperationName> --config <baton.json> [--language swift|kotlin] <files...>
 ```
 
-`--schema <sdl>` may replace `--config` when there is no configuration.
-Beside a configuration, it overrides that configuration's `schema`, for a
-schema that is a build's own output. Otherwise the configuration's
-`schema` is the schema, relative to the configuration's directory, as are
-its `schemaExtensions` and, unless `--persisted` names it, the persisted
-documents file.
+`--schema <file or directory>` may replace `--config` when there is no
+configuration. It may repeat, and a directory stands for its `.graphql`
+files in name order; the files of every `--schema`, in the order given,
+are the schema together, so a build system that declares each input
+names each file. Beside a configuration, it overrides that
+configuration's `schema` or `schemaDir`, for a schema that is a build's
+own output. Otherwise the configuration names the schema, relative to the
+configuration's directory: `schema` one file, or Relay's `schemaDir` a
+directory whose `.graphql` files, in name order, are the schema. It names
+one of the two; both, or a `schemaDir` that is not a directory, is an
+error. Its `schemaExtensions` and, unless `--persisted` names it, the
+persisted documents file are relative to the same directory.
+The schema's files are a set: every definition is built before every
+extension, so the order the files are given in does not matter, and the
+schema's digest, which versions the image, is the same for the same files
+in any order and under any names, since the compiler sorts their texts
+before hashing; a schema of one file keeps the digest it had.
+
+Where a file is listed says whose its fields are. A file of the schema
+describes what the transport answers, the server's SDL and, beside it,
+the fields another backend answers through the app's own transport
+([a backend that is not GraphQL](another-backend.md)); an `extend` in it
+adds server fields, and may come before the type it extends. A file
+under `schemaExtensions` declares client fields. `extend schema`,
+`extend input` and `extend scalar` are errors at their line in either
+list, since Relay's front end has no code for them: write what they add
+in the definition they extend.
 
 `<files...>` are the target's host sources, Swift or Kotlin, and its
 `.graphql` or `.gql` documents. The compiler reads the GraphQL out of the

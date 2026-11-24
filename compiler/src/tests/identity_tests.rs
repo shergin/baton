@@ -20,9 +20,13 @@ fn identity_errors(identity: &str) -> Vec<String> {
 /// The compiled plan of `text` under the identity block.
 fn compiled(identity: &str, text: &str) -> crate::pipeline::plan::Plan {
     let (sdl, path) = schema();
-    compile(&sdl, &path, &[], &[document(text)], &configured(identity))
-        .unwrap_or_else(|errors| panic!("{errors:?}"))
-        .plan
+    compile(
+        &one_file(&sdl, &path),
+        &[document(text)],
+        &configured(identity),
+    )
+    .unwrap_or_else(|errors| panic!("{errors:?}"))
+    .plan
 }
 
 /// The text the server receives for `text` under the identity block.
@@ -34,9 +38,7 @@ fn sent(identity: &str, text: &str) -> String {
 fn an_identity_for_a_type_the_schema_lacks_is_an_error_pointing_at_the_configuration() {
     let (sdl, path) = schema();
     let diagnostics = compile(
-        &sdl,
-        &path,
-        &[],
+        &one_file(&sdl, &path),
         &[document(QUERY)],
         &configured(r#"{"types": {"Robot": ["id"]}}"#),
     )
@@ -274,9 +276,7 @@ fn an_alias_taking_a_key_field_s_name_is_refused_at_the_alias() {
     let (sdl, path) = schema();
     let text = "query Probe { assets { uuid: name } }";
     let diagnostics = compile(
-        &sdl,
-        &path,
-        &[],
+        &one_file(&sdl, &path),
         &[document(text)],
         &configured(TEST_IDENTITY),
     )
@@ -332,7 +332,7 @@ fn emitted(config: &str, text: &str) -> String {
     let (sdl, path) = schema();
     let mut config: Config = serde_json::from_str(config).expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
-    let compiled = compile(&sdl, &path, &[], &[document(text)], &config)
+    let compiled = compile(&one_file(&sdl, &path), &[document(text)], &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     let output = crate::emit::swift(&compiled.plan, &config).expect("the plan emits");
     output
@@ -489,9 +489,7 @@ fn a_lookup_without_a_type_probes_only_the_types_one_value_keys() {
     .expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
     let compiled = compile(
-        &sdl,
-        &path,
-        &[],
+        &one_file(&sdl, &path),
         &[document("query Probe($id: ID!) { node(id: $id) { id } }")],
         &config,
     )
@@ -522,7 +520,7 @@ fn a_lookup_without_a_type_keeps_its_own_set_beside_a_lens_testing_the_same_cond
     .expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
     let text = "query Probe { node(id: \"1\") { __typename } namesake(name: \"a\") { ...ProbeNode @alias } } fragment ProbeNode on Node { id }";
-    let compiled = compile(&sdl, &path, &[], &[document(text)], &config)
+    let compiled = compile(&one_file(&sdl, &path), &[document(text)], &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     let output = crate::emit::swift(&compiled.plan, &config).expect("the plan emits");
     let shared = &output.shared;
@@ -560,7 +558,7 @@ fn a_schema_type_named_like_a_set_of_types_is_refused_rather_than_declared_twice
         .expect("the configuration parses");
         config.path = PathBuf::from("baton.json");
         let text = "query Probe { node(id: \"1\") { __typename } namesake(name: \"a\") { ...ProbeNode @alias } probe { id } } fragment ProbeNode on Node { id }";
-        let compiled = compile(&sdl, &path, &[], &[document(text)], &config)
+        let compiled = compile(&one_file(&sdl, &path), &[document(text)], &config)
             .unwrap_or_else(|errors| panic!("{errors:?}"));
         let errors: Vec<String> = crate::emit::swift(&compiled.plan, &config)
             .err()

@@ -126,6 +126,7 @@ fragment HostileArguments_character on Character
   cacheExpiration: {type: "Boolean", defaultValue: true},
   Action: {type: "Boolean", defaultValue: true},
   OptimisticResponse: {type: "Boolean", defaultValue: true},
+  RawResponse: {type: "Boolean", defaultValue: true},
   hash: {type: "Boolean", defaultValue: true},
   commit: {type: "Boolean", defaultValue: true},
   callAsFunction: {type: "Boolean", defaultValue: true},
@@ -215,7 +216,7 @@ fragment HostileArguments_character on Character
   ... @include(if: $text) { name } ... @include(if: $plan) { name }
   ... @include(if: $errorBehavior) { name } ... @include(if: $throwsOnFieldError) { name }
   ... @include(if: $bubbles) { name } ... @include(if: $hasIncremental) { name } ... @include(if: $isClientOnly) { name } ... @include(if: $cacheExpiration) { name }
-  ... @include(if: $Action) { name } ... @include(if: $OptimisticResponse) { name }
+  ... @include(if: $Action) { name } ... @include(if: $OptimisticResponse) { name } ... @include(if: $RawResponse) { name }
   ... @include(if: $hash) { name } ... @include(if: $commit) { name }
   ... @include(if: $callAsFunction) { name } ... @include(if: $Op) { name }
   ... @include(if: $variable) { name } ... @include(if: $payload) { name }

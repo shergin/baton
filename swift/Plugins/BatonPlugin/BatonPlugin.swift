@@ -35,7 +35,6 @@ struct BatonPlugin: BuildToolPlugin {
             return []
         }
         let configuration = try Configuration.load(at: configurationFile)
-        let schema = configurationFile.deletingLastPathComponent().appending(path: configuration.schema)
         let outputDirectory = workDirectory.appending(path: "Generated")
         let shared = outputDirectory.appending(path: "Baton.baton.swift")
         // What the target compiled, for review and registration. The report
@@ -49,19 +48,14 @@ struct BatonPlugin: BuildToolPlugin {
         // output directory is the compiler's own, and it removes the
         // outputs there it did not write, so a source renamed or removed
         // leaves no file behind.
-        var inputs: [URL] = [schema, configurationFile, tool]
-        // A client schema extension is part of the schema: an edit to one
-        // regenerates, as an edit to the schema does.
+        var inputs: [URL] = [configurationFile, tool]
+        // The schema is one file or the files of `schemaDir`, and a client
+        // schema extension is part of it: an edit to any of them
+        // regenerates.
         let configurationDirectory = configurationFile.deletingLastPathComponent()
-        for entry in configuration.schemaExtensions ?? [] {
-            let url = configurationDirectory.appending(path: entry)
-            var isDirectory: ObjCBool = false
-            if FileManager.default.fileExists(atPath: url.path(percentEncoded: false), isDirectory: &isDirectory), isDirectory.boolValue {
-                let files = (try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)) ?? []
-                inputs.append(contentsOf: files.filter { $0.pathExtension == "graphql" }.sorted { $0.path() < $1.path() })
-            } else {
-                inputs.append(url)
-            }
+        let named = [configuration.schema, configuration.schemaDir].compactMap { $0 } + (configuration.schemaExtensions ?? [])
+        for entry in named {
+            inputs.append(contentsOf: graphQLFiles(at: configurationDirectory.appending(path: entry)))
         }
         var arguments = [
             "generate",
@@ -114,6 +108,18 @@ struct BatonPlugin: BuildToolPlugin {
         return stem + ".baton.swift"
     }
 
+    /// The files a path of the configuration names: the file itself, or the
+    /// `.graphql` files of a directory, in name order, as the compiler reads
+    /// them.
+    private static func graphQLFiles(at url: URL) -> [URL] {
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: url.path(percentEncoded: false), isDirectory: &isDirectory), isDirectory.boolValue else {
+            return [url]
+        }
+        let files = (try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)) ?? []
+        return files.filter { $0.pathExtension == "graphql" }.sorted { $0.path() < $1.path() }
+    }
+
     /// Whether a file may declare GraphQL: it names a marker, bare or
     /// qualified by the module. A superset of what the compiler's scanner
     /// accepts, which also wants a literal after the parenthesis, so no file
@@ -125,7 +131,8 @@ struct BatonPlugin: BuildToolPlugin {
 }
 
 struct Configuration: Decodable {
-    var schema: String
+    var schema: String?
+    var schemaDir: String?
     var schemaExtensions: [String]?
     var persistConfig: PersistConfiguration?
 

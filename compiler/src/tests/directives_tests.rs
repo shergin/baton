@@ -90,10 +90,50 @@ fn a_directive_baton_gives_no_meaning_is_an_error_at_it() {
         .len(),
         1
     );
-    assert_eq!(
-        errors("query Q @raw_response_type { a }", Some(Marker::Query)).len(),
-        1
-    );
+}
+
+#[test]
+fn raw_response_type_on_a_query_a_mutation_or_a_subscription_passes_the_directive_check() {
+    for (text, marker) in [
+        ("query Q @raw_response_type { a }", Marker::Query),
+        (
+            "mutation M @raw_response_type @throwOnFieldError { a }",
+            Marker::Mutation,
+        ),
+        (
+            "subscription S @raw_response_type { a }",
+            Marker::Subscription,
+        ),
+    ] {
+        assert!(errors(text, Some(marker)).is_empty(), "{text}");
+    }
+}
+
+#[test]
+fn raw_response_type_on_a_fragment_definition_a_field_or_a_spread_is_an_error_at_it() {
+    for (text, marker, message) in [
+        (
+            "fragment F on T @raw_response_type { a }",
+            Marker::Fragment,
+            "`@raw_response_type` on a fragment definition has no meaning in Baton; a fragment definition takes `@argumentDefinitions`, `@refetchable`, `@throwOnFieldError`, `@inline`",
+        ),
+        (
+            "query Q { a @raw_response_type { b } }",
+            Marker::Query,
+            "`@raw_response_type` on a field has no meaning in Baton; a field takes `@include`, `@skip`, `@required`, `@catch`, `@connection`, `@appendEdge`, `@prependEdge`, `@appendNode`, `@prependNode`, `@deleteEdge`, `@deleteRecord`, `@stream`, `@stream_connection`, `@paged`",
+        ),
+        (
+            "query Q { a { ...F @raw_response_type } }",
+            Marker::Query,
+            "`@raw_response_type` on a fragment spread has no meaning in Baton; a fragment spread takes `@include`, `@skip`, `@defer`, `@arguments`, `@alias`, `@catch`",
+        ),
+    ] {
+        let errors = errors_at(text, Some(marker));
+        assert_eq!(errors.len(), 1, "{text}: {errors:?}");
+        let (error, at) = &errors[0];
+        assert_eq!(error, message, "{text}");
+        assert!(at.starts_with("@raw_response_type"), "{text}: at `{at}`");
+    }
 }
 
 #[test]
@@ -111,7 +151,7 @@ fn a_query_takes_a_cache_expiration_and_a_mutation_or_a_subscription_does_not() 
             Some(Marker::Mutation)
         ),
         vec![
-            "`@cacheExpiration` on a mutation has no meaning in Baton; a mutation takes `@throwOnFieldError`, `@deletes`"
+            "`@cacheExpiration` on a mutation has no meaning in Baton; a mutation takes `@throwOnFieldError`, `@deletes`, `@raw_response_type`"
         ]
     );
     assert_eq!(
@@ -120,13 +160,13 @@ fn a_query_takes_a_cache_expiration_and_a_mutation_or_a_subscription_does_not() 
             Some(Marker::Subscription)
         ),
         vec![
-            "`@cacheExpiration` on a subscription has no meaning in Baton; a subscription takes `@throwOnFieldError`"
+            "`@cacheExpiration` on a subscription has no meaning in Baton; a subscription takes `@throwOnFieldError`, `@raw_response_type`"
         ]
     );
     assert_eq!(
         errors("query Q @live { a }", Some(Marker::Query)),
         vec![
-            "`@live` on a query has no meaning in Baton; a query takes `@throwOnFieldError`, `@cacheExpiration`"
+            "`@live` on a query has no meaning in Baton; a query takes `@throwOnFieldError`, `@cacheExpiration`, `@raw_response_type`"
         ]
     );
 }
@@ -154,7 +194,7 @@ fn a_mutation_takes_deletes_and_a_query_or_a_subscription_does_not() {
             Some(Marker::Query)
         ),
         vec![
-            "`@deletes` on a query has no meaning in Baton; a query takes `@throwOnFieldError`, `@cacheExpiration`"
+            "`@deletes` on a query has no meaning in Baton; a query takes `@throwOnFieldError`, `@cacheExpiration`, `@raw_response_type`"
         ]
     );
     assert_eq!(
@@ -163,7 +203,7 @@ fn a_mutation_takes_deletes_and_a_query_or_a_subscription_does_not() {
             Some(Marker::Subscription)
         ),
         vec![
-            "`@deletes` on a subscription has no meaning in Baton; a subscription takes `@throwOnFieldError`"
+            "`@deletes` on a subscription has no meaning in Baton; a subscription takes `@throwOnFieldError`, `@raw_response_type`"
         ]
     );
 }
@@ -227,7 +267,7 @@ fn paged_on_a_query_a_fragment_definition_an_inline_fragment_or_a_spread_is_an_e
         (
             "query Q($page: Int!) @paged(key: \"Q_notes\", page: $page) { page(page: $page) { notes { id } } }",
             Marker::Query,
-            "`@paged` on a query has no meaning in Baton; a query takes `@throwOnFieldError`, `@cacheExpiration`",
+            "`@paged` on a query has no meaning in Baton; a query takes `@throwOnFieldError`, `@cacheExpiration`, `@raw_response_type`",
         ),
         (
             "fragment F on Page @paged(key: \"F_notes\", page: $page) { notes { id } }",

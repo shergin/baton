@@ -16,8 +16,10 @@ def _baton_check_test_impl(ctx):
         "generate",
         "--config",
         ctx.file.config.short_path,
-        "--schema",
-        ctx.file.schema.short_path,
+    ]
+    for schema in ctx.files.schema:
+        arguments += ["--schema", schema.short_path]
+    arguments += [
         "--language",
         ctx.attr.language,
         "--shared",
@@ -42,7 +44,7 @@ def _baton_check_test_impl(ctx):
     )
     runfiles = ctx.runfiles(
         files = ctx.files.srcs + ctx.files.generated + ctx.files.schema_extensions +
-                [ctx.file.config, ctx.file.schema, batonc],
+                ctx.files.schema + [ctx.file.config, batonc],
     )
     return [DefaultInfo(executable = script, runfiles = runfiles)]
 

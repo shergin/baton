@@ -1,0 +1,29 @@
+load("@rules_baton//baton:defs.bzl", "baton_check_test", "baton_generate")
+
+# A schema of two files, as `schemaDir` keeps one: the server's, and the
+# feed's, which extends the server's `Query` and sorts first. The rule
+# passes each file as `--schema`, in the order the target gives them.
+filegroup(
+    name = "schema",
+    srcs = glob(["schema/*.graphql"]),
+)
+
+baton_generate(
+    name = "pulse",
+    srcs = ["Pulse.graphql"],
+    config = "baton.json",
+    schema = ":schema",
+)
+
+# `--check` over a committed `Generated/`, produced from `:pulse` first;
+# `scripts/check-bazel.sh` does both.
+baton_check_test(
+    name = "pulse_check",
+    srcs = ["Pulse.graphql"],
+    config = "baton.json",
+    generated = glob(
+        ["Generated/*"],
+        allow_empty = True,
+    ),
+    schema = ":schema",
+)

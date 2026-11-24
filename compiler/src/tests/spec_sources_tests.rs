@@ -11,7 +11,7 @@
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-use super::{compile_swift_tests, first_difference, repository, schema_extensions};
+use super::{compile_swift_tests, first_difference, repository, schema_sources};
 use crate::config::Config;
 use crate::pipeline::Plan;
 use crate::{diagnostics, documents, pipeline};
@@ -181,29 +181,21 @@ fn the_spec_sources_are_the_markers_texts() {
 fn compile_spec_sources() -> Plan {
     let config_path = repository().join("spec/tests/baton.json");
     let config = Config::load(&config_path).expect("the specification has a baton.json");
-    let schema_path = config.schema_path(&config_path);
-    let schema = std::fs::read_to_string(&schema_path).expect("the test schema is readable");
     let (documents, errors) = documents::collect(&graphql_files(&sources()));
     assert!(errors.is_empty(), "{errors:?}");
-    let extensions = schema_extensions(&config, &config_path);
-    pipeline::compile(
-        &schema,
-        &schema_path.to_string_lossy(),
-        &extensions,
-        &documents,
-        &config,
-    )
-    .unwrap_or_else(|errors| {
-        let rendered: Vec<String> = errors
-            .iter()
-            .map(|error| diagnostics::render(error, &documents).to_string())
-            .collect();
-        panic!(
-            "the specification's sources do not compile:\n{}",
-            rendered.join("\n")
-        )
-    })
-    .plan
+    let sources = schema_sources(&config, &config_path);
+    pipeline::compile(&sources, &documents, &config)
+        .unwrap_or_else(|errors| {
+            let rendered: Vec<String> = errors
+                .iter()
+                .map(|error| diagnostics::render(error, &documents).to_string())
+                .collect();
+            panic!(
+                "the specification's sources do not compile:\n{}",
+                rendered.join("\n")
+            )
+        })
+        .plan
 }
 
 /// A plan as the plan goldens serialize it, without where each definition

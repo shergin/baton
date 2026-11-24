@@ -149,8 +149,9 @@ against two schemas registers a second task of the same type.
 | `report` | what the run compiled, as `--report` writes it | `build/baton/<task>/report.json` |
 | `persisted` | the persisted documents file under `persistConfig`, as `--persisted` places it | unset, so it goes under the output directory |
 
-- **Every input declared:** the hosts, the configuration, and the schema
-  and the `schemaExtensions` the configuration names. The plugin reads
+- **Every input declared:** the hosts, the configuration, and the schema,
+  one file or the directory `schemaDir` names, and the `schemaExtensions`
+  the configuration names. The plugin reads
   those from the configuration's text, through a provider Gradle tracks,
   so an edit to the schema regenerates and you name nothing twice. The
   compiler binary is an input when `BATON_COMPILER` names one, and the

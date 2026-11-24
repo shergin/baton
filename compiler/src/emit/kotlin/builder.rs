@@ -1,4 +1,5 @@
-//! A mutation's optimistic-response builders in Kotlin: a class per
+//! An operation's response builders in Kotlin, a mutation's optimistic
+//! response or the raw response a query or a subscription asks for: a class per
 //! selection set, every field a constructor parameter that defaults to
 //! null, which renders the `Variable` a response's data is and, on the
 //! response's own, the payload the door takes.
@@ -8,11 +9,12 @@ use super::literal::{Base, Converters, ValueShape, jvm_getters, string_literal};
 use crate::decide::{BuilderPlan, BuilderValue};
 use crate::kotlin_names::escape;
 
-/// Writes an optimistic-response builder and those nested in it.
+/// Writes a response builder and those nested in it.
 pub(super) fn builder(writer: &mut Writer, builder: &BuilderPlan, converters: &Converters) {
-    writer.line(
-        "/** A partial response to show before the server answers; absent fields leave the store untouched. */",
-    );
+    writer.line(format!(
+        "/** {} */",
+        super::super::builder::summary(builder.kind)
+    ));
     let names: Vec<&str> = builder
         .fields
         .iter()

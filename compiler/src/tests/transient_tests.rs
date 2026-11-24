@@ -14,7 +14,7 @@ fn compiled(config: &str, text: &str) -> crate::pipeline::plan::Plan {
     let (sdl, path) = schema();
     let mut config: Config = serde_json::from_str(config).expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
-    compile(&sdl, &path, &[], &[document(text)], &config)
+    compile(&one_file(&sdl, &path), &[document(text)], &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"))
         .plan
 }
@@ -71,7 +71,7 @@ fn each_name_the_schema_cannot_take_is_refused_where_the_configuration_loads() {
 
         let mut parsed: Config = serde_json::from_str(&config).expect("the configuration parses");
         parsed.path = PathBuf::from("baton.json");
-        let diagnostics = compile(&sdl, &path, &[], &[document(QUERY)], &parsed)
+        let diagnostics = compile(&one_file(&sdl, &path), &[document(QUERY)], &parsed)
             .err()
             .expect("the configuration is refused");
         assert_eq!(

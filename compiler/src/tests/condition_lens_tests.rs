@@ -11,7 +11,7 @@ fn emitted(text: &str) -> String {
     let (sdl, path) = schema();
     let mut config: Config = serde_json::from_str("{}").expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
-    let compiled = compile(&sdl, &path, &[], &[document(text)], &config)
+    let compiled = compile(&one_file(&sdl, &path), &[document(text)], &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     let output = crate::emit::swift(&compiled.plan, &config)
         .unwrap_or_else(|errors| panic!("the document declares names twice: {errors:?}"));

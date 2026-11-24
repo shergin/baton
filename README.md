@@ -415,9 +415,14 @@ both languages: a rate limit and an outage
 scalar read as a type of the app's
 ([a `Json` scalar](docs/recipes/json-scalar.md)), a field answered
 differently by the path that reached it
-([fields a server nulls by path](docs/recipes/fields-by-path.md)), and a
+([fields a server nulls by path](docs/recipes/fields-by-path.md)), a
 whole list in one request
-([an unpaged collection](docs/recipes/unpaged-collection.md)).
+([an unpaged collection](docs/recipes/unpaged-collection.md)), data
+from beside the server, a socket of another protocol or a REST endpoint,
+declared in the schema and answered by the app's own transport
+([a backend that is not GraphQL](docs/recipes/another-backend.md)), and
+a feed faster than a screen, committed once per interval
+([a fast stream, paced](docs/recipes/stream.md)).
 
 Baton strives to support each backend's own features wherever they fit the
 design and make sense for a client. If yours does something Baton does not

@@ -12,13 +12,14 @@ use crate::naming::NameError;
 fn emitted_against(sdl: &str, text: &str) -> Result<crate::emit::Output, Vec<String>> {
     let mut config: Config = serde_json::from_str("{}").expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
-    let compiled =
-        compile(sdl, "schema.graphql", &[], &[document(text)], &config).map_err(|errors| {
+    let compiled = compile(&one_file(sdl, "schema.graphql"), &[document(text)], &config).map_err(
+        |errors| {
             errors
                 .iter()
                 .map(|error| error.message().to_string())
                 .collect::<Vec<_>>()
-        })?;
+        },
+    )?;
     crate::emit::swift(&compiled.plan, &config).map_err(|errors| {
         errors
             .iter()
@@ -335,7 +336,7 @@ fn a_module_whose_variables_name_no_input_declares_no_struct() {
 fn planned(sdl: &str, text: &str) -> crate::pipeline::Plan {
     let mut config: Config = serde_json::from_str("{}").expect("the configuration parses");
     config.path = PathBuf::from("baton.json");
-    compile(sdl, "schema.graphql", &[], &[document(text)], &config)
+    compile(&one_file(sdl, "schema.graphql"), &[document(text)], &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"))
         .plan
 }
@@ -350,7 +351,7 @@ fn kotlin_shared(sdl: &str, text: &str) -> String {
         }),
         ..Config::default()
     };
-    let compiled = compile(sdl, "schema.graphql", &[], &[document(text)], &config)
+    let compiled = compile(&one_file(sdl, "schema.graphql"), &[document(text)], &config)
         .unwrap_or_else(|errors| panic!("{errors:?}"));
     let naming = crate::kotlin_names::KotlinNaming::new(&config).into();
     let program = crate::decide::program(&compiled.plan, &naming)

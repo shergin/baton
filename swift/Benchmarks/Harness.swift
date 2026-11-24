@@ -126,14 +126,25 @@ public struct Row: Sendable {
     var median: Double { samples.sorted()[samples.count / 2] / Double(ops) }
 }
 
+/// A figure of a run that is neither a timed row nor a deterministic count:
+/// a rate, a lag, a byte count measured once over a sustained run.
+public struct Figure: Sendable {
+    public let section: String
+    public let name: String
+    public let value: Double
+    public let unit: String
+}
+
 /// The report of a run: its rows and counts, written as JSON when asked.
 @MainActor
 final class Report {
     private(set) var rows: [Row] = []
     private(set) var counts: [(name: String, value: Int)] = []
+    private(set) var figures: [Figure] = []
 
     func add(_ row: Row) { rows.append(row) }
     func add(count name: String, _ value: Int) { counts.append((name, value)) }
+    func add(_ figure: Figure) { figures.append(figure) }
 
     /// The report as JSON: the machine, the run and every row and count.
     func json() throws -> Data {
@@ -154,6 +165,7 @@ final class Report {
                 return object
             },
             "counts": counts.map { ["name": $0.name, "value": $0.value] },
+            "figures": figures.map { ["section": $0.section, "name": $0.name, "value": $0.value, "unit": $0.unit] },
         ]
         return try JSONSerialization.data(withJSONObject: document, options: [.prettyPrinted, .sortedKeys])
     }
@@ -191,6 +203,123 @@ func count(_ name: String, _ value: Int, _ line: String) {
     } else if !line.isEmpty {
         print(line)
     }
+}
+
+/// Records a figure that depends on the machine and is measured once, not
+/// sampled: printed as `line` in a normal run, never under `--counts`.
+@MainActor
+func figure(_ name: String, _ value: Double, unit: String, _ line: String = "") {
+    suiteReport.add(Figure(section: currentSection, name: name, value: value, unit: unit))
+    if !options.countsOnly, !line.isEmpty { print(line) }
+}
+
+/// The CPU time of the calling thread, in nanoseconds. Read on the main
+/// actor, it is the main thread's: what the main actor was busy for, its
+/// own jobs and the dispatch around them, and none of the time it waited.
+func threadCPUTime() -> UInt64 {
+    clock_gettime_nsec_np(CLOCK_THREAD_CPUTIME_ID)
+}
+
+/// The bytes the process has written to files, by the kernel's logical
+/// accounting: every write, whether or not it has reached the device yet.
+func diskBytesWritten() -> UInt64 {
+    var info = rusage_info_v4()
+    let result = withUnsafeMutablePointer(to: &info) { pointer in
+        pointer.withMemoryRebound(to: rusage_info_t?.self, capacity: 1) { proc_pid_rusage(getpid(), RUSAGE_INFO_V4, $0) }
+    }
+    return result == 0 ? info.ri_logical_writes : 0
+}
+
+/// How long the main queue makes work wait: a thread off the main actor
+/// posts a block to the main queue, notes how long it waited to run, and
+/// posts the next one a quarter of a millisecond after the last ran. The
+/// longest wait is the longest the main actor was held, by one job or by
+/// jobs queued back to back, to within the interval: the wait a frame's
+/// work posted then would have met. The probes cost the main actor a
+/// little, so a measurement of its busy time runs without them.
+final class MainQueueProbe: Sendable {
+    private let running = Atomic<Bool>(false)
+    private let longest = Atomic<UInt64>(0)
+
+    func start() {
+        running.store(true, ordering: .relaxed)
+        longest.store(0, ordering: .relaxed)
+        let thread = Thread { [self] in
+            let ran = DispatchSemaphore(value: 0)
+            while running.load(ordering: .relaxed) {
+                let posted = DispatchTime.now().uptimeNanoseconds
+                DispatchQueue.main.async {
+                    let waited = DispatchTime.now().uptimeNanoseconds - posted
+                    var current = self.longest.load(ordering: .relaxed)
+                    while waited > current {
+                        let (exchanged, original) = self.longest.compareExchange(expected: current, desired: waited, ordering: .relaxed)
+                        if exchanged { break }
+                        current = original
+                    }
+                    ran.signal()
+                }
+                ran.wait()
+                usleep(250)
+            }
+        }
+        thread.qualityOfService = .userInteractive
+        thread.start()
+    }
+
+    /// Stops the probing and returns the longest wait, in nanoseconds. The
+    /// thread ends on its own once its last probe has run.
+    func stop() -> UInt64 {
+        running.store(false, ordering: .relaxed)
+        return longest.load(ordering: .relaxed)
+    }
+}
+
+/// Times an asynchronous body by its wall clock and by the main thread's CPU
+/// time, `iterations` times, and reports two rows: `label` and `label` with
+/// `, on the main thread`. `setup` runs before each sample, off the clock;
+/// an `observer` counts what its scopes received during the bodies. Under
+/// `--profile` a matching row loops its body for the profiler.
+@MainActor
+func measureAsync(_ label: String, iterations: Int = 20, ops: Int = 1, observer: Observer? = nil, setup: () async -> Void = {}, _ body: () async -> Void) async {
+    if let profile = options.profile {
+        if label.localizedCaseInsensitiveContains(profile) { await profileLoopAsync(label, setup: setup, body) }
+        return
+    }
+    var wall: [Double] = []
+    var main: [Double] = []
+    for _ in 0..<rounds(iterations) {
+        await setup()
+        let start = DispatchTime.now().uptimeNanoseconds
+        let cpu = threadCPUTime()
+        await body()
+        main.append(Double(threadCPUTime() - cpu))
+        wall.append(Double(DispatchTime.now().uptimeNanoseconds - start))
+        observer?.settle()
+    }
+    report(label, wall, ops: ops)
+    report(label + ", on the main thread", main, ops: ops)
+}
+
+/// The asynchronous form of the profiler's loop.
+@MainActor
+private func profileLoopAsync(_ label: String, setup: () async -> Void, _ body: () async -> Void) async -> Never {
+    var info = Dl_info()
+    dladdr(UnsafeRawPointer(#dsohandle), &info)
+    print("profiling \(label)")
+    print("load-address 0x\(String(UInt(bitPattern: info.dli_fbase), radix: 16))")
+    fflush(stdout)
+    try? await Task.sleep(for: .milliseconds(1500))
+    let deadline = DispatchTime.now().uptimeNanoseconds + UInt64(options.profileSeconds * 1e9)
+    var samples: [Double] = []
+    repeat {
+        await setup()
+        let start = DispatchTime.now().uptimeNanoseconds
+        await body()
+        samples.append(Double(DispatchTime.now().uptimeNanoseconds - start))
+    } while DispatchTime.now().uptimeNanoseconds < deadline
+    let sorted = samples.sorted()
+    print("profiled \(samples.count) runs: best \(format(sorted[0])), median \(format(sorted[sorted.count / 2]))")
+    exit(0)
 }
 
 /// How many samples a measurement asked for `iterations` takes.
