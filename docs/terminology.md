@@ -1100,6 +1100,19 @@ is that interface; the Kotlin format has numbers of its own, starting at 1,
 and the shared file names it as `Types.format`, the runtime's marker object
 `baton.Format4`.
 
+**Base.** *Composition: document, lens.* Relay's word: a project names a
+`base` project whose documents it can reference and which produces no
+artifacts for it. Not built yet.
+Here: a target whose report another target's compilation reads, so that
+target spreads the base's fragments. The base's fragment definitions join
+the compilation and are inlined into its operations' plans and printed in
+their texts; a spread of one reads through the lens the base generated,
+which is not generated again, and an enum or an input object the base
+generated is read from it. The build hands a target the reports of its
+whole closure, and the schema's digest of each must be the target's. A
+fragment's name is unique among a target and its bases. See
+[the decision](decisions/a-target-spreads-its-bases-fragments.md).
+
 **Report.** *Composition: document, schema.* Baton's word.
 Here: what the compiler compiled for one target, written by
 `batonc generate --report` as JSON and, under SwiftPM's plugin, into the
@@ -1121,7 +1134,9 @@ reports is the contract's change. `validate`, `print` and
 persisted documents file is a second view of the same facts, and a
 dependent target's compilation is what the fragment's definition is there
 for; see
-[the decision](decisions/the-report-is-what-a-dependent-target-reads.md).
+[the decision](decisions/the-report-is-what-a-dependent-target-reads.md),
+and, for the compilation that reads it as a [base](#compiler),
+[that decision](decisions/a-target-spreads-its-bases-fragments.md).
 Swift: the build plugin is SwiftPM's.
 Kotlin: the build plugin is Gradle's, `com.shergin.baton`, whose
 `generateBaton` task writes the report through `--report` to its `report`

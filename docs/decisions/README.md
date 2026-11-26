@@ -76,3 +76,4 @@ principle, the proof belongs here.
 - [A `@oneOf` input reads as an enum](a-oneof-input-reads-as-an-enum.md)
 - [The schema is what the transport answers](the-schema-is-what-the-transport-answers.md)
 - [A raw response is asked for with `@raw_response_type`](a-raw-response-is-asked-for.md)
+- [A target spreads the fragments of its bases](a-target-spreads-its-bases-fragments.md)

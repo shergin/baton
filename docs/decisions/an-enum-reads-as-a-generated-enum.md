@@ -2,7 +2,10 @@
 
 Status: accepted, 2026-10-11. Completes the proposal recorded with
 [A mapped scalar is a fallible read](a-mapped-scalar-is-a-fallible-read.md),
-which placed enums at the same boundary as custom scalars. Serves
+which placed enums at the same boundary as custom scalars; narrowed on
+2026-11-25 by
+[A target spreads the fragments of its bases](a-target-spreads-its-bases-fragments.md)
+from once per module to once per target and its bases. Serves
 [Honest data](../principles/honest-data.md) and
 [Relay's words](../principles/relays-words.md). Reopen if an adopter needs
 the enum's cases spelled otherwise than the schema spells its values, or a

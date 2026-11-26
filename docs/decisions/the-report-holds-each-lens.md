@@ -2,7 +2,10 @@
 
 Status: accepted, 2026-10-09. Extends
 [The report is what a dependent target's compilation would read](the-report-is-what-a-dependent-target-reads.md).
-Serves [The compiler decides](../principles/compiler-decides.md). Reopen
+Serves [The compiler decides](../principles/compiler-decides.md). The
+first reopening line, the lens's checks, is answered on 2026-11-25 by
+[A target spreads the fragments of its bases](a-target-spreads-its-bases-fragments.md),
+which generates them at the spread rather than spelling them here. Reopen
 if a consumer needs the lens's checks (`satisfied`, `fieldErrors`) or its
 connection surface spelled out too, or if the lenses make the report too
 large to review as a diff.

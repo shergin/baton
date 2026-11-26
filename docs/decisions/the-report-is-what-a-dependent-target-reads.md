@@ -1,7 +1,9 @@
 # The report is what a dependent target's compilation would read
 
 Status: accepted, 2026-10-11; extended by
-[The report holds each lens](the-report-holds-each-lens.md). Answers
+[The report holds each lens](the-report-holds-each-lens.md); superseded
+for the import on 2026-11-25 by
+[A target spreads the fragments of its bases](a-target-spreads-its-bases-fragments.md). Answers
 [#17](https://github.com/shergin/baton/issues/17)'s compile report and the
 manifest side of [#7](https://github.com/shergin/baton/issues/7), and
 settles the shape of the report before fragments across modules need it.
