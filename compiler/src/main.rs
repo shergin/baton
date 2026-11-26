@@ -21,6 +21,7 @@
 //! of the configuration's `schema` or `schemaDir`, and may repeat: the files
 //! together are the schema, in the order given.
 
+mod base;
 mod config;
 mod decide;
 mod diagnostics;
@@ -111,8 +112,33 @@ fn language_of(options: &Options) -> Result<Language, DriverError> {
         .unwrap_or_default())
 }
 
+/// The command line with each `@file` argument replaced by the arguments
+/// the file holds, one a line: a build system passes a target's bases so,
+/// since the bases of a target at the top of an app outgrow a command line.
+fn arguments() -> Result<Vec<String>, DriverError> {
+    let mut arguments = Vec::new();
+    for argument in std::env::args().skip(1) {
+        let Some(path) = argument.strip_prefix('@') else {
+            arguments.push(argument);
+            continue;
+        };
+        let text = std::fs::read_to_string(path).map_err(|source| DriverError::Read {
+            path: path.to_string(),
+            source,
+        })?;
+        arguments.extend(text.lines().map(str::to_string));
+    }
+    Ok(arguments)
+}
+
 fn main() -> ExitCode {
-    let arguments: Vec<String> = std::env::args().skip(1).collect();
+    let arguments = match arguments() {
+        Ok(arguments) => arguments,
+        Err(failure) => {
+            eprintln!("{failure}");
+            return ExitCode::FAILURE;
+        }
+    };
     let Some(command) = arguments.first() else {
         eprintln!("usage: batonc <scan|plan|generate|validate|print|bench> …");
         return ExitCode::from(2);
@@ -168,6 +194,9 @@ enum DriverError {
     },
     #[error("batonc: {0}")]
     Json(#[from] serde_json::Error),
+    /// A base's file is not a report this compiler reads.
+    #[error("{0}")]
+    Base(#[from] crate::base::BaseError),
     /// The diagnostics have been printed.
     #[error("batonc: the documents have errors")]
     Reported,
@@ -186,6 +215,9 @@ struct Options {
     /// the configuration's: a build system that declares each input names
     /// each file.
     schemas: Vec<PathBuf>,
+    /// The files of the target's bases, every `--base`: the reports, or
+    /// their fragments alone, of the targets whose fragments it spreads.
+    bases: Vec<PathBuf>,
     paths: Vec<PathBuf>,
 }
 
@@ -204,6 +236,7 @@ fn parse_options(
         flags: BTreeSet::new(),
         emits: Vec::new(),
         schemas: Vec::new(),
+        bases: Vec::new(),
         paths: Vec::new(),
     };
     let mut iterator = arguments.iter();
@@ -237,6 +270,8 @@ fn parse_options(
                     .push((PathBuf::from(source), PathBuf::from(output)));
             } else if name == "schema" {
                 options.schemas.push(PathBuf::from(value));
+            } else if name == "base" {
+                options.bases.push(PathBuf::from(value));
             } else {
                 options.values.insert(name.to_string(), value.clone());
             }
@@ -419,7 +454,9 @@ fn compile_documents(options: &Options) -> Result<Compilation, DriverError> {
     for error in &errors {
         eprintln!("{error}");
     }
-    let compiled = pipeline::compile(&sources.files, &documents, &sources.config);
+    let bases = read_bases(options)?;
+    let compiled =
+        pipeline::compile_with_bases(&sources.files, &documents, &sources.config, &bases);
     let plan = match compiled {
         Ok(compiled) => compiled.plan,
         Err(diagnostics) => {
@@ -433,6 +470,16 @@ fn compile_documents(options: &Options) -> Result<Compilation, DriverError> {
     if !errors.is_empty() {
         return Err(DriverError::Reported);
     }
+    let unbuilt = decide::unbuilt_base_spreads(&plan);
+    for spread in &unbuilt {
+        match &spread.origin {
+            Some(origin) => eprintln!("{}", diagnostics::at(origin, &documents, &spread.message)),
+            None => eprintln!("batonc: {}", spread.message),
+        }
+    }
+    if !unbuilt.is_empty() {
+        return Err(DriverError::Reported);
+    }
     let mut rendered: Vec<Rendered> = HOSTS
         .iter()
         .flat_map(|host| host.check(&documents, &plan))
@@ -444,6 +491,54 @@ fn compile_documents(options: &Options) -> Result<Compilation, DriverError> {
         plan,
         rendered,
     })
+}
+
+/// The bases every `--base` names, read from their files.
+fn read_bases(options: &Options) -> Result<Vec<base::Base>, DriverError> {
+    options
+        .bases
+        .iter()
+        .map(|path| {
+            let name = path.to_string_lossy();
+            let text = std::fs::read_to_string(path).map_err(|source| DriverError::Read {
+                path: name.to_string(),
+                source,
+            })?;
+            Ok(base::Base::parse(&name, &text)?)
+        })
+        .collect()
+}
+
+/// Where the compilation's generated code is declared, for its report. In
+/// Swift, the module `--module` names. In Kotlin, the package of the shared
+/// file, which the configuration names, and the package of each fragment's
+/// source, where its lens is.
+fn home(compilation: &Compilation, options: &Options) -> Result<report::Home, DriverError> {
+    let config = &compilation.sources.config;
+    let module = options.values.get("module");
+    if config.language == Language::Swift {
+        return Ok(report::Home {
+            module: module.cloned(),
+            packages: BTreeMap::new(),
+        });
+    }
+    if module.is_some() {
+        return Err(DriverError::Usage(
+            "`--module` names a Swift module; a Kotlin target's is the `kotlin.package` of its configuration".to_string(),
+        ));
+    }
+    let mut home = report::Home {
+        module: config.kotlin_package().map(str::to_string),
+        packages: BTreeMap::new(),
+    };
+    let kotlin = emit::Kotlin::new(config, kotlin_packages(&compilation.documents));
+    for fragment in compilation.plan.own_fragments() {
+        if let Some(package) = kotlin.package_of(&fragment.source) {
+            home.packages
+                .insert(fragment.name.clone(), package.to_string());
+        }
+    }
+    Ok(home)
 }
 
 /// The code of a compilation in the language of its run, decided in that
@@ -586,9 +681,12 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
             "shared",
             "emit",
             "report",
+            "fragments",
             "persisted",
             "check",
             "language",
+            "base",
+            "module",
         ],
     )?;
     let out_dir = options.values.get("out").map(PathBuf::from);
@@ -663,10 +761,19 @@ fn generate(arguments: &[String]) -> Result<(), DriverError> {
     }
     // The report: what this target compiled, for the people who register
     // operations and review contract changes.
+    let home = home(&compilation, &options)?;
     if let Some(report_path) = options.values.get("report") {
         planned.push((
             PathBuf::from(report_path),
-            report::text(plan, &root, &program),
+            report::text(plan, &root, &program, &home),
+        ));
+    }
+    // The report's head and fragments alone, what a dependent target reads
+    // of this one as its base: a file that changes only when they do.
+    if let Some(fragments_path) = options.values.get("fragments") {
+        planned.push((
+            PathBuf::from(fragments_path),
+            report::fragments_text(plan, &root, &home),
         ));
     }
 
@@ -735,7 +842,11 @@ fn check_outputs(
 /// The same compilation as `generate` with no output: diagnostics and an
 /// exit code, for an editor or a hook.
 fn validate(arguments: &[String]) -> Result<(), DriverError> {
-    let options = parse_options("validate", arguments, &["schema", "config", "language"])?;
+    let options = parse_options(
+        "validate",
+        arguments,
+        &["schema", "config", "language", "base"],
+    )?;
     let compilation = compile_documents(&options)?;
     check_kotlin_package(&compilation, false)?;
     emitted(&compilation)?;
@@ -745,7 +856,11 @@ fn validate(arguments: &[String]) -> Result<(), DriverError> {
 /// The same compilation, printing one operation's text, the very text the
 /// app sends, after `# documentId: <id>` when it is persisted.
 fn print(arguments: &[String]) -> Result<(), DriverError> {
-    let mut options = parse_options("print", arguments, &["schema", "config", "language"])?;
+    let mut options = parse_options(
+        "print",
+        arguments,
+        &["schema", "config", "language", "base"],
+    )?;
     if options.paths.is_empty() {
         return Err(DriverError::Usage(
             "`print` takes the operation's name, then the files".to_string(),
@@ -770,14 +885,14 @@ fn print(arguments: &[String]) -> Result<(), DriverError> {
     Ok(())
 }
 
-/// A fragment no operation reaches, directly or through another fragment,
-/// warned at its definition: nothing can read it, and the code
-/// generated for it is dead.
+/// A fragment of the target that none of its operations reaches, directly
+/// or through another fragment, warned at its definition: nothing in the
+/// target reads it. A target that spreads it as a fragment of its base may,
+/// which this compilation cannot see, so the warning says what it knows.
 fn unused_fragments(documents: &[Document], plan: &pipeline::Plan) -> Vec<Rendered> {
     let reach = report::reach(plan);
     let reached: BTreeSet<&str> = reach.values().flatten().map(String::as_str).collect();
-    plan.fragments
-        .iter()
+    plan.own_fragments()
         .filter(|fragment| !reached.contains(fragment.name.as_str()))
         .filter_map(|fragment| {
             let origin = fragment.origin.as_ref()?;
@@ -785,7 +900,7 @@ fn unused_fragments(documents: &[Document], plan: &pipeline::Plan) -> Vec<Render
                 origin,
                 documents,
                 format!(
-                    "fragment `{}` is spread by no operation; nothing can read it",
+                    "fragment `{}` is spread by no operation of this target; nothing in it reads the fragment",
                     fragment.name
                 ),
             ))

@@ -1,0 +1,35 @@
+load("@rules_baton//baton:defs.bzl", "baton_check_test", "baton_generate")
+
+# A fragment declared in one target and spread in another, its base in
+# Relay's word. `shared` names the Swift module its code is compiled in, so
+# that `screens` imports the lens from it; `screens` lists `shared` in
+# `deps`, as its `swift_library` would list `shared`'s library.
+baton_generate(
+    name = "shared",
+    srcs = ["Shared.graphql"],
+    config = "baton.json",
+    module = "Shared",
+    schema = "@schema//:schema.graphql",
+)
+
+baton_generate(
+    name = "screens",
+    srcs = ["Screens.graphql"],
+    config = "baton.json",
+    schema = "@schema//:schema.graphql",
+    deps = [":shared"],
+)
+
+# `--check` over a committed `Generated/`, produced from `:screens` first,
+# with the same bases; `scripts/check-bazel.sh` does both.
+baton_check_test(
+    name = "screens_check",
+    srcs = ["Screens.graphql"],
+    config = "baton.json",
+    generated = glob(
+        ["Generated/*"],
+        allow_empty = True,
+    ),
+    schema = "@schema//:schema.graphql",
+    deps = [":shared"],
+)

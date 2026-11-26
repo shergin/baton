@@ -73,7 +73,12 @@ fn reported_with_lenses(plan: &Plan) -> Report {
 
 /// The report's text as `generate` writes it for `plan`.
 fn written(plan: &Plan) -> String {
-    text(plan, Path::new("/nowhere"), &decided(plan))
+    text(
+        plan,
+        Path::new("/nowhere"),
+        &decided(plan),
+        &Home::default(),
+    )
 }
 
 /// The accessor of `lens` named `name`.

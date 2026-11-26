@@ -18,10 +18,52 @@ use crate::pipeline::{FragmentPlan, OperationKind, Plan, SelectionPlan, TypePlan
 #[derive(Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Report {
+    /// The format of the head and the fragments, which a compilation that
+    /// reads the report as a base checks.
+    pub format: u32,
     /// The schema's digest, as `Types.schemaDigest` names it.
     pub schema_digest: String,
+    /// Where the target's generated code is declared: the Swift module
+    /// `--module` named, where a dependent target imports its lenses from,
+    /// or the Kotlin package of its shared file, which no target that
+    /// depends on it may share.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub module: Option<String>,
     pub operations: Vec<OperationReport>,
     pub fragments: Vec<FragmentReport>,
+}
+
+/// Where a target's generated code is declared: the Swift module, which
+/// only its build knows, or the Kotlin package of its shared file, and for
+/// Kotlin the package of each fragment's lens, by the fragment's name.
+#[derive(Debug, Default)]
+pub struct Home {
+    pub module: Option<String>,
+    pub packages: BTreeMap<String, String>,
+}
+
+/// A report's head and its fragments alone: what a dependent target reads
+/// of its base, written apart so that a build reruns the dependent only
+/// when the base's fragments change, and not with each of its operations.
+#[derive(Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct Fragments<'a> {
+    format: u32,
+    schema_digest: &'a str,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    module: Option<&'a str>,
+    fragments: Vec<FragmentEntry<'a>>,
+}
+
+#[derive(Debug, serde::Serialize)]
+struct FragmentEntry<'a> {
+    name: &'a str,
+    #[serde(rename = "type")]
+    type_condition: &'a str,
+    source: &'a str,
+    text: &'a str,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    package: Option<&'a str>,
 }
 
 #[derive(Debug, serde::Serialize)]
@@ -66,8 +108,12 @@ pub struct FragmentReport {
     /// spreads it.
     pub operations: Vec<String>,
     /// The definition as the author wrote it, printed before the transforms,
-    /// what a dependent target's compilation would read.
+    /// what a dependent target's compilation reads.
     pub text: String,
+    /// The Kotlin package the fragment's lens is declared in, when it has
+    /// one: where a dependent target imports the lens from.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub package: Option<String>,
     /// The fragment's lens, once the program is decided.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub lens: Option<LensReport>,
@@ -191,9 +237,10 @@ pub fn report(plan: &Plan, root: &Path) -> Report {
         })
         .collect();
     operations.sort_by(|left, right| left.name.cmp(&right.name));
+    // A base's fragments are in the base's report, their home, and an
+    // operation's reach names them all the same.
     let mut fragments: Vec<FragmentReport> = plan
-        .fragments
-        .iter()
+        .own_fragments()
         .map(|fragment| FragmentReport {
             name: fragment.name.clone(),
             type_condition: fragment.type_condition.clone(),
@@ -203,23 +250,61 @@ pub fn report(plan: &Plan, root: &Path) -> Report {
                 .map(|operations| operations.iter().cloned().collect())
                 .unwrap_or_default(),
             text: fragment.text.clone(),
+            package: None,
             lens: None,
         })
         .collect();
     fragments.sort_by(|left, right| left.name.cmp(&right.name));
     Report {
+        format: crate::base::FORMAT,
         schema_digest: plan.schema_digest.clone(),
+        module: None,
         operations,
         fragments,
     }
 }
 
+/// States in `report` where the target's lenses are declared.
+pub fn with_home(report: &mut Report, home: &Home) {
+    report.module = home.module.clone();
+    for fragment in &mut report.fragments {
+        fragment.package = home.packages.get(&fragment.name).cloned();
+    }
+}
+
 /// The report as `generate` writes it: pretty JSON ending in a newline,
-/// with every lens of `program`.
-pub fn text(plan: &Plan, root: &Path, program: &Program) -> String {
+/// with every lens of `program` and where `home` says they are declared.
+pub fn text(plan: &Plan, root: &Path, program: &Program, home: &Home) -> String {
     let mut report = report(plan, root);
     with_lenses(&mut report, program);
+    with_home(&mut report, home);
     let mut text = serde_json::to_string_pretty(&report).unwrap_or_default();
+    text.push('\n');
+    text
+}
+
+/// The fragments file as `generate --fragments` writes it: the report's
+/// head and, of each fragment, what a dependent target reads.
+pub fn fragments_text(plan: &Plan, root: &Path, home: &Home) -> String {
+    let mut report = report(plan, root);
+    with_home(&mut report, home);
+    let fragments = Fragments {
+        format: report.format,
+        schema_digest: &report.schema_digest,
+        module: report.module.as_deref(),
+        fragments: report
+            .fragments
+            .iter()
+            .map(|fragment| FragmentEntry {
+                name: &fragment.name,
+                type_condition: &fragment.type_condition,
+                source: &fragment.source,
+                text: &fragment.text,
+                package: fragment.package.as_deref(),
+            })
+            .collect(),
+    };
+    let mut text = serde_json::to_string_pretty(&fragments).unwrap_or_default();
     text.push('\n');
     text
 }

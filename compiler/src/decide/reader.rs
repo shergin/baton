@@ -886,7 +886,10 @@ impl<'a> Readers<'a> {
 /// `@throwOnFieldError` or spread under a catch, then, to a fixed point,
 /// every inline fragment spread inside one of those, and every one spread
 /// inside a value that holds a `@catch`, whose caught selection scans.
-fn scanning_values(plan: &Plan, caught_fragments: &BTreeSet<String>) -> BTreeSet<String> {
+pub(super) fn scanning_values(
+    plan: &Plan,
+    caught_fragments: &BTreeSet<String>,
+) -> BTreeSet<String> {
     let values: BTreeMap<&str, &FragmentPlan> = plan
         .fragments
         .iter()

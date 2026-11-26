@@ -385,7 +385,12 @@ fn report_swift_tests() -> BTreeMap<String, String> {
         .unwrap_or_else(|errors| panic!("the test documents emit: {errors:?}"));
     BTreeMap::from([(
         "BatonTests.report.json".to_string(),
-        crate::report::text(&plan, &repository(), &program),
+        crate::report::text(
+            &plan,
+            &repository(),
+            &program,
+            &crate::report::Home::default(),
+        ),
     )])
 }
 

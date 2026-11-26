@@ -1,0 +1,4 @@
+fragment CharacterStatus_character on Character {
+  name
+  status
+}

@@ -40,7 +40,7 @@ pub use selections::SelectionTable;
 
 use crate::naming::{LanguageNaming, NameError, Naming, Position, Reserved, Written};
 use crate::pipeline::{
-    ConditionClass, ConnectionPlan, EditPlan, FragmentPlan, LookupPlan, PagedPlan, Plan,
+    ConditionClass, ConnectionPlan, EditPlan, FragmentPlan, LookupPlan, Origin, PagedPlan, Plan,
     SelectionPlan, StorageKeyPlan, TypePlan,
 };
 
@@ -50,6 +50,10 @@ pub struct Program {
     pub fragments: Vec<FragmentLens>,
     pub operations: Vec<OperationValue>,
     pub shared: Shared,
+    /// The base fragments the target's documents spread, each with the
+    /// Swift module or the Kotlin package its lens is declared in: what the
+    /// generated code names from another module and imports.
+    pub bases: BTreeMap<String, Option<String>>,
 }
 
 /// A fragment's lens and where it was declared. An `@inline` fragment's is
@@ -63,6 +67,86 @@ pub struct FragmentLens {
     /// `@inline`: the fragment reads as a value.
     pub inline: bool,
     pub lens: ReaderPlan,
+}
+
+/// A spread of a base fragment that asks the fragment's lens for a check a
+/// lens carries only when its own target asks: the base cannot know that
+/// this target does. Refused until the check is generated at the spread
+/// (`docs/decisions/a-target-spreads-its-bases-fragments.md`).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct UnbuiltBaseSpread {
+    /// Where the document that spreads it wrote its own name.
+    pub origin: Option<Origin>,
+    pub message: String,
+}
+
+/// The spreads of base fragments `plan` cannot be generated for yet: one
+/// under `@defer`, one under `@catch`, and one of a value inside a value
+/// whose field errors are read.
+pub fn unbuilt_base_spreads(plan: &Plan) -> Vec<UnbuiltBaseSpread> {
+    let bases: BTreeSet<&str> = plan
+        .fragments
+        .iter()
+        .filter(|fragment| fragment.base.is_some())
+        .map(|fragment| fragment.name.as_str())
+        .collect();
+    if bases.is_empty() {
+        return Vec::new();
+    }
+    let mut unbuilt = Vec::new();
+    let mut every_caught = BTreeSet::new();
+    let own = plan
+        .own_fragments()
+        .map(|fragment| (&fragment.origin, &fragment.reader))
+        .chain(
+            plan.operations
+                .iter()
+                .map(|operation| (&operation.origin, &operation.reader)),
+        );
+    for (origin, reader) in own {
+        let mut deferred = BTreeSet::new();
+        let mut caught = BTreeSet::new();
+        members::collect_deferred(reader, &mut deferred);
+        members::collect_caught(reader, &mut caught);
+        for (asked, directive, check) in [
+            (&deferred, "@defer", "the check that its part arrived"),
+            (&caught, "@catch", "the read of its field errors"),
+        ] {
+            for fragment in asked.iter().filter(|name| bases.contains(name.as_str())) {
+                unbuilt.push(UnbuiltBaseSpread {
+                    origin: origin.clone(),
+                    message: format!(
+                        "`...{fragment}` under `{directive}`: `{fragment}` is a base's fragment, and {check} is generated only where its own target asks for it; a base fragment under `{directive}` is not built yet"
+                    ),
+                });
+            }
+        }
+        every_caught.extend(caught);
+    }
+    for fragment in &plan.fragments {
+        members::collect_caught(&fragment.reader, &mut every_caught);
+    }
+    let scanning = reader::scanning_values(plan, &every_caught);
+    for fragment in plan
+        .own_fragments()
+        .filter(|fragment| fragment.inline && scanning.contains(&fragment.name))
+    {
+        let mut spread = BTreeSet::new();
+        crate::pipeline::spread_names(&fragment.reader, &mut spread);
+        for value in spread
+            .iter()
+            .filter(|name| bases.contains(name.as_str()) && scanning.contains(*name))
+        {
+            unbuilt.push(UnbuiltBaseSpread {
+                origin: fragment.origin.clone(),
+                message: format!(
+                    "`{}` reads its field errors and spreads `{value}`, a base's value, whose errors are read only where its own target asks for them; not built yet",
+                    fragment.name
+                ),
+            });
+        }
+    }
+    unbuilt
 }
 
 /// Decides everything the emitters print for `plan`, or returns the names
@@ -82,9 +166,10 @@ pub fn program(plan: &Plan, naming: &LanguageNaming) -> Result<Program, Vec<Name
             .chain(plan.inputs.keys().map(|name| naming.input_type(name))),
     );
     let mut duplicates = Vec::new();
+    // A base fragment's lens is the base's: the target decides none, and
+    // reads what a spread of one needs from the plan.
     let fragments = plan
-        .fragments
-        .iter()
+        .own_fragments()
         .map(|fragment| FragmentLens {
             name: fragment.name.clone(),
             source: fragment.source.clone(),
@@ -116,6 +201,7 @@ pub fn program(plan: &Plan, naming: &LanguageNaming) -> Result<Program, Vec<Name
         fragments,
         operations,
         shared: Shared::default(),
+        bases: plan.base_spreads(),
     };
     program.shared = Shared::collect(plan, &program, naming);
     let mut all = std::mem::take(&mut readers.duplicates);

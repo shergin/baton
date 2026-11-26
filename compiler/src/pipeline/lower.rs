@@ -1,7 +1,7 @@
 //! Lowering: Relay's reader and normalization programs into the plan IR.
 //! Everything here reads Relay's types and writes Baton's.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use common::{Diagnostic, DirectiveName, NamedItem, SourceLocationKey};
 use graphql_ir::{
@@ -24,13 +24,14 @@ use schema::{SDLSchema, Schema, Type, TypeReference};
 
 use super::identity::Keys;
 use super::plan::{
-    ArgumentPlan, ArgumentValuePlan, CatchPlan, CatchTarget, ConditionClass, ConnectionPlan,
-    ConstantPlan, DeletePlan, EditKind, EditPlan, FragmentPlan, InputFieldPlan, InputPlan,
-    LookupArgumentPlan, LookupPlan, OperationKind, OperationPlan, Origin, PagedPlan,
+    ArgumentPlan, ArgumentValuePlan, BaseLens, CatchPlan, CatchTarget, ConditionClass,
+    ConnectionPlan, ConstantPlan, DeletePlan, EditKind, EditPlan, FragmentPlan, InputFieldPlan,
+    InputPlan, LookupArgumentPlan, LookupPlan, OperationKind, OperationPlan, Origin, PagedPlan,
     PaginationPlan, Plan, RefetchPlan, RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan,
     TypeKind, TypePlan, VariablePlan,
 };
 
+use crate::base::Included;
 use crate::config::Config;
 use crate::directives::Deletes;
 
@@ -106,6 +107,11 @@ struct Lowering<'a> {
     enums: std::cell::RefCell<BTreeMap<String, Vec<String>>>,
     /// The input objects the documents' variables name, with their fields.
     inputs: std::cell::RefCell<BTreeMap<String, InputPlan>>,
+    /// What is being lowered, and by which of them each enum and input
+    /// object was named: one only a base fragment names is the base's to
+    /// generate.
+    naming: std::cell::Cell<NamedBy>,
+    named_by: std::cell::RefCell<BTreeMap<String, u8>>,
     /// The definition being lowered, whose variables `@paged` checks its
     /// page against.
     scope: std::cell::RefCell<Scope>,
@@ -113,6 +119,58 @@ struct Lowering<'a> {
     /// last: the one a `@paged` list's container is, and what the list
     /// claimed of it.
     containers: std::cell::RefCell<Vec<Container>>,
+}
+
+/// What names a schema type while it is lowered. An operation's
+/// normalization covers the fields of every fragment it reaches, a base's
+/// among them, so a type it names is the target's only when no base
+/// fragment names it.
+#[derive(Clone, Copy)]
+enum NamedBy {
+    /// The target's own fragments, and its operations' readers and variables.
+    Own = 1,
+    /// A base fragment.
+    Base = 2,
+    /// An operation's normalization.
+    Normalization = 4,
+}
+
+/// The enums and input objects the target generates: each one something
+/// of its own names, or nothing of a base's does, and each one a field of
+/// such an input object names, whoever met the field first.
+fn own_types(
+    named_by: &BTreeMap<String, u8>,
+    inputs: &BTreeMap<String, InputPlan>,
+) -> BTreeSet<String> {
+    let mut pending: Vec<&str> = named_by
+        .iter()
+        .filter(|(_, by)| **by & NamedBy::Own as u8 != 0 || **by & NamedBy::Base as u8 == 0)
+        .map(|(name, _)| name.as_str())
+        .collect();
+    let mut own = BTreeSet::new();
+    while let Some(name) = pending.pop() {
+        if !own.insert(name.to_string()) {
+            continue;
+        }
+        let Some(input) = inputs.get(name) else {
+            continue;
+        };
+        for field in &input.fields {
+            let mut type_ = &field.type_;
+            while let TypePlan::List { element, .. } = type_ {
+                type_ = element;
+            }
+            if let TypePlan::Named {
+                name,
+                kind: TypeKind::Enum | TypeKind::InputObject,
+                ..
+            } = type_
+            {
+                pending.push(name);
+            }
+        }
+    }
+    own
 }
 
 /// The definition a selection is lowered in.
@@ -155,6 +213,7 @@ pub(super) fn lower(
     config: &Config,
     keys: &Keys,
     deletes: &BTreeMap<String, Vec<Deletes>>,
+    bases: &BTreeMap<String, Included>,
 ) -> Result<Plan, Vec<Diagnostic>> {
     let lowering = Lowering {
         schema,
@@ -165,23 +224,50 @@ pub(super) fn lower(
         diagnostics: std::cell::RefCell::new(Vec::new()),
         enums: std::cell::RefCell::new(BTreeMap::new()),
         inputs: std::cell::RefCell::new(BTreeMap::new()),
+        naming: std::cell::Cell::new(NamedBy::Own),
+        named_by: std::cell::RefCell::new(BTreeMap::new()),
         scope: std::cell::RefCell::new(Scope::None),
         containers: std::cell::RefCell::new(Vec::new()),
     };
     let mut plan = Plan::default();
     for fragment in programs.reader.fragments() {
-        plan.fragments.push(lowering.fragment(fragment));
+        let Some(base) = bases.get(fragment.name.item.0.lookup()) else {
+            lowering.naming.set(NamedBy::Own);
+            plan.fragments.push(lowering.fragment(fragment));
+            continue;
+        };
+        // A base fragment is lowered for what a spread of it is decided
+        // from; its name was written in the base, and so was its source.
+        lowering.naming.set(NamedBy::Base);
+        let mut lowered = lowering.fragment(fragment);
+        lowered.origin = None;
+        lowered.source = base.source.clone();
+        lowered.base = Some(BaseLens {
+            module: base.module.clone(),
+        });
+        plan.fragments.push(lowered);
     }
     plan.fragments
         .sort_by(|left, right| left.name.cmp(&right.name));
 
     for operation in programs.normalization.operations() {
+        // The refetch query of a base's `@refetchable` fragment is the
+        // base's: its lens runs the one the base generated.
+        let of_base = RefetchableDerivedFromMetadata::find(&operation.directives)
+            .is_some_and(|derived| bases.contains_key(derived.0.0.lookup()));
+        if of_base {
+            continue;
+        }
+        lowering.naming.set(NamedBy::Own);
         plan.operations.push(lowering.operation(operation));
     }
     plan.operations
         .sort_by(|left, right| left.name.cmp(&right.name));
+    let own = own_types(&lowering.named_by.borrow(), &lowering.inputs.borrow());
     plan.enums = lowering.enums.borrow().clone();
+    plan.enums.retain(|name, _| own.contains(name));
     plan.inputs = lowering.inputs.borrow().clone();
+    plan.inputs.retain(|name, _| own.contains(name));
     mark_indirect(&mut plan.inputs);
     // An operation is lowered twice, as its reader and as its
     // normalization, so a selection's error is found twice: once is told.
@@ -344,6 +430,7 @@ impl Lowering<'_> {
                 .named(*CHILDREN_CAN_BUBBLE_METADATA_KEY)
                 .is_some(),
             inline,
+            base: None,
             reader: self.selections(
                 &fragment.selections,
                 fragment.type_condition,
@@ -441,6 +528,7 @@ impl Lowering<'_> {
         // holds and sends.
         .trim_end()
         .to_string();
+        self.naming.set(NamedBy::Normalization);
         let mut normalization = self.selections(
             &operation.selections,
             operation.type_,
@@ -448,6 +536,7 @@ impl Lowering<'_> {
             false,
             false,
         );
+        self.naming.set(NamedBy::Own);
         let mut reader = reader;
         if operation.kind == SyntaxOperationKind::Mutation {
             key_by_response(&mut normalization);
@@ -1716,6 +1805,10 @@ impl Lowering<'_> {
             TypeReference::Named(named) => {
                 let name = self.schema.get_type_name(*named).lookup().to_string();
                 let kind = self.type_kind(*named);
+                if matches!(named, Type::Enum(_) | Type::InputObject(_)) {
+                    *self.named_by.borrow_mut().entry(name.clone()).or_default() |=
+                        self.naming.get() as u8;
+                }
                 if let Type::Enum(id) = named {
                     self.enums
                         .borrow_mut()

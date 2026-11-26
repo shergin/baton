@@ -5,6 +5,43 @@ are expected and listed without apology.
 
 ## Unreleased
 
+- A target spreads a fragment declared in another target, its base, in
+  Relay's word. `batonc generate --base <file>`, repeatable, and the same
+  on `validate`, `print` and `--check`, names a base's report or its
+  fragments file, which `generate --fragments <file>` writes: the
+  report's head and the target's fragments alone, a file that changes
+  only when a fragment does. Only the base fragments the target's
+  documents reach join its compilation; they are inlined into its
+  operations' plans and printed in their texts, and a spread returns the
+  lens the base generated. In Swift the base's `generate` names its
+  module with `--module`, and each generated file of the dependent opens
+  with `@_spi(Generated) import <Module>`; in Kotlin the dependent
+  imports the lens from the package of the fragment's source, the head
+  names the package of the shared file, `--module` is a usage error, and
+  no two of a target and its bases may declare their shared file in one
+  package. The bases must have the target's schema digest, and a fragment's name is unique
+  among a target and its bases. An argument `@<file>` is read as the
+  arguments the file holds, one a line. `rules_baton`'s `baton_generate`
+  takes `deps`, the bases' `baton_generate` targets, whose closure it
+  passes as `--base`, and `module`; it writes `Baton.fragments.json` as
+  the output group `fragments` and returns `BatonInfo`, and
+  `baton_check_test` takes the same `deps`. Refused for now, at the name
+  of the document that spreads: a base fragment's spread under `@defer`
+  or `@catch`, and a base `@inline` value spread inside a value whose
+  field errors are read. SwiftPM's and Gradle's plugins pass no bases
+  yet ([the decision](docs/decisions/a-target-spreads-its-bases-fragments.md),
+  [the command](docs/recipes/batonc.md#bases),
+  [Bazel](docs/recipes/bazel.md)). Both runtimes.
+
+- The report's head names its `format`, 1, and its `module`, the Swift
+  module `--module` gave or, under Kotlin, the shared file's package; a
+  fragment names its lens's `package` under Kotlin. A
+  base's fragments are not listed in a dependent's report.
+
+- The warning for a fragment no operation reaches now reads "fragment
+  `X` is spread by no operation of this target; nothing in it reads the
+  fragment", since a target that lists this one as a base may spread it.
+
 - A recipe for a fast stream that is not GraphQL,
   [a fast stream, paced](docs/recipes/stream.md), and the bench behind it
   in `BENCHMARKS.md`: ticks through `commitPayload` and through a

@@ -120,9 +120,10 @@ impl HostLanguage for SwiftHost {
             };
             let path = document.path.to_string_lossy();
             let expected = match embedded.marker {
+                // A base's fragment was declared in the base's sources, whose
+                // paths are another target's and may read as this one's.
                 Marker::Fragment => plan
-                    .fragments
-                    .iter()
+                    .own_fragments()
                     .find(|fragment| fragment.source == path && fragment.document == document.index)
                     .map(|fragment| fragment.name.as_str()),
                 marker => plan

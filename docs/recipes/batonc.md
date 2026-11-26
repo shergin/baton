@@ -15,10 +15,14 @@ goldens under `compiler/src/tests` fix those bytes.
 ## Commands
 
 ```
-batonc generate --config <baton.json> [--language swift|kotlin] (--out <dir> | --emit <source>=<output>...) [--shared <file>] [--report <file>] [--persisted <file>] [--check] <files...>
-batonc validate --config <baton.json> [--language swift|kotlin] <files...>
-batonc print <OperationName> --config <baton.json> [--language swift|kotlin] <files...>
+batonc generate --config <baton.json> [--language swift|kotlin] (--out <dir> | --emit <source>=<output>...) [--shared <file>] [--report <file>] [--fragments <file>] [--module <name>] [--persisted <file>] [--base <file>...] [--check] <files...>
+batonc validate --config <baton.json> [--language swift|kotlin] [--base <file>...] <files...>
+batonc print <OperationName> --config <baton.json> [--language swift|kotlin] [--base <file>...] <files...>
 ```
+
+An argument `@<file>` is replaced by the arguments the file holds, one a
+line: a build system's params file, since the bases of a target at the
+top of an app outgrow a command line.
 
 `--schema <file or directory>` may replace `--config` when there is no
 configuration. It may repeat, and a directory stands for its `.graphql`
@@ -116,7 +120,19 @@ The Kotlin target reads two entries of `baton.json`:
   `persistConfig` is an error.
 - **The report**, `--report <file>`: what the target compiled, as JSON,
   each lens with its accessors' names, keys, and shapes. See
-  [Report](../terminology.md#compiler).
+  [Report](../terminology.md#compiler). `--module <name>` names the
+  Swift module the generated code is compiled in, written into the
+  report's head, so a target that spreads this one's fragments imports
+  their lenses from it. A Kotlin run takes no `--module`, which is a
+  usage error there: its head's `module` is the package of the shared
+  file, the `kotlin.package` of the configuration.
+- **The fragments file**, `--fragments <file>`: the report's head and, of
+  each fragment the target declares, its name, type condition, source,
+  definition and, under Kotlin, package. It is what a dependent target
+  reads of this one as its base, and it changes only when a fragment
+  does, so a build that hands dependents this file and not the report
+  reruns a dependent only when a base's fragments change, not with each
+  edit to one of this target's operations.
 
 `--check` writes nothing. Every output is computed and compared with the
 file at its path, and each stale or missing one is named on stderr, with
@@ -135,12 +151,66 @@ text is the exact text the app sends, compact on one line as the compiler
 prints it, and preceded by `# documentId: <id>` under `persistConfig`.
 Paste it into a server's tool, which formats it.
 
+### Bases
+
+A target spreads the fragments of another target, its
+[base](../terminology.md#compiler), when each `--base <file>` names a
+base's report or fragments file. `generate`, `validate`, `print` and
+`--check` take it alike, since they are the same compilation. Give the
+files of the whole closure: an operation's text prints every fragment it
+reaches, however deep its base. Only the base fragments the target's
+documents reach, directly or through another base fragment, join the
+compilation; each is validated with the target's documents, inlined into
+its operations' plans and printed in their texts, so an operation's id
+covers it. The target generates no lens for a base fragment and no
+refetch query from it: a spread returns the base's lens, named bare, as
+the target's own are. In Swift each generated file of the target imports
+each such base's module as `@_spi(Generated) import <Module>`; in Kotlin
+a file imports a base's lens from the package the base's file gives. An
+enum or an input object that only a base fragment names is the base's
+and is not generated again. A base's fragments are not listed in the
+target's report, and an operation's `fragments` names them all the same.
+See [the decision](../decisions/a-target-spreads-its-bases-fragments.md).
+
+A base raises these errors:
+
+- A base of another schema's digest, at the configuration, naming the
+  base. The digest covers the schema's files, the client extensions,
+  `identity` and `transient`.
+- A base's file of another `format`, or a file that is not a report or a
+  fragments file, at the base's file.
+- A fragment the target declares and a base declares too, at the
+  target's fragment; two bases that declare one name, naming both. A
+  fragment's name is unique among a target and its bases.
+- A base fragment that spreads a fragment no base given declares, naming
+  it: pass the base of the target that declares it.
+- In Swift, a base fragment reached through a base whose file names no
+  module, naming `--module`.
+- In Kotlin, a base whose shared file is in the target's package, at the
+  configuration, naming the base and the package; two bases whose shared
+  files are in one package, at the second base's file, naming both. The
+  shared file's objects are public and named alike in every target, so
+  an app cannot hold two in one package: name another `kotlin.package`
+  for one of them. Every base given is checked, reached or not.
+- Not built yet, and refused at the name of the document that spreads: a
+  base fragment's spread under `@defer`, its spread under `@catch`, and a
+  base `@inline` value spread inside a value whose field errors are read.
+  The checks they need are generated on the lens only where its own
+  target asks for them.
+
 ## Diagnostics and exit codes
 
 Diagnostics are printed to stderr as
 `path:line:column: severity: message`, with the position inside the
 GraphQL text in the host file. Xcode, Gradle, and Bazel show them at the
 line. A warning does not fail the command.
+
+A fragment of the target that no operation of the target reaches,
+directly or through another fragment, is a warning at its definition:
+"fragment `X` is spread by no operation of this target; nothing in it
+reads the fragment". A target that lists this one as a base may spread
+it, which this compilation cannot see. A base's fragments are not warned
+of.
 
 | Exit | Meaning |
 |---|---|
@@ -174,6 +244,7 @@ batonc generate --config Sources/App/baton.json --out Sources/App/Generated --ch
 
 `rules_baton`, under `bazel/` in this repository, is this command as a
 Bazel rule, and the release's bundle as a toolchain. Every input is
-declared, there is one output per source, and the report and the
-persisted documents file are output groups. A test runs over `--check`
-for committed output. [Bazel](bazel.md) is its page.
+declared, there is one output per source, and the report, the fragments
+file and the persisted documents file are output groups. A target's
+`deps` are its bases, passed as `--base`. A test runs over `--check` for
+committed output. [Bazel](bazel.md) is its page.

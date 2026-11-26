@@ -23,7 +23,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use super::Output;
 use crate::config::Config;
 use crate::decide::{NormalizationKind, NormalizationSelection, Program, ReaderPlan};
-use crate::kotlin_names::{IMMUTABLE, RUNTIME_NAMES, STABLE, enum_type_name, input_type_name};
+use crate::kotlin_names::{
+    IMMUTABLE, RUNTIME_NAMES, STABLE, enum_type_name, escape, input_type_name,
+};
 use lens::Lenses;
 use literal::Converters;
 use shared::ConnectionTypes;
@@ -66,7 +68,7 @@ impl Kotlin {
     }
 
     /// The package the code generated for `source` takes.
-    fn package_of(&self, source: &str) -> Option<&str> {
+    pub fn package_of(&self, source: &str) -> Option<&str> {
         match self.packages.get(source) {
             Some(package) => package.as_deref(),
             None => self.shared_package.as_deref(),
@@ -103,7 +105,8 @@ impl Kotlin {
             .map(|(source, texts)| {
                 let package = self.package_of(&source);
                 let body = texts.join("\n");
-                let shared_imports = self.shared_imports(program, &body, package);
+                let mut shared_imports = self.shared_imports(program, &body, package);
+                shared_imports.extend(base_imports(program, &body, package));
                 let text = if body.is_empty() {
                     format!("{GENERATED}\n{}", package_line(package))
                 } else {
@@ -152,6 +155,22 @@ impl Kotlin {
             .map(|name| format!("{shared}.{name}"))
             .collect()
     }
+}
+
+/// The lenses of base fragments that `body`, the code of a file in
+/// `package`, names from another package: each is imported by its own
+/// name, since a base declares a lens in the package of its source.
+fn base_imports(program: &Program, body: &str, package: Option<&str>) -> Vec<String> {
+    let spelled = identifiers(body);
+    program
+        .bases
+        .iter()
+        .filter_map(|(name, base_package)| {
+            let base_package = base_package.as_deref()?;
+            (Some(base_package) != package && spelled.contains(name.as_str()))
+                .then(|| format!("{base_package}.{}", escape(name)))
+        })
+        .collect()
 }
 
 /// The `package` line, or nothing for the default package.

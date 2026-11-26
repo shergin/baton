@@ -27,7 +27,7 @@ mod swift;
 mod value;
 mod writer;
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use crate::decide::Program;
 
@@ -77,8 +77,22 @@ impl Swift {
                 .or_default()
                 .push_str(&operation::operation_text(operation, &program.shared));
         }
+        // A base's lens is named bare, as the target's own are: a fragment's
+        // name is unique among a target and its bases, and a module's name
+        // before it would be hidden by a type of that name. The import
+        // takes the base's interface for generated code with the lens.
+        let modules: BTreeSet<&str> = program
+            .bases
+            .values()
+            .flatten()
+            .map(String::as_str)
+            .collect();
+        let imports: String = modules
+            .iter()
+            .map(|module| format!("@_spi(Generated) import {module}\n"))
+            .collect();
         for text in files.values_mut() {
-            *text = format!("{HEADER}\n{text}");
+            *text = format!("{HEADER}{imports}\n{text}");
         }
         Output {
             shared: shared::shared_text(&program.shared),

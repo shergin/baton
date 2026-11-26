@@ -103,7 +103,8 @@ swift_library(
 - **The default output is the generated sources,** to list in the `srcs`
   of your `swift_library`, `kt_jvm_library`, or in-house macro, with the
   runtime and the macro plugin in that rule's own attributes. The report
-  is the output group `report`, and under `persistConfig` the persisted
+  is the output group `report`, the fragments file the output group
+  `fragments`, and under `persistConfig` the persisted
   documents file is the output group `persisted`, named by the
   `persisted` attribute, since a rule declares its outputs before it can
   read the configuration:
@@ -125,6 +126,77 @@ swift_library(
 - **Diagnostics** are `path:line:column: error: message`, pointing into
   the GraphQL text in the host file, and a document with an error fails
   the action with nothing written.
+
+## Bases: `deps` and `module`
+
+A target spreads the fragments of another target, its
+[base](../terminology.md#compiler), when it lists that target's
+`baton_generate` in `deps`, as its `swift_library` lists the base's
+library for the lenses:
+
+```python
+baton_generate(
+    name = "shared_graphql",
+    srcs = glob(["Sources/Shared/**/*.swift"]),
+    config = "Sources/Shared/baton.json",
+    schema = "//graphql:schema.graphql",
+    module = "Shared",
+)
+
+swift_library(
+    name = "Shared",
+    module_name = "Shared",
+    srcs = glob(["Sources/Shared/**/*.swift"]) + [":shared_graphql"],
+    deps = ["@swiftpkg_baton//:Baton"],
+    plugins = ["@swiftpkg_baton//:BatonMacros.rspm"],
+)
+
+baton_generate(
+    name = "screens_graphql",
+    srcs = glob(["Sources/Screens/**/*.swift"]),
+    config = "Sources/Screens/baton.json",
+    schema = "//graphql:schema.graphql",
+    deps = [":shared_graphql"],
+)
+
+swift_library(
+    name = "Screens",
+    srcs = glob(["Sources/Screens/**/*.swift"]) + [":screens_graphql"],
+    deps = [":Shared", "@swiftpkg_baton//:Baton"],
+    plugins = ["@swiftpkg_baton//:BatonMacros.rspm"],
+)
+```
+
+- **`module`** is the Swift module the generated sources are compiled in,
+  the `module_name` of the `swift_library` that lists them. A Swift
+  target others list in `deps` names it: a dependent's generated files
+  import that module as `@_spi(Generated) import Shared` and name its
+  lenses bare. It is Swift's: a Kotlin target does not set it, and
+  `batonc` refuses `--module` on a Kotlin run. A Kotlin target's
+  fragments file names the package of its shared file, the
+  `kotlin.package` of its configuration, and a dependent reads each
+  lens's package from the base. No two Kotlin targets of a closure may
+  name one `kotlin.package`.
+- **`deps`** are the base's `baton_generate` targets, the ones the
+  library's own `deps` mirror. Each is passed with all it depends on in
+  turn as `--base`: an operation's text prints every fragment it reaches,
+  however deep its base. The arguments go through a params file, since
+  the bases of a target at the top of an app outgrow a command line. Only
+  the base fragments the target's documents reach join its compilation.
+- **The fragments file** is what a dependent reads, not the report:
+  every `baton_generate` writes `Baton.fragments.json`, the output group
+  `fragments`, which changes only when one of its fragments does, so an
+  edit to one of a base's operations reruns no dependent.
+- **`BatonInfo`**, exported from `@rules_baton//baton:defs.bzl`, is what
+  a `baton_generate` returns for the targets that list it: `fragments`,
+  a depset of the fragments files of the target and all it depends on. A
+  rule of your own that stands between two targets forwards it.
+
+A base of another schema's digest, a fragment's name declared twice, a
+Kotlin base whose shared file is in the target's package or another
+base's, or a base fragment's spread under `@defer` or `@catch`, which is
+not built yet, fails the action with an error;
+[the command's contract](batonc.md#bases) lists them all.
 
 ## `baton_check_test`
 
@@ -149,6 +221,8 @@ baton_check_test(
 The committed `Generated/` is the `baton_generate` target's output, copied
 from `bazel-bin`, or the result of `batonc generate --out Generated`, run
 from the package's directory, which names the outputs by the same rule.
+A target with bases lists the same `deps` as its `baton_generate`, since
+the check is the same compilation.
 
 ## The example
 
@@ -161,9 +235,15 @@ compiler built in the checkout. The script copies the output into
 `Generated/` and runs the check test. Then it edits one file and runs
 the test again. It also builds and checks
 `bazel/examples/rickandmorty/several`, whose schema is a filegroup of two
-files, the extension's file first. CI's `bazel` job is that script. The example compiles
+files, the extension's file first, and
+`bazel/examples/rickandmorty/bases`, where `screens` spreads a fragment
+declared in `shared` through `deps`. CI's `bazel` job is that script. The example compiles
 nothing: the generated Swift is what the SwiftPM plugin writes for the
 same sources, and the package's own build compiles it.
+`scripts/check-bases.sh` is the half that compiles: two modules of one
+app, the second spreading a fragment the first declares, generated with
+`--fragments` and `--base` over the same compiler, built and tested in
+Swift and in Kotlin. CI's `swift` and `kotlin` jobs run its halves.
 
 ## What the module does not do
 

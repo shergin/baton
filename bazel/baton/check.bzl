@@ -2,6 +2,7 @@
 a team that commits its generated code and gates on its freshness."""
 
 load(":naming.bzl", "LANGUAGES", "SOURCE_ATTRS", "TOOLCHAIN_TYPE", "outputs_by_source")
+load(":providers.bzl", "bases_of")
 
 def _quoted(path):
     return "'" + path.replace("'", "'\\''") + "'"
@@ -27,6 +28,11 @@ def _baton_check_test_impl(ctx):
     ]
     if ctx.attr.persisted:
         arguments += ["--persisted", directory + "/" + ctx.attr.persisted]
+
+    # The same bases as the `baton_generate` it checks: the same compilation.
+    bases = bases_of(ctx.attr.deps).to_list()
+    for base in bases:
+        arguments += ["--base", base.short_path]
     for src, name in outputs_by_source(ctx.files.srcs, package, language):
         arguments += ["--emit", src.short_path + "=" + directory + "/" + name]
     arguments.append("--check")
@@ -44,7 +50,7 @@ def _baton_check_test_impl(ctx):
     )
     runfiles = ctx.runfiles(
         files = ctx.files.srcs + ctx.files.generated + ctx.files.schema_extensions +
-                ctx.files.schema + [ctx.file.config, batonc],
+                ctx.files.schema + [ctx.file.config, batonc] + bases,
     )
     return [DefaultInfo(executable = script, runfiles = runfiles)]
 

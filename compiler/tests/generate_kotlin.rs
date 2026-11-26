@@ -185,3 +185,218 @@ fn a_variable_named_like_what_its_class_declares_is_an_error_at_the_name_in_the_
         stderr(&output)
     );
 }
+
+/// A Kotlin host in `package` whose one document is `document`.
+fn host(package: &str, annotation: &str, document: &str) -> String {
+    format!(
+        "package {package}\n\nimport baton.{annotation}\n\n@{annotation}($$\"\"\"\n    {document}\n    \"\"\")\nfun host() {{}}\n"
+    )
+}
+
+/// The configuration of the base target: its shared file in `app.base`.
+const BASE_PACKAGE: &str = ", \"kotlin\": {\"package\": \"app.base\"}";
+
+/// A workspace whose base target, `Status.kt` in the package `app.shared`
+/// with its shared file in `app.base`, has written its fragments file to
+/// `shared/fragments.json`. The configuration is then the dependent's,
+/// whose shared file is in `app.generated`.
+fn kotlin_base(name: &str) -> PathBuf {
+    let directory = workspace(name);
+    configuration(&directory, BASE_PACKAGE);
+    write(
+        &directory,
+        "Status.kt",
+        &host(
+            "app.shared",
+            "Fragment",
+            "fragment CharacterStatus_character on Character { status }",
+        ),
+    );
+    let output = generate(
+        &directory,
+        &[
+            "--out",
+            "shared",
+            "--fragments",
+            "shared/fragments.json",
+            "Status.kt",
+        ],
+    );
+    assert!(output.status.success(), "{}", stderr(&output));
+    configuration(&directory, PACKAGE);
+    directory
+}
+
+/// A Kotlin host in `app.screens` whose query spreads the base's fragment.
+fn row() -> String {
+    host(
+        "app.screens",
+        "Query",
+        "query RowQuery { character(id: 1) { id ...CharacterStatus_character } }",
+    )
+}
+
+#[test]
+fn a_kotlin_base_s_fragments_file_carries_each_fragment_s_package() {
+    let directory = kotlin_base("base-package");
+    let text = std::fs::read_to_string(directory.join("shared/fragments.json"))
+        .expect("the fragments file is written");
+    let file: serde_json::Value = serde_json::from_str(&text).expect("the file is JSON");
+    assert_eq!(file["fragments"][0]["name"], "CharacterStatus_character");
+    assert_eq!(file["fragments"][0]["package"], "app.shared");
+}
+
+#[test]
+fn a_kotlin_head_s_module_is_the_package_of_the_target_s_shared_file() {
+    let directory = kotlin_base("base-head");
+    let fragments: serde_json::Value = serde_json::from_str(
+        &std::fs::read_to_string(directory.join("shared/fragments.json"))
+            .expect("the fragments file is written"),
+    )
+    .expect("the fragments file is JSON");
+    assert_eq!(fragments["module"], "app.base");
+    configuration(&directory, BASE_PACKAGE);
+    let output = generate(
+        &directory,
+        &[
+            "--out",
+            "again",
+            "--report",
+            "again/report.json",
+            "Status.kt",
+        ],
+    );
+    assert!(output.status.success(), "{}", stderr(&output));
+    let report: serde_json::Value = serde_json::from_str(
+        &std::fs::read_to_string(directory.join("again/report.json"))
+            .expect("the report is written"),
+    )
+    .expect("the report is JSON");
+    assert_eq!(report["module"], "app.base");
+}
+
+#[test]
+fn module_on_a_kotlin_run_is_a_usage_error_naming_the_configuration_s_package() {
+    let directory = workspace("module-option");
+    configuration(&directory, PACKAGE);
+    write(&directory, "Home.kt", SCREEN);
+    let output = generate(
+        &directory,
+        &[
+            "--out",
+            "out",
+            "--module",
+            "Screens",
+            "--fragments",
+            "out/fragments.json",
+            "Home.kt",
+        ],
+    );
+    assert!(!output.status.success());
+    assert!(
+        stderr(&output).starts_with(
+            "batonc: `--module` names a Swift module; a Kotlin target's is the `kotlin.package` of its configuration"
+        ),
+        "{}",
+        stderr(&output)
+    );
+    assert!(!directory.join("out").exists());
+}
+
+#[test]
+fn a_kotlin_base_whose_shared_file_is_in_the_target_s_package_is_an_error_at_the_configuration() {
+    let directory = kotlin_base("base-clash");
+    configuration(&directory, BASE_PACKAGE);
+    write(&directory, "Row.kt", &row());
+    let output = generate(
+        &directory,
+        &[
+            "--out",
+            "screens",
+            "--base",
+            "shared/fragments.json",
+            "Row.kt",
+        ],
+    );
+    assert!(!output.status.success());
+    assert!(
+        stderr(&output).starts_with(
+            "baton.json:1:1: error: the base `shared/fragments.json` declares its shared file in the Kotlin package `app.base`, and so does this target: an app cannot hold both, so name another `kotlin.package` for one of them"
+        ),
+        "{}",
+        stderr(&output)
+    );
+    assert!(!directory.join("screens").exists());
+}
+
+#[test]
+fn a_kotlin_report_s_fragment_carries_its_package() {
+    let directory = kotlin_base("base-report");
+    configuration(&directory, BASE_PACKAGE);
+    let output = generate(
+        &directory,
+        &[
+            "--out",
+            "again",
+            "--report",
+            "again/report.json",
+            "Status.kt",
+        ],
+    );
+    assert!(output.status.success(), "{}", stderr(&output));
+    let report: serde_json::Value = serde_json::from_str(
+        &std::fs::read_to_string(directory.join("again/report.json"))
+            .expect("the report is written"),
+    )
+    .expect("the report is JSON");
+    assert_eq!(report["fragments"][0]["package"], "app.shared");
+}
+
+/// The base's lens is in `app.shared`, its host's package, and its shared
+/// file in `app.base`; the dependent's shared file is in `app.generated`,
+/// and one of its hosts is in `app.shared` too: two targets' hosts may
+/// share a package when their shared files do not.
+#[test]
+fn a_file_that_names_a_base_lens_of_another_package_imports_it_and_one_in_its_package_does_not() {
+    let directory = kotlin_base("base-imports");
+    write(&directory, "Row.kt", &row());
+    write(
+        &directory,
+        "Same.kt",
+        &host(
+            "app.shared",
+            "Query",
+            "query SameQuery { character(id: 1) { id ...CharacterStatus_character } }",
+        ),
+    );
+    let output = generate(
+        &directory,
+        &[
+            "--out",
+            "screens",
+            "--base",
+            "shared/fragments.json",
+            "Row.kt",
+            "Same.kt",
+        ],
+    );
+    assert!(output.status.success(), "{}", stderr(&output));
+    let read = |name: &str| {
+        std::fs::read_to_string(directory.join("screens").join(name)).unwrap_or_default()
+    };
+    let row = read("Row.baton.kt");
+    assert!(
+        row.contains("\nimport app.shared.CharacterStatus_character\n"),
+        "{row}"
+    );
+    assert!(row.contains("CharacterStatus_character"), "{row}");
+    let same = read("Same.baton.kt");
+    assert!(same.contains("\npackage app.shared\n"), "{same}");
+    assert!(same.contains("CharacterStatus_character"), "{same}");
+    assert!(!same.contains("import app.shared."), "{same}");
+    assert!(
+        !row.contains("class CharacterStatus_character")
+            && !same.contains("class CharacterStatus_character"),
+        "the dependent declares no lens of the base's"
+    );
+}

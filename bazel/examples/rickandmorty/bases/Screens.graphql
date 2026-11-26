@@ -1,0 +1,11 @@
+fragment CharacterRow_character on Character {
+  species
+  ...CharacterStatus_character
+}
+
+query CharacterScreen($id: ID!) {
+  character(id: $id) {
+    ...CharacterRow_character
+    ...CharacterStatus_character
+  }
+}

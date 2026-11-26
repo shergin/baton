@@ -1,6 +1,8 @@
 """What the languages share: the output each source writes, named by the
 rule the SwiftPM plugin and `batonc generate --out` use."""
 
+load(":providers.bzl", "BatonInfo")
+
 # The source extension, the output suffix and the shared file, by language.
 LANGUAGES = {
     "swift": struct(extension = ".swift", suffix = ".baton.swift", shared = "Baton.baton.swift"),
@@ -64,6 +66,10 @@ SOURCE_ATTRS = {
         doc = "The language the run writes.",
         default = "swift",
         values = ["swift", "kotlin"],
+    ),
+    "deps": attr.label_list(
+        doc = "The `baton_generate` targets whose fragments this one spreads, its bases: the same targets its library depends on for their lenses. Each is passed, with all it depends on in turn, as `--base`.",
+        providers = [BatonInfo],
     ),
     "persisted": attr.string(
         doc = "The name of the persisted documents file to write under `persistConfig`; none when unset.",

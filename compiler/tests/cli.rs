@@ -256,7 +256,7 @@ fn validate_warns_at_the_name_of_a_fragment_no_operation_spreads_and_succeeds() 
     assert_eq!(
         warnings,
         [format!(
-            "{path}:4:10: warning: fragment `Unused_character` is spread by no operation; nothing can read it"
+            "{path}:4:10: warning: fragment `Unused_character` is spread by no operation of this target; nothing in it reads the fragment"
         )],
         "{errors}"
     );
@@ -380,4 +380,240 @@ fn check_with_persisted_passes_after_generate_and_names_the_persisted_file_when_
     );
     assert_eq!(errors.lines().count(), 2, "{errors}");
     assert!(!persisted.exists(), "the check writes nothing");
+}
+
+/// `batonc` run in `directory`.
+fn batonc_in(directory: &Scratch, arguments: &[&str]) -> Output {
+    Command::new(env!("CARGO_BIN_EXE_batonc"))
+        .current_dir(&directory.0)
+        .args(arguments)
+        .output()
+        .expect("batonc runs")
+}
+
+const STATUS: &str = "fragment CharacterStatus_character on Character { status species }\n";
+
+const ROW: &str = "fragment CharacterRow_character on Character { name ...CharacterStatus_character }\n\
+                   query RowQuery { character(id: \"1\") { id ...CharacterRow_character } }\n";
+
+/// A directory holding a base target, `Shared.graphql`, generated in the
+/// module `Shared` with its fragments file at `shared/fragments.json`, and a
+/// dependent target, `Screen.graphql`, that spreads its fragment; with the
+/// schema's path.
+fn two_targets(name: &str) -> (Scratch, String) {
+    let directory = Scratch::new(name);
+    std::fs::write(directory.join("Shared.graphql"), STATUS).expect("the base is written");
+    std::fs::write(directory.join("Screen.graphql"), ROW).expect("the dependent is written");
+    let schema = root()
+        .join("spec/rickandmorty/schema.graphql")
+        .to_string_lossy()
+        .into_owned();
+    let generated = batonc_in(
+        &directory,
+        &[
+            "generate",
+            "--schema",
+            &schema,
+            "--module",
+            "Shared",
+            "--out",
+            "shared",
+            "--fragments",
+            "shared/fragments.json",
+            "Shared.graphql",
+        ],
+    );
+    assert!(generated.status.success(), "{}", stderr(&generated));
+    (directory, schema)
+}
+
+#[test]
+fn generate_with_fragments_and_module_writes_the_head_and_fragments_a_dependent_reads() {
+    let (directory, _) = two_targets("base-fragments");
+    let text = std::fs::read_to_string(directory.join("shared/fragments.json"))
+        .expect("the fragments file is written");
+    let file: serde_json::Value = serde_json::from_str(&text).expect("the file is JSON");
+    assert_eq!(file["format"], 1);
+    assert_eq!(file["module"], "Shared");
+    assert_eq!(file["fragments"][0]["name"], "CharacterStatus_character");
+    assert_eq!(file["fragments"][0]["source"], "Shared.graphql");
+    assert!(file.get("operations").is_none(), "{text}");
+    assert!(names(&directory.join("shared")).contains(&"Shared.graphql.baton.swift".to_string()));
+}
+
+#[test]
+fn generate_with_base_reads_through_the_base_s_lens_and_reports_its_own_fragments() {
+    let (directory, schema) = two_targets("base-generate");
+    let generated = batonc_in(
+        &directory,
+        &[
+            "generate",
+            "--schema",
+            &schema,
+            "--out",
+            "screens",
+            "--report",
+            "screens/report.json",
+            "--base",
+            "shared/fragments.json",
+            "Screen.graphql",
+        ],
+    );
+    assert!(generated.status.success(), "{}", stderr(&generated));
+    assert_eq!(stderr(&generated), "");
+    let swift = std::fs::read_to_string(directory.join("screens/Screen.graphql.baton.swift"))
+        .expect("the dependent's file is written");
+    assert!(
+        swift.contains("@_spi(Generated) import Baton\n@_spi(Generated) import Shared\n"),
+        "{swift}"
+    );
+    assert!(
+        !swift.contains("struct CharacterStatus_character"),
+        "{swift}"
+    );
+    let report: serde_json::Value = serde_json::from_str(
+        &std::fs::read_to_string(directory.join("screens/report.json"))
+            .expect("the report is written"),
+    )
+    .expect("the report is JSON");
+    assert_eq!(
+        report["fragments"]
+            .as_array()
+            .map(|fragments| fragments.len()),
+        Some(1)
+    );
+    assert_eq!(report["fragments"][0]["name"], "CharacterRow_character");
+    assert!(report.get("module").is_none());
+}
+
+#[test]
+fn validate_with_base_succeeds_where_validate_without_it_cannot_find_the_fragment() {
+    let (directory, schema) = two_targets("base-validate");
+    let validated = batonc_in(
+        &directory,
+        &[
+            "validate",
+            "--schema",
+            &schema,
+            "--base",
+            "shared/fragments.json",
+            "Screen.graphql",
+        ],
+    );
+    assert!(validated.status.success(), "{}", stderr(&validated));
+    assert_eq!(stderr(&validated), "");
+
+    let alone = batonc_in(
+        &directory,
+        &["validate", "--schema", &schema, "Screen.graphql"],
+    );
+    assert_eq!(alone.status.code(), Some(1));
+    assert!(
+        stderr(&alone).contains("Undefined fragment 'CharacterStatus_character'"),
+        "{}",
+        stderr(&alone)
+    );
+}
+
+#[test]
+fn print_with_base_prints_the_base_fragment_s_definition_in_the_text() {
+    let (directory, schema) = two_targets("base-print");
+    let printed = batonc_in(
+        &directory,
+        &[
+            "print",
+            "RowQuery",
+            "--schema",
+            &schema,
+            "--base",
+            "shared/fragments.json",
+            "Screen.graphql",
+        ],
+    );
+    assert!(printed.status.success(), "{}", stderr(&printed));
+    assert_eq!(
+        stdout(&printed).trim_end(),
+        "query RowQuery{character(id:\"1\"){id,...CharacterRow_character}}fragment CharacterRow_character on Character{name,...CharacterStatus_character}fragment CharacterStatus_character on Character{status,species}"
+    );
+}
+
+#[test]
+fn an_argument_file_is_replaced_by_the_arguments_it_holds_one_a_line() {
+    let (directory, schema) = two_targets("base-arguments");
+    std::fs::write(
+        directory.join("arguments.txt"),
+        format!("--schema\n{schema}\n--base\nshared/fragments.json\n"),
+    )
+    .expect("the argument file is written");
+    let validated = batonc_in(
+        &directory,
+        &["validate", "@arguments.txt", "Screen.graphql"],
+    );
+    assert!(validated.status.success(), "{}", stderr(&validated));
+    assert_eq!(stderr(&validated), "");
+}
+
+#[test]
+fn an_argument_file_that_cannot_be_read_fails_the_run() {
+    let directory = Scratch::new("base-arguments-missing");
+    let output = batonc_in(&directory, &["validate", "@missing.txt"]);
+    assert_eq!(output.status.code(), Some(1));
+    assert!(
+        stderr(&output).starts_with("batonc: cannot read missing.txt"),
+        "{}",
+        stderr(&output)
+    );
+}
+
+#[test]
+fn base_is_refused_by_a_command_that_does_not_take_it() {
+    let (directory, schema) = two_targets("base-plan");
+    let output = batonc_in(
+        &directory,
+        &[
+            "plan",
+            "--schema",
+            &schema,
+            "--base",
+            "shared/fragments.json",
+            "Screen.graphql",
+        ],
+    );
+    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(
+        stderr(&output).trim_end(),
+        "batonc: `--base` is not an option of `plan`, which takes `--schema`, `--config`, `--language`"
+    );
+}
+
+#[test]
+fn a_base_fragment_spread_under_catch_fails_generate_before_anything_is_written() {
+    let (directory, schema) = two_targets("base-refused");
+    std::fs::write(
+        directory.join("Caught.graphql"),
+        "query CaughtQuery { character(id: \"1\") { id ... @alias(as: \"status\") @catch { ...CharacterStatus_character } } }\n",
+    )
+    .expect("the dependent is written");
+    let output = batonc_in(
+        &directory,
+        &[
+            "generate",
+            "--schema",
+            &schema,
+            "--out",
+            "screens",
+            "--base",
+            "shared/fragments.json",
+            "Caught.graphql",
+        ],
+    );
+    assert_eq!(output.status.code(), Some(1));
+    assert!(
+        stderr(&output).starts_with(
+            "Caught.graphql:1:7: error: `...CharacterStatus_character` under `@catch`"
+        ),
+        "{}",
+        stderr(&output)
+    );
+    assert!(!directory.join("screens").exists(), "nothing is written");
 }

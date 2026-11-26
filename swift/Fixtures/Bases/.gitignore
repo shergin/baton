@@ -1,0 +1,5 @@
+# Build products of scripts/check-bases.sh and of SwiftPM.
+/.build/
+/.swiftpm/
+/Package.resolved
+/Sources/*/Generated/

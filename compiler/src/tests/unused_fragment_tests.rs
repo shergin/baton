@@ -1,6 +1,7 @@
 //! Tests of the warning for a fragment no operation reaches: one warning at
 //! the name of each such fragment, none for a fragment an operation spreads
-//! directly, through another fragment or as its refetch query.
+//! directly, through another fragment or as its refetch query, and none for
+//! a fragment of a base, whose own target is the one to warn it.
 
 use std::path::{Path, PathBuf};
 
@@ -40,17 +41,44 @@ fn documents(texts: &[(&str, Position, &str)]) -> Vec<Document> {
         .collect()
 }
 
+/// The configuration the tests compile under: none, at `baton.json`.
+fn config() -> Config {
+    let mut config: Config = serde_json::from_str("{}").expect("the configuration parses");
+    config.path = PathBuf::from("baton.json");
+    config
+}
+
 /// The warnings for unused fragments among `texts`, compiled without
 /// configuration.
 fn warnings(texts: &[(&str, Position, &str)]) -> Vec<Rendered> {
+    warnings_with_bases(texts, &[])
+}
+
+/// The warnings for unused fragments among `texts`, spreading the fragments
+/// of `bases`.
+fn warnings_with_bases(texts: &[(&str, Position, &str)], bases: &[base::Base]) -> Vec<Rendered> {
     let (sdl, path) = schema();
-    let mut config: Config = serde_json::from_str("{}").expect("the configuration parses");
-    config.path = PathBuf::from("baton.json");
     let documents = documents(texts);
-    let plan = compile(&one_file(&sdl, &path), &documents, &config)
+    let plan =
+        crate::pipeline::compile_with_bases(&one_file(&sdl, &path), &documents, &config(), bases)
+            .unwrap_or_else(|errors| panic!("{errors:?}"))
+            .plan;
+    unused_fragments(&documents, &plan)
+}
+
+/// The base whose fragments file a build writes for the target `texts`, in
+/// the module `Shared`.
+fn shared_base(texts: &[(&str, Position, &str)]) -> base::Base {
+    let (sdl, path) = schema();
+    let plan = compile(&one_file(&sdl, &path), &documents(texts), &config())
         .unwrap_or_else(|errors| panic!("{errors:?}"))
         .plan;
-    unused_fragments(&documents, &plan)
+    let home = report::Home {
+        module: Some("Shared".to_string()),
+        ..report::Home::default()
+    };
+    let text = report::fragments_text(&plan, Path::new("/nowhere"), &home);
+    base::Base::parse("shared.json", &text).unwrap_or_else(|error| panic!("{error}"))
 }
 
 const START: Position = Position { line: 1, column: 1 };
@@ -59,7 +87,9 @@ const QUERY: &str = "query Screen { character(id: \"1\") { id ...Row_character }
 const ROW: &str = "fragment Row_character on Character { name }";
 
 fn message(name: &str) -> String {
-    format!("fragment `{name}` is spread by no operation; nothing can read it")
+    format!(
+        "fragment `{name}` is spread by no operation of this target; nothing in it reads the fragment"
+    )
 }
 
 #[test]
@@ -161,6 +191,53 @@ fn a_refetchable_fragment_nothing_else_spreads_is_reached_by_its_refetch_query()
         START,
         "fragment Refetch_character on Character @refetchable(queryName: \"RefetchCharacterQuery\") { name }",
     )]);
+    assert!(warnings.is_empty(), "{warnings:?}");
+}
+
+#[test]
+fn a_base_fragment_the_target_reaches_only_through_an_unspread_fragment_is_not_warned() {
+    let shared = shared_base(&[(
+        "Shared.graphql",
+        START,
+        "fragment Status_character on Character { status }",
+    )]);
+    let warnings = warnings_with_bases(
+        &[
+            ("Screen.swift", START, QUERY),
+            ("Screen.swift", START, ROW),
+            (
+                "Chain.swift",
+                START,
+                "fragment Outer_character on Character { ...Status_character }",
+            ),
+        ],
+        &[shared],
+    );
+    let messages: Vec<&str> = warnings
+        .iter()
+        .map(|warning| warning.message.as_str())
+        .collect();
+    assert_eq!(messages, [message("Outer_character")]);
+}
+
+#[test]
+fn a_base_fragment_an_operation_reaches_through_a_fragment_is_not_warned() {
+    let shared = shared_base(&[(
+        "Shared.graphql",
+        START,
+        "fragment Status_character on Character { status }",
+    )]);
+    let warnings = warnings_with_bases(
+        &[
+            ("Screen.swift", START, QUERY),
+            (
+                "Screen.swift",
+                START,
+                "fragment Row_character on Character { name ...Status_character }",
+            ),
+        ],
+        &[shared],
+    );
     assert!(warnings.is_empty(), "{warnings:?}");
 }
 

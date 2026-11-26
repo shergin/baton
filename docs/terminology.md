@@ -1102,26 +1102,46 @@ and the shared file names it as `Types.format`, the runtime's marker object
 
 **Base.** *Composition: document, lens.* Relay's word: a project names a
 `base` project whose documents it can reference and which produces no
-artifacts for it. Not built yet.
-Here: a target whose report another target's compilation reads, so that
-target spreads the base's fragments. The base's fragment definitions join
-the compilation and are inlined into its operations' plans and printed in
-their texts; a spread of one reads through the lens the base generated,
-which is not generated again, and an enum or an input object the base
-generated is read from it. The build hands a target the reports of its
-whole closure, and the schema's digest of each must be the target's. A
-fragment's name is unique among a target and its bases. See
+artifacts for it.
+Here: a target whose report's head and fragments another target's
+compilation reads, so that target spreads the base's fragments; the
+target is given each base's report or [fragments file](#compiler) by
+`batonc generate --base`. Only the base fragments its documents reach,
+directly or through another base fragment, join the compilation; they
+are validated with its documents, inlined into its operations' plans and printed in
+their texts. A spread of one reads through the lens the base generated,
+which is not generated again. An enum or an input object that only a
+base fragment names is the base's and is not generated again either. The
+build hands a target the files of its whole closure, the schema's digest
+of each must be the target's, and a fragment's name is unique among a
+target and its bases. See
 [the decision](decisions/a-target-spreads-its-bases-fragments.md).
+Swift: a generated file imports each base's module as
+`@_spi(Generated) import <Module>`, the module `--module` named to the
+base's `generate`, and names the base's lens bare.
+Kotlin: a generated file imports a base's lens from the package of the
+fragment's source, which the base's file gives. No two of a target and
+its bases declare their shared file in one package: its objects are
+public and named alike in every target, so an app would hold one class
+twice. A base of the target's package, and two bases of one package, are
+errors, checked for every base given, reached or not.
 
 **Report.** *Composition: document, schema.* Baton's word.
 Here: what the compiler compiled for one target, written by
 `batonc generate --report` as JSON and, under SwiftPM's plugin, into the
-build's output directory as `Baton.report.json`: the schema's digest; every
+build's output directory as `Baton.report.json`: at its head, the format
+of the head and the fragments (`format`, which a compilation that reads the
+report as a base checks), the schema's digest and `module`: in Swift,
+when `--module` named it, the module the target's code is compiled in,
+and under Kotlin the package of the target's shared file, its
+configuration's `kotlin.package`; every
 operation with its name, kind, source, id when persisted, variables as the
 schema types them, the fragments it reaches directly or through other
 fragments, its text and its lens; every fragment with its name, type
 condition, source, the operations that reach it, its definition as the
-author wrote it, printed before the transforms, and its lens. A lens is
+author wrote it, printed before the transforms, under Kotlin the package
+its lens is declared in, and its lens. A base's fragments are not listed;
+an operation's fragments name them all the same. A lens is
 listed as the target's language reads it: each accessor's name, the
 response key it reads, the schema coordinate of the field it reads,
 `Type.field`, and its shape, whether it reads absent, a `@catch`
@@ -1141,6 +1161,20 @@ Swift: the build plugin is SwiftPM's.
 Kotlin: the build plugin is Gradle's, `com.shergin.baton`, whose
 `generateBaton` task writes the report through `--report` to its `report`
 property, `build/baton/<task>/report.json` by default.
+
+**Fragments file.** *Composition: document, schema.* Baton's word.
+Here: the report's head and its fragments alone, written by
+`batonc generate --fragments` as JSON and, under `rules_baton`, as
+`Baton.fragments.json`: `format`, `schemaDigest` and `module`, the Swift
+module when `--module` named it or, under Kotlin, the shared file's
+package; of each fragment the target declares, its `name`, `type`, `source`, `text` and,
+under Kotlin, `package`. It is a second view of the report, as the
+persisted documents file is, and it is what a target that spreads this
+one's fragments reads as its [base](#compiler). It changes only when a
+fragment does, so a build that hands dependents this file and not the
+report reruns a dependent only when a base's fragments change, not with
+each edit to one of the base's operations. See
+[the decision](decisions/a-target-spreads-its-bases-fragments.md).
 
 ## Runtime
 

@@ -101,7 +101,68 @@ pub struct FragmentPlan {
     /// `@inline`: the fragment reads as a value, not a lens.
     #[serde(skip_serializing_if = "is_false")]
     pub inline: bool,
+    /// A fragment a base declares: the target spreads it and reads through
+    /// the lens the base generated, and generates none of its own.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub base: Option<BaseLens>,
     pub reader: Vec<SelectionPlan>,
+}
+
+/// Where a base declares a fragment's lens: the Swift module or the Kotlin
+/// package, none being Kotlin's default package.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+pub struct BaseLens {
+    pub module: Option<String>,
+}
+
+impl Plan {
+    /// The fragments the target declares, which it generates the lenses of:
+    /// all but those of its bases.
+    pub fn own_fragments(&self) -> impl Iterator<Item = &FragmentPlan> {
+        self.fragments
+            .iter()
+            .filter(|fragment| fragment.base.is_none())
+    }
+
+    /// The base fragments the target's own documents spread, each with
+    /// where its lens is declared: what the generated code names from
+    /// another module.
+    pub fn base_spreads(&self) -> BTreeMap<String, Option<String>> {
+        let bases: BTreeMap<&str, &BaseLens> = self
+            .fragments
+            .iter()
+            .filter_map(|fragment| Some((fragment.name.as_str(), fragment.base.as_ref()?)))
+            .collect();
+        let mut names = BTreeSet::new();
+        for fragment in self.own_fragments() {
+            spread_names(&fragment.reader, &mut names);
+        }
+        for operation in &self.operations {
+            spread_names(&operation.reader, &mut names);
+        }
+        names
+            .into_iter()
+            .filter_map(|name| {
+                let base = bases.get(name.as_str())?;
+                Some((name, base.module.clone()))
+            })
+            .collect()
+    }
+}
+
+/// The names of the fragments `selections` spread, at any depth.
+pub fn spread_names(selections: &[SelectionPlan], into: &mut BTreeSet<String>) {
+    for selection in selections {
+        match selection {
+            SelectionPlan::Spread { fragment, .. } => {
+                into.insert(fragment.clone());
+            }
+            SelectionPlan::Linked { selections, .. }
+            | SelectionPlan::Inline { selections, .. }
+            | SelectionPlan::Condition { selections, .. } => spread_names(selections, into),
+            SelectionPlan::Scalar { .. } => {}
+        }
+    }
 }
 
 /// How a `@refetchable` fragment is fetched again: the generated query, the

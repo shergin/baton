@@ -14,7 +14,7 @@ pub use plan::{
     ArgumentPlan, ArgumentValuePlan, CatchTarget, ConditionClass, ConnectionPlan, ConstantPlan,
     DeletePlan, EditKind, EditPlan, FragmentPlan, LookupPlan, OperationKind, OperationPlan, Origin,
     PagedPlan, Plan, RefetchPlan, RequiredAction, RequiredPlan, SelectionPlan, StorageKeyPlan,
-    TypeKind, TypePlan, VariablePlan,
+    TypeKind, TypePlan, VariablePlan, spread_names,
 };
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -36,6 +36,7 @@ use relay_transforms::{
 };
 use schema::{FieldID, SDLSchema, Schema, Type};
 
+use crate::base::Base;
 use crate::config::{Config, Language};
 use crate::documents::Document;
 
@@ -134,6 +135,24 @@ pub fn compile(
     documents: &[Document],
     config: &Config,
 ) -> Result<Compiled, Vec<Diagnostic>> {
+    compile_with_bases(sources, documents, config, &[])
+}
+
+/// Compiles a target that spreads the fragments of `bases`: the base
+/// fragments its documents reach join the program, so they are validated
+/// with it and each operation's plan and text cover them, and the plan
+/// marks them as the bases', whose lenses the target reads through.
+///
+/// Relay's own handling of a base project's fragments is not used: it
+/// removes them from the reader program, where the lowering reads what a
+/// spread's accessor is decided from, the fragment's arguments, its type
+/// condition and whether a required child can null it.
+pub fn compile_with_bases(
+    sources: &SchemaSources,
+    documents: &[Document],
+    config: &Config,
+    bases: &[Base],
+) -> Result<Compiled, Vec<Diagnostic>> {
     let mut timings = Timings::default();
 
     let started = Instant::now();
@@ -180,10 +199,19 @@ pub fn compile(
         }
     }
     crate::directives::check_passes(&mut deletes, &definitions, &mut diagnostics);
-    timings.parse = started.elapsed();
     if !diagnostics.is_empty() {
         return Err(diagnostics);
     }
+    let digest = schema_digest(sources, &config.identity, &config.transient);
+    let included = crate::base::include(
+        bases,
+        &digest,
+        config.language,
+        config.kotlin_package(),
+        config_location(config),
+        &mut definitions,
+    )?;
+    timings.parse = started.elapsed();
 
     let mut project_config = ProjectConfig::default();
     project_config.schema_config.defer_stream_interface = defer_stream_interface(&schema);
@@ -219,10 +247,10 @@ pub fn compile(
     timings.transform = started.elapsed();
 
     let started = Instant::now();
-    let mut plan = lower(&schema, &programs, config, &keys, &deletes)?;
+    let mut plan = lower(&schema, &programs, config, &keys, &deletes, &included)?;
     plan.root_names = root_names;
     plan.transient_types = transient_types;
-    plan.schema_digest = schema_digest(sources, &config.identity, &config.transient);
+    plan.schema_digest = digest;
     timings.lower = started.elapsed();
 
     Ok(Compiled { plan, timings })
